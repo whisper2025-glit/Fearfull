@@ -74,53 +74,18 @@ const Profile = () => {
     }
   };
 
+  // User stats - these would come from your backend/database in a real app
   const stats = {
     followers: 0,
-    following: 1,
+    following: 0,
     likes: 0,
     publicBots: 0,
-    favorites: 4,
+    favorites: 0,
     posts: 0
   };
 
-  const favoriteCharacters = [
-    {
-      id: 1,
-      name: 'Mikzu',
-      description: 'Your Personal Freeuse Spanking Maid!',
-      image: '/lovable-uploads/f455db46-8eae-4432-a644-f977619b90eb.png',
-      category: 'Anime',
-      stats: { messages: 1234, likes: 567 },
-      tags: ['Cheerful', 'Resilient', 'Flirty', 'Professional']
-    },
-    {
-      id: 2,
-      name: 'Mason-Kyson th...',
-      description: "You're under our command, darling~",
-      image: '/lovable-uploads/3eab3055-d06f-48a5-9790-123de7769f97.png',
-      category: 'Romance',
-      stats: { messages: 2156, likes: 892 },
-      tags: ['Seductive', 'Dark', 'Male', 'Mafia']
-    },
-    {
-      id: 3,
-      name: 'Luna',
-      description: 'An ancient sorceress wielding powerful magic',
-      image: '/lovable-uploads/f455db46-8eae-4432-a644-f977619b90eb.png',
-      category: 'Fantasy',
-      stats: { messages: 876, likes: 234 },
-      tags: ['Mysterious', 'Powerful', 'Ancient', 'Magic']
-    },
-    {
-      id: 4,
-      name: 'Aria',
-      description: 'A talented musician with a mysterious past',
-      image: '/lovable-uploads/3eab3055-d06f-48a5-9790-123de7769f97.png',
-      category: 'Romance',
-      stats: { messages: 3421, likes: 1567 },
-      tags: ['Musical', 'Mysterious', 'Talented', 'Artist']
-    }
-  ];
+  // Characters data - these would come from your backend/database in a real app
+  const favoriteCharacters: any[] = [];
 
   const tabs = [
     { id: 'bots', label: 'Public Bots', count: stats.publicBots },
