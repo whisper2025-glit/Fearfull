@@ -163,13 +163,10 @@ Aizawa: "introduce yourself and take`,
           {allMessages.map((msg) => (
             <div key={msg.id} className="mb-4">
               {msg.type === 'intro' ? (
-                <Card className="relative p-4 bg-card/60 border-accent/30 shadow-md overflow-hidden">
-                  {/* Background overlay for better text readability */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-background/40 to-background/60" />
-
-                  <div className="relative z-10 space-y-3">
-                    {/* Character Avatar - positioned at top center */}
-                    <div className="flex justify-center">
+                <div className="relative pt-8">
+                  <Card className="relative p-4 pt-8 bg-card/60 border-accent/30 shadow-md overflow-visible">
+                    {/* Character Avatar - positioned to overlap card border */}
+                    <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 z-20">
                       <img
                         src={currentCharacter.avatar}
                         alt={currentCharacter.name}
@@ -177,33 +174,38 @@ Aizawa: "introduce yourself and take`,
                       />
                     </div>
 
-                    {/* Character Title */}
-                    <div className="text-center">
-                      <h2 className="text-lg font-bold text-foreground">{msg.characterName}</h2>
-                      <p className="text-sm text-primary/80 mt-1">{msg.author}</p>
+                    {/* Background overlay for better text readability */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-background/40 to-background/60" />
+
+                    <div className="relative z-10 space-y-3">
+                      {/* Character Title */}
+                      <div className="text-center">
+                        <h2 className="text-lg font-bold text-foreground">{msg.characterName}</h2>
+                        <p className="text-sm text-primary/80 mt-1">{msg.author}</p>
+                      </div>
+
+                      {/* Intro Section */}
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-center">
+                          <span className="text-accent font-semibold text-sm bg-accent/10 px-3 py-1 rounded-full">Intro</span>
+                        </div>
+                        <div className={`transition-all duration-300 ${isIntroExpanded ? 'max-h-none' : 'max-h-16 overflow-hidden'}`}>
+                          <p className="text-foreground text-sm leading-relaxed text-center">{msg.content}</p>
+                        </div>
+                      </div>
                     </div>
 
-                    {/* Intro Section */}
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-center">
-                        <span className="text-accent font-semibold text-sm bg-accent/10 px-3 py-1 rounded-full">Intro</span>
-                      </div>
-                      <div className={`transition-all duration-300 ${isIntroExpanded ? 'max-h-none' : 'max-h-16 overflow-hidden'}`}>
-                        <p className="text-foreground text-sm leading-relaxed text-center">{msg.content}</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Collapse/Expand Arrow */}
-                  <button
-                    onClick={() => setIsIntroExpanded(!isIntroExpanded)}
-                    className="absolute bottom-2 right-2 p-1 rounded-full bg-background/20 hover:bg-background/40 transition-colors"
-                  >
-                    <ChevronDown
-                      className={`h-4 w-4 text-foreground/70 transition-transform duration-300 ${isIntroExpanded ? 'rotate-180' : ''}`}
-                    />
-                  </button>
-                </Card>
+                    {/* Collapse/Expand Arrow */}
+                    <button
+                      onClick={() => setIsIntroExpanded(!isIntroExpanded)}
+                      className="absolute bottom-2 right-2 p-1 rounded-full bg-background/20 hover:bg-background/40 transition-colors"
+                    >
+                      <ChevronDown
+                        className={`h-4 w-4 text-foreground/70 transition-transform duration-300 ${isIntroExpanded ? 'rotate-180' : ''}`}
+                      />
+                    </button>
+                  </Card>
+                </div>
               ) : msg.type === 'scenario' ? (
                 <Card className="p-3 bg-card/50 border-primary/20">
                   <div className="flex items-start gap-2">
