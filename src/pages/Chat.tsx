@@ -90,8 +90,26 @@ Aizawa: "introduce yourself and take`,
 
   const currentCharacter = characters[characterId as keyof typeof characters] || characters["1"];
 
-  const handleSendMessage = () => {
-    if (!message.trim()) return;
+  const handleSendMessage = async () => {
+    if (!message.trim() || isLoading) return;
+
+    // Use default model if none selected
+    const modelToUse = selectedModel || {
+      id: "mistral-main",
+      name: "mistralai/mistral-small-3.2-24b-instruct:free",
+      author: "Mistral AI",
+      description: "Default roleplay model",
+      price: 0,
+      responseTime: "850 ms",
+      memory: "24B",
+      rating: 8.5,
+      tags: ["Main", "Roleplay", "Free"],
+      isActive: true,
+      isPremium: false,
+      isMain: true,
+      provider: 'mistral',
+      tier: 'standard' as const
+    };
 
     // Add user message
     const userMessage: Message = {
@@ -103,19 +121,60 @@ Aizawa: "introduce yourself and take`,
     };
 
     setMessages(prev => [...prev, userMessage]);
+    const currentMessage = message;
     setMessage("");
+    setIsLoading(true);
 
-    // Simulate bot response
-    setTimeout(() => {
+    try {
+      // Prepare chat messages for OpenRouter
+      const allMessages = [...currentCharacter.messages, ...messages, userMessage];
+      const chatMessages: ChatMessage[] = [
+        {
+          role: 'system',
+          content: openRouterAPI.getRoleplaySystemPrompt(modelToUse, currentCharacter.name)
+        },
+        // Add character intro and scenario as context
+        {
+          role: 'system',
+          content: `Character: ${currentCharacter.name}\nIntro: ${currentCharacter.intro}\nScenario: ${currentCharacter.scenario}`
+        },
+        // Convert recent messages to chat format (last 10 messages for context)
+        ...allMessages.slice(-10).filter(msg => msg.type === 'regular').map(msg => ({
+          role: msg.isBot ? 'assistant' as const : 'user' as const,
+          content: msg.content
+        }))
+      ];
+
+      // Get response from OpenRouter
+      const response = await openRouterAPI.createChatCompletion(modelToUse, chatMessages, {
+        temperature: 0.8,
+        max_tokens: 1000
+      });
+
       const botMessage: Message = {
         id: Date.now() + 1,
-        content: "Thanks for your message! This is a simulated response from the AI character.",
+        content: response.choices[0]?.message?.content || "I apologize, but I couldn't generate a response.",
         isBot: true,
         timestamp: "now",
         type: "regular"
       };
+
       setMessages(prev => [...prev, botMessage]);
-    }, 1000);
+    } catch (error) {
+      console.error('Error sending message:', error);
+      toast.error('Failed to get response from AI model. Please try again.');
+
+      const errorMessage: Message = {
+        id: Date.now() + 1,
+        content: "I'm sorry, I'm having trouble responding right now. Please try again.",
+        isBot: true,
+        timestamp: "now",
+        type: "regular"
+      };
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
