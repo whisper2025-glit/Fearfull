@@ -440,24 +440,24 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
         </div>
 
         {/* Footer */}
-        <div className="p-6 pt-4 border-t border-border">
+        <div className="p-4 border-t border-[#2d2e3e]">
           {selectedModel && (
-            <div className="bg-primary/10 p-3 rounded-lg mb-4">
-              <p className="text-xs text-muted-foreground mb-1" style={{ fontSize: '12px' }}>Selected Model:</p>
-              <p className="text-sm font-medium" style={{ fontSize: '14px' }}>{selectedModel.name}</p>
+            <div className="bg-[#1a4d5c] p-3 rounded-xl mb-4">
+              <p className="text-xs text-gray-400 mb-1" style={{ fontSize: '12px' }}>Selected Model:</p>
+              <p className="text-sm font-medium text-white" style={{ fontSize: '14px' }}>{selectedModel.name}</p>
             </div>
           )}
-          
+
           <div className="flex gap-3">
-            <Button 
-              variant="outline" 
-              className="flex-1"
+            <Button
+              variant="outline"
+              className="flex-1 bg-[#2d2e3e] border-[#3d3e4e] text-white hover:bg-[#34354a] rounded-xl py-3"
               onClick={() => onOpenChange(false)}
             >
               Cancel
             </Button>
-            <Button 
-              className="flex-1 bg-primary hover:bg-primary/90"
+            <Button
+              className="flex-1 bg-gradient-to-r from-[#e74c8c] to-[#c44f93] hover:from-[#d63384] hover:to-[#b83e88] text-white rounded-xl py-3"
               onClick={() => onOpenChange(false)}
               disabled={!selectedModel}
             >
