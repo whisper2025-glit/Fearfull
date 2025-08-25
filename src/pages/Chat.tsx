@@ -5,6 +5,20 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 
+interface Character {
+  name: string;
+  author: string;
+  intro: string;
+  scenario: string;
+  avatar: string;
+  messages: Array<{
+    id: number;
+    content: string;
+    isBot: boolean;
+    timestamp: string;
+  }>;
+}
+
 const Chat = () => {
   const { characterId } = useParams();
   const navigate = useNavigate();
