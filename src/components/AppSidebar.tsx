@@ -106,15 +106,42 @@ export function AppSidebar() {
         </div>
 
         {/* User Profile */}
-        <div className="flex items-center gap-3 p-2 rounded-xl bg-sidebar-accent">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex-shrink-0"></div>
-          {!collapsed && (
-            <div className="flex-1">
-              <p className="text-sm font-medium">Leon</p>
-              <p className="text-xs text-muted-foreground">Free Plan</p>
-            </div>
-          )}
-        </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              className="flex items-center gap-3 p-2 rounded-xl bg-sidebar-accent hover:bg-sidebar-accent/80 w-full justify-start h-auto"
+            >
+              <Avatar className="w-8 h-8 flex-shrink-0">
+                <AvatarImage src="/lovable-uploads/3eab3055-d06f-48a5-9790-123de7769f97.png" />
+                <AvatarFallback className="bg-gradient-to-br from-blue-400 to-purple-500 text-white text-sm">L</AvatarFallback>
+              </Avatar>
+              {!collapsed && (
+                <div className="flex-1 text-left">
+                  <p className="text-sm font-medium">Leon</p>
+                  <p className="text-xs text-muted-foreground">Free Plan</p>
+                </div>
+              )}
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent side="top" align="start" className="bg-background border-border mb-2">
+            <DropdownMenuItem onClick={() => navigate('/profile')} className="cursor-pointer">
+              Profile
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => navigate('/settings')} className="cursor-pointer">
+              Settings
+            </DropdownMenuItem>
+            <DropdownMenuItem className="cursor-pointer">
+              Task
+            </DropdownMenuItem>
+            <DropdownMenuItem className="cursor-pointer">
+              User guide
+            </DropdownMenuItem>
+            <DropdownMenuItem className="cursor-pointer">
+              Join Discord
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </SidebarContent>
     </Sidebar>
   );
