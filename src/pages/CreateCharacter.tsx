@@ -506,9 +506,21 @@ const CreateCharacter = () => {
 
           {/* Create Button */}
           <div className="pb-8 pt-4">
-            <Button 
+            <Button
               className="w-full bg-primary hover:bg-primary/90 text-white h-14 text-xs font-medium rounded-full shadow-lg"
-              onClick={() => navigate('/')}
+              onClick={() => {
+                // Save character data to localStorage
+                const characterData = {
+                  ...formData,
+                  id: Date.now().toString(),
+                  createdAt: new Date().toISOString()
+                };
+                localStorage.setItem('current-character', JSON.stringify(characterData));
+                localStorage.setItem('scene-background', formData.sceneImage);
+
+                // Navigate to chat with the new character
+                navigate(`/chat/${characterData.id}`);
+              }}
             >
               Create and Chat!
             </Button>
