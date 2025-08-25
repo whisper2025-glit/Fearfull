@@ -233,10 +233,21 @@ const Profile = () => {
                     {/* Banner */}
                     <div className="space-y-2">
                       <Label>Banner</Label>
-                      <Button variant="outline" className="w-full justify-between text-xs">
-                        Current
+                      <Button
+                        variant="outline"
+                        className="w-full justify-between text-xs"
+                        onClick={() => document.getElementById('banner-upload')?.click()}
+                      >
+                        Change Banner
                         <span>→</span>
                       </Button>
+                      <input
+                        id="banner-upload"
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={handleBannerUpload}
+                      />
                     </div>
 
                     {/* Save Button */}
