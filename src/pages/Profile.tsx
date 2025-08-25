@@ -15,6 +15,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { ChevronLeft, Settings, Gift, MoreHorizontal, X, Camera, Star } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { CharacterCard } from "@/components/CharacterCard";
+import SettingsSheet from "@/components/SettingsSheet";
 
 const Profile = () => {
   const navigate = useNavigate();
