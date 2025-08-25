@@ -260,7 +260,7 @@ const CreateCharacter = () => {
 
               {/* Tags */}
               <div className="space-y-4">
-                <Label className="text-primary text-base font-medium flex items-center gap-2">
+                <Label className="text-primary text-sm font-medium flex items-center gap-2">
                   Tags <Info className="h-4 w-4 text-muted-foreground" />
                 </Label>
                 <div className="relative">
@@ -282,7 +282,7 @@ const CreateCharacter = () => {
 
               {/* Gender */}
               <div className="space-y-4">
-                <Label className="text-primary text-base font-medium">
+                <Label className="text-primary text-sm font-medium">
                   Gender <span className="text-primary">*</span>
                 </Label>
                 <Select 
