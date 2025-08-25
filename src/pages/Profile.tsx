@@ -167,22 +167,13 @@ const Profile = () => {
       <div className="flex-1 overflow-auto">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-border">
-          <Button 
-            variant="ghost" 
+          <Button
+            variant="ghost"
             size="icon"
             onClick={() => navigate(-1)}
           >
             <ChevronLeft className="h-5 w-5" />
           </Button>
-          
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon">
-              <Gift className="h-5 w-5" />
-            </Button>
-            <Button variant="ghost" size="icon">
-              <Settings className="h-5 w-5" />
-            </Button>
-          </div>
         </div>
 
         {/* Banner and Profile Section */}
