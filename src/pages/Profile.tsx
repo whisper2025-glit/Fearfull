@@ -12,8 +12,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { ChevronLeft, Settings, Gift, MoreHorizontal, X, Camera } from "lucide-react";
+import { ChevronLeft, Settings, Gift, MoreHorizontal, X, Camera, Star } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { CharacterCard } from "@/components/CharacterCard";
 
 const Profile = () => {
   const navigate = useNavigate();
