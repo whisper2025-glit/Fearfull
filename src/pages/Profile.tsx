@@ -389,18 +389,35 @@ const Profile = () => {
           </div>
 
           {/* Content Area */}
-          <div className="flex flex-col items-center justify-center py-16 space-y-4">
-            <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center">
-              <div className="text-2xl">💬</div>
+          {activeTab === 'favorites' && favoriteCharacters.length > 0 ? (
+            <div className="grid grid-cols-2 gap-4">
+              {favoriteCharacters.map((character) => (
+                <FavoriteCharacterCard
+                  key={character.id}
+                  character={character}
+                />
+              ))}
             </div>
-            <p className="text-muted-foreground text-sm">No bot yet, try to create one.</p>
-            <Button 
-              onClick={() => navigate('/create')}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-6"
-            >
-              Create my Bots
-            </Button>
-          </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center py-16 space-y-4">
+              <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center">
+                <div className="text-2xl">💬</div>
+              </div>
+              <p className="text-muted-foreground text-sm">
+                {activeTab === 'bots' ? 'No bot yet, try to create one.' :
+                 activeTab === 'favorites' ? 'No favorites yet.' :
+                 'No posts yet.'}
+              </p>
+              {activeTab === 'bots' && (
+                <Button
+                  onClick={() => navigate('/create')}
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-6"
+                >
+                  Create my Bots
+                </Button>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </Layout>
