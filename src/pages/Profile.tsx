@@ -20,16 +20,37 @@ import SettingsSheet from "@/components/SettingsSheet";
 
 const Profile = () => {
   const navigate = useNavigate();
+  const { isSignedIn, user } = useUser();
   const [activeTab, setActiveTab] = useState('favorites');
   const [sortBy, setSortBy] = useState('newest');
   const [editModalOpen, setEditModalOpen] = useState(false);
+
+  // Redirect to sign-in if not authenticated
+  useEffect(() => {
+    if (!isSignedIn) {
+      navigate('/auth');
+    }
+  }, [isSignedIn, navigate]);
+
+  // User profile state with Clerk data
   const [userProfile, setUserProfile] = useState({
-    name: 'Leon',
-    bio: '17 years old',
-    gender: 'Male',
-    avatar: '/lovable-uploads/3eab3055-d06f-48a5-9790-123de7769f97.png',
-    banner: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&h=300&fit=crop'
+    name: user?.firstName || user?.username || 'User',
+    bio: '',
+    gender: '',
+    avatar: user?.imageUrl || '',
+    banner: ''
   });
+
+  // Update profile when user data changes
+  useEffect(() => {
+    if (user) {
+      setUserProfile(prev => ({
+        ...prev,
+        name: user.firstName || user.username || 'User',
+        avatar: user.imageUrl || prev.avatar
+      }));
+    }
+  }, [user]);
 
   const handleBannerUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
