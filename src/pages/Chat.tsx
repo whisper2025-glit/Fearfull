@@ -34,7 +34,8 @@ const Chat = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isIntroExpanded, setIsIntroExpanded] = useState(true);
   const [isModelsModalOpen, setIsModelsModalOpen] = useState(false);
-  const [selectedModel, setSelectedModel] = useState<any>(null);
+  const [selectedModel, setSelectedModel] = useState<Model | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Mock character data - in a real app this would come from an API
   const characters: Record<string, Character> = {
