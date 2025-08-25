@@ -212,7 +212,7 @@ const CreateCharacter = () => {
 
               {/* Visibility */}
               <div className="space-y-4">
-                <Label className="text-primary text-base font-medium flex items-center gap-2">
+                <Label className="text-primary text-sm font-medium flex items-center gap-2">
                   Visibility <span className="text-primary">*</span>
                   <Info className="h-4 w-4 text-muted-foreground" />
                 </Label>
@@ -238,7 +238,7 @@ const CreateCharacter = () => {
 
               {/* Rating */}
               <div className="space-y-4">
-                <Label className="text-primary text-base font-medium flex items-center gap-2">
+                <Label className="text-primary text-sm font-medium flex items-center gap-2">
                   Rating <span className="text-primary">*</span>
                   <Info className="h-4 w-4 text-muted-foreground" />
                 </Label>
