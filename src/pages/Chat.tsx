@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Home, MoreHorizontal, Lightbulb, Clock, Users, Bot, ChevronDown } from "lucide-react";
+import { ArrowLeft, Home, MoreHorizontal, Lightbulb, Clock, Users, Bot, ChevronDown, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
-import { ModelsModal } from "@/components/ModelsModal";
+import { ModelsModal, Model } from "@/components/ModelsModal";
+import { openRouterAPI, ChatMessage } from "@/lib/openrouter";
+import { toast } from "sonner";
 
 interface Message {
   id: number;
@@ -32,7 +34,23 @@ const Chat = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isIntroExpanded, setIsIntroExpanded] = useState(true);
   const [isModelsModalOpen, setIsModelsModalOpen] = useState(false);
-  const [selectedModel, setSelectedModel] = useState<any>(null);
+  const [selectedModel, setSelectedModel] = useState<Model | null>({
+    id: "mistral-main",
+    name: "mistralai/mistral-small-3.2-24b-instruct:free",
+    author: "Mistral AI",
+    description: "Excellent for creative roleplay scenarios",
+    price: 0,
+    responseTime: "850 ms",
+    memory: "24B",
+    rating: 8.5,
+    tags: ["Main", "Roleplay", "Creative", "Free"],
+    isActive: true,
+    isPremium: false,
+    isMain: true,
+    provider: 'mistral',
+    tier: 'standard'
+  });
+  const [isLoading, setIsLoading] = useState(false);
 
   // Mock character data - in a real app this would come from an API
   const characters: Record<string, Character> = {
@@ -87,8 +105,45 @@ Aizawa: "introduce yourself and take`,
 
   const currentCharacter = characters[characterId as keyof typeof characters] || characters["1"];
 
-  const handleSendMessage = () => {
-    if (!message.trim()) return;
+  // Test OpenRouter connection on mount
+  useEffect(() => {
+    const testConnection = async () => {
+      try {
+        const isConnected = await openRouterAPI.testConnection();
+        if (isConnected) {
+          toast.success('OpenRouter API connected successfully!');
+        } else {
+          toast.error('Failed to connect to OpenRouter API. Please check your configuration.');
+        }
+      } catch (error) {
+        console.error('Connection test failed:', error);
+        toast.error('OpenRouter API connection test failed.');
+      }
+    };
+
+    testConnection();
+  }, []);
+
+  const handleSendMessage = async () => {
+    if (!message.trim() || isLoading) return;
+
+    // Use default model if none selected
+    const modelToUse = selectedModel || {
+      id: "mistral-main",
+      name: "mistralai/mistral-small-3.2-24b-instruct:free",
+      author: "Mistral AI",
+      description: "Default roleplay model",
+      price: 0,
+      responseTime: "850 ms",
+      memory: "24B",
+      rating: 8.5,
+      tags: ["Main", "Roleplay", "Free"],
+      isActive: true,
+      isPremium: false,
+      isMain: true,
+      provider: 'mistral',
+      tier: 'standard' as const
+    };
 
     // Add user message
     const userMessage: Message = {
@@ -100,19 +155,61 @@ Aizawa: "introduce yourself and take`,
     };
 
     setMessages(prev => [...prev, userMessage]);
+    const currentMessage = message;
     setMessage("");
+    setIsLoading(true);
 
-    // Simulate bot response
-    setTimeout(() => {
+    try {
+      // Prepare chat messages for OpenRouter
+      const allMessages = [...currentCharacter.messages, ...messages, userMessage];
+      const chatMessages: ChatMessage[] = [
+        {
+          role: 'system',
+          content: openRouterAPI.getRoleplaySystemPrompt(modelToUse, currentCharacter.name)
+        },
+        // Add character intro and scenario as context
+        {
+          role: 'system',
+          content: `Character: ${currentCharacter.name}\nIntro: ${currentCharacter.intro}\nScenario: ${currentCharacter.scenario}`
+        },
+        // Convert recent messages to chat format (last 10 messages for context)
+        ...allMessages.slice(-10).filter(msg => msg.type === 'regular').map(msg => ({
+          role: msg.isBot ? 'assistant' as const : 'user' as const,
+          content: msg.content
+        }))
+      ];
+
+      // Get response from OpenRouter
+      const response = await openRouterAPI.createChatCompletion(modelToUse, chatMessages, {
+        temperature: 0.8,
+        max_tokens: 1000
+      });
+
       const botMessage: Message = {
         id: Date.now() + 1,
-        content: "Thanks for your message! This is a simulated response from the AI character.",
+        content: response.choices[0]?.message?.content || "I apologize, but I couldn't generate a response.",
         isBot: true,
         timestamp: "now",
         type: "regular"
       };
+
       setMessages(prev => [...prev, botMessage]);
-    }, 1000);
+      toast.success(`Response received from ${modelToUse.author}`);
+    } catch (error) {
+      console.error('Error sending message:', error);
+      toast.error(`Failed to get response from ${modelToUse.author}. Please check your API key and try again.`);
+
+      const errorMessage: Message = {
+        id: Date.now() + 1,
+        content: "I'm sorry, I'm having trouble responding right now. Please check your API connection and try again.",
+        isBot: true,
+        timestamp: "now",
+        type: "regular"
+      };
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -259,7 +356,8 @@ Aizawa: "introduce yourself and take`,
               onClick={() => setIsModelsModalOpen(true)}
             >
               <Bot className="h-3 w-3" />
-              Models
+              {selectedModel ? selectedModel.author : 'Models'}
+              {selectedModel && <div className="w-1.5 h-1.5 bg-green-500 rounded-full" />}
             </Button>
           </div>
         </div>
@@ -271,17 +369,25 @@ Aizawa: "introduce yourself and take`,
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder="Type a message"
+              placeholder={isLoading ? "AI is typing..." : "Type a message"}
+              disabled={isLoading}
               className="flex-1 bg-card/50 border-border resize-none min-h-[40px] max-h-[120px] text-sm chat-text"
               rows={1}
             />
-            <Button 
+            <Button
               onClick={handleSendMessage}
-              disabled={!message.trim()}
+              disabled={!message.trim() || isLoading}
               className="px-4 self-end"
               size="sm"
             >
-              Send
+              {isLoading ? (
+                <>
+                  <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                  Sending
+                </>
+              ) : (
+                'Send'
+              )}
             </Button>
           </div>
         </div>
