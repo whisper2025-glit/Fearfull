@@ -139,17 +139,20 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg h-[80vh] bg-[#1a1b2e] border-[#2d2e3e] p-0 rounded-2xl w-[95vw] sm:w-auto sm:max-w-lg !gap-0 !grid-cols-1 !grid-rows-1 flex flex-col overflow-hidden">
         <div className="flex flex-col h-full overflow-hidden">
-          <DialogHeader className="px-3 py-0.5 flex-shrink-0">
-            <div className="flex items-center">
-              <DialogTitle className="text-sm font-bold text-[#e74c8c]" style={{ fontSize: '13px' }}>
+          <DialogHeader className="px-4 py-3 flex-shrink-0">
+            <div className="flex items-center justify-between">
+              <DialogTitle className="text-lg font-bold text-[#e74c8c]" style={{ fontSize: '18px' }}>
                 Change Model
               </DialogTitle>
+              <Button variant="ghost" size="icon" onClick={() => onOpenChange(false)} className="text-white hover:bg-[#2d2e3e] h-8 w-8">
+                <X className="h-4 w-4" />
+              </Button>
             </div>
           </DialogHeader>
 
           <div className="px-4 flex-1 overflow-hidden flex flex-col min-h-0">
             {/* Tier Tabs */}
-            <div className="flex gap-1 mb-4 flex-shrink-0">
+            <div className="flex gap-1 mb-3 flex-shrink-0">
             <Button
               variant={activeTab === 'standard' ? 'default' : 'ghost'}
               className={`flex-1 rounded-2xl text-xs font-medium py-2 border-0 ${
