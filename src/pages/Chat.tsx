@@ -255,7 +255,7 @@ Aizawa: "introduce yourself and take`,
     >
       {/* Background overlay for better readability */}
       {sceneBackground && (
-        <div className="absolute inset-0 bg-black/40 z-0" />
+        <div className="absolute inset-0 bg-black/20 z-0" />
       )}
 
       {/* Header */}
