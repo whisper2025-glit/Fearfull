@@ -243,7 +243,7 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] bg-[#1a1b2e] border-[#2d2e3e] p-0 sm:rounded-2xl">
+      <DialogContent className="max-w-lg max-h-[75vh] bg-[#1a1b2e] border-[#2d2e3e] p-0 sm:rounded-2xl">
         <DialogHeader className="p-4 pb-0">
           <div className="flex items-center justify-between">
             <DialogTitle className="text-lg font-bold text-[#e74c8c]" style={{ fontSize: '18px' }}>
