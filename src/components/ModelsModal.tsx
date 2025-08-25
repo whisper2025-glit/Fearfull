@@ -164,37 +164,41 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
   };
 
   const renderModelCard = (model: Model) => (
-    <Card 
-      key={model.id} 
-      className={`bg-card/60 border-2 transition-all cursor-pointer hover:border-primary/40 ${
-        selectedModel?.id === model.id ? 'border-primary' : 'border-border/30'
-      } ${model.isActive ? 'border-primary/60' : ''}`}
+    <Card
+      key={model.id}
+      className={`border-2 transition-all cursor-pointer rounded-2xl overflow-hidden ${
+        selectedModel?.id === model.id ? 'border-[#e74c8c]' : 'border-[#2d2e3e]'
+      } ${model.isActive ? 'border-[#e74c8c] bg-gradient-to-br from-[#e74c8c]/10 to-[#c44f93]/5' : 'bg-[#232438]'} hover:border-[#e74c8c]/60`}
       onClick={() => handleModelSelect(model)}
     >
       <CardContent className="p-4">
         <div className="flex items-start justify-between mb-3">
           <div className="flex items-center gap-2">
-            <Circle className={`h-3 w-3 ${model.isActive ? 'fill-primary text-primary' : 'text-muted-foreground'}`} />
-            <h3 className="text-sm font-semibold text-foreground" style={{ fontSize: '14px' }}>{model.name}</h3>
+            <Circle className={`h-3 w-3 ${model.isActive ? 'fill-[#e74c8c] text-[#e74c8c]' : 'text-gray-500'}`} />
+            <h3 className="text-sm font-semibold text-white" style={{ fontSize: '14px' }}>{model.name}</h3>
           </div>
-          <Button variant="ghost" size="icon" className="h-6 w-6">
+          <Button variant="ghost" size="icon" className="h-6 w-6 text-gray-400 hover:text-white">
             <Star className="h-3 w-3" />
           </Button>
         </div>
-        
-        <p className="text-primary/80 text-xs mb-2" style={{ fontSize: '12px' }}>{model.author}</p>
-        
-        <p className="text-muted-foreground text-xs mb-3 line-clamp-2" style={{ fontSize: '12px' }}>
+
+        <p className="text-[#e74c8c] text-xs mb-2" style={{ fontSize: '12px' }}>{model.author}</p>
+
+        <p className="text-gray-400 text-xs mb-3 line-clamp-2" style={{ fontSize: '12px' }}>
           {model.description}
         </p>
-        
+
         <div className="flex items-center justify-between mb-3">
           <div className="flex gap-2">
             {model.tags.map((tag, index) => (
-              <Badge 
-                key={index} 
-                variant={tag === 'NSFW' ? 'destructive' : 'secondary'}
-                className="text-xs px-2 py-0.5"
+              <Badge
+                key={index}
+                variant="secondary"
+                className={`text-xs px-2 py-0.5 rounded ${
+                  tag === 'NSFW' ? 'bg-[#e74c8c] text-white' :
+                  tag.includes('%OFF') ? 'bg-[#ffa500] text-black' :
+                  'bg-gray-600 text-white'
+                }`}
                 style={{ fontSize: '10px' }}
               >
                 {tag}
@@ -202,18 +206,18 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
             ))}
           </div>
           <div className="text-right">
-            <div className="text-lg font-bold text-green-500">${model.price}</div>
-            <div className="text-xs text-green-400" style={{ fontSize: '10px' }}>Per Message</div>
-            <Badge variant="secondary" className="text-xs mt-1" style={{ fontSize: '10px' }}>
+            <div className="text-lg font-bold text-green-400">${model.price}</div>
+            <div className="text-xs text-green-300" style={{ fontSize: '10px' }}>Per Message</div>
+            <Badge variant="secondary" className="text-xs mt-1 bg-[#ffa500] text-black" style={{ fontSize: '10px' }}>
               Deluxe FREE
             </Badge>
           </div>
         </div>
-        
-        <div className="flex items-center justify-between text-xs text-muted-foreground">
+
+        <div className="flex items-center justify-between text-xs text-gray-400">
           <div className="flex items-center gap-4">
             <span className="flex items-center gap-1">
-              <Circle className="h-2 w-2 fill-green-500 text-green-500" />
+              <Circle className="h-2 w-2 fill-green-400 text-green-400" />
               {model.responseTime}
             </span>
             {model.memory && (
@@ -224,12 +228,12 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
             )}
             {model.rating > 0 && (
               <span className="flex items-center gap-1">
-                <Star className="h-3 w-3 fill-yellow-500 text-yellow-500" />
+                <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
                 {model.rating}k
               </span>
             )}
           </div>
-          <Button variant="ghost" size="sm" className="text-xs h-6 px-2">
+          <Button variant="ghost" size="sm" className="text-xs h-6 px-2 text-gray-300 hover:text-white">
             More ▶
           </Button>
         </div>
