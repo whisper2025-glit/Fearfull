@@ -376,10 +376,10 @@ const CreateCharacter = () => {
 
               {/* Appearance */}
               <div className="space-y-4">
-                <Label className="text-primary text-base font-medium flex items-center gap-2">
+                <Label className="text-primary text-sm font-medium flex items-center gap-2">
                   Appearance <Info className="h-4 w-4 text-muted-foreground" />
                 </Label>
-                <p className="text-muted-foreground text-sm leading-relaxed">
+                <p className="text-muted-foreground text-xs leading-relaxed">
                   Describe {'{char}'}'s appearance here. This content will be saved in the long-term context. 
                   <a href="#" className="text-blue-400 underline"> View the guide book.</a>
                 </p>
