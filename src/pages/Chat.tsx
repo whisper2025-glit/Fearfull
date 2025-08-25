@@ -106,8 +106,29 @@ Aizawa: "introduce yourself and take`,
 
   const currentCharacter = characters[characterId as keyof typeof characters] || characters["1"];
 
-  // Test OpenRouter connection on mount
+  // Load scene background and test OpenRouter connection on mount
   useEffect(() => {
+    // Load scene background from localStorage
+    const savedBackground = localStorage.getItem('scene-background');
+    if (savedBackground) {
+      setSceneBackground(savedBackground);
+    }
+
+    // Load character data if it's a newly created character
+    const savedCharacter = localStorage.getItem('current-character');
+    if (savedCharacter) {
+      try {
+        const characterData = JSON.parse(savedCharacter);
+        if (characterData.id === characterId) {
+          // This is a newly created character, we could update the characters object here
+          // For now, we'll just use the scene background
+          console.log('Loaded newly created character:', characterData.name);
+        }
+      } catch (error) {
+        console.error('Error parsing saved character:', error);
+      }
+    }
+
     const testConnection = async () => {
       try {
         const isConnected = await openRouterAPI.testConnection();
@@ -123,7 +144,7 @@ Aizawa: "introduce yourself and take`,
     };
 
     testConnection();
-  }, []);
+  }, [characterId]);
 
   const handleSendMessage = async () => {
     if (!message.trim() || isLoading) return;
