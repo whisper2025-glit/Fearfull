@@ -398,7 +398,7 @@ Aizawa: "introduce yourself and take`,
         </div>
 
         {/* Message Input */}
-        <div className="px-4 pb-4">
+        <div className="px-4 pb-4 bg-background/80 backdrop-blur-sm border-t border-border/50">
           <div className="flex gap-2">
             <Textarea
               value={message}
