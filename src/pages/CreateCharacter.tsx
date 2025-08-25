@@ -223,15 +223,15 @@ const CreateCharacter = () => {
                 >
                   <div className="flex items-center space-x-3">
                     <RadioGroupItem value="public" id="public" className="border-primary text-primary" />
-                    <Label htmlFor="public" className="text-sm font-medium">Public: Everyone can chat</Label>
+                    <Label htmlFor="public" className="text-xs font-medium">Public: Everyone can chat</Label>
                   </div>
                   <div className="flex items-center space-x-3">
                     <RadioGroupItem value="unlisted" id="unlisted" className="border-primary" />
-                    <Label htmlFor="unlisted" className="text-sm font-medium">Unlisted: Anyone with the link can chat</Label>
+                    <Label htmlFor="unlisted" className="text-xs font-medium">Unlisted: Anyone with the link can chat</Label>
                   </div>
                   <div className="flex items-center space-x-3">
                     <RadioGroupItem value="private" id="private" className="border-primary" />
-                    <Label htmlFor="private" className="text-sm font-medium">Private: Only you can chat</Label>
+                    <Label htmlFor="private" className="text-xs font-medium">Private: Only you can chat</Label>
                   </div>
                 </RadioGroup>
               </div>
@@ -249,11 +249,11 @@ const CreateCharacter = () => {
                 >
                   <div className="flex items-center space-x-3">
                     <RadioGroupItem value="filtered" id="filtered" className="border-primary text-primary" />
-                    <Label htmlFor="filtered" className="text-sm font-medium">Filtered</Label>
+                    <Label htmlFor="filtered" className="text-xs font-medium">Filtered</Label>
                   </div>
                   <div className="flex items-center space-x-3">
                     <RadioGroupItem value="unfiltered" id="unfiltered" className="border-primary" />
-                    <Label htmlFor="unfiltered" className="text-sm font-medium">Unfiltered</Label>
+                    <Label htmlFor="unfiltered" className="text-xs font-medium">Unfiltered</Label>
                   </div>
                 </RadioGroup>
               </div>
