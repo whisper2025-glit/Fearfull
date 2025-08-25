@@ -28,6 +28,28 @@ const Profile = () => {
     banner: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&h=300&fit=crop'
   });
 
+  const handleBannerUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setUserProfile({...userProfile, banner: e.target?.result as string});
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleAvatarUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setUserProfile({...userProfile, avatar: e.target?.result as string});
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const stats = {
     followers: 0,
     following: 1,
