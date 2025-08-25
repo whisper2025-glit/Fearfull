@@ -24,7 +24,9 @@ const CreateCharacter = () => {
     visibility: 'public',
     rating: 'filtered',
     tags: '',
-    gender: ''
+    gender: '',
+    characterImage: '',
+    sceneImage: ''
   });
 
   const handleInputChange = (field: string, value: string) => {
