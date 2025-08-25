@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Search, ChevronRight, Star, Circle, X, ChevronDown } from "lucide-react";
 
-interface Model {
+export interface Model {
   id: string;
   name: string;
   author: string;
