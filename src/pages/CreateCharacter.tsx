@@ -423,14 +423,14 @@ const CreateCharacter = () => {
               <h2 className="text-sm font-medium">{formData.name || "Your OC's Name"}</h2>
               <div className="border-t border-border pt-6">
                 <h3 className="text-sm font-medium mb-3">Intro</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">
+                <p className="text-xs text-muted-foreground leading-relaxed">
                   {formData.intro || "Your OC's introduction"}
                 </p>
               </div>
               <div className="border-t border-border pt-6">
                 <h3 className="text-sm font-medium mb-3">{formData.name || "Your OC's Name"}</h3>
                 <div className="bg-secondary/50 rounded-lg p-4 text-left">
-                  <p className="text-sm text-muted-foreground leading-relaxed">
+                  <p className="text-xs text-muted-foreground leading-relaxed">
                     {formData.greeting || "Please fill in the greetings column on the left"}
                   </p>
                 </div>
