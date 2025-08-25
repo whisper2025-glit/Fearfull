@@ -286,6 +286,14 @@ Aizawa: "introduce yourself and take`,
           </div>
         </div>
       </div>
+
+      {/* Models Modal */}
+      <ModelsModal
+        open={isModelsModalOpen}
+        onOpenChange={setIsModelsModalOpen}
+        onModelSelect={setSelectedModel}
+        selectedModel={selectedModel}
+      />
     </div>
   );
 };
