@@ -390,8 +390,8 @@ const CreateCharacter = () => {
                   className="min-h-[140px] text-xs bg-secondary/50 border-border rounded-lg resize-none placeholder:text-muted-foreground/70"
                 />
                 <div className="flex justify-between items-center">
-                  <p className="text-muted-foreground text-sm">{getCharacterCount(formData.appearance)} Chars</p>
-                  <Button variant="ghost" size="sm" className="text-sm text-muted-foreground hover:bg-secondary/50 rounded-lg px-3 py-1">
+                  <p className="text-muted-foreground text-xs">{getCharacterCount(formData.appearance)} Chars</p>
+                  <Button variant="ghost" size="sm" className="text-xs text-muted-foreground hover:bg-secondary/50 rounded-lg px-3 py-1">
                     ⭐ AI Summarize
                   </Button>
                 </div>
