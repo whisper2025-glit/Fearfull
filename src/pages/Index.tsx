@@ -1,96 +1,112 @@
-
-import { useState } from "react";
 import { Layout } from "@/components/Layout";
-import { CharacterCard } from "@/components/CharacterCard";
 import { CategoryTabs } from "@/components/CategoryTabs";
-
-// Mock character data
-const characters = [
-  {
-    id: 1,
-    name: "Free Use Law RPG",
-    description: "A new law where anyone can screw anyone...",
-    imageUrl: "/lovable-uploads/f455db46-8eae-4432-a644-f977619b90eb.png",
-    messageCount: "10.1m",
-    likeCount: "1.7k",
-    category: "RPG"
-  },
-  {
-    id: 2,
-    name: "Class 1-A",
-    description: "You're the New student!",
-    imageUrl: "/lovable-uploads/3eab3055-d06f-48a5-9790-123de7769f97.png",
-    messageCount: "8.4m",
-    likeCount: "1.1k",
-    category: "Anime"
-  },
-  {
-    id: 3,
-    name: "Shylily",
-    description: "shylily wants to show you a magic trick",
-    imageUrl: "/lovable-uploads/f455db46-8eae-4432-a644-f977619b90eb.png",
-    messageCount: "453.1k",
-    likeCount: "391"
-  },
-  {
-    id: 4,
-    name: "William Van De Laar",
-    description: "Your father hates you because he blames you...",
-    imageUrl: "/lovable-uploads/3eab3055-d06f-48a5-9790-123de7769f97.png",
-    messageCount: "46.0k",
-    likeCount: "16"
-  },
-  {
-    id: 5,
-    name: "Luna",
-    description: "A mysterious AI companion ready for adventure",
-    imageUrl: "/lovable-uploads/f455db46-8eae-4432-a644-f977619b90eb.png",
-    messageCount: "2.3m",
-    likeCount: "890"
-  },
-  {
-    id: 6,
-    name: "Professor Akira",
-    description: "Your brilliant teacher with hidden secrets",
-    imageUrl: "/lovable-uploads/3eab3055-d06f-48a5-9790-123de7769f97.png",
-    messageCount: "1.8m",
-    likeCount: "654"
-  }
-];
+import { CharacterCard } from "@/components/CharacterCard";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 const Index = () => {
-  const [activeCategory, setActiveCategory] = useState("for-you");
+  const navigate = useNavigate();
+  const [activeCategory, setActiveCategory] = useState('All');
+
+  const categories = ['All', 'Anime', 'Game', 'Movies & TV', 'Books', 'Religion', 'Image Generating', 'Discussion', 'Language Learning', 'History'];
+
+  const characters = [
+    {
+      id: 1,
+      name: 'Aiden',
+      description: 'A mysterious detective with a sharp mind',
+      image: '/lovable-uploads/3eab3055-d06f-48a5-9790-123de7769f97.png',
+      category: 'Anime',
+      stats: { messages: 1234, likes: 567 }
+    },
+    {
+      id: 2,
+      name: 'Luna',
+      description: 'An ancient sorceress wielding powerful magic',
+      image: '/lovable-uploads/f455db46-8eae-4432-a644-f977619b90eb.png',
+      category: 'Fantasy',
+      stats: { messages: 2156, likes: 892 }
+    },
+    {
+      id: 3,
+      name: 'Marcus',
+      description: 'A brave knight on a quest for justice',
+      image: '/lovable-uploads/3eab3055-d06f-48a5-9790-123de7769f97.png',
+      category: 'Adventure',
+      stats: { messages: 876, likes: 234 }
+    },
+    {
+      id: 4,
+      name: 'Aria',
+      description: 'A talented musician with a mysterious past',
+      image: '/lovable-uploads/f455db46-8eae-4432-a644-f977619b90eb.png',
+      category: 'Romance',
+      stats: { messages: 3421, likes: 1567 }
+    },
+    {
+      id: 5,
+      name: 'Zyx',
+      description: 'An alien explorer from distant galaxies',
+      image: '/lovable-uploads/3eab3055-d06f-48a5-9790-123de7769f97.png',
+      category: 'Sci-Fi',
+      stats: { messages: 987, likes: 432 }
+    },
+    {
+      id: 6,
+      name: 'Nova',
+      description: 'A brilliant scientist discovering new worlds',
+      image: '/lovable-uploads/f455db46-8eae-4432-a644-f977619b90eb.png',
+      category: 'Sci-Fi',
+      stats: { messages: 1876, likes: 743 }
+    }
+  ];
+
+  const filteredCharacters = activeCategory === 'All' 
+    ? characters 
+    : characters.filter(char => char.category === activeCategory);
 
   return (
     <Layout>
-      <div className="p-4 max-w-full mx-auto overflow-x-hidden">
-        {/* Category Tabs */}
-        <CategoryTabs 
-          activeCategory={activeCategory}
-          onCategoryChange={setActiveCategory}
-        />
+      <div className="flex-1 overflow-auto">
+        <div className="p-4 space-y-6">
+          {/* Header Section */}
+          <div className="text-center space-y-4">
+            <h1 className="text-2xl font-bold gradient-text">
+              Discover Amazing AI Characters
+            </h1>
+            <p className="text-muted-foreground text-[12px] max-w-2xl mx-auto">
+              Chat with thousands of AI characters, or create your own. Dive into endless conversations and explore new personalities.
+            </p>
+            
+            {/* Add Create Character Button */}
+            <div className="flex justify-center">
+              <Button 
+                onClick={() => navigate('/create')}
+                className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-2 text-[12px]"
+              >
+                Create New Character
+              </Button>
+            </div>
+          </div>
 
-        {/* Character Grid - 2 cards per row */}
-        <div className="grid grid-cols-2 gap-3 max-w-full">
-          {characters.map((character) => (
-            <CharacterCard
-              key={character.id}
-              id={character.id}
-              name={character.name}
-              description={character.description}
-              imageUrl={character.imageUrl}
-              messageCount={character.messageCount}
-              likeCount={character.likeCount}
-              category={character.category}
-            />
-          ))}
-        </div>
+          {/* Category Tabs */}
+          <CategoryTabs 
+            categories={categories}
+            activeCategory={activeCategory}
+            onCategoryChange={setActiveCategory}
+          />
 
-        {/* Load More */}
-        <div className="flex justify-center mt-8">
-          <button className="px-6 py-2 bg-secondary hover:bg-secondary/80 text-foreground rounded-full font-medium transition-colors text-sm">
-            Load More Characters
-          </button>
+          {/* Character Grid */}
+          <div className="grid grid-cols-2 gap-4">
+            {filteredCharacters.map((character) => (
+              <CharacterCard 
+                key={character.id} 
+                character={character} 
+                onClick={() => navigate(`/chat/${character.id}`)}
+              />
+            ))}
+          </div>
         </div>
       </div>
     </Layout>
