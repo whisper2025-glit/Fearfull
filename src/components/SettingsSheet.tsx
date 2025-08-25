@@ -51,13 +51,13 @@ const SettingsSheet = ({ children }: SettingsSheetProps) => {
   const contactLinks = [
     {
       name: "Discord",
-      icon: MessageCircle,
+      icon: DiscordIcon,
       href: "#",
       color: "text-indigo-400"
     },
     {
       name: "Reddit",
-      icon: MessageCircle,
+      icon: RedditIcon,
       href: "#",
       color: "text-orange-500"
     },
