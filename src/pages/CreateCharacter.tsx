@@ -105,7 +105,7 @@ const CreateCharacter = () => {
                   placeholder="Get your character a wonderful name"
                   value={formData.name}
                   onChange={(e) => handleInputChange('name', e.target.value)}
-                  className="text-sm bg-secondary/50 border-border rounded-lg h-12 placeholder:text-muted-foreground/70"
+                  className="text-xs bg-secondary/50 border-border rounded-lg h-12 placeholder:text-muted-foreground/70"
                 />
                 <p className="text-muted-foreground text-sm">{getCharacterCount(formData.name)} characters</p>
               </div>
@@ -120,7 +120,7 @@ const CreateCharacter = () => {
                   placeholder="Enter the character's age here."
                   value={formData.age}
                   onChange={(e) => handleInputChange('age', e.target.value)}
-                  className="text-sm bg-secondary/50 border-border rounded-lg h-12 placeholder:text-muted-foreground/70"
+                  className="text-xs bg-secondary/50 border-border rounded-lg h-12 placeholder:text-muted-foreground/70"
                 />
                 <p className="text-muted-foreground text-sm">{getCharacterCount(formData.age)} characters</p>
               </div>
