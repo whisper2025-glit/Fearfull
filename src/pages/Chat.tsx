@@ -337,13 +337,20 @@ Aizawa: "introduce yourself and take`,
               className="flex-1 bg-card/50 border-border resize-none min-h-[40px] max-h-[120px] text-sm chat-text"
               rows={1}
             />
-            <Button 
+            <Button
               onClick={handleSendMessage}
-              disabled={!message.trim()}
+              disabled={!message.trim() || isLoading}
               className="px-4 self-end"
               size="sm"
             >
-              Send
+              {isLoading ? (
+                <>
+                  <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                  Sending
+                </>
+              ) : (
+                'Send'
+              )}
             </Button>
           </div>
         </div>
