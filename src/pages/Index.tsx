@@ -70,26 +70,6 @@ const Index = () => {
     <Layout>
       <div className="flex-1 overflow-auto">
         <div className="p-4 space-y-6">
-          {/* Header Section */}
-          <div className="text-center space-y-4">
-            <h1 className="text-2xl font-bold gradient-text">
-              Discover Amazing AI Characters
-            </h1>
-            <p className="text-muted-foreground text-[12px] max-w-2xl mx-auto">
-              Chat with thousands of AI characters, or create your own. Dive into endless conversations and explore new personalities.
-            </p>
-            
-            {/* Add Create Character Button */}
-            <div className="flex justify-center">
-              <Button 
-                onClick={() => navigate('/create')}
-                className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-2 text-[12px]"
-              >
-                Create New Character
-              </Button>
-            </div>
-          </div>
-
           {/* Category Tabs */}
           <CategoryTabs 
             categories={categories}
