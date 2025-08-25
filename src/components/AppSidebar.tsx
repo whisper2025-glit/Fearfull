@@ -70,12 +70,12 @@ export function AppSidebar() {
       <SidebarContent className="p-4 space-y-6">
         {/* Logo */}
         <div className="flex items-center gap-3 px-2">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-            <div className="w-4 h-4 bg-white rounded-sm transform rotate-45"></div>
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center">
+            <div className="w-4 h-4 bg-white rounded-sm transform rotate-12"></div>
           </div>
           {!collapsed && (
-            <span className="text-xl font-bold gradient-text">
-              AI Pals Place
+            <span className="text-xl font-bold text-white">
+              Joyland
             </span>
           )}
         </div>
