@@ -35,98 +35,7 @@ interface ModelsModalProps {
   selectedModel?: Model;
 }
 
-const mockModels: Model[] = [
-  {
-    id: "1",
-    name: "Passion Fruit - NSFW - 8K",
-    author: "@JuicyTeam",
-    description: "focuses on sensory immersion, character psychology, and...",
-    price: 2,
-    responseTime: "914 ms",
-    memory: "454M",
-    rating: 7.9,
-    tags: ["NSFW"],
-    isActive: true,
-    isPremium: true,
-    tier: 'standard'
-  },
-  {
-    id: "2",
-    name: "Citrus Rush - NSFW - 8K",
-    author: "@JuicyTeam",
-    description: "embraces provocative storytelling with dark, taboo themes, delivere...",
-    price: 2,
-    responseTime: "1.97 s",
-    memory: "43.9M",
-    rating: 7.3,
-    tags: ["NSFW"],
-    tier: 'standard'
-  },
-  {
-    id: "3",
-    name: "Mango Tango - NSFW - 8K",
-    author: "@JuicyTeam",
-    description: "thrives in versatility, adapting seamlessly across genres—from...",
-    price: 2,
-    responseTime: "1.02 s",
-    memory: "32.8M",
-    rating: 4.8,
-    tags: ["NSFW"],
-    tier: 'standard'
-  },
-  {
-    id: "4",
-    name: "JuicyLLM Passion Fruit - 8K",
-    author: "JuicyLLM",
-    description: "Smart, Flexible, Creative",
-    price: 2,
-    responseTime: "914 ms",
-    memory: "",
-    rating: 0,
-    tags: ["%OFF Premium"],
-    isPremium: true,
-    tier: 'standard'
-  },
-  {
-    id: "5",
-    name: "JuicyLLM Mango Tango - 8K",
-    author: "JuicyLLM",
-    description: "Bold, Detailed, Lively",
-    price: 2,
-    responseTime: "1.03 s",
-    memory: "",
-    rating: 0,
-    tags: ["%OFF Premium"],
-    isPremium: true,
-    tier: 'standard'
-  },
-  {
-    id: "6",
-    name: "JuicyLLM Citrus Rush - 8K",
-    author: "JuicyLLM",
-    description: "Fresh, Vivid, Expressive",
-    price: 2,
-    responseTime: "1.97 s",
-    memory: "",
-    rating: 0,
-    tags: ["%OFF Premium"],
-    isPremium: true,
-    tier: 'standard'
-  },
-  {
-    id: "7",
-    name: "JuicyLLM Blueberry Blast - 8K",
-    author: "JuicyLLM",
-    description: "Innovative, Dynamic, Engaging",
-    price: 2,
-    responseTime: "1.58 s",
-    memory: "",
-    rating: 0,
-    tags: ["%OFF Premium"],
-    isPremium: true,
-    tier: 'standard'
-  }
-];
+const mockModels: Model[] = [];
 
 const mockFolders: ModelFolder[] = [
   { id: "1", name: "JuicyLLM", modelCount: 15 },
@@ -230,7 +139,7 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg h-[80vh] bg-[#1a1b2e] border-[#2d2e3e] p-0 rounded-2xl w-[95vw] sm:w-auto sm:max-w-lg !gap-0 !grid-cols-1 !grid-rows-1 flex flex-col overflow-hidden">
         <div className="flex flex-col h-full overflow-hidden">
-          <DialogHeader className="px-3 py-1 flex-shrink-0">
+          <DialogHeader className="px-3 py-0.5 flex-shrink-0">
             <div className="flex items-center justify-between">
               <DialogTitle className="text-sm font-bold text-[#e74c8c]" style={{ fontSize: '13px' }}>
                 Change Model
@@ -246,7 +155,7 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
             <div className="flex gap-1 mb-4 flex-shrink-0">
             <Button
               variant={activeTab === 'standard' ? 'default' : 'ghost'}
-              className={`flex-1 rounded-2xl text-xs font-medium py-3 ${
+              className={`flex-1 rounded-2xl text-xs font-medium py-2 border-0 ${
                 activeTab === 'standard'
                   ? 'bg-gradient-to-r from-[#e74c8c] to-[#c44f93] text-white shadow-lg'
                   : 'bg-[#2d2e3e] text-gray-300 hover:bg-[#34354a]'
@@ -258,7 +167,7 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
             </Button>
             <Button
               variant={activeTab === 'pro' ? 'default' : 'ghost'}
-              className={`flex-1 rounded-2xl text-xs font-medium py-3 ${
+              className={`flex-1 rounded-2xl text-xs font-medium py-2 border-0 ${
                 activeTab === 'pro'
                   ? 'bg-gradient-to-r from-[#e74c8c] to-[#c44f93] text-white shadow-lg'
                   : 'bg-[#2d2e3e] text-gray-300 hover:bg-[#34354a]'
@@ -270,7 +179,7 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
             </Button>
             <Button
               variant={activeTab === 'max' ? 'default' : 'ghost'}
-              className={`flex-1 rounded-2xl text-xs font-medium py-3 ${
+              className={`flex-1 rounded-2xl text-xs font-medium py-2 border-0 ${
                 activeTab === 'max'
                   ? 'bg-gradient-to-r from-[#e74c8c] to-[#c44f93] text-white shadow-lg'
                   : 'bg-[#2d2e3e] text-gray-300 hover:bg-[#34354a]'
@@ -405,9 +314,6 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
                       Recently
                     </Button>
                   </div>
-                  <Button variant="ghost" size="icon" onClick={() => setView('main')} className="text-white hover:bg-[#2d2e3e]">
-                    <X className="h-4 w-4" />
-                  </Button>
                 </div>
 
                 {/* Folders List */}
