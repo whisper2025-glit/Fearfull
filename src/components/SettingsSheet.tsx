@@ -185,19 +185,22 @@ const SettingsSheet = ({ children }: SettingsSheetProps) => {
               <h3 className="text-gray-400 text-sm font-medium">Contact Us</h3>
               
               <div className="space-y-2">
-                {contactLinks.map((link) => (
-                  <button
-                    key={link.name}
-                    className="flex items-center justify-between w-full p-3 rounded-lg hover:bg-gray-800 transition-colors text-left"
-                    onClick={() => window.open(link.href, '_blank')}
-                  >
-                    <div className="flex items-center gap-3">
-                      <link.icon className={`h-5 w-5 ${link.color}`} />
-                      <span className="text-white">{link.name}</span>
-                    </div>
-                    <ChevronRight className="h-4 w-4 text-gray-400" />
-                  </button>
-                ))}
+                {contactLinks.map((link) => {
+                  const IconComponent = link.icon;
+                  return (
+                    <button
+                      key={link.name}
+                      className="flex items-center justify-between w-full p-3 rounded-lg hover:bg-gray-800 transition-colors text-left"
+                      onClick={() => window.open(link.href, '_blank')}
+                    >
+                      <div className="flex items-center gap-3">
+                        <IconComponent className={`h-5 w-5 ${link.color}`} />
+                        <span className="text-white">{link.name}</span>
+                      </div>
+                      <ChevronRight className="h-4 w-4 text-gray-400" />
+                    </button>
+                  );
+                })}
               </div>
             </div>
           </div>
