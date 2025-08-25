@@ -284,34 +284,34 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
           {view === 'main' ? (
             <>
               {/* Controls */}
-              <div className="flex gap-3 mb-4">
+              <div className="flex gap-2 mb-3">
                 <Button
                   variant="outline"
-                  className="flex items-center gap-2 bg-[#2d2e3e] border-[#3d3e4e] text-white hover:bg-[#34354a] rounded-xl px-4 py-2"
-                  style={{ fontSize: '12px' }}
+                  className="flex items-center gap-1 bg-[#2d2e3e] border-[#3d3e4e] text-white hover:bg-[#34354a] rounded-lg px-3 py-1.5"
+                  style={{ fontSize: '11px' }}
                   onClick={() => setView('allModels')}
                 >
                   {selectedFolder ? mockFolders.find(f => f.id === selectedFolder)?.name || 'All Models' : 'All Models'}
-                  <ChevronRight className="h-3 w-3" />
+                  <ChevronRight className="h-2.5 w-2.5" />
                 </Button>
 
                 <div className="relative">
                   <Button
                     variant="outline"
-                    className="flex items-center gap-2 bg-[#1a1b2e] border-[#3d3e4e] text-white hover:bg-[#2d2e3e] rounded-xl px-4 py-2"
-                    style={{ fontSize: '12px' }}
+                    className="flex items-center gap-1 bg-[#1a1b2e] border-[#3d3e4e] text-white hover:bg-[#2d2e3e] rounded-lg px-3 py-1.5"
+                    style={{ fontSize: '11px' }}
                     onClick={() => setShowDropdown(!showDropdown)}
                   >
                     {filterType === 'active' ? 'Active' : filterType === 'new' ? 'New' : 'Popular'}
-                    <ChevronDown className="h-3 w-3" />
+                    <ChevronDown className="h-2.5 w-2.5" />
                   </Button>
 
                   {showDropdown && (
-                    <div className="absolute top-full left-0 mt-1 bg-[#e74c8c] border border-[#c44f93] rounded-xl shadow-lg z-50 min-w-[120px]">
-                      <div className="p-1">
+                    <div className="absolute top-full left-0 mt-1 bg-[#e74c8c] border border-[#c44f93] rounded-lg shadow-lg z-50 min-w-[100px]">
+                      <div className="p-0.5">
                         <button
-                          className="w-full text-left px-3 py-2 text-xs hover:bg-[#d63384] rounded-lg text-white font-medium"
-                          style={{ fontSize: '12px' }}
+                          className="w-full text-left px-2 py-1.5 text-xs hover:bg-[#d63384] rounded text-white font-medium"
+                          style={{ fontSize: '11px' }}
                           onClick={() => {
                             setFilterType('active');
                             setShowDropdown(false);
@@ -320,8 +320,8 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
                           Active
                         </button>
                         <button
-                          className="w-full text-left px-3 py-2 text-xs hover:bg-[#d63384] rounded-lg text-white"
-                          style={{ fontSize: '12px' }}
+                          className="w-full text-left px-2 py-1.5 text-xs hover:bg-[#d63384] rounded text-white"
+                          style={{ fontSize: '11px' }}
                           onClick={() => {
                             setFilterType('new');
                             setShowDropdown(false);
@@ -330,8 +330,8 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
                           New
                         </button>
                         <button
-                          className="w-full text-left px-3 py-2 text-xs hover:bg-[#d63384] rounded-lg text-white"
-                          style={{ fontSize: '12px' }}
+                          className="w-full text-left px-2 py-1.5 text-xs hover:bg-[#d63384] rounded text-white"
+                          style={{ fontSize: '11px' }}
                           onClick={() => {
                             setFilterType('popular');
                             setShowDropdown(false);
@@ -344,20 +344,20 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
                   )}
                 </div>
 
-                <Button variant="ghost" size="icon" className="text-white hover:bg-[#2d2e3e] rounded-xl">
-                  <Search className="h-4 w-4" />
+                <Button variant="ghost" size="icon" className="text-white hover:bg-[#2d2e3e] rounded-lg h-8 w-8">
+                  <Search className="h-3 w-3" />
                 </Button>
               </div>
 
               {/* Currently Using */}
-              <div className="mb-4">
-                <div className="flex items-center justify-end mb-2">
-                  <span className="text-xs text-gray-400" style={{ fontSize: '12px' }}>Using</span>
+              <div className="mb-2">
+                <div className="flex items-center justify-end mb-1">
+                  <span className="text-xs text-gray-400" style={{ fontSize: '11px' }}>Using</span>
                 </div>
               </div>
 
               {/* Models List */}
-              <div className="space-y-3 max-h-96 overflow-y-auto">
+              <div className="space-y-2 max-h-80 overflow-y-auto">
                 {filteredModels.map(renderModelCard)}
               </div>
             </>
