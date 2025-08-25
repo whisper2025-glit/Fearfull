@@ -1,17 +1,16 @@
-
 import { useState } from "react";
-import { 
-  Home, 
-  Plus, 
-  MessageCircle, 
-  Search, 
-  BookOpen, 
-  Wrench, 
-  Bot, 
+import {
+  Home,
+  Plus,
+  MessageCircle,
+  Search,
+  BookOpen,
+  Wrench,
+  Bot,
   Settings,
   Crown
 } from "lucide-react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   Sidebar,
   SidebarContent,
