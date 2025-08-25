@@ -96,7 +96,7 @@ const CreateCharacter = () => {
             <>
               {/* Name Field */}
               <div className="space-y-3">
-                <Label htmlFor="name" className="text-primary text-base font-medium flex items-center gap-2">
+                <Label htmlFor="name" className="text-primary text-sm font-medium flex items-center gap-2">
                   Name <span className="text-primary">*</span>
                   <Info className="h-4 w-4 text-muted-foreground" />
                 </Label>
@@ -112,7 +112,7 @@ const CreateCharacter = () => {
 
               {/* Age Field */}
               <div className="space-y-3">
-                <Label htmlFor="age" className="text-primary text-base font-medium">
+                <Label htmlFor="age" className="text-primary text-sm font-medium">
                   Age <span className="text-primary">*</span>
                 </Label>
                 <Input
