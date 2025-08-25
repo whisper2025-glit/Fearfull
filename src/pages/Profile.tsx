@@ -169,8 +169,8 @@ const Profile = () => {
     </div>
   );
 
-  // Show loading while checking authentication
-  if (!isSignedIn || !user) {
+  // Show loading if user data is not yet available
+  if (!user) {
     return (
       <Layout>
         <div className="flex-1 flex items-center justify-center">
