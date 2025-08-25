@@ -50,13 +50,13 @@ const CreateCharacter = () => {
               <ArrowLeft className="h-5 w-5" />
             </Button>
             <div className="flex items-center gap-2">
-              <h1 className="text-primary font-medium text-lg">New Character...</h1>
+              <h1 className="text-primary font-medium text-sm">New Character...</h1>
               <span className="bg-yellow-500/20 text-yellow-500 px-2 py-1 rounded-full text-xs font-medium border border-yellow-500/30">
                 Draft
               </span>
             </div>
           </div>
-          <Button variant="ghost" className="text-muted-foreground text-sm flex items-center gap-1 hover:bg-secondary/50">
+          <Button variant="ghost" className="text-muted-foreground text-xs flex items-center gap-1 hover:bg-secondary/50">
             <div className="bg-muted rounded p-1">
               <Info className="h-4 w-4" />
             </div>
@@ -68,9 +68,9 @@ const CreateCharacter = () => {
         <div className="flex bg-background">
           <Button
             variant="ghost"
-            className={`flex-1 rounded-none h-12 text-sm font-medium ${
-              activeTab === 'create' 
-                ? 'bg-primary text-white shadow-lg' 
+            className={`flex-1 rounded-none h-12 text-xs font-medium ${
+              activeTab === 'create'
+                ? 'bg-primary text-white shadow-lg'
                 : 'bg-black text-white hover:bg-secondary/30'
             }`}
             onClick={() => setActiveTab('create')}
@@ -79,9 +79,9 @@ const CreateCharacter = () => {
           </Button>
           <Button
             variant="ghost"
-            className={`flex-1 rounded-none h-12 text-sm font-medium ${
-              activeTab === 'preview' 
-                ? 'bg-primary text-white shadow-lg' 
+            className={`flex-1 rounded-none h-12 text-xs font-medium ${
+              activeTab === 'preview'
+                ? 'bg-primary text-white shadow-lg'
                 : 'bg-black text-white hover:bg-secondary/30'
             }`}
             onClick={() => setActiveTab('preview')}
@@ -441,7 +441,7 @@ const CreateCharacter = () => {
           {/* Create Button */}
           <div className="pb-8 pt-4">
             <Button 
-              className="w-full bg-primary hover:bg-primary/90 text-white h-14 text-base font-medium rounded-full shadow-lg"
+              className="w-full bg-primary hover:bg-primary/90 text-white h-14 text-xs font-medium rounded-full shadow-lg"
               onClick={() => navigate('/')}
             >
               Create and Chat!
