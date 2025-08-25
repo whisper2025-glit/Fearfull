@@ -137,14 +137,14 @@ const CreateCharacter = () => {
                   </div>
                 </div>
                 <div className="bg-secondary/30 rounded-lg p-4 space-y-2">
-                  <p className="text-muted-foreground text-sm leading-relaxed">
+                  <p className="text-muted-foreground text-xs leading-relaxed">
                     Avatars can be in various formats including <span className="text-green-400">webp</span>, 
                     <span className="text-green-400"> png, gif, and jpeg</span>, with <span className="text-green-400">webp</span> working 
                     best (gif can be converted to webp and then uploaded). It is recommended to upload a 
                     <span className="text-green-400"> 9:16</span> or <span className="text-green-400">3:4</span> image from 
                     which a <span className="text-green-400">1:1 (512x512)</span> avatar is captured. The image should be less than 5MB.
                   </p>
-                  <p className="text-red-400 text-sm leading-relaxed">
+                  <p className="text-red-400 text-xs leading-relaxed">
                     Please do not upload images containing underage individuals, as this may result in your OC 
                     being banned or restricted from display.
                   </p>
@@ -178,7 +178,7 @@ const CreateCharacter = () => {
                   </div>
                 </div>
                 <div className="bg-secondary/30 rounded-lg p-4">
-                  <p className="text-muted-foreground text-sm leading-relaxed">
+                  <p className="text-muted-foreground text-xs leading-relaxed">
                     For clarity, it is recommended that you upload a picture of 
                     <span className="text-green-400"> 3072*2048, 1920*1080</span> size, less than 5MB. It will 
                     be a scene when chatting. The rectangular part in the crop is the area you display on the mobile phone.
