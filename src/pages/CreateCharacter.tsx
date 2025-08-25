@@ -387,7 +387,7 @@ const CreateCharacter = () => {
                   placeholder="e.g.{{char}} has long, wavy brown hair, bright green eyes, and a warm smile. {{char}}'s skin is fair with a natural glow, and {{char}}'s features are delicate, with a slender frame and a graceful, confident posture."
                   value={formData.appearance}
                   onChange={(e) => handleInputChange('appearance', e.target.value)}
-                  className="min-h-[140px] text-sm bg-secondary/50 border-border rounded-lg resize-none placeholder:text-muted-foreground/70"
+                  className="min-h-[140px] text-xs bg-secondary/50 border-border rounded-lg resize-none placeholder:text-muted-foreground/70"
                 />
                 <div className="flex justify-between items-center">
                   <p className="text-muted-foreground text-sm">{getCharacterCount(formData.appearance)} Chars</p>
