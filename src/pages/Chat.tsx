@@ -299,7 +299,7 @@ Aizawa: "introduce yourself and take`,
             <div key={msg.id} className="mb-4">
               {msg.type === 'intro' ? (
                 <div className="relative pt-8">
-                  <Card className="relative p-4 pt-8 bg-card/60 border-accent/30 shadow-md overflow-visible">
+                  <Card className="relative p-4 pt-8 bg-card/30 backdrop-blur-sm border-accent/30 shadow-md overflow-visible">
                     {/* Character Avatar - positioned to overlap card border */}
                     <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 z-20">
                       <img
