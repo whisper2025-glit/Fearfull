@@ -63,14 +63,22 @@ const Profile = () => {
     }
   };
 
-  const handleAvatarUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setUserProfile({...userProfile, avatar: e.target?.result as string});
-      };
-      reader.readAsDataURL(file);
+    if (file && user) {
+      try {
+        // Upload avatar to Clerk
+        await user.setProfileImage({ file });
+
+        // Update local state with new avatar URL
+        setUserProfile(prev => ({
+          ...prev,
+          avatar: user.imageUrl || prev.avatar
+        }));
+      } catch (error) {
+        console.error('Error uploading avatar:', error);
+        // Handle error - maybe show a toast notification
+      }
     }
   };
 
