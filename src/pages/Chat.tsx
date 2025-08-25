@@ -175,7 +175,7 @@ const Chat = () => {
   }, [characterId, navigate]);
 
   const handleSendMessage = async () => {
-    if (!message.trim() || isLoading) return;
+    if (!message.trim() || isLoading || !currentCharacter || !user) return;
 
     // Use default model if none selected
     const modelToUse = selectedModel || {
@@ -195,12 +195,12 @@ const Chat = () => {
       tier: 'standard' as const
     };
 
-    // Add user message
+    // Add user message to local state immediately for UI responsiveness
     const userMessage: Message = {
       id: Date.now(),
       content: message,
       isBot: false,
-      timestamp: "now",
+      timestamp: new Date().toLocaleTimeString(),
       type: "regular"
     };
 
@@ -210,6 +210,21 @@ const Chat = () => {
     setIsLoading(true);
 
     try {
+      // Save user message to Supabase
+      const { error: userMessageError } = await supabase
+        .from('messages')
+        .insert({
+          character_id: characterId,
+          author_id: user.id,
+          content: currentMessage,
+          is_bot: false,
+          type: 'regular'
+        });
+
+      if (userMessageError) {
+        console.error('Error saving user message:', userMessageError);
+      }
+
       // Prepare chat messages for OpenRouter
       const allMessages = [...currentCharacter.messages, ...messages, userMessage];
       const chatMessages: ChatMessage[] = [
@@ -235,15 +250,33 @@ const Chat = () => {
         max_tokens: 1000
       });
 
+      const botResponseContent = response.choices[0]?.message?.content || "I apologize, but I couldn't generate a response.";
+
       const botMessage: Message = {
         id: Date.now() + 1,
-        content: response.choices[0]?.message?.content || "I apologize, but I couldn't generate a response.",
+        content: botResponseContent,
         isBot: true,
-        timestamp: "now",
+        timestamp: new Date().toLocaleTimeString(),
         type: "regular"
       };
 
       setMessages(prev => [...prev, botMessage]);
+
+      // Save bot message to Supabase
+      const { error: botMessageError } = await supabase
+        .from('messages')
+        .insert({
+          character_id: characterId,
+          author_id: null, // Bot messages have null author_id
+          content: botResponseContent,
+          is_bot: true,
+          type: 'regular'
+        });
+
+      if (botMessageError) {
+        console.error('Error saving bot message:', botMessageError);
+      }
+
       toast.success(`Response received from ${modelToUse.author}`);
     } catch (error) {
       console.error('Error sending message:', error);
@@ -253,7 +286,7 @@ const Chat = () => {
         id: Date.now() + 1,
         content: "I'm sorry, I'm having trouble responding right now. Please check your API connection and try again.",
         isBot: true,
-        timestamp: "now",
+        timestamp: new Date().toLocaleTimeString(),
         type: "regular"
       };
       setMessages(prev => [...prev, errorMessage]);
@@ -269,7 +302,19 @@ const Chat = () => {
     }
   };
 
-  const allMessages = [...currentCharacter.messages, ...messages];
+  const allMessages = currentCharacter ? [...currentCharacter.messages, ...messages] : [];
+
+  // Show loading state while character is being loaded
+  if (isLoadingCharacter || !currentCharacter) {
+    return (
+      <div className="min-h-screen bg-background text-foreground flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="h-8 w-8 animate-spin" />
+          <p className="text-muted-foreground">Loading character...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
