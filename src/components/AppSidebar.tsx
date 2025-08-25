@@ -1,17 +1,16 @@
-
 import { useState } from "react";
-import { 
-  Home, 
-  Plus, 
-  MessageCircle, 
-  Search, 
-  BookOpen, 
-  Wrench, 
-  Bot, 
+import {
+  Home,
+  Plus,
+  MessageCircle,
+  Search,
+  BookOpen,
+  Wrench,
+  Bot,
   Settings,
   Crown
 } from "lucide-react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   Sidebar,
   SidebarContent,
@@ -23,6 +22,13 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const menuItems = [
   { title: "Create a bot", url: "/create", icon: Plus },
@@ -39,6 +45,7 @@ const menuItems = [
 export function AppSidebar() {
   const { state } = useSidebar();
   const location = useLocation();
+  const navigate = useNavigate();
   const currentPath = location.pathname;
   const collapsed = state === "collapsed";
 
@@ -65,23 +72,21 @@ export function AppSidebar() {
             <SidebarMenu className="space-y-1">
               {menuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton 
-                    asChild
+                  <SidebarMenuButton
                     className={`nav-item ${isActive(item.url) ? 'active' : ''}`}
+                    onClick={() => navigate(item.url)}
                   >
-                    <a href={item.url}>
-                      <item.icon className="h-5 w-5 flex-shrink-0" />
-                      {!collapsed && (
-                        <div className="flex items-center justify-between flex-1">
-                          <span>{item.title}</span>
-                          {item.badge && (
-                            <span className="px-2 py-0.5 text-xs bg-primary text-primary-foreground rounded-full">
-                              {item.badge}
-                            </span>
-                          )}
-                        </div>
-                      )}
-                    </a>
+                    <item.icon className="h-5 w-5 flex-shrink-0" />
+                    {!collapsed && (
+                      <div className="flex items-center justify-between flex-1">
+                        <span>{item.title}</span>
+                        {item.badge && (
+                          <span className="px-2 py-0.5 text-xs bg-primary text-primary-foreground rounded-full">
+                            {item.badge}
+                          </span>
+                        )}
+                      </div>
+                    )}
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
@@ -101,15 +106,42 @@ export function AppSidebar() {
         </div>
 
         {/* User Profile */}
-        <div className="flex items-center gap-3 p-2 rounded-xl bg-sidebar-accent">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex-shrink-0"></div>
-          {!collapsed && (
-            <div className="flex-1">
-              <p className="text-sm font-medium">Leon</p>
-              <p className="text-xs text-muted-foreground">Free Plan</p>
-            </div>
-          )}
-        </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              className="flex items-center gap-3 p-2 rounded-xl bg-sidebar-accent hover:bg-sidebar-accent/80 w-full justify-start h-auto"
+            >
+              <Avatar className="w-8 h-8 flex-shrink-0">
+                <AvatarImage src="/lovable-uploads/3eab3055-d06f-48a5-9790-123de7769f97.png" />
+                <AvatarFallback className="bg-gradient-to-br from-blue-400 to-purple-500 text-white text-sm">L</AvatarFallback>
+              </Avatar>
+              {!collapsed && (
+                <div className="flex-1 text-left">
+                  <p className="text-sm font-medium">Leon</p>
+                  <p className="text-xs text-muted-foreground">Free Plan</p>
+                </div>
+              )}
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent side="top" align="start" className="bg-background border-border mb-2">
+            <DropdownMenuItem onClick={() => navigate('/profile')} className="cursor-pointer">
+              Profile
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => navigate('/settings')} className="cursor-pointer">
+              Settings
+            </DropdownMenuItem>
+            <DropdownMenuItem className="cursor-pointer">
+              Task
+            </DropdownMenuItem>
+            <DropdownMenuItem className="cursor-pointer">
+              User guide
+            </DropdownMenuItem>
+            <DropdownMenuItem className="cursor-pointer">
+              Join Discord
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </SidebarContent>
     </Sidebar>
   );
