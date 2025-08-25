@@ -342,7 +342,7 @@ Aizawa: "introduce yourself and take`,
                   </Card>
                 </div>
               ) : msg.type === 'scenario' ? (
-                <Card className="p-3 bg-card/50 border-primary/20">
+                <Card className="p-3 bg-card/30 backdrop-blur-sm border-primary/20">
                   <div className="flex items-start gap-2">
                     <span className="text-primary font-medium text-sm">Scenario:</span>
                     <p className="text-muted-foreground italic text-sm">{msg.content}</p>
