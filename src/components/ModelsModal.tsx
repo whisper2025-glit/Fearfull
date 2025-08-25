@@ -435,7 +435,7 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
               </div>
             </>
           )}
-        </div>
+          </div>
 
           {/* Footer */}
           <div className="p-4 border-t border-[#2d2e3e] flex-shrink-0">
