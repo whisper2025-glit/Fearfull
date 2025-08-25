@@ -162,7 +162,7 @@ export function AppSidebar() {
             </>
           ) : (
             /* Log in / Sign up Button for unauthenticated users */
-            <SignInButton mode="modal">
+            <SignInButton mode="modal" fallbackRedirectUrl="/" signUpFallbackRedirectUrl="/">
               <Button
                 className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-full h-12"
                 size="default"
