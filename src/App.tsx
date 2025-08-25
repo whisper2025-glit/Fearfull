@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import Chat from "./pages/Chat";
 import CreateCharacter from "./pages/CreateCharacter";
 import Profile from "./pages/Profile";
+import AuthPage from "./pages/AuthPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
