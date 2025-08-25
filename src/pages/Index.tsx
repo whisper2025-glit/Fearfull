@@ -63,15 +63,15 @@ const Index = () => {
 
   return (
     <Layout>
-      <div className="p-6 max-w-7xl mx-auto">
+      <div className="p-4 max-w-full mx-auto overflow-x-hidden">
         {/* Category Tabs */}
         <CategoryTabs 
           activeCategory={activeCategory}
           onCategoryChange={setActiveCategory}
         />
 
-        {/* Character Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {/* Character Grid - 2 cards per row */}
+        <div className="grid grid-cols-2 gap-3 max-w-full">
           {characters.map((character) => (
             <CharacterCard
               key={character.id}
@@ -87,8 +87,8 @@ const Index = () => {
         </div>
 
         {/* Load More */}
-        <div className="flex justify-center mt-12">
-          <button className="px-8 py-3 bg-secondary hover:bg-secondary/80 text-foreground rounded-full font-medium transition-colors">
+        <div className="flex justify-center mt-8">
+          <button className="px-6 py-2 bg-secondary hover:bg-secondary/80 text-foreground rounded-full font-medium transition-colors text-sm">
             Load More Characters
           </button>
         </div>

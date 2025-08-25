@@ -30,7 +30,7 @@ export function CharacterCard({
 
   return (
     <div 
-      className="character-card group cursor-pointer"
+      className="character-card group cursor-pointer w-full"
       onClick={handleClick}
     >
       {/* Image Container */}
@@ -46,32 +46,32 @@ export function CharacterCard({
         
         {/* Category Badge */}
         {category && (
-          <div className="absolute top-3 right-3">
-            <span className="stats-badge bg-primary/20 text-primary border border-primary/30">
+          <div className="absolute top-2 right-2">
+            <span className="stats-badge bg-primary/20 text-primary border border-primary/30 text-[10px]">
               {category}
             </span>
           </div>
         )}
         
         {/* Content */}
-        <div className="absolute bottom-0 left-0 right-0 p-4">
-          <h3 className="text-lg font-bold text-white mb-2 line-clamp-1">
+        <div className="absolute bottom-0 left-0 right-0 p-3">
+          <h3 className="text-sm font-bold text-white mb-1 line-clamp-1">
             {name}
           </h3>
-          <p className="text-sm text-gray-300 mb-3 line-clamp-2">
+          <p className="text-xs text-gray-300 mb-2 line-clamp-2">
             {description}
           </p>
           
           {/* Stats */}
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
               <div className="stats-badge">
-                <MessageCircle className="h-3 w-3" />
-                <span>{messageCount}</span>
+                <MessageCircle className="h-2.5 w-2.5" />
+                <span className="text-[10px]">{messageCount}</span>
               </div>
               <div className="stats-badge">
-                <Heart className="h-3 w-3" />
-                <span>{likeCount}</span>
+                <Heart className="h-2.5 w-2.5" />
+                <span className="text-[10px]">{likeCount}</span>
               </div>
             </div>
           </div>

@@ -1,15 +1,15 @@
-
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, Home, MoreHorizontal, Lightbulb, Clock, Users, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 
 const Chat = () => {
   const { characterId } = useParams();
   const navigate = useNavigate();
   const [message, setMessage] = useState("");
+  const [messages, setMessages] = useState<Array<{id: number; content: string; isBot: boolean; timestamp: string}>>([]);
 
   // Mock character data - in a real app this would come from an API
   const characters = {
@@ -48,9 +48,27 @@ Aizawa: "introduce yourself and take`,
   const handleSendMessage = () => {
     if (!message.trim()) return;
     
-    // In a real app, this would send the message to your AI backend
-    console.log("Sending message:", message);
+    // Add user message
+    const userMessage = {
+      id: Date.now(),
+      content: message,
+      isBot: false,
+      timestamp: "now"
+    };
+    
+    setMessages(prev => [...prev, userMessage]);
     setMessage("");
+    
+    // Simulate bot response
+    setTimeout(() => {
+      const botMessage = {
+        id: Date.now() + 1,
+        content: "Thanks for your message! This is a simulated response from the AI character.",
+        isBot: true,
+        timestamp: "now"
+      };
+      setMessages(prev => [...prev, botMessage]);
+    }, 1000);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -60,8 +78,10 @@ Aizawa: "introduce yourself and take`,
     }
   };
 
+  const allMessages = [...currentCharacter.messages, ...messages];
+
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
       {/* Header */}
       <header className="flex items-center justify-between p-4 border-b border-border">
         <div className="flex items-center gap-3">
@@ -71,9 +91,9 @@ Aizawa: "introduce yourself and take`,
             onClick={() => navigate(-1)}
             className="text-muted-foreground hover:text-foreground"
           >
-            <ArrowLeft className="h-5 w-5" />
+            <ArrowLeft className="h-4 w-4" />
           </Button>
-          <h1 className="text-lg font-semibold">{currentCharacter.name}</h1>
+          <h1 className="text-sm font-semibold">{currentCharacter.name}</h1>
         </div>
         
         <div className="flex items-center gap-2">
@@ -83,43 +103,45 @@ Aizawa: "introduce yourself and take`,
             onClick={() => navigate('/')}
             className="text-muted-foreground hover:text-foreground"
           >
-            <Home className="h-5 w-5" />
+            <Home className="h-4 w-4" />
           </Button>
           <Button 
             variant="ghost" 
             size="icon"
             className="text-muted-foreground hover:text-foreground"
           >
-            <MoreHorizontal className="h-5 w-5" />
+            <MoreHorizontal className="h-4 w-4" />
           </Button>
         </div>
       </header>
 
       {/* Chat Content */}
-      <div className="flex-1 flex flex-col max-w-4xl mx-auto">
+      <div className="flex-1 flex flex-col max-w-full mx-auto h-[calc(100vh-4rem)]">
         {/* Scenario Card */}
         <div className="p-4">
-          <Card className="p-4 bg-card/50 border-primary/20">
+          <Card className="p-3 bg-card/50 border-primary/20">
             <div className="flex items-start gap-2">
-              <span className="text-primary font-medium">Scenario:</span>
-              <p className="text-muted-foreground italic">{currentCharacter.scenario}</p>
+              <span className="text-primary font-medium text-sm">Scenario:</span>
+              <p className="text-muted-foreground italic text-sm">{currentCharacter.scenario}</p>
             </div>
           </Card>
         </div>
 
         {/* Messages */}
-        <div className="flex-1 px-4 pb-4">
-          {currentCharacter.messages.map((msg) => (
+        <div className="flex-1 px-4 pb-4 overflow-y-auto">
+          {allMessages.map((msg) => (
             <div key={msg.id} className="mb-4">
-              <Card className="p-4 bg-card/30">
+              <Card className={`p-3 ${msg.isBot ? 'bg-card/30' : 'bg-primary/10 ml-8'}`}>
                 <div className="flex items-start gap-3">
-                  <img 
-                    src={currentCharacter.avatar} 
-                    alt={currentCharacter.name}
-                    className="w-10 h-10 rounded-full object-cover"
-                  />
+                  {msg.isBot && (
+                    <img 
+                      src={currentCharacter.avatar} 
+                      alt={currentCharacter.name}
+                      className="w-8 h-8 rounded-full object-cover flex-shrink-0"
+                    />
+                  )}
                   <div className="flex-1">
-                    <p className="text-foreground whitespace-pre-wrap">{msg.content}</p>
+                    <p className="text-foreground whitespace-pre-wrap chat-text">{msg.content}</p>
                   </div>
                 </div>
               </Card>
@@ -128,23 +150,23 @@ Aizawa: "introduce yourself and take`,
         </div>
 
         {/* Action Buttons */}
-        <div className="px-4 pb-4">
-          <div className="flex gap-2 mb-4">
-            <Button variant="outline" size="sm" className="flex items-center gap-2">
-              <Lightbulb className="h-4 w-4" />
+        <div className="px-4 pb-2">
+          <div className="flex gap-2 mb-3 flex-wrap">
+            <Button variant="outline" size="sm" className="flex items-center gap-2 text-xs">
+              <Lightbulb className="h-3 w-3" />
               Suggest
             </Button>
-            <Button variant="outline" size="sm" className="flex items-center gap-2">
-              <Clock className="h-4 w-4" />
+            <Button variant="outline" size="sm" className="flex items-center gap-2 text-xs">
+              <Clock className="h-3 w-3" />
               Memory
-              <div className="w-2 h-2 bg-pink-500 rounded-full" />
+              <div className="w-1.5 h-1.5 bg-pink-500 rounded-full" />
             </Button>
-            <Button variant="outline" size="sm" className="flex items-center gap-2">
-              <Users className="h-4 w-4" />
+            <Button variant="outline" size="sm" className="flex items-center gap-2 text-xs">
+              <Users className="h-3 w-3" />
               Persona
             </Button>
-            <Button variant="outline" size="sm" className="flex items-center gap-2">
-              <User className="h-4 w-4" />
+            <Button variant="outline" size="sm" className="flex items-center gap-2 text-xs">
+              <User className="h-3 w-3" />
               Profile
             </Button>
           </div>
@@ -153,17 +175,19 @@ Aizawa: "introduce yourself and take`,
         {/* Message Input */}
         <div className="px-4 pb-4">
           <div className="flex gap-2">
-            <Input
+            <Textarea
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder="Type a message"
-              className="flex-1 bg-card/50 border-border"
+              className="flex-1 bg-card/50 border-border resize-none min-h-[40px] max-h-[120px] text-sm chat-text"
+              rows={1}
             />
             <Button 
               onClick={handleSendMessage}
               disabled={!message.trim()}
-              className="px-6"
+              className="px-4 self-end"
+              size="sm"
             >
               Send
             </Button>
