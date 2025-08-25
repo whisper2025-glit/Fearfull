@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Home, MoreHorizontal, Lightbulb, Clock, Users, User, ChevronDown } from "lucide-react";
+import { ArrowLeft, Home, MoreHorizontal, Lightbulb, Clock, Users, Bot, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
+import { ModelsModal } from "@/components/ModelsModal";
 
 interface Message {
   id: number;
@@ -30,6 +31,8 @@ const Chat = () => {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [isIntroExpanded, setIsIntroExpanded] = useState(true);
+  const [isModelsModalOpen, setIsModelsModalOpen] = useState(false);
+  const [selectedModel, setSelectedModel] = useState<any>(null);
 
   // Mock character data - in a real app this would come from an API
   const characters: Record<string, Character> = {
@@ -249,9 +252,14 @@ Aizawa: "introduce yourself and take`,
               <Users className="h-3 w-3" />
               Persona
             </Button>
-            <Button variant="outline" size="sm" className="flex items-center gap-2 text-xs whitespace-nowrap flex-shrink-0">
-              <User className="h-3 w-3" />
-              Profile
+            <Button
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-2 text-xs whitespace-nowrap flex-shrink-0"
+              onClick={() => setIsModelsModalOpen(true)}
+            >
+              <Bot className="h-3 w-3" />
+              Models
             </Button>
           </div>
         </div>
@@ -278,6 +286,14 @@ Aizawa: "introduce yourself and take`,
           </div>
         </div>
       </div>
+
+      {/* Models Modal */}
+      <ModelsModal
+        open={isModelsModalOpen}
+        onOpenChange={setIsModelsModalOpen}
+        onModelSelect={setSelectedModel}
+        selectedModel={selectedModel}
+      />
     </div>
   );
 };
