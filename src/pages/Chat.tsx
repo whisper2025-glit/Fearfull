@@ -95,7 +95,7 @@ Aizawa: "introduce yourself and take`,
           >
             <ArrowLeft className="h-4 w-4" />
           </Button>
-          <h1 className="text-sm font-semibold">{currentCharacter.name}</h1>
+          <h1 className="text-sm font-semibold">Angela</h1>
         </div>
         
         <div className="flex items-center gap-2">
