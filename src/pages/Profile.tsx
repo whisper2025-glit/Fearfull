@@ -193,6 +193,163 @@ const Profile = () => {
                 <Settings className="h-5 w-5" />
               </Button>
             </div>
+
+            {/* Profile Info - Positioned at bottom of banner */}
+            <div className="absolute bottom-4 left-4 right-4">
+              <div className="flex items-end gap-4 mb-4">
+                <Avatar className="w-20 h-20 border-4 border-white">
+                  <AvatarImage src={userProfile.avatar} />
+                  <AvatarFallback>{userProfile.name.charAt(0)}</AvatarFallback>
+                </Avatar>
+
+                <div className="flex-1">
+                  <h1 className="text-xl font-bold text-white">{userProfile.name}</h1>
+                  <p className="text-sm text-white/80">{userProfile.bio}</p>
+                </div>
+              </div>
+
+              {/* Stats and Edit Button */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-6">
+                  <div className="text-center">
+                    <div className="text-lg font-bold text-white">{stats.followers}</div>
+                    <div className="text-xs text-white/70">Followers</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-lg font-bold text-white">{stats.following}</div>
+                    <div className="text-xs text-white/70">Following</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-lg font-bold text-white">{stats.likes}</div>
+                    <div className="text-xs text-white/70">Likes</div>
+                  </div>
+                </div>
+
+                <Dialog open={editModalOpen} onOpenChange={setEditModalOpen}>
+                  <DialogTrigger asChild>
+                    <Button className="bg-gray-700/80 hover:bg-gray-600/80 text-white px-6">
+                      Edit Profile
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="bg-background border-border max-w-md">
+                    <DialogHeader className="flex flex-row items-center justify-between">
+                      <DialogTitle>Edit Profile</DialogTitle>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => setEditModalOpen(false)}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </DialogHeader>
+
+                    <div className="space-y-6 pt-4">
+                      {/* Avatar */}
+                      <div className="flex justify-center">
+                        <div className="relative">
+                          <Avatar className="w-20 h-20">
+                            <AvatarImage src={userProfile.avatar} />
+                            <AvatarFallback>{userProfile.name.charAt(0)}</AvatarFallback>
+                          </Avatar>
+                          <Button
+                            size="icon"
+                            className="absolute bottom-0 right-0 w-6 h-6 bg-gray-700 hover:bg-gray-600"
+                            onClick={() => document.getElementById('avatar-upload')?.click()}
+                          >
+                            <Camera className="h-3 w-3" />
+                          </Button>
+                          <input
+                            id="avatar-upload"
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={handleAvatarUpload}
+                          />
+                        </div>
+                      </div>
+
+                      {/* Name */}
+                      <div className="space-y-2">
+                        <Label htmlFor="name">Name</Label>
+                        <div className="relative">
+                          <Input
+                            id="name"
+                            value={userProfile.name}
+                            onChange={(e) => setUserProfile({...userProfile, name: e.target.value})}
+                            className="bg-background border-border"
+                          />
+                          <span className="absolute right-3 top-3 text-xs text-muted-foreground">
+                            {userProfile.name.length}/20
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Gender */}
+                      <div className="space-y-2">
+                        <Label>Gender</Label>
+                        <div className="flex gap-2">
+                          {['Male', 'Female', 'Non-binary'].map((gender) => (
+                            <Button
+                              key={gender}
+                              variant={userProfile.gender === gender ? "default" : "outline"}
+                              className="flex-1 text-xs"
+                              onClick={() => setUserProfile({...userProfile, gender})}
+                            >
+                              {gender}
+                            </Button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Bio */}
+                      <div className="space-y-2">
+                        <Label htmlFor="bio">Bio</Label>
+                        <div className="relative">
+                          <Textarea
+                            id="bio"
+                            value={userProfile.bio}
+                            onChange={(e) => setUserProfile({...userProfile, bio: e.target.value})}
+                            className="bg-background border-border min-h-[80px] resize-none"
+                            placeholder="Tell us about yourself..."
+                          />
+                          <span className="absolute bottom-3 right-3 text-xs text-muted-foreground">
+                            {userProfile.bio.length}/80
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Banner */}
+                      <div className="space-y-2">
+                        <Label>Banner</Label>
+                        <Button
+                          variant="outline"
+                          className="w-full justify-between text-xs"
+                          onClick={() => document.getElementById('banner-upload')?.click()}
+                        >
+                          Change Banner
+                          <span>→</span>
+                        </Button>
+                        <input
+                          id="banner-upload"
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={handleBannerUpload}
+                        />
+                      </div>
+
+                      {/* Save Button */}
+                      <Button
+                        onClick={handleSaveProfile}
+                        className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                      >
+                        Save
+                      </Button>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              </div>
+            </div>
           </div>
 
           {/* Profile Info */}
