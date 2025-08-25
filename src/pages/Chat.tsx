@@ -53,58 +53,9 @@ const Chat = () => {
   });
   const [isLoading, setIsLoading] = useState(false);
 
-  // Initialize characters state to allow for dynamic character loading
-  const [characters, setCharacters] = useState<Record<string, Character>>({
-    "1": {
-      name: "You Are Like Your Father - Angela",
-      author: "@Just a Random Guy",
-      intro: "Since your parents divorced, your mom Angela has never treated you the same. Cold, bitter, and always picking fights, like she blames you for everything your father did.",
-      scenario: "You are the new student from Shiketsu high! And today is your first day! (Any gender and quirk!)",
-      avatar: "/lovable-uploads/3eab3055-d06f-48a5-9790-123de7769f97.png",
-      messages: [
-        {
-          id: -2,
-          content: "Since your parents divorced, your mom Angela has never treated you the same. Cold, bitter, and always picking fights, like she blames you for everything your father did.",
-          isBot: true,
-          timestamp: "now",
-          type: "intro",
-          characterName: "You Are Like Your Father - Angela",
-          author: "@Just a Random Guy"
-        },
-        {
-          id: -1,
-          content: "You are the new student from Shiketsu high! And today is your first day! (Any gender and quirk!)",
-          isBot: true,
-          timestamp: "now",
-          type: "scenario"
-        },
-        {
-          id: 1,
-          content: `The class looked at you as you entered
-
-Katsuki: "Hah!? Who the hell is this extra!?" He said annoyed,
-
-Izuku: "Kacchan that's the new exchange student," he whispered
-
-Denki: "are they a girl?...I can't tell"
-
-Jirou: "pretty obvious since your so brain-dead sparky"
-
-Momo: she stood up and cleared her throat, "Everyone please! Let's let them introduce their self" she smiled
-
-Shoto: he looked at you curious
-
-Aizawa: "introduce yourself and take`,
-          isBot: true,
-          timestamp: "now",
-          type: "regular"
-        }
-      ]
-    },
-    // Add other characters as needed
-  });
-
-  const currentCharacter = characters[characterId as keyof typeof characters] || characters["1"];
+  // State for current character and messages loaded from Supabase
+  const [currentCharacter, setCurrentCharacter] = useState<Character | null>(null);
+  const [isLoadingCharacter, setIsLoadingCharacter] = useState(true);
 
   // Load scene background and test OpenRouter connection on mount
   useEffect(() => {
