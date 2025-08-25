@@ -117,8 +117,8 @@ Aizawa: "introduce yourself and take`,
 
       {/* Chat Content */}
       <div className="flex-1 flex flex-col max-w-full mx-auto h-[calc(100vh-4rem)]">
-        {/* Scenario Card */}
-        <div className="p-4">
+        {/* Scenario Card - Separated from header */}
+        <div className="p-4 mt-4">
           <Card className="p-3 bg-card/50 border-primary/20">
             <div className="flex items-start gap-2">
               <span className="text-primary font-medium text-sm">Scenario:</span>
