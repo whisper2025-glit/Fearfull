@@ -33,6 +33,15 @@ const CreateCharacter = () => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
+  const handleImageUpload = (field: 'characterImage' | 'sceneImage', file: File) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const result = e.target?.result as string;
+      setFormData(prev => ({ ...prev, [field]: result }));
+    };
+    reader.readAsDataURL(file);
+  };
+
   const getCharacterCount = (text: string) => {
     return text.length;
   };
