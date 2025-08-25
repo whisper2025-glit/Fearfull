@@ -228,9 +228,9 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg h-[75vh] bg-[#1a1b2e] border-[#2d2e3e] p-0 rounded-2xl w-[95vw] sm:w-auto sm:max-w-lg !gap-0 !grid-cols-1 !grid-rows-1 flex flex-col overflow-hidden">
+      <DialogContent className="max-w-lg h-[80vh] bg-[#1a1b2e] border-[#2d2e3e] p-0 rounded-2xl w-[95vw] sm:w-auto sm:max-w-lg !gap-0 !grid-cols-1 !grid-rows-1 flex flex-col overflow-hidden">
         <div className="flex flex-col h-full overflow-hidden">
-          <DialogHeader className="p-3 pb-2 flex-shrink-0">
+          <DialogHeader className="p-2 pb-1 flex-shrink-0">
             <div className="flex items-center justify-between">
               <DialogTitle className="text-base font-bold text-[#e74c8c]" style={{ fontSize: '15px' }}>
                 Change Model
@@ -438,9 +438,9 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
           </div>
 
           {/* Footer */}
-          <div className="p-4 border-t border-[#2d2e3e] flex-shrink-0">
+          <div className="p-3 border-t border-[#2d2e3e] flex-shrink-0">
             {selectedModel && (
-              <div className="bg-[#1a4d5c] p-2 rounded-lg mb-3">
+              <div className="bg-[#1a4d5c] p-2 rounded-lg mb-2">
                 <p className="text-xs text-gray-400 mb-0.5" style={{ fontSize: '11px' }}>Selected Model:</p>
                 <p className="text-sm font-medium text-white" style={{ fontSize: '12px' }}>{selectedModel.name}</p>
               </div>
