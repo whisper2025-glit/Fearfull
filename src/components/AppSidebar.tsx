@@ -38,7 +38,6 @@ const menuItems = [
   { title: "Search", url: "/search", icon: Search },
   { title: "Joybook", url: "/joybook", icon: BookOpen },
   { title: "Toolkit", url: "/toolkit", icon: Wrench },
-  { title: "My Bots", url: "/my-bots", icon: Bot },
   { title: "Settings", url: "/settings", icon: Settings },
 ];
 
