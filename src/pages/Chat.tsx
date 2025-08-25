@@ -28,7 +28,7 @@ const Chat = () => {
   const { characterId } = useParams();
   const navigate = useNavigate();
   const [message, setMessage] = useState("");
-  const [messages, setMessages] = useState<Array<{id: number; content: string; isBot: boolean; timestamp: string}>>([]);
+  const [messages, setMessages] = useState<Message[]>([]);
 
   // Mock character data - in a real app this would come from an API
   const characters: Record<string, Character> = {
