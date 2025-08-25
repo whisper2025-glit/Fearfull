@@ -9,6 +9,7 @@ import CreateCharacter from "./pages/CreateCharacter";
 import Profile from "./pages/Profile";
 import AuthPage from "./pages/AuthPage";
 import NotFound from "./pages/NotFound";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const queryClient = new QueryClient();
 
