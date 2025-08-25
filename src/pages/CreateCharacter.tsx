@@ -353,10 +353,10 @@ const CreateCharacter = () => {
 
               {/* Personality */}
               <div className="space-y-4">
-                <Label className="text-primary text-base font-medium flex items-center gap-2">
+                <Label className="text-primary text-sm font-medium flex items-center gap-2">
                   Personality <Info className="h-4 w-4 text-muted-foreground" />
                 </Label>
-                <p className="text-muted-foreground text-sm leading-relaxed">
+                <p className="text-muted-foreground text-xs leading-relaxed">
                   The detailed description of your character. This will be included in long-term memory. 
                   <a href="#" className="text-blue-400 underline"> View the guide book.</a>
                 </p>
