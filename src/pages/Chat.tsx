@@ -34,7 +34,22 @@ const Chat = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isIntroExpanded, setIsIntroExpanded] = useState(true);
   const [isModelsModalOpen, setIsModelsModalOpen] = useState(false);
-  const [selectedModel, setSelectedModel] = useState<Model | null>(null);
+  const [selectedModel, setSelectedModel] = useState<Model | null>({
+    id: "mistral-main",
+    name: "mistralai/mistral-small-3.2-24b-instruct:free",
+    author: "Mistral AI",
+    description: "Excellent for creative roleplay scenarios",
+    price: 0,
+    responseTime: "850 ms",
+    memory: "24B",
+    rating: 8.5,
+    tags: ["Main", "Roleplay", "Creative", "Free"],
+    isActive: true,
+    isPremium: false,
+    isMain: true,
+    provider: 'mistral',
+    tier: 'standard'
+  });
   const [isLoading, setIsLoading] = useState(false);
 
   // Mock character data - in a real app this would come from an API
