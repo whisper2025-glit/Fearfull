@@ -236,7 +236,7 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
                 Change Model
               </DialogTitle>
               <Button variant="ghost" size="sm" onClick={() => onOpenChange(false)} className="text-white hover:bg-[#2d2e3e] h-6 w-6 p-0">
-                <X className="h-4 w-4" />
+                <X className="h-3 w-3" />
               </Button>
             </div>
           </DialogHeader>
