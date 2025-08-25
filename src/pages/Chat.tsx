@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Home, MoreHorizontal, Lightbulb, Clock, Users, User } from "lucide-react";
+import { ArrowLeft, Home, MoreHorizontal, Lightbulb, Clock, Users, User, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
