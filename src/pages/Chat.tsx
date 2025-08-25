@@ -34,6 +34,7 @@ const Chat = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isIntroExpanded, setIsIntroExpanded] = useState(true);
   const [isModelsModalOpen, setIsModelsModalOpen] = useState(false);
+  const [sceneBackground, setSceneBackground] = useState<string>("");
   const [selectedModel, setSelectedModel] = useState<Model | null>({
     id: "mistral-main",
     name: "mistralai/mistral-small-3.2-24b-instruct:free",
