@@ -155,55 +155,51 @@ Aizawa: "introduce yourself and take`,
 
       {/* Chat Content */}
       <div className="flex-1 flex flex-col max-w-full mx-auto h-[calc(100vh-4rem)]">
-        {/* Intro Block */}
-        <div className="p-4 pb-2">
-          <Card className="p-4 bg-card/60 border-accent/30 shadow-md">
-            <div className="space-y-3">
-              {/* Character Title */}
-              <div className="text-center">
-                <h2 className="text-lg font-bold text-foreground">{currentCharacter.name}</h2>
-                <p className="text-sm text-primary/80 mt-1">{currentCharacter.author}</p>
-              </div>
-
-              {/* Intro Section */}
-              <div className="space-y-2">
-                <div className="flex items-center justify-center">
-                  <span className="text-accent font-semibold text-sm bg-accent/10 px-3 py-1 rounded-full">Intro</span>
-                </div>
-                <p className="text-foreground text-sm leading-relaxed text-center">{currentCharacter.intro}</p>
-              </div>
-            </div>
-          </Card>
-        </div>
-
-        {/* Scenario Card - In chat flow but with original styling */}
-        <div className="px-4 pb-4">
-          <Card className="p-3 bg-card/50 border-primary/20">
-            <div className="flex items-start gap-2">
-              <span className="text-primary font-medium text-sm">Scenario:</span>
-              <p className="text-muted-foreground italic text-sm">{currentCharacter.scenario}</p>
-            </div>
-          </Card>
-        </div>
-
         {/* Messages */}
-        <div className="flex-1 px-4 pb-4 overflow-y-auto">
+        <div className="flex-1 px-4 py-4 overflow-y-auto">
           {allMessages.map((msg) => (
             <div key={msg.id} className="mb-4">
-              <Card className={`p-3 ${msg.isBot ? 'bg-card/30' : 'bg-primary/10 ml-8'}`}>
-                <div className="flex items-start gap-3">
-                  {msg.isBot && (
-                    <img 
-                      src={currentCharacter.avatar} 
-                      alt={currentCharacter.name}
-                      className="w-8 h-8 rounded-full object-cover flex-shrink-0"
-                    />
-                  )}
-                  <div className="flex-1">
-                    <p className="text-foreground whitespace-pre-wrap chat-text">{msg.content}</p>
+              {msg.type === 'intro' ? (
+                <Card className="p-4 bg-card/60 border-accent/30 shadow-md">
+                  <div className="space-y-3">
+                    {/* Character Title */}
+                    <div className="text-center">
+                      <h2 className="text-lg font-bold text-foreground">{msg.characterName}</h2>
+                      <p className="text-sm text-primary/80 mt-1">{msg.author}</p>
+                    </div>
+
+                    {/* Intro Section */}
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-center">
+                        <span className="text-accent font-semibold text-sm bg-accent/10 px-3 py-1 rounded-full">Intro</span>
+                      </div>
+                      <p className="text-foreground text-sm leading-relaxed text-center">{msg.content}</p>
+                    </div>
                   </div>
-                </div>
-              </Card>
+                </Card>
+              ) : msg.type === 'scenario' ? (
+                <Card className="p-3 bg-card/50 border-primary/20">
+                  <div className="flex items-start gap-2">
+                    <span className="text-primary font-medium text-sm">Scenario:</span>
+                    <p className="text-muted-foreground italic text-sm">{msg.content}</p>
+                  </div>
+                </Card>
+              ) : (
+                <Card className={`p-3 ${msg.isBot ? 'bg-card/30' : 'bg-primary/10 ml-8'}`}>
+                  <div className="flex items-start gap-3">
+                    {msg.isBot && (
+                      <img
+                        src={currentCharacter.avatar}
+                        alt={currentCharacter.name}
+                        className="w-8 h-8 rounded-full object-cover flex-shrink-0"
+                      />
+                    )}
+                    <div className="flex-1">
+                      <p className="text-foreground whitespace-pre-wrap chat-text">{msg.content}</p>
+                    </div>
+                  </div>
+                </Card>
+              )}
             </div>
           ))}
         </div>
