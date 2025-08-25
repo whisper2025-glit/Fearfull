@@ -241,9 +241,9 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
             </div>
           </DialogHeader>
 
-          <div className="px-3 flex-1 overflow-hidden flex flex-col">
+          <div className="px-4 flex-1 overflow-hidden flex flex-col">
             {/* Tier Tabs */}
-            <div className="flex gap-1 mb-3 flex-shrink-0">
+            <div className="flex gap-1 mb-4 flex-shrink-0">
             <Button
               variant={activeTab === 'standard' ? 'default' : 'ghost'}
               className={`flex-1 rounded-2xl text-xs font-medium py-3 ${
