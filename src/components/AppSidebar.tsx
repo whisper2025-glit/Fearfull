@@ -49,20 +49,14 @@ export function AppSidebar() {
   const currentPath = location.pathname;
   const collapsed = state === "collapsed";
 
-  // Authentication state - for demo purposes, we'll use a state variable
-  // In a real app, this would come from a global auth context
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  // Clerk authentication hooks
+  const { isSignedIn, user } = useUser();
+  const { signOut } = useClerk();
 
   const isActive = (path: string) => currentPath === path;
 
-  const handleAuthAction = () => {
-    if (isAuthenticated) {
-      // Handle logout
-      setIsAuthenticated(false);
-    } else {
-      // Handle login/signup - for demo, just toggle the state
-      setIsAuthenticated(true);
-    }
+  const handleSignOut = async () => {
+    await signOut();
   };
 
   return (
