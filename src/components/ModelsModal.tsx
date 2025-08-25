@@ -411,7 +411,7 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
                 </div>
 
                 {/* Folders List */}
-                <div className="space-y-3 flex-1 overflow-y-auto min-h-0">
+                <div className="space-y-3 flex-1 overflow-y-auto min-h-0 pr-1">
                   {mockFolders.map((folder) => (
                     <Card
                       key={folder.id}
