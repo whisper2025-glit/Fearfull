@@ -105,6 +105,25 @@ Aizawa: "introduce yourself and take`,
 
   const currentCharacter = characters[characterId as keyof typeof characters] || characters["1"];
 
+  // Test OpenRouter connection on mount
+  useEffect(() => {
+    const testConnection = async () => {
+      try {
+        const isConnected = await openRouterAPI.testConnection();
+        if (isConnected) {
+          toast.success('OpenRouter API connected successfully!');
+        } else {
+          toast.error('Failed to connect to OpenRouter API. Please check your configuration.');
+        }
+      } catch (error) {
+        console.error('Connection test failed:', error);
+        toast.error('OpenRouter API connection test failed.');
+      }
+    };
+
+    testConnection();
+  }, []);
+
   const handleSendMessage = async () => {
     if (!message.trim() || isLoading) return;
 
