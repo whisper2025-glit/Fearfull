@@ -369,7 +369,7 @@ Aizawa: "introduce yourself and take`,
         </div>
 
         {/* Action Buttons */}
-        <div className="pb-2">
+        <div className="pb-2 bg-background/60 backdrop-blur-sm">
           <div className="flex gap-2 mb-3 overflow-x-auto px-4 scrollbar-hide">
             <Button variant="outline" size="sm" className="flex items-center gap-2 text-xs whitespace-nowrap flex-shrink-0">
               <Lightbulb className="h-3 w-3" />
