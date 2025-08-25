@@ -364,7 +364,7 @@ const CreateCharacter = () => {
                   placeholder="The Long Description allows you to have the Character describe themselves (traits, history, mannerisms, etc) and the kinds of things they want to talk about."
                   value={formData.personality}
                   onChange={(e) => handleInputChange('personality', e.target.value)}
-                  className="min-h-[140px] text-sm bg-secondary/50 border-border rounded-lg resize-none placeholder:text-muted-foreground/70"
+                  className="min-h-[140px] text-xs bg-secondary/50 border-border rounded-lg resize-none placeholder:text-muted-foreground/70"
                 />
                 <div className="flex justify-between items-center">
                   <p className="text-muted-foreground text-sm">{getCharacterCount(formData.personality)} Chars</p>
