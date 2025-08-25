@@ -229,20 +229,20 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg max-h-[75vh] bg-[#1a1b2e] border-[#2d2e3e] p-0 sm:rounded-2xl">
-        <DialogHeader className="p-4 pb-0">
+        <DialogHeader className="p-3 pb-0">
           <div className="flex items-center justify-between">
-            <DialogTitle className="text-lg font-bold text-[#e74c8c]" style={{ fontSize: '18px' }}>
+            <DialogTitle className="text-base font-bold text-[#e74c8c]" style={{ fontSize: '16px' }}>
               Change Model
             </DialogTitle>
             <Button variant="ghost" size="icon" onClick={() => onOpenChange(false)} className="text-white hover:bg-[#2d2e3e]">
-              <X className="h-5 w-5" />
+              <X className="h-4 w-4" />
             </Button>
           </div>
         </DialogHeader>
 
-        <div className="px-4">
+        <div className="px-3">
           {/* Tier Tabs */}
-          <div className="flex gap-2 mb-6">
+          <div className="flex gap-1 mb-4">
             <Button
               variant={activeTab === 'standard' ? 'default' : 'ghost'}
               className={`flex-1 rounded-2xl text-xs font-medium py-3 ${
