@@ -129,7 +129,7 @@ const CreateCharacter = () => {
               <div className="space-y-4">
                 <h3 className="text-primary text-sm font-medium">Character Photo</h3>
                 <div className="flex items-end gap-4">
-                  <div className="w-52 h-60 relative bg-secondary/30 rounded-lg border-2 border-dashed border-border flex items-center justify-center">
+                  <div className="w-52 h-80 relative bg-secondary/30 rounded-lg border-2 border-dashed border-border flex items-center justify-center">
                     <div className="flex flex-col items-center space-y-3">
                       <div className="w-16 h-16 bg-muted rounded-lg flex items-center justify-center">
                         <Upload className="h-8 w-8 text-muted-foreground" />
@@ -137,10 +137,10 @@ const CreateCharacter = () => {
                       <p className="text-muted-foreground text-xs font-medium text-center">Upload your photo</p>
                     </div>
                   </div>
-                  <div className="w-16 h-16 bg-black rounded-full flex items-center justify-center relative">
-                    <Heart className="h-8 w-8 text-primary fill-primary" />
-                    <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-primary rounded-full flex items-center justify-center">
-                      <RotateCcw className="h-3 w-3 text-white" />
+                  <div className="w-24 h-24 bg-black rounded-full flex items-center justify-center relative">
+                    <Heart className="h-12 w-12 text-primary fill-primary" />
+                    <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+                      <RotateCcw className="h-4 w-4 text-white" />
                     </div>
                   </div>
                 </div>
@@ -169,12 +169,12 @@ const CreateCharacter = () => {
                   <span className="bg-cyan-400 text-black px-2 py-1 rounded-full text-xs font-bold">New</span>
                   <ChevronUp className="h-4 w-4 text-primary ml-auto" />
                 </div>
-                <div className="relative bg-secondary/30 rounded-lg p-8 text-center border-2 border-dashed border-border">
-                  <div className="flex flex-col items-center space-y-3">
-                    <div className="w-16 h-16 bg-muted rounded-lg flex items-center justify-center">
-                      <Upload className="h-8 w-8 text-muted-foreground" />
+                <div className="relative bg-secondary/30 rounded-lg border-2 border-dashed border-border aspect-[16/9] flex items-center justify-center">
+                  <div className="flex flex-col items-center space-y-4">
+                    <div className="w-20 h-20 bg-muted rounded-lg flex items-center justify-center">
+                      <Upload className="h-10 w-10 text-muted-foreground" />
                     </div>
-                    <p className="text-muted-foreground text-base font-medium">Upload Scene Image</p>
+                    <p className="text-muted-foreground text-xs font-medium">Upload Scene Image</p>
                   </div>
                 </div>
                 <div className="bg-secondary/30 rounded-lg p-4">
