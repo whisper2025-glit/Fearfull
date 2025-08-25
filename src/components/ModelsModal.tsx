@@ -239,14 +239,14 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] bg-background/95 backdrop-blur-sm border-border p-0">
-        <DialogHeader className="p-6 pb-0">
+      <DialogContent className="max-w-2xl max-h-[90vh] bg-[#1a1b2e] border-[#2d2e3e] p-0 sm:rounded-2xl">
+        <DialogHeader className="p-4 pb-0">
           <div className="flex items-center justify-between">
-            <DialogTitle className="text-lg font-bold text-primary" style={{ fontSize: '18px' }}>
+            <DialogTitle className="text-lg font-bold text-[#e74c8c]" style={{ fontSize: '18px' }}>
               Change Model
             </DialogTitle>
-            <Button variant="ghost" size="icon" onClick={() => onOpenChange(false)}>
-              <X className="h-4 w-4" />
+            <Button variant="ghost" size="icon" onClick={() => onOpenChange(false)} className="text-white hover:bg-[#2d2e3e]">
+              <X className="h-5 w-5" />
             </Button>
           </div>
         </DialogHeader>
