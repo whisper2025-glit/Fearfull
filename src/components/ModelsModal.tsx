@@ -36,33 +36,9 @@ interface ModelsModalProps {
   selectedModel?: Model;
 }
 
-const mockModels: Model[] = [
-  {
-    id: "mistral-main",
-    name: "mistralai/mistral-small-3.2-24b-instruct:free",
-    author: "Mistral AI",
-    description: "Main Mistral model from OpenRouter - Fast, efficient, and reliable",
-    price: 0,
-    responseTime: "850 ms",
-    memory: "24B",
-    rating: 8.5,
-    tags: ["Main", "Free"],
-    isActive: true,
-    isPremium: false,
-    isMain: true,
-    tier: 'standard'
-  }
-];
+const mockModels: Model[] = [];
 
-const mockFolders: ModelFolder[] = [
-  { id: "mistral", name: "Mistral", modelCount: 1 },
-  { id: "1", name: "JuicyLLM", modelCount: 15 },
-  { id: "2", name: "Community", modelCount: 234 },
-  { id: "3", name: "Official", modelCount: 12 },
-  { id: "4", name: "NSFW", modelCount: 89 },
-  { id: "5", name: "SFW", modelCount: 156 },
-  { id: "6", name: "Roleplay", modelCount: 67 },
-];
+const mockFolders: ModelFolder[] = [];
 
 export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }: ModelsModalProps) {
   const [activeTab, setActiveTab] = useState<'standard' | 'pro' | 'max'>('standard');
