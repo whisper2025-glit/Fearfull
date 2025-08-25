@@ -251,12 +251,16 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
           </div>
         </DialogHeader>
 
-        <div className="px-6">
+        <div className="px-4">
           {/* Tier Tabs */}
-          <div className="flex gap-1 mb-4">
+          <div className="flex gap-2 mb-6">
             <Button
               variant={activeTab === 'standard' ? 'default' : 'ghost'}
-              className={`flex-1 text-xs ${activeTab === 'standard' ? 'bg-primary text-primary-foreground' : ''}`}
+              className={`flex-1 rounded-2xl text-xs font-medium py-3 ${
+                activeTab === 'standard'
+                  ? 'bg-gradient-to-r from-[#e74c8c] to-[#c44f93] text-white shadow-lg'
+                  : 'bg-[#2d2e3e] text-gray-300 hover:bg-[#34354a]'
+              }`}
               style={{ fontSize: '12px' }}
               onClick={() => setActiveTab('standard')}
             >
@@ -264,7 +268,11 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
             </Button>
             <Button
               variant={activeTab === 'pro' ? 'default' : 'ghost'}
-              className="flex-1 text-xs"
+              className={`flex-1 rounded-2xl text-xs font-medium py-3 ${
+                activeTab === 'pro'
+                  ? 'bg-gradient-to-r from-[#e74c8c] to-[#c44f93] text-white shadow-lg'
+                  : 'bg-[#2d2e3e] text-gray-300 hover:bg-[#34354a]'
+              }`}
               style={{ fontSize: '12px' }}
               onClick={() => setActiveTab('pro')}
             >
@@ -272,7 +280,11 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
             </Button>
             <Button
               variant={activeTab === 'max' ? 'default' : 'ghost'}
-              className="flex-1 text-xs"
+              className={`flex-1 rounded-2xl text-xs font-medium py-3 ${
+                activeTab === 'max'
+                  ? 'bg-gradient-to-r from-[#e74c8c] to-[#c44f93] text-white shadow-lg'
+                  : 'bg-[#2d2e3e] text-gray-300 hover:bg-[#34354a]'
+              }`}
               style={{ fontSize: '12px' }}
               onClick={() => setActiveTab('max')}
             >
