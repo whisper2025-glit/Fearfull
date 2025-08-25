@@ -196,7 +196,7 @@ const Profile = () => {
           {/* Profile Info */}
           <div className="px-4 pb-4">
             <div className="flex items-end gap-4 -mt-12">
-              <Avatar className="w-16 h-16 border-4 border-background">
+              <Avatar className="w-20 h-20 border-4 border-background">
                 <AvatarImage src={userProfile.avatar} />
                 <AvatarFallback>{userProfile.name.charAt(0)}</AvatarFallback>
               </Avatar>
