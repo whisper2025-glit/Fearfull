@@ -51,11 +51,91 @@ const mockModels: Model[] = [
     isPremium: false,
     isMain: true,
     tier: 'standard'
+  },
+  {
+    id: "llama-model",
+    name: "meta-llama/llama-3.3-70b-instruct:free",
+    author: "Meta",
+    description: "Powerful Llama model from Meta - Advanced reasoning and instruction following",
+    price: 0,
+    responseTime: "920 ms",
+    memory: "70B",
+    rating: 9.1,
+    tags: ["Free"],
+    isActive: false,
+    isPremium: false,
+    isMain: false,
+    tier: 'standard'
+  },
+  {
+    id: "glm-model",
+    name: "z-ai/glm-4.5-air:free",
+    author: "Z-AI",
+    description: "GLM 4.5 Air model - Lightweight yet powerful for various tasks",
+    price: 0,
+    responseTime: "780 ms",
+    memory: "4.5B",
+    rating: 7.8,
+    tags: ["Free"],
+    isActive: false,
+    isPremium: false,
+    isMain: false,
+    tier: 'standard'
+  },
+  {
+    id: "openai-model",
+    name: "openai/gpt-oss-20b:free",
+    author: "OpenAI",
+    description: "OpenAI GPT OSS model - Open source variant with strong performance",
+    price: 0,
+    responseTime: "890 ms",
+    memory: "20B",
+    rating: 8.7,
+    tags: ["Free"],
+    isActive: false,
+    isPremium: false,
+    isMain: false,
+    tier: 'standard'
+  },
+  {
+    id: "deepseek-model",
+    name: "deepseek/deepseek-chat-v3-0324:free",
+    author: "DeepSeek",
+    description: "DeepSeek Chat v3 - Advanced conversational AI with strong reasoning",
+    price: 0,
+    responseTime: "800 ms",
+    memory: "Chat-V3",
+    rating: 8.3,
+    tags: ["Free"],
+    isActive: false,
+    isPremium: false,
+    isMain: false,
+    tier: 'standard'
+  },
+  {
+    id: "qwen-model",
+    name: "qwen/qwen3-4b:free",
+    author: "Qwen",
+    description: "Qwen 3 4B model - Efficient and capable multilingual model",
+    price: 0,
+    responseTime: "720 ms",
+    memory: "4B",
+    rating: 7.9,
+    tags: ["Free"],
+    isActive: false,
+    isPremium: false,
+    isMain: false,
+    tier: 'standard'
   }
 ];
 
 const mockFolders: ModelFolder[] = [
-  { id: "mistral", name: "Mistral", modelCount: 1 }
+  { id: "mistral", name: "Mistral", modelCount: 1 },
+  { id: "meta", name: "Meta", modelCount: 1 },
+  { id: "z-ai", name: "GLM", modelCount: 1 },
+  { id: "openai", name: "OpenAI", modelCount: 1 },
+  { id: "deepseek", name: "DeepSeek", modelCount: 1 },
+  { id: "qwen", name: "Qwen", modelCount: 1 }
 ];
 
 export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }: ModelsModalProps) {
