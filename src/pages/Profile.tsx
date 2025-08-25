@@ -103,8 +103,8 @@ const Profile = () => {
         {/* Banner and Profile Section */}
         <div className="relative">
           {/* Banner */}
-          <div 
-            className="h-32 bg-gradient-to-br from-blue-600 to-purple-700 bg-cover bg-center"
+          <div
+            className="h-48 bg-gradient-to-br from-blue-600 to-purple-700 bg-cover bg-center"
             style={userProfile.banner ? { backgroundImage: `url(${userProfile.banner})` } : {}}
           />
           
