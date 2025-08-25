@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Home, MoreHorizontal, Lightbulb, Clock, Users, Bot, ChevronDown } from "lucide-react";
+import { ArrowLeft, Home, MoreHorizontal, Lightbulb, Clock, Users, Bot, ChevronDown, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
-import { ModelsModal } from "@/components/ModelsModal";
+import { ModelsModal, Model } from "@/components/ModelsModal";
+import { openRouterAPI, ChatMessage } from "@/lib/openrouter";
+import { toast } from "sonner";
 
 interface Message {
   id: number;
