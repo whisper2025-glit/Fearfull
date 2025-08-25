@@ -244,9 +244,22 @@ Aizawa: "introduce yourself and take`,
   const allMessages = [...currentCharacter.messages, ...messages];
 
   return (
-    <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
+    <div
+      className="min-h-screen bg-background text-foreground overflow-x-hidden relative"
+      style={{
+        backgroundImage: sceneBackground ? `url(${sceneBackground})` : undefined,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
+      }}
+    >
+      {/* Background overlay for better readability */}
+      {sceneBackground && (
+        <div className="absolute inset-0 bg-black/40 z-0" />
+      )}
+
       {/* Header */}
-      <header className="flex items-center justify-between p-4 border-b border-border">
+      <header className="relative z-10 flex items-center justify-between p-4 border-b border-border bg-background/80 backdrop-blur-sm">
         <div className="flex items-center gap-3">
           <Button 
             variant="ghost" 
