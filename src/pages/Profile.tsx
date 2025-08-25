@@ -172,6 +172,9 @@ const Profile = () => {
             className="h-64 bg-gradient-to-br from-blue-600 to-purple-700 bg-cover bg-center relative"
             style={userProfile.banner ? { backgroundImage: `url(${userProfile.banner})` } : {}}
           >
+            {/* Dark glass overlay */}
+            <div className="absolute inset-0 bg-black/40"></div>
+
             {/* Back button */}
             <div className="absolute top-4 left-4">
               <Button
