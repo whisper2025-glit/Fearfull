@@ -189,13 +189,13 @@ const Profile = () => {
         <div className="relative">
           {/* Banner */}
           <div
-            className="h-80 bg-gradient-to-br from-blue-600 to-purple-700 bg-cover bg-center"
+            className="h-64 bg-gradient-to-br from-blue-600 to-purple-700 bg-cover bg-center"
             style={userProfile.banner ? { backgroundImage: `url(${userProfile.banner})` } : {}}
           />
 
           {/* Profile Info */}
           <div className="px-4 pb-4">
-            <div className="flex items-end gap-4 -mt-16">
+            <div className="flex items-end gap-4 -mt-12">
               <Avatar className="w-16 h-16 border-4 border-background">
                 <AvatarImage src={userProfile.avatar} />
                 <AvatarFallback>{userProfile.name.charAt(0)}</AvatarFallback>
