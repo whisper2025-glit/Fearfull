@@ -321,7 +321,8 @@ Aizawa: "introduce yourself and take`,
               onClick={() => setIsModelsModalOpen(true)}
             >
               <Bot className="h-3 w-3" />
-              Models
+              {selectedModel ? selectedModel.author : 'Models'}
+              {selectedModel && <div className="w-1.5 h-1.5 bg-green-500 rounded-full" />}
             </Button>
           </div>
         </div>
