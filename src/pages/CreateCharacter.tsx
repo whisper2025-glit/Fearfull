@@ -128,11 +128,11 @@ const CreateCharacter = () => {
               {/* Character Photo */}
               <div className="space-y-4">
                 <h3 className="text-primary text-sm font-medium">Character Photo</h3>
-                <div className="flex items-start gap-4">
-                  <div className="w-32 h-48 relative bg-secondary/30 rounded-lg border-2 border-dashed border-border flex items-center justify-center">
+                <div className="flex items-center gap-4">
+                  <div className="w-40 h-60 relative bg-secondary/30 rounded-lg border-2 border-dashed border-border flex items-center justify-center">
                     <div className="flex flex-col items-center space-y-3">
-                      <div className="w-12 h-12 bg-muted rounded-lg flex items-center justify-center">
-                        <Upload className="h-6 w-6 text-muted-foreground" />
+                      <div className="w-16 h-16 bg-muted rounded-lg flex items-center justify-center">
+                        <Upload className="h-8 w-8 text-muted-foreground" />
                       </div>
                       <p className="text-muted-foreground text-xs font-medium text-center">Upload your photo</p>
                     </div>
