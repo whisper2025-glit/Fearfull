@@ -9,12 +9,11 @@ import {
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
-import { 
-  Settings, 
-  Moon, 
-  ChevronRight, 
+import {
+  Settings,
+  Moon,
+  ChevronRight,
   LogOut,
-  MessageCircle,
   Instagram,
   Mail,
   Twitter
