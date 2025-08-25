@@ -265,7 +265,7 @@ const CreateCharacter = () => {
                 </Label>
                 <div className="relative">
                   <Select>
-                    <SelectTrigger className="text-sm bg-secondary/50 border-border rounded-lg h-12">
+                    <SelectTrigger className="text-xs bg-secondary/50 border-border rounded-lg h-12">
                       <SelectValue placeholder="Select tags..." />
                     </SelectTrigger>
                     <SelectContent>
@@ -289,13 +289,13 @@ const CreateCharacter = () => {
                   value={formData.gender}
                   onValueChange={(value) => handleInputChange('gender', value)}
                 >
-                  <SelectTrigger className="text-sm bg-secondary/50 border-border rounded-lg h-12">
+                  <SelectTrigger className="text-xs bg-secondary/50 border-border rounded-lg h-12">
                     <SelectValue placeholder="Choose gender" />
                   </SelectTrigger>
                   <SelectContent className="bg-secondary border-border">
-                    <SelectItem value="male" className="text-sm py-3">Male</SelectItem>
-                    <SelectItem value="female" className="text-sm py-3">Female</SelectItem>
-                    <SelectItem value="non-binary" className="text-sm py-3">Non-binary</SelectItem>
+                    <SelectItem value="male" className="text-xs py-3">Male</SelectItem>
+                    <SelectItem value="female" className="text-xs py-3">Female</SelectItem>
+                    <SelectItem value="non-binary" className="text-xs py-3">Non-binary</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
