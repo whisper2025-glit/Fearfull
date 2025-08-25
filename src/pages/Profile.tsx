@@ -166,9 +166,17 @@ const Profile = () => {
                         <Button
                           size="icon"
                           className="absolute bottom-0 right-0 w-6 h-6 bg-gray-700 hover:bg-gray-600"
+                          onClick={() => document.getElementById('avatar-upload')?.click()}
                         >
                           <Camera className="h-3 w-3" />
                         </Button>
+                        <input
+                          id="avatar-upload"
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={handleAvatarUpload}
+                        />
                       </div>
                     </div>
 
