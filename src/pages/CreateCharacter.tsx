@@ -128,34 +128,34 @@ const CreateCharacter = () => {
               {/* Character Photo */}
               <div className="space-y-4">
                 <h3 className="text-primary text-sm font-medium">Character Photo</h3>
-                <div className="relative bg-secondary/30 rounded-lg p-8 text-center border-2 border-dashed border-border">
-                  <div className="flex flex-col items-center space-y-3">
-                    <div className="w-16 h-16 bg-muted rounded-lg flex items-center justify-center">
-                      <Upload className="h-8 w-8 text-muted-foreground" />
+                <div className="flex items-center gap-4">
+                  <div className="flex-1 relative bg-secondary/30 rounded-lg p-8 text-center border-2 border-dashed border-border">
+                    <div className="flex flex-col items-center space-y-3">
+                      <div className="w-16 h-16 bg-muted rounded-lg flex items-center justify-center">
+                        <Upload className="h-8 w-8 text-muted-foreground" />
+                      </div>
+                      <p className="text-muted-foreground text-xs font-medium">Upload your photo</p>
                     </div>
-                    <p className="text-muted-foreground text-base font-medium">Upload your photo</p>
                   </div>
-                </div>
-                <div className="bg-secondary/30 rounded-lg p-4 space-y-2">
-                  <p className="text-muted-foreground text-xs leading-relaxed">
-                    Avatars can be in various formats including <span className="text-green-400">webp</span>, 
-                    <span className="text-green-400"> png, gif, and jpeg</span>, with <span className="text-green-400">webp</span> working 
-                    best (gif can be converted to webp and then uploaded). It is recommended to upload a 
-                    <span className="text-green-400"> 9:16</span> or <span className="text-green-400">3:4</span> image from 
-                    which a <span className="text-green-400">1:1 (512x512)</span> avatar is captured. The image should be less than 5MB.
-                  </p>
-                  <p className="text-red-400 text-xs leading-relaxed">
-                    Please do not upload images containing underage individuals, as this may result in your OC 
-                    being banned or restricted from display.
-                  </p>
-                </div>
-                <div className="flex justify-center">
                   <div className="w-16 h-16 bg-black rounded-full flex items-center justify-center relative">
                     <Heart className="h-8 w-8 text-primary fill-primary" />
                     <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-primary rounded-full flex items-center justify-center">
                       <RotateCcw className="h-3 w-3 text-white" />
                     </div>
                   </div>
+                </div>
+                <div className="bg-secondary/30 rounded-lg p-4 space-y-2">
+                  <p className="text-muted-foreground text-xs leading-relaxed">
+                    Avatars can be in various formats including <span className="text-green-400">webp</span>,
+                    <span className="text-green-400"> png, gif, and jpeg</span>, with <span className="text-green-400">webp</span> working
+                    best (gif can be converted to webp and then uploaded). It is recommended to upload a
+                    <span className="text-green-400"> 9:16</span> or <span className="text-green-400">3:4</span> image from
+                    which a <span className="text-green-400">1:1 (512x512)</span> avatar is captured. The image should be less than 5MB.
+                  </p>
+                  <p className="text-red-400 text-xs leading-relaxed">
+                    Please do not upload images containing underage individuals, as this may result in your OC
+                    being banned or restricted from display.
+                  </p>
                 </div>
                 <Button className="w-full bg-primary hover:bg-primary/90 text-white h-12 rounded-full font-medium">
                   Change
