@@ -175,13 +175,14 @@ Aizawa: "introduce yourself and take`,
       };
 
       setMessages(prev => [...prev, botMessage]);
+      toast.success(`Response received from ${modelToUse.author}`);
     } catch (error) {
       console.error('Error sending message:', error);
-      toast.error('Failed to get response from AI model. Please try again.');
+      toast.error(`Failed to get response from ${modelToUse.author}. Please check your API key and try again.`);
 
       const errorMessage: Message = {
         id: Date.now() + 1,
-        content: "I'm sorry, I'm having trouble responding right now. Please try again.",
+        content: "I'm sorry, I'm having trouble responding right now. Please check your API connection and try again.",
         isBot: true,
         timestamp: "now",
         type: "regular"
