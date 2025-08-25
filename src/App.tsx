@@ -23,7 +23,11 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/chat/:characterId" element={<Chat />} />
           <Route path="/create" element={<CreateCharacter />} />
-          <Route path="/profile" element={<Profile />} />
+          <Route path="/profile" element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          } />
           <Route path="/auth" element={<AuthPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
