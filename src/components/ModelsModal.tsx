@@ -196,8 +196,8 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
 
         <div className="flex items-center justify-between mb-2">
           <p className="text-[#e74c8c] text-xs" style={{ fontSize: '11px' }}>{model.author}</p>
-          <div className="flex gap-1">
-            {model.tags.slice(0, 1).map((tag, index) => (
+          <div className="flex gap-1 flex-wrap">
+            {model.tags.slice(0, 2).map((tag, index) => (
               <Badge
                 key={index}
                 variant="secondary"
@@ -206,6 +206,18 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
                   tag.includes('%OFF') ? 'bg-[#ffa500] text-black' :
                   tag === 'Main' ? 'bg-[#ffa500] text-black font-bold' :
                   tag === 'Free' ? 'bg-green-600 text-white' :
+                  tag === 'Roleplay' ? 'bg-purple-600 text-white font-medium' :
+                  tag === 'Creative' ? 'bg-blue-600 text-white' :
+                  tag === 'Narrative' ? 'bg-indigo-600 text-white' :
+                  tag === 'Character' ? 'bg-pink-600 text-white' :
+                  tag === 'Fast' ? 'bg-cyan-600 text-white' :
+                  tag === 'Interactive' ? 'bg-teal-600 text-white' :
+                  tag === 'Dialogue' ? 'bg-emerald-600 text-white' :
+                  tag === 'Consistent' ? 'bg-lime-600 text-white' :
+                  tag === 'Emotional' ? 'bg-rose-600 text-white' :
+                  tag === 'Complex' ? 'bg-violet-600 text-white' :
+                  tag === 'Multilingual' ? 'bg-amber-600 text-white' :
+                  tag === 'Cultural' ? 'bg-orange-600 text-white' :
                   'bg-gray-600 text-white'
                 }`}
                 style={{ fontSize: '9px' }}
