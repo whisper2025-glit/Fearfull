@@ -1,23 +1,61 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Home, MoreHorizontal, Lightbulb, Clock, Users, User } from "lucide-react";
+import { ArrowLeft, Home, MoreHorizontal, Lightbulb, Clock, Users, User, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
+
+interface Message {
+  id: number;
+  content: string;
+  isBot: boolean;
+  timestamp: string;
+  type?: 'intro' | 'scenario' | 'regular';
+  characterName?: string;
+  author?: string;
+}
+
+interface Character {
+  name: string;
+  author: string;
+  intro: string;
+  scenario: string;
+  avatar: string;
+  messages: Message[];
+}
 
 const Chat = () => {
   const { characterId } = useParams();
   const navigate = useNavigate();
   const [message, setMessage] = useState("");
-  const [messages, setMessages] = useState<Array<{id: number; content: string; isBot: boolean; timestamp: string}>>([]);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [isIntroExpanded, setIsIntroExpanded] = useState(true);
 
   // Mock character data - in a real app this would come from an API
-  const characters = {
+  const characters: Record<string, Character> = {
     "1": {
-      name: "Class 1-A",
+      name: "You Are Like Your Father - Angela",
+      author: "@Just a Random Guy",
+      intro: "Since your parents divorced, your mom Angela has never treated you the same. Cold, bitter, and always picking fights, like she blames you for everything your father did.",
       scenario: "You are the new student from Shiketsu high! And today is your first day! (Any gender and quirk!)",
       avatar: "/lovable-uploads/3eab3055-d06f-48a5-9790-123de7769f97.png",
       messages: [
+        {
+          id: -2,
+          content: "Since your parents divorced, your mom Angela has never treated you the same. Cold, bitter, and always picking fights, like she blames you for everything your father did.",
+          isBot: true,
+          timestamp: "now",
+          type: "intro",
+          characterName: "You Are Like Your Father - Angela",
+          author: "@Just a Random Guy"
+        },
+        {
+          id: -1,
+          content: "You are the new student from Shiketsu high! And today is your first day! (Any gender and quirk!)",
+          isBot: true,
+          timestamp: "now",
+          type: "scenario"
+        },
         {
           id: 1,
           content: `The class looked at you as you entered
@@ -36,7 +74,8 @@ Shoto: he looked at you curious
 
 Aizawa: "introduce yourself and take`,
           isBot: true,
-          timestamp: "now"
+          timestamp: "now",
+          type: "regular"
         }
       ]
     },
@@ -47,25 +86,27 @@ Aizawa: "introduce yourself and take`,
 
   const handleSendMessage = () => {
     if (!message.trim()) return;
-    
+
     // Add user message
-    const userMessage = {
+    const userMessage: Message = {
       id: Date.now(),
       content: message,
       isBot: false,
-      timestamp: "now"
+      timestamp: "now",
+      type: "regular"
     };
-    
+
     setMessages(prev => [...prev, userMessage]);
     setMessage("");
-    
+
     // Simulate bot response
     setTimeout(() => {
-      const botMessage = {
+      const botMessage: Message = {
         id: Date.now() + 1,
         content: "Thanks for your message! This is a simulated response from the AI character.",
         isBot: true,
-        timestamp: "now"
+        timestamp: "now",
+        type: "regular"
       };
       setMessages(prev => [...prev, botMessage]);
     }, 1000);
@@ -93,7 +134,7 @@ Aizawa: "introduce yourself and take`,
           >
             <ArrowLeft className="h-4 w-4" />
           </Button>
-          <h1 className="text-sm font-semibold">{currentCharacter.name}</h1>
+          <h1 className="text-sm font-semibold">Angela</h1>
         </div>
         
         <div className="flex items-center gap-2">
@@ -117,55 +158,98 @@ Aizawa: "introduce yourself and take`,
 
       {/* Chat Content */}
       <div className="flex-1 flex flex-col max-w-full mx-auto h-[calc(100vh-4rem)]">
-        {/* Scenario Card - In chat flow but with original styling */}
-        <div className="p-4">
-          <Card className="p-3 bg-card/50 border-primary/20">
-            <div className="flex items-start gap-2">
-              <span className="text-primary font-medium text-sm">Scenario:</span>
-              <p className="text-muted-foreground italic text-sm">{currentCharacter.scenario}</p>
-            </div>
-          </Card>
-        </div>
-
         {/* Messages */}
-        <div className="flex-1 px-4 pb-4 overflow-y-auto">
+        <div className="flex-1 px-4 py-4 overflow-y-auto">
           {allMessages.map((msg) => (
             <div key={msg.id} className="mb-4">
-              <Card className={`p-3 ${msg.isBot ? 'bg-card/30' : 'bg-primary/10 ml-8'}`}>
-                <div className="flex items-start gap-3">
-                  {msg.isBot && (
-                    <img 
-                      src={currentCharacter.avatar} 
-                      alt={currentCharacter.name}
-                      className="w-8 h-8 rounded-full object-cover flex-shrink-0"
-                    />
-                  )}
-                  <div className="flex-1">
-                    <p className="text-foreground whitespace-pre-wrap chat-text">{msg.content}</p>
-                  </div>
+              {msg.type === 'intro' ? (
+                <div className="relative pt-8">
+                  <Card className="relative p-4 pt-8 bg-card/60 border-accent/30 shadow-md overflow-visible">
+                    {/* Character Avatar - positioned to overlap card border */}
+                    <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 z-20">
+                      <img
+                        src={currentCharacter.avatar}
+                        alt={currentCharacter.name}
+                        className="w-16 h-16 rounded-full object-cover border-2 border-background/20"
+                      />
+                    </div>
+
+                    {/* Background overlay for better text readability */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-background/40 to-background/60" />
+
+                    <div className="relative z-10 space-y-3">
+                      {/* Character Title */}
+                      <div className="text-center">
+                        <h2 className="text-lg font-bold text-foreground">{msg.characterName}</h2>
+                        <p className="text-sm text-primary/80 mt-1">{msg.author}</p>
+                      </div>
+
+                      {/* Intro Section */}
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-center">
+                          <span className="text-accent font-semibold text-sm bg-accent/10 px-3 py-1 rounded-full">Intro</span>
+                        </div>
+                        <div className={`transition-all duration-300 ${isIntroExpanded ? 'max-h-none' : 'max-h-16 overflow-hidden'}`}>
+                          <p className="text-foreground text-sm leading-relaxed text-center">{msg.content}</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Collapse/Expand Arrow */}
+                    <button
+                      onClick={() => setIsIntroExpanded(!isIntroExpanded)}
+                      className="absolute bottom-2 right-2 p-1 rounded-full bg-background/20 hover:bg-background/40 transition-colors"
+                    >
+                      <ChevronDown
+                        className={`h-4 w-4 text-foreground/70 transition-transform duration-300 ${isIntroExpanded ? 'rotate-180' : ''}`}
+                      />
+                    </button>
+                  </Card>
                 </div>
-              </Card>
+              ) : msg.type === 'scenario' ? (
+                <Card className="p-3 bg-card/50 border-primary/20">
+                  <div className="flex items-start gap-2">
+                    <span className="text-primary font-medium text-sm">Scenario:</span>
+                    <p className="text-muted-foreground italic text-sm">{msg.content}</p>
+                  </div>
+                </Card>
+              ) : (
+                <Card className={`p-3 ${msg.isBot ? 'bg-card/30' : 'bg-primary/10 ml-8'}`}>
+                  <div className="flex items-start gap-3">
+                    {msg.isBot && (
+                      <img
+                        src={currentCharacter.avatar}
+                        alt={currentCharacter.name}
+                        className="w-8 h-8 rounded-full object-cover flex-shrink-0"
+                      />
+                    )}
+                    <div className="flex-1">
+                      <p className="text-foreground whitespace-pre-wrap chat-text">{msg.content}</p>
+                    </div>
+                  </div>
+                </Card>
+              )}
             </div>
           ))}
         </div>
 
         {/* Action Buttons */}
-        <div className="px-4 pb-2">
-          <div className="flex gap-2 mb-3 flex-wrap">
-            <Button variant="outline" size="sm" className="flex items-center gap-2 text-xs">
+        <div className="pb-2">
+          <div className="flex gap-2 mb-3 overflow-x-auto px-4 scrollbar-hide">
+            <Button variant="outline" size="sm" className="flex items-center gap-2 text-xs whitespace-nowrap flex-shrink-0">
               <Lightbulb className="h-3 w-3" />
               Suggest
             </Button>
-            <Button variant="outline" size="sm" className="flex items-center gap-2 text-xs">
+            <Button variant="outline" size="sm" className="flex items-center gap-2 text-xs whitespace-nowrap flex-shrink-0">
               <Clock className="h-3 w-3" />
               Memory
               <div className="w-1.5 h-1.5 bg-pink-500 rounded-full" />
             </Button>
-            <Button variant="outline" size="sm" className="flex items-center gap-2 text-xs">
+            <Button variant="outline" size="sm" className="flex items-center gap-2 text-xs whitespace-nowrap flex-shrink-0">
               <Users className="h-3 w-3" />
               Persona
             </Button>
-            <Button variant="outline" size="sm" className="flex items-center gap-2 text-xs">
+            <Button variant="outline" size="sm" className="flex items-center gap-2 text-xs whitespace-nowrap flex-shrink-0">
               <User className="h-3 w-3" />
               Profile
             </Button>
