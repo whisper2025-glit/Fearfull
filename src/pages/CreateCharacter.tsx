@@ -399,10 +399,10 @@ const CreateCharacter = () => {
 
               {/* Scenario */}
               <div className="space-y-4">
-                <Label className="text-primary text-base font-medium flex items-center gap-2">
+                <Label className="text-primary text-sm font-medium flex items-center gap-2">
                   Scenario <Info className="h-4 w-4 text-muted-foreground" />
                 </Label>
-                <p className="text-muted-foreground text-sm leading-relaxed">
+                <p className="text-muted-foreground text-xs leading-relaxed">
                   If the switch is turned on in the chat settings, this content will be included as long-term memory. 
                   <a href="#" className="text-blue-400 underline"> View the guide book.</a>
                 </p>
@@ -410,7 +410,7 @@ const CreateCharacter = () => {
                   placeholder="Describe the environment the Character is in."
                   value={formData.scenario}
                   onChange={(e) => handleInputChange('scenario', e.target.value)}
-                  className="min-h-[120px] text-sm bg-secondary/50 border-border rounded-lg resize-none placeholder:text-muted-foreground/70"
+                  className="min-h-[120px] text-xs bg-secondary/50 border-border rounded-lg resize-none placeholder:text-muted-foreground/70"
                 />
               </div>
             </>
