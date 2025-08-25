@@ -25,12 +25,7 @@ const Profile = () => {
   const [sortBy, setSortBy] = useState('newest');
   const [editModalOpen, setEditModalOpen] = useState(false);
 
-  // Redirect to sign-in if not authenticated
-  useEffect(() => {
-    if (!isSignedIn) {
-      navigate('/auth');
-    }
-  }, [isSignedIn, navigate]);
+  // ProtectedRoute handles authentication, so we can assume user is signed in
 
   // User profile state with Clerk data
   const [userProfile, setUserProfile] = useState({
