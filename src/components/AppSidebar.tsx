@@ -104,7 +104,7 @@ export function AppSidebar() {
 
         {/* Bottom Authentication Section */}
         <div className="mt-auto space-y-3">
-          {isAuthenticated ? (
+          {isSignedIn ? (
             <>
               {/* Subscribe Button for authenticated users */}
               <Button
@@ -123,12 +123,16 @@ export function AppSidebar() {
                     className="flex items-center gap-3 p-2 rounded-xl bg-sidebar-accent hover:bg-sidebar-accent/80 w-full justify-start h-auto"
                   >
                     <Avatar className="w-8 h-8 flex-shrink-0">
-                      <AvatarImage src="/lovable-uploads/3eab3055-d06f-48a5-9790-123de7769f97.png" />
-                      <AvatarFallback className="bg-gradient-to-br from-blue-400 to-purple-500 text-white text-sm">L</AvatarFallback>
+                      <AvatarImage src={user?.imageUrl} />
+                      <AvatarFallback className="bg-gradient-to-br from-blue-400 to-purple-500 text-white text-sm">
+                        {user?.firstName?.charAt(0) || user?.emailAddresses[0]?.emailAddress?.charAt(0) || "U"}
+                      </AvatarFallback>
                     </Avatar>
                     {!collapsed && (
                       <div className="flex-1 text-left">
-                        <p className="text-sm font-medium">Leon</p>
+                        <p className="text-sm font-medium">
+                          {user?.firstName || user?.emailAddresses[0]?.emailAddress || "User"}
+                        </p>
                         <p className="text-xs text-muted-foreground">Free Plan</p>
                       </div>
                     )}
@@ -150,7 +154,7 @@ export function AppSidebar() {
                   <DropdownMenuItem className="cursor-pointer">
                     Join Discord
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={handleAuthAction} className="cursor-pointer text-red-600">
+                  <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer text-red-600">
                     Log out
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -158,13 +162,14 @@ export function AppSidebar() {
             </>
           ) : (
             /* Log in / Sign up Button for unauthenticated users */
-            <Button
-              onClick={handleAuthAction}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-full h-12"
-              size="default"
-            >
-              {!collapsed ? "Log in / Sign up" : "Login"}
-            </Button>
+            <SignInButton mode="modal">
+              <Button
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-full h-12"
+                size="default"
+              >
+                {!collapsed ? "Log in / Sign up" : "Login"}
+              </Button>
+            </SignInButton>
           )}
         </div>
       </SidebarContent>
