@@ -95,7 +95,7 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
       key={model.id}
       className={`border transition-all cursor-pointer rounded-xl overflow-hidden ${
         selectedModel?.id === model.id ? 'border-[#e74c8c]' : 'border-[#2d2e3e]'
-      } ${model.isActive ? 'border-[#e74c8c] bg-gradient-to-br from-[#e74c8c]/10 to-[#c44f93]/5' : 'bg-[#232438]'} hover:border-[#e74c8c]/60`}
+      } ${model.isActive ? 'border-[#e74c8c] bg-gradient-to-br from-[#e74c8c]/10 to-[#c44f93]/5' : 'bg-[#232438]'} ${model.isMain ? 'ring-2 ring-[#ffa500] border-[#ffa500]' : ''} hover:border-[#e74c8c]/60`}
       onClick={() => handleModelSelect(model)}
     >
       <CardContent className="p-3">
@@ -122,6 +122,8 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
                 className={`text-xs px-1.5 py-0 rounded ${
                   tag === 'NSFW' ? 'bg-[#e74c8c] text-white' :
                   tag.includes('%OFF') ? 'bg-[#ffa500] text-black' :
+                  tag === 'Main' ? 'bg-[#ffa500] text-black font-bold' :
+                  tag === 'Free' ? 'bg-green-600 text-white' :
                   'bg-gray-600 text-white'
                 }`}
                 style={{ fontSize: '9px' }}
