@@ -1,0 +1,462 @@
+import { useState } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Search, ChevronRight, Star, Circle, X, ChevronDown } from "lucide-react";
+
+interface Model {
+  id: string;
+  name: string;
+  author: string;
+  description: string;
+  price: number;
+  responseTime: string;
+  memory: string;
+  rating: number;
+  tags: string[];
+  isActive?: boolean;
+  isPremium?: boolean;
+  tier: 'standard' | 'pro' | 'max';
+}
+
+interface ModelFolder {
+  id: string;
+  name: string;
+  modelCount: number;
+}
+
+interface ModelsModalProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onModelSelect: (model: Model) => void;
+  selectedModel?: Model;
+}
+
+const mockModels: Model[] = [
+  {
+    id: "1",
+    name: "Passion Fruit - NSFW - 8K",
+    author: "@JuicyTeam",
+    description: "focuses on sensory immersion, character psychology, and...",
+    price: 2,
+    responseTime: "914 ms",
+    memory: "454M",
+    rating: 7.9,
+    tags: ["NSFW"],
+    isActive: true,
+    isPremium: true,
+    tier: 'standard'
+  },
+  {
+    id: "2",
+    name: "Citrus Rush - NSFW - 8K",
+    author: "@JuicyTeam",
+    description: "embraces provocative storytelling with dark, taboo themes, delivere...",
+    price: 2,
+    responseTime: "1.97 s",
+    memory: "43.9M",
+    rating: 7.3,
+    tags: ["NSFW"],
+    tier: 'standard'
+  },
+  {
+    id: "3",
+    name: "Mango Tango - NSFW - 8K",
+    author: "@JuicyTeam",
+    description: "thrives in versatility, adapting seamlessly across genres—from...",
+    price: 2,
+    responseTime: "1.02 s",
+    memory: "32.8M",
+    rating: 4.8,
+    tags: ["NSFW"],
+    tier: 'standard'
+  },
+  {
+    id: "4",
+    name: "JuicyLLM Passion Fruit - 8K",
+    author: "JuicyLLM",
+    description: "Smart, Flexible, Creative",
+    price: 2,
+    responseTime: "914 ms",
+    memory: "",
+    rating: 0,
+    tags: ["%OFF Premium"],
+    isPremium: true,
+    tier: 'standard'
+  },
+  {
+    id: "5",
+    name: "JuicyLLM Mango Tango - 8K",
+    author: "JuicyLLM",
+    description: "Bold, Detailed, Lively",
+    price: 2,
+    responseTime: "1.03 s",
+    memory: "",
+    rating: 0,
+    tags: ["%OFF Premium"],
+    isPremium: true,
+    tier: 'standard'
+  },
+  {
+    id: "6",
+    name: "JuicyLLM Citrus Rush - 8K",
+    author: "JuicyLLM",
+    description: "Fresh, Vivid, Expressive",
+    price: 2,
+    responseTime: "1.97 s",
+    memory: "",
+    rating: 0,
+    tags: ["%OFF Premium"],
+    isPremium: true,
+    tier: 'standard'
+  },
+  {
+    id: "7",
+    name: "JuicyLLM Blueberry Blast - 8K",
+    author: "JuicyLLM",
+    description: "Innovative, Dynamic, Engaging",
+    price: 2,
+    responseTime: "1.58 s",
+    memory: "",
+    rating: 0,
+    tags: ["%OFF Premium"],
+    isPremium: true,
+    tier: 'standard'
+  }
+];
+
+const mockFolders: ModelFolder[] = [
+  { id: "1", name: "JuicyLLM", modelCount: 15 },
+  { id: "2", name: "Community", modelCount: 234 },
+  { id: "3", name: "Official", modelCount: 12 },
+  { id: "4", name: "NSFW", modelCount: 89 },
+  { id: "5", name: "SFW", modelCount: 156 },
+  { id: "6", name: "Roleplay", modelCount: 67 },
+];
+
+export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }: ModelsModalProps) {
+  const [activeTab, setActiveTab] = useState<'standard' | 'pro' | 'max'>('standard');
+  const [view, setView] = useState<'main' | 'allModels'>('main');
+  const [allModelsTab, setAllModelsTab] = useState<'all' | 'collections' | 'recently'>('all');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterType, setFilterType] = useState('active');
+  const [selectedFolder, setSelectedFolder] = useState<string | null>(null);
+  const [showDropdown, setShowDropdown] = useState(false);
+
+  const filteredModels = mockModels.filter(model => {
+    const matchesSearch = model.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         model.author.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesTier = model.tier === activeTab;
+    return matchesSearch && matchesTier;
+  });
+
+  const handleModelSelect = (model: Model) => {
+    onModelSelect(model);
+    onOpenChange(false);
+  };
+
+  const handleFolderSelect = (folder: ModelFolder) => {
+    setSelectedFolder(folder.id);
+    setView('main');
+  };
+
+  const renderModelCard = (model: Model) => (
+    <Card 
+      key={model.id} 
+      className={`bg-card/60 border-2 transition-all cursor-pointer hover:border-primary/40 ${
+        selectedModel?.id === model.id ? 'border-primary' : 'border-border/30'
+      } ${model.isActive ? 'border-primary/60' : ''}`}
+      onClick={() => handleModelSelect(model)}
+    >
+      <CardContent className="p-4">
+        <div className="flex items-start justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <Circle className={`h-3 w-3 ${model.isActive ? 'fill-primary text-primary' : 'text-muted-foreground'}`} />
+            <h3 className="text-sm font-semibold text-foreground" style={{ fontSize: '14px' }}>{model.name}</h3>
+          </div>
+          <Button variant="ghost" size="icon" className="h-6 w-6">
+            <Star className="h-3 w-3" />
+          </Button>
+        </div>
+        
+        <p className="text-primary/80 text-xs mb-2" style={{ fontSize: '12px' }}>{model.author}</p>
+        
+        <p className="text-muted-foreground text-xs mb-3 line-clamp-2" style={{ fontSize: '12px' }}>
+          {model.description}
+        </p>
+        
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex gap-2">
+            {model.tags.map((tag, index) => (
+              <Badge 
+                key={index} 
+                variant={tag === 'NSFW' ? 'destructive' : 'secondary'}
+                className="text-xs px-2 py-0.5"
+                style={{ fontSize: '10px' }}
+              >
+                {tag}
+              </Badge>
+            ))}
+          </div>
+          <div className="text-right">
+            <div className="text-lg font-bold text-green-500">${model.price}</div>
+            <div className="text-xs text-green-400" style={{ fontSize: '10px' }}>Per Message</div>
+            <Badge variant="secondary" className="text-xs mt-1" style={{ fontSize: '10px' }}>
+              Deluxe FREE
+            </Badge>
+          </div>
+        </div>
+        
+        <div className="flex items-center justify-between text-xs text-muted-foreground">
+          <div className="flex items-center gap-4">
+            <span className="flex items-center gap-1">
+              <Circle className="h-2 w-2 fill-green-500 text-green-500" />
+              {model.responseTime}
+            </span>
+            {model.memory && (
+              <span className="flex items-center gap-1">
+                <Circle className="h-2 w-2" />
+                {model.memory}
+              </span>
+            )}
+            {model.rating > 0 && (
+              <span className="flex items-center gap-1">
+                <Star className="h-3 w-3 fill-yellow-500 text-yellow-500" />
+                {model.rating}k
+              </span>
+            )}
+          </div>
+          <Button variant="ghost" size="sm" className="text-xs h-6 px-2">
+            More ▶
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-2xl max-h-[90vh] bg-background/95 backdrop-blur-sm border-border p-0">
+        <DialogHeader className="p-6 pb-0">
+          <div className="flex items-center justify-between">
+            <DialogTitle className="text-lg font-bold text-primary" style={{ fontSize: '18px' }}>
+              Change Model
+            </DialogTitle>
+            <Button variant="ghost" size="icon" onClick={() => onOpenChange(false)}>
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+        </DialogHeader>
+
+        <div className="px-6">
+          {/* Tier Tabs */}
+          <div className="flex gap-1 mb-4">
+            <Button
+              variant={activeTab === 'standard' ? 'default' : 'ghost'}
+              className={`flex-1 text-xs ${activeTab === 'standard' ? 'bg-primary text-primary-foreground' : ''}`}
+              style={{ fontSize: '12px' }}
+              onClick={() => setActiveTab('standard')}
+            >
+              Standard
+            </Button>
+            <Button
+              variant={activeTab === 'pro' ? 'default' : 'ghost'}
+              className="flex-1 text-xs"
+              style={{ fontSize: '12px' }}
+              onClick={() => setActiveTab('pro')}
+            >
+              Pro ♦ Member
+            </Button>
+            <Button
+              variant={activeTab === 'max' ? 'default' : 'ghost'}
+              className="flex-1 text-xs"
+              style={{ fontSize: '12px' }}
+              onClick={() => setActiveTab('max')}
+            >
+              Max ♦ Diamond
+            </Button>
+          </div>
+
+          {view === 'main' ? (
+            <>
+              {/* Controls */}
+              <div className="flex gap-2 mb-4">
+                <Button
+                  variant="outline"
+                  className="flex items-center gap-2 text-xs"
+                  style={{ fontSize: '12px' }}
+                  onClick={() => setView('allModels')}
+                >
+                  {selectedFolder ? mockFolders.find(f => f.id === selectedFolder)?.name || 'All Models' : 'All Models'}
+                  <ChevronRight className="h-3 w-3" />
+                </Button>
+
+                <div className="relative">
+                  <Button
+                    variant="outline"
+                    className="flex items-center gap-2 text-xs"
+                    style={{ fontSize: '12px' }}
+                    onClick={() => setShowDropdown(!showDropdown)}
+                  >
+                    {filterType === 'active' ? 'Active' : filterType === 'new' ? 'New' : 'Popular'}
+                    <ChevronDown className="h-3 w-3" />
+                  </Button>
+                  
+                  {showDropdown && (
+                    <div className="absolute top-full left-0 mt-1 bg-background border border-border rounded-md shadow-lg z-50 min-w-[120px]">
+                      <div className="p-1">
+                        <button
+                          className="w-full text-left px-3 py-2 text-xs hover:bg-accent rounded text-primary"
+                          style={{ fontSize: '12px' }}
+                          onClick={() => {
+                            setFilterType('active');
+                            setShowDropdown(false);
+                          }}
+                        >
+                          Active
+                        </button>
+                        <button
+                          className="w-full text-left px-3 py-2 text-xs hover:bg-accent rounded"
+                          style={{ fontSize: '12px' }}
+                          onClick={() => {
+                            setFilterType('new');
+                            setShowDropdown(false);
+                          }}
+                        >
+                          New
+                        </button>
+                        <button
+                          className="w-full text-left px-3 py-2 text-xs hover:bg-accent rounded"
+                          style={{ fontSize: '12px' }}
+                          onClick={() => {
+                            setFilterType('popular');
+                            setShowDropdown(false);
+                          }}
+                        >
+                          Popular
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-3 w-3 text-muted-foreground" />
+                  <Input
+                    placeholder="Search models..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-8 text-xs"
+                    style={{ fontSize: '12px' }}
+                  />
+                </div>
+              </div>
+
+              {/* Currently Using */}
+              <div className="mb-4">
+                <div className="flex items-center justify-end mb-2">
+                  <span className="text-xs text-muted-foreground" style={{ fontSize: '12px' }}>Using</span>
+                </div>
+              </div>
+
+              {/* Models List */}
+              <div className="space-y-3 max-h-96 overflow-y-auto">
+                {filteredModels.map(renderModelCard)}
+              </div>
+            </>
+          ) : (
+            <>
+              {/* All Models View */}
+              <div className="mb-4">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex gap-1">
+                    <Button
+                      variant={allModelsTab === 'all' ? 'default' : 'ghost'}
+                      className={`text-xs ${allModelsTab === 'all' ? 'bg-primary/20 border border-primary' : ''}`}
+                      style={{ fontSize: '12px' }}
+                      onClick={() => setAllModelsTab('all')}
+                    >
+                      All Models
+                    </Button>
+                    <Button
+                      variant={allModelsTab === 'collections' ? 'default' : 'ghost'}
+                      className="text-xs"
+                      style={{ fontSize: '12px' }}
+                      onClick={() => setAllModelsTab('collections')}
+                    >
+                      Collections
+                    </Button>
+                    <Button
+                      variant={allModelsTab === 'recently' ? 'default' : 'ghost'}
+                      className="text-xs"
+                      style={{ fontSize: '12px' }}
+                      onClick={() => setAllModelsTab('recently')}
+                    >
+                      Recently
+                    </Button>
+                  </div>
+                  <Button variant="ghost" size="icon" onClick={() => setView('main')}>
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+
+                {/* Folders List */}
+                <div className="space-y-3 max-h-96 overflow-y-auto">
+                  {mockFolders.map((folder) => (
+                    <Card 
+                      key={folder.id}
+                      className="bg-card/60 border border-border/30 hover:border-primary/40 cursor-pointer transition-all"
+                      onClick={() => handleFolderSelect(folder)}
+                    >
+                      <CardContent className="p-4">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <h3 className="text-sm font-semibold" style={{ fontSize: '14px' }}>{folder.name}</h3>
+                            <p className="text-xs text-muted-foreground" style={{ fontSize: '12px' }}>
+                              {folder.modelCount} models
+                            </p>
+                          </div>
+                          <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+
+        {/* Footer */}
+        <div className="p-6 pt-4 border-t border-border">
+          {selectedModel && (
+            <div className="bg-primary/10 p-3 rounded-lg mb-4">
+              <p className="text-xs text-muted-foreground mb-1" style={{ fontSize: '12px' }}>Selected Model:</p>
+              <p className="text-sm font-medium" style={{ fontSize: '14px' }}>{selectedModel.name}</p>
+            </div>
+          )}
+          
+          <div className="flex gap-3">
+            <Button 
+              variant="outline" 
+              className="flex-1"
+              onClick={() => onOpenChange(false)}
+            >
+              Cancel
+            </Button>
+            <Button 
+              className="flex-1 bg-primary hover:bg-primary/90"
+              onClick={() => onOpenChange(false)}
+              disabled={!selectedModel}
+            >
+              Save
+            </Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
