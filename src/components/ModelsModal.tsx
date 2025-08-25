@@ -358,7 +358,7 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
               </div>
 
               {/* Models List */}
-              <div className="space-y-3 flex-1 overflow-y-auto min-h-0">
+              <div className="space-y-3 flex-1 overflow-y-auto min-h-0 pr-1">
                 {filteredModels.map(renderModelCard)}
               </div>
             </>
