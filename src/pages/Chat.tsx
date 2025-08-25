@@ -29,6 +29,7 @@ const Chat = () => {
   const navigate = useNavigate();
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
+  const [isIntroExpanded, setIsIntroExpanded] = useState(true);
 
   // Mock character data - in a real app this would come from an API
   const characters: Record<string, Character> = {
