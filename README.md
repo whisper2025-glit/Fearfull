@@ -32,9 +32,38 @@ cd <YOUR_PROJECT_NAME>
 # Step 3: Install the necessary dependencies.
 npm i
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Step 4: Set up environment variables (see Environment Variables section below)
+
+# Step 5: Start the development server with auto-reloading and an instant preview.
 npm run dev
 ```
+
+## Environment Variables
+
+This project requires certain environment variables to function properly. These are kept secure and never committed to the repository.
+
+### Required Variables
+
+- `VITE_OPENROUTER_API_KEY`: Your OpenRouter API key for AI model access
+  - Get your API key from: https://openrouter.ai/keys
+  - This key enables the AI chat functionality
+
+### Setup Options
+
+**Option 1: Using .env file (Local Development)**
+1. Copy `.env.example` to `.env`
+2. Replace placeholder values with your actual API keys
+3. The `.env` file is automatically ignored by Git for security
+
+**Option 2: Using Lovable DevServerControl (Recommended)**
+- Environment variables are managed securely through the platform
+- No risk of accidentally committing sensitive data
+- Variables persist across deployments
+
+### Security Note
+- Never commit actual API keys to the repository
+- The `.gitignore` file is configured to exclude all `.env` files
+- Use `.env.example` as a template for required variables
 
 **Edit a file directly in GitHub**
 
