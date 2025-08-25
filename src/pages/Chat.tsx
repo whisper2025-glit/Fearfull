@@ -252,9 +252,14 @@ Aizawa: "introduce yourself and take`,
               <Users className="h-3 w-3" />
               Persona
             </Button>
-            <Button variant="outline" size="sm" className="flex items-center gap-2 text-xs whitespace-nowrap flex-shrink-0">
-              <User className="h-3 w-3" />
-              Profile
+            <Button
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-2 text-xs whitespace-nowrap flex-shrink-0"
+              onClick={() => setIsModelsModalOpen(true)}
+            >
+              <Bot className="h-3 w-3" />
+              Models
             </Button>
           </div>
         </div>
