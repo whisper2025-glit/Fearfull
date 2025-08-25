@@ -310,7 +310,7 @@ Aizawa: "introduce yourself and take`,
                     </div>
 
                     {/* Background overlay for better text readability */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-background/40 to-background/60" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-background/20 to-background/30" />
 
                     <div className="relative z-10 space-y-3">
                       {/* Character Title */}
