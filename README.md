@@ -48,6 +48,10 @@ This project requires certain environment variables to function properly. These 
   - Get your API key from: https://openrouter.ai/keys
   - This key enables the AI chat functionality
 
+- `VITE_CLERK_PUBLISHABLE_KEY`: Your Clerk publishable key for authentication
+  - Get your publishable key from: https://clerk.com/
+  - This key enables user authentication and account management
+
 ### Setup Options
 
 **Option 1: Using .env file (Local Development)**
