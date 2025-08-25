@@ -229,20 +229,21 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md max-h-[70vh] bg-[#1a1b2e] border-[#2d2e3e] p-0 rounded-2xl fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[90vw] sm:w-auto">
-        <DialogHeader className="p-3 pb-0">
-          <div className="flex items-center justify-between">
-            <DialogTitle className="text-base font-bold text-[#e74c8c]" style={{ fontSize: '16px' }}>
-              Change Model
-            </DialogTitle>
-            <Button variant="ghost" size="icon" onClick={() => onOpenChange(false)} className="text-white hover:bg-[#2d2e3e]">
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
-        </DialogHeader>
+        <div className="flex flex-col h-full">
+          <DialogHeader className="p-3 pb-2 flex-shrink-0">
+            <div className="flex items-center justify-between">
+              <DialogTitle className="text-base font-bold text-[#e74c8c]" style={{ fontSize: '15px' }}>
+                Change Model
+              </DialogTitle>
+              <Button variant="ghost" size="icon" onClick={() => onOpenChange(false)} className="text-white hover:bg-[#2d2e3e]">
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+          </DialogHeader>
 
-        <div className="px-3">
-          {/* Tier Tabs */}
-          <div className="flex gap-1 mb-4">
+          <div className="px-3 flex-1 overflow-hidden flex flex-col">
+            {/* Tier Tabs */}
+            <div className="flex gap-1 mb-3 flex-shrink-0">
             <Button
               variant={activeTab === 'standard' ? 'default' : 'ghost'}
               className={`flex-1 rounded-2xl text-xs font-medium py-3 ${
@@ -284,7 +285,7 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
           {view === 'main' ? (
             <>
               {/* Controls */}
-              <div className="flex gap-2 mb-3">
+              <div className="flex gap-2 mb-2 flex-shrink-0">
                 <Button
                   variant="outline"
                   className="flex items-center gap-1 bg-[#2d2e3e] border-[#3d3e4e] text-white hover:bg-[#34354a] rounded-lg px-3 py-1.5"
@@ -350,14 +351,14 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
               </div>
 
               {/* Currently Using */}
-              <div className="mb-2">
+              <div className="mb-2 flex-shrink-0">
                 <div className="flex items-center justify-end mb-1">
                   <span className="text-xs text-gray-400" style={{ fontSize: '11px' }}>Using</span>
                 </div>
               </div>
 
               {/* Models List */}
-              <div className="space-y-2 max-h-80 overflow-y-auto">
+              <div className="space-y-2 flex-1 overflow-y-auto">
                 {filteredModels.map(renderModelCard)}
               </div>
             </>
@@ -410,7 +411,7 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
                 </div>
 
                 {/* Folders List */}
-                <div className="space-y-2 max-h-80 overflow-y-auto">
+                <div className="space-y-2 flex-1 overflow-y-auto">
                   {mockFolders.map((folder) => (
                     <Card
                       key={folder.id}
@@ -436,32 +437,33 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
           )}
         </div>
 
-        {/* Footer */}
-        <div className="p-3 border-t border-[#2d2e3e]">
-          {selectedModel && (
-            <div className="bg-[#1a4d5c] p-2 rounded-lg mb-3">
-              <p className="text-xs text-gray-400 mb-0.5" style={{ fontSize: '11px' }}>Selected Model:</p>
-              <p className="text-sm font-medium text-white" style={{ fontSize: '12px' }}>{selectedModel.name}</p>
-            </div>
-          )}
+          {/* Footer */}
+          <div className="p-3 border-t border-[#2d2e3e] flex-shrink-0 mt-2">
+            {selectedModel && (
+              <div className="bg-[#1a4d5c] p-2 rounded-lg mb-3">
+                <p className="text-xs text-gray-400 mb-0.5" style={{ fontSize: '11px' }}>Selected Model:</p>
+                <p className="text-sm font-medium text-white" style={{ fontSize: '12px' }}>{selectedModel.name}</p>
+              </div>
+            )}
 
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              className="flex-1 bg-[#2d2e3e] border-[#3d3e4e] text-white hover:bg-[#34354a] rounded-lg py-2"
-              onClick={() => onOpenChange(false)}
-              style={{ fontSize: '12px' }}
-            >
-              Cancel
-            </Button>
-            <Button
-              className="flex-1 bg-gradient-to-r from-[#e74c8c] to-[#c44f93] hover:from-[#d63384] hover:to-[#b83e88] text-white rounded-lg py-2"
-              onClick={() => onOpenChange(false)}
-              disabled={!selectedModel}
-              style={{ fontSize: '12px' }}
-            >
-              Save
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                className="flex-1 bg-[#2d2e3e] border-[#3d3e4e] text-white hover:bg-[#34354a] rounded-lg py-2"
+                onClick={() => onOpenChange(false)}
+                style={{ fontSize: '12px' }}
+              >
+                Cancel
+              </Button>
+              <Button
+                className="flex-1 bg-gradient-to-r from-[#e74c8c] to-[#c44f93] hover:from-[#d63384] hover:to-[#b83e88] text-white rounded-lg py-2"
+                onClick={() => onOpenChange(false)}
+                disabled={!selectedModel}
+                style={{ fontSize: '12px' }}
+              >
+                Save
+              </Button>
+            </div>
           </div>
         </div>
       </DialogContent>
