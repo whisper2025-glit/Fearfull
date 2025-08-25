@@ -20,7 +20,7 @@ import SettingsSheet from "@/components/SettingsSheet";
 
 const Profile = () => {
   const navigate = useNavigate();
-  const { isSignedIn, user } = useUser();
+  const { user } = useUser();
   const [activeTab, setActiveTab] = useState('favorites');
   const [sortBy, setSortBy] = useState('newest');
   const [editModalOpen, setEditModalOpen] = useState(false);
