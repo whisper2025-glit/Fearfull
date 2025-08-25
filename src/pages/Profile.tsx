@@ -100,9 +100,25 @@ const Profile = () => {
     { id: 'likes', label: 'Likes' }
   ];
 
-  const handleSaveProfile = () => {
-    setEditModalOpen(false);
-    // Handle save logic here
+  const handleSaveProfile = async () => {
+    try {
+      if (user) {
+        // Update Clerk user profile
+        await user.update({
+          firstName: userProfile.name,
+        });
+
+        // Update avatar if changed
+        if (userProfile.avatar && userProfile.avatar !== user.imageUrl) {
+          // Note: Avatar upload would typically require a file upload to Clerk
+          // For now, we'll just update the local state
+        }
+      }
+      setEditModalOpen(false);
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      // Handle error - maybe show a toast notification
+    }
   };
 
   const FavoriteCharacterCard = ({ character }: { character: any }) => (
