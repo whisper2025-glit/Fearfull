@@ -107,7 +107,7 @@ const CreateCharacter = () => {
                   onChange={(e) => handleInputChange('name', e.target.value)}
                   className="text-xs bg-secondary/50 border-border rounded-lg h-12 placeholder:text-muted-foreground/70"
                 />
-                <p className="text-muted-foreground text-sm">{getCharacterCount(formData.name)} characters</p>
+                <p className="text-muted-foreground text-xs">{getCharacterCount(formData.name)} characters</p>
               </div>
 
               {/* Age Field */}
@@ -122,12 +122,12 @@ const CreateCharacter = () => {
                   onChange={(e) => handleInputChange('age', e.target.value)}
                   className="text-xs bg-secondary/50 border-border rounded-lg h-12 placeholder:text-muted-foreground/70"
                 />
-                <p className="text-muted-foreground text-sm">{getCharacterCount(formData.age)} characters</p>
+                <p className="text-muted-foreground text-xs">{getCharacterCount(formData.age)} characters</p>
               </div>
 
               {/* Character Photo */}
               <div className="space-y-4">
-                <h3 className="text-primary text-base font-medium">Character Photo</h3>
+                <h3 className="text-primary text-sm font-medium">Character Photo</h3>
                 <div className="relative bg-secondary/30 rounded-lg p-8 text-center border-2 border-dashed border-border">
                   <div className="flex flex-col items-center space-y-3">
                     <div className="w-16 h-16 bg-muted rounded-lg flex items-center justify-center">
@@ -165,7 +165,7 @@ const CreateCharacter = () => {
               {/* Scene Card */}
               <div className="space-y-4">
                 <div className="flex items-center gap-2">
-                  <h3 className="text-primary text-base font-medium">Scene Card</h3>
+                  <h3 className="text-primary text-sm font-medium">Scene Card</h3>
                   <span className="bg-cyan-400 text-black px-2 py-1 rounded-full text-xs font-bold">New</span>
                   <ChevronUp className="h-4 w-4 text-primary ml-auto" />
                 </div>
