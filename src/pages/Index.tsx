@@ -75,6 +75,7 @@ const Index = () => {
           {characters.map((character) => (
             <CharacterCard
               key={character.id}
+              id={character.id}
               name={character.name}
               description={character.description}
               imageUrl={character.imageUrl}

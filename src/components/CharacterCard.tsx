@@ -1,8 +1,10 @@
 
 import { Heart, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 interface CharacterCardProps {
+  id: number;
   name: string;
   description: string;
   imageUrl: string;
@@ -12,6 +14,7 @@ interface CharacterCardProps {
 }
 
 export function CharacterCard({ 
+  id,
   name, 
   description, 
   imageUrl, 
@@ -19,8 +22,17 @@ export function CharacterCard({
   likeCount,
   category 
 }: CharacterCardProps) {
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    navigate(`/chat/${id}`);
+  };
+
   return (
-    <div className="character-card group cursor-pointer">
+    <div 
+      className="character-card group cursor-pointer"
+      onClick={handleClick}
+    >
       {/* Image Container */}
       <div className="relative aspect-[4/5] overflow-hidden">
         <img 
