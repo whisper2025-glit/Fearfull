@@ -1,30 +1,24 @@
 
 import { useState } from "react";
 
-const categories = [
-  { id: "hot", label: "Hot" },
-  { id: "for-you", label: "For You" },
-  { id: "anime", label: "Anime" },
-  { id: "romance", label: "Romance" },
-];
-
 interface CategoryTabsProps {
+  categories: string[];
   activeCategory: string;
   onCategoryChange: (category: string) => void;
 }
 
-export function CategoryTabs({ activeCategory, onCategoryChange }: CategoryTabsProps) {
+export function CategoryTabs({ categories, activeCategory, onCategoryChange }: CategoryTabsProps) {
   return (
     <div className="flex items-center gap-2 mb-8">
       {categories.map((category) => (
         <button
-          key={category.id}
-          onClick={() => onCategoryChange(category.id)}
+          key={category}
+          onClick={() => onCategoryChange(category)}
           className={`category-tab ${
-            activeCategory === category.id ? "active" : ""
+            activeCategory === category ? "active" : ""
           }`}
         >
-          {category.label}
+          {category}
         </button>
       ))}
     </div>
