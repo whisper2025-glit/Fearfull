@@ -20,6 +20,7 @@ interface Model {
   isActive?: boolean;
   isPremium?: boolean;
   isMain?: boolean;
+  provider: string;
   tier: 'standard' | 'pro' | 'max';
 }
 
@@ -151,7 +152,8 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
     const matchesSearch = model.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          model.author.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesTier = model.tier === activeTab;
-    return matchesSearch && matchesTier;
+    const matchesFolder = selectedFolder ? model.provider === selectedFolder : true;
+    return matchesSearch && matchesTier && matchesFolder;
   });
 
   const handleModelSelect = (model: Model) => {
