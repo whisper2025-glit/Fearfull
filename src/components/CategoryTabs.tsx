@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 
 interface CategoryTabsProps {
@@ -9,18 +8,20 @@ interface CategoryTabsProps {
 
 export function CategoryTabs({ categories, activeCategory, onCategoryChange }: CategoryTabsProps) {
   return (
-    <div className="flex items-center gap-2 mb-8">
-      {categories.map((category) => (
-        <button
-          key={category}
-          onClick={() => onCategoryChange(category)}
-          className={`category-tab ${
-            activeCategory === category ? "active" : ""
-          }`}
-        >
-          {category}
-        </button>
-      ))}
+    <div className="mb-8 overflow-x-auto">
+      <div className="flex items-center gap-2 min-w-max px-1">
+        {categories.map((category) => (
+          <button
+            key={category}
+            onClick={() => onCategoryChange(category)}
+            className={`category-tab whitespace-nowrap ${
+              activeCategory === category ? "active" : ""
+            }`}
+          >
+            {category}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }
