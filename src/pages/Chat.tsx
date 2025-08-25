@@ -34,6 +34,7 @@ const Chat = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isIntroExpanded, setIsIntroExpanded] = useState(true);
   const [isModelsModalOpen, setIsModelsModalOpen] = useState(false);
+  const [sceneBackground, setSceneBackground] = useState<string>("");
   const [selectedModel, setSelectedModel] = useState<Model | null>({
     id: "mistral-main",
     name: "mistralai/mistral-small-3.2-24b-instruct:free",
@@ -105,8 +106,29 @@ Aizawa: "introduce yourself and take`,
 
   const currentCharacter = characters[characterId as keyof typeof characters] || characters["1"];
 
-  // Test OpenRouter connection on mount
+  // Load scene background and test OpenRouter connection on mount
   useEffect(() => {
+    // Load scene background from localStorage
+    const savedBackground = localStorage.getItem('scene-background');
+    if (savedBackground) {
+      setSceneBackground(savedBackground);
+    }
+
+    // Load character data if it's a newly created character
+    const savedCharacter = localStorage.getItem('current-character');
+    if (savedCharacter) {
+      try {
+        const characterData = JSON.parse(savedCharacter);
+        if (characterData.id === characterId) {
+          // This is a newly created character, we could update the characters object here
+          // For now, we'll just use the scene background
+          console.log('Loaded newly created character:', characterData.name);
+        }
+      } catch (error) {
+        console.error('Error parsing saved character:', error);
+      }
+    }
+
     const testConnection = async () => {
       try {
         const isConnected = await openRouterAPI.testConnection();
@@ -122,7 +144,7 @@ Aizawa: "introduce yourself and take`,
     };
 
     testConnection();
-  }, []);
+  }, [characterId]);
 
   const handleSendMessage = async () => {
     if (!message.trim() || isLoading) return;
@@ -222,9 +244,22 @@ Aizawa: "introduce yourself and take`,
   const allMessages = [...currentCharacter.messages, ...messages];
 
   return (
-    <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
+    <div
+      className="min-h-screen bg-background text-foreground overflow-x-hidden relative"
+      style={{
+        backgroundImage: sceneBackground ? `url(${sceneBackground})` : undefined,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
+      }}
+    >
+      {/* Background overlay for better readability */}
+      {sceneBackground && (
+        <div className="absolute inset-0 bg-black/20 z-0" />
+      )}
+
       {/* Header */}
-      <header className="flex items-center justify-between p-4 border-b border-border">
+      <header className="relative z-10 flex items-center justify-between p-4 border-b border-border/30 bg-background/20 backdrop-blur-sm">
         <div className="flex items-center gap-3">
           <Button 
             variant="ghost" 
@@ -257,14 +292,14 @@ Aizawa: "introduce yourself and take`,
       </header>
 
       {/* Chat Content */}
-      <div className="flex-1 flex flex-col max-w-full mx-auto h-[calc(100vh-4rem)]">
+      <div className="relative z-10 flex-1 flex flex-col max-w-full mx-auto h-[calc(100vh-4rem)]">
         {/* Messages */}
         <div className="flex-1 px-4 py-4 overflow-y-auto">
           {allMessages.map((msg) => (
             <div key={msg.id} className="mb-4">
               {msg.type === 'intro' ? (
                 <div className="relative pt-8">
-                  <Card className="relative p-4 pt-8 bg-card/60 border-accent/30 shadow-md overflow-visible">
+                  <Card className="relative p-4 pt-8 bg-card/30 backdrop-blur-sm border-accent/30 shadow-md overflow-visible">
                     {/* Character Avatar - positioned to overlap card border */}
                     <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 z-20">
                       <img
@@ -275,7 +310,7 @@ Aizawa: "introduce yourself and take`,
                     </div>
 
                     {/* Background overlay for better text readability */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-background/40 to-background/60" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-background/20 to-background/30" />
 
                     <div className="relative z-10 space-y-3">
                       {/* Character Title */}
@@ -307,14 +342,14 @@ Aizawa: "introduce yourself and take`,
                   </Card>
                 </div>
               ) : msg.type === 'scenario' ? (
-                <Card className="p-3 bg-card/50 border-primary/20">
+                <Card className="p-3 bg-card/30 backdrop-blur-sm border-primary/20">
                   <div className="flex items-start gap-2">
                     <span className="text-primary font-medium text-sm">Scenario:</span>
                     <p className="text-muted-foreground italic text-sm">{msg.content}</p>
                   </div>
                 </Card>
               ) : (
-                <Card className={`p-3 ${msg.isBot ? 'bg-card/30' : 'bg-primary/10 ml-8'}`}>
+                <Card className={`p-3 ${msg.isBot ? 'bg-card/20 backdrop-blur-sm' : 'bg-primary/20 ml-8 backdrop-blur-sm'}`}>
                   <div className="flex items-start gap-3">
                     {msg.isBot && (
                       <img
@@ -334,7 +369,7 @@ Aizawa: "introduce yourself and take`,
         </div>
 
         {/* Action Buttons */}
-        <div className="pb-2">
+        <div className="pb-2 bg-background/20 backdrop-blur-sm">
           <div className="flex gap-2 mb-3 overflow-x-auto px-4 scrollbar-hide">
             <Button variant="outline" size="sm" className="flex items-center gap-2 text-xs whitespace-nowrap flex-shrink-0">
               <Lightbulb className="h-3 w-3" />
@@ -363,7 +398,7 @@ Aizawa: "introduce yourself and take`,
         </div>
 
         {/* Message Input */}
-        <div className="px-4 pb-4">
+        <div className="px-4 pb-4 bg-background/20 backdrop-blur-sm border-t border-border/30">
           <div className="flex gap-2">
             <Textarea
               value={message}
