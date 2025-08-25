@@ -333,7 +333,8 @@ Aizawa: "introduce yourself and take`,
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder="Type a message"
+              placeholder={isLoading ? "AI is typing..." : "Type a message"}
+              disabled={isLoading}
               className="flex-1 bg-card/50 border-border resize-none min-h-[40px] max-h-[120px] text-sm chat-text"
               rows={1}
             />
