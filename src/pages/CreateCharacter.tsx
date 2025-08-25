@@ -169,12 +169,12 @@ const CreateCharacter = () => {
                   <span className="bg-cyan-400 text-black px-2 py-1 rounded-full text-xs font-bold">New</span>
                   <ChevronUp className="h-4 w-4 text-primary ml-auto" />
                 </div>
-                <div className="relative bg-secondary/30 rounded-lg border-2 border-dashed border-border aspect-[16/9] flex items-center justify-center">
+                <div className="w-full h-48 relative bg-secondary/30 rounded-lg border-2 border-dashed border-border flex items-center justify-center">
                   <div className="flex flex-col items-center space-y-4">
-                    <div className="w-20 h-20 bg-muted rounded-lg flex items-center justify-center">
-                      <Upload className="h-10 w-10 text-muted-foreground" />
+                    <div className="w-24 h-24 bg-muted rounded-lg flex items-center justify-center">
+                      <Upload className="h-12 w-12 text-muted-foreground" />
                     </div>
-                    <p className="text-muted-foreground text-xs font-medium">Upload Scene Image</p>
+                    <p className="text-muted-foreground text-sm font-medium">Upload Scene Image</p>
                   </div>
                 </div>
                 <div className="bg-secondary/30 rounded-lg p-4">
