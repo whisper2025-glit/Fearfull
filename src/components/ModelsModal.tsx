@@ -364,68 +364,68 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
           ) : (
             <>
               {/* All Models View */}
-              <div className="mb-4">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex gap-2">
+              <div className="mb-3">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex gap-1">
                     <Button
                       variant={allModelsTab === 'all' ? 'default' : 'ghost'}
-                      className={`text-xs rounded-xl px-4 py-2 ${
+                      className={`text-xs rounded-lg px-3 py-1.5 ${
                         allModelsTab === 'all'
                           ? 'bg-[#e74c8c]/20 border border-[#e74c8c] text-[#e74c8c]'
                           : 'bg-[#2d2e3e] text-gray-300 hover:bg-[#34354a]'
                       }`}
-                      style={{ fontSize: '12px' }}
+                      style={{ fontSize: '11px' }}
                       onClick={() => setAllModelsTab('all')}
                     >
                       All Models
                     </Button>
                     <Button
                       variant={allModelsTab === 'collections' ? 'default' : 'ghost'}
-                      className={`text-xs rounded-xl px-4 py-2 ${
+                      className={`text-xs rounded-lg px-3 py-1.5 ${
                         allModelsTab === 'collections'
                           ? 'bg-[#e74c8c]/20 border border-[#e74c8c] text-[#e74c8c]'
                           : 'bg-[#2d2e3e] text-gray-300 hover:bg-[#34354a]'
                       }`}
-                      style={{ fontSize: '12px' }}
+                      style={{ fontSize: '11px' }}
                       onClick={() => setAllModelsTab('collections')}
                     >
                       Collections
                     </Button>
                     <Button
                       variant={allModelsTab === 'recently' ? 'default' : 'ghost'}
-                      className={`text-xs rounded-xl px-4 py-2 ${
+                      className={`text-xs rounded-lg px-3 py-1.5 ${
                         allModelsTab === 'recently'
                           ? 'bg-[#e74c8c]/20 border border-[#e74c8c] text-[#e74c8c]'
                           : 'bg-[#2d2e3e] text-gray-300 hover:bg-[#34354a]'
                       }`}
-                      style={{ fontSize: '12px' }}
+                      style={{ fontSize: '11px' }}
                       onClick={() => setAllModelsTab('recently')}
                     >
                       Recently
                     </Button>
                   </div>
-                  <Button variant="ghost" size="icon" onClick={() => setView('main')} className="text-white hover:bg-[#2d2e3e]">
-                    <X className="h-4 w-4" />
+                  <Button variant="ghost" size="icon" onClick={() => setView('main')} className="text-white hover:bg-[#2d2e3e] h-8 w-8">
+                    <X className="h-3 w-3" />
                   </Button>
                 </div>
 
                 {/* Folders List */}
-                <div className="space-y-3 max-h-96 overflow-y-auto">
+                <div className="space-y-2 max-h-80 overflow-y-auto">
                   {mockFolders.map((folder) => (
                     <Card
                       key={folder.id}
-                      className="bg-[#232438] border border-[#2d2e3e] hover:border-[#e74c8c]/40 cursor-pointer transition-all rounded-2xl"
+                      className="bg-[#232438] border border-[#2d2e3e] hover:border-[#e74c8c]/40 cursor-pointer transition-all rounded-xl"
                       onClick={() => handleFolderSelect(folder)}
                     >
-                      <CardContent className="p-4">
+                      <CardContent className="p-3">
                         <div className="flex items-center justify-between">
                           <div>
-                            <h3 className="text-sm font-semibold text-white" style={{ fontSize: '14px' }}>{folder.name}</h3>
-                            <p className="text-xs text-gray-400" style={{ fontSize: '12px' }}>
+                            <h3 className="text-sm font-semibold text-white" style={{ fontSize: '12px' }}>{folder.name}</h3>
+                            <p className="text-xs text-gray-400" style={{ fontSize: '11px' }}>
                               {folder.modelCount} models
                             </p>
                           </div>
-                          <ChevronRight className="h-4 w-4 text-gray-400" />
+                          <ChevronRight className="h-3 w-3 text-gray-400" />
                         </div>
                       </CardContent>
                     </Card>
