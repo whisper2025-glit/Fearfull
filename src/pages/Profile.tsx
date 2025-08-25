@@ -180,9 +180,19 @@ const Profile = () => {
         <div className="relative">
           {/* Banner */}
           <div
-            className="h-64 bg-gradient-to-br from-blue-600 to-purple-700 bg-cover bg-center"
+            className="h-64 bg-gradient-to-br from-blue-600 to-purple-700 bg-cover bg-center relative"
             style={userProfile.banner ? { backgroundImage: `url(${userProfile.banner})` } : {}}
-          />
+          >
+            {/* Overlay buttons */}
+            <div className="absolute top-4 right-4 flex items-center gap-2">
+              <Button variant="ghost" size="icon" className="bg-black/20 hover:bg-black/40 text-white">
+                <Gift className="h-5 w-5" />
+              </Button>
+              <Button variant="ghost" size="icon" className="bg-black/20 hover:bg-black/40 text-white">
+                <Settings className="h-5 w-5" />
+              </Button>
+            </div>
+          </div>
 
           {/* Profile Info */}
           <div className="px-4 pb-4">
