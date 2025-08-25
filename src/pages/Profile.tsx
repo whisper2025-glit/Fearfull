@@ -13,82 +13,125 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { ChevronLeft, Settings, Gift, MoreHorizontal, X, Camera, Star } from "lucide-react";
+import { ChevronLeft, Settings, Gift, MoreHorizontal, X, Camera, Star, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { CharacterCard } from "@/components/CharacterCard";
 import SettingsSheet from "@/components/SettingsSheet";
+import { supabase, uploadImage } from "@/lib/supabase";
+import { toast } from "sonner";
 
 const Profile = () => {
   const navigate = useNavigate();
   const { user } = useUser();
-  const [activeTab, setActiveTab] = useState('favorites');
+  const [activeTab, setActiveTab] = useState('bots');
   const [sortBy, setSortBy] = useState('newest');
   const [editModalOpen, setEditModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [userCharacters, setUserCharacters] = useState<any[]>([]);
 
-  // ProtectedRoute handles authentication, so we can assume user is signed in
-
-  // User profile state with Clerk data
+  // User profile state with Supabase data
   const [userProfile, setUserProfile] = useState({
-    name: user?.firstName || user?.username || 'User',
+    username: '',
+    name: '',
     bio: '',
     gender: '',
-    avatar: user?.imageUrl || '',
+    avatar: '',
     banner: ''
   });
 
-  // Update profile when user data changes
-  useEffect(() => {
-    if (user) {
-      setUserProfile(prev => ({
-        ...prev,
-        name: user.firstName || user.username || 'User',
-        avatar: user.imageUrl || prev.avatar
-      }));
-    }
-  }, [user]);
-
-  const handleBannerUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setUserProfile({...userProfile, banner: e.target?.result as string});
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file && user) {
-      try {
-        // Upload avatar to Clerk
-        await user.setProfileImage({ file });
-
-        // Update local state with new avatar URL
-        setUserProfile(prev => ({
-          ...prev,
-          avatar: user.imageUrl || prev.avatar
-        }));
-      } catch (error) {
-        console.error('Error uploading avatar:', error);
-        // Handle error - maybe show a toast notification
-      }
-    }
-  };
-
-  // User stats - these would come from your backend/database in a real app
-  const stats = {
+  // Stats state
+  const [stats, setStats] = useState({
     followers: 0,
     following: 0,
     likes: 0,
     publicBots: 0,
     favorites: 0,
     posts: 0
+  });
+
+  // Load user profile and data from Supabase
+  useEffect(() => {
+    const loadUserData = async () => {
+      if (!user) return;
+
+      setIsLoading(true);
+      try {
+        // Load user profile from Supabase
+        const { data: profileData, error: profileError } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single();
+
+        if (profileError && profileError.code !== 'PGRST116') {
+          console.error('Error loading profile:', profileError);
+        } else if (profileData) {
+          setUserProfile({
+            username: profileData.username,
+            name: profileData.full_name || user.firstName || user.username || 'User',
+            bio: profileData.bio || '',
+            gender: '',
+            avatar: profileData.avatar_url || user.imageUrl || '',
+            banner: profileData.banner_url || ''
+          });
+        } else {
+          // Set default values from Clerk
+          setUserProfile({
+            username: user.username || 'user',
+            name: user.firstName || user.username || 'User',
+            bio: '',
+            gender: '',
+            avatar: user.imageUrl || '',
+            banner: ''
+          });
+        }
+
+        // Load user's characters
+        const { data: charactersData, error: charactersError } = await supabase
+          .from('characters')
+          .select('*, messages(id)')
+          .eq('owner_id', user.id)
+          .order('created_at', { ascending: false });
+
+        if (charactersError) {
+          console.error('Error loading characters:', charactersError);
+        } else {
+          setUserCharacters(charactersData || []);
+          setStats(prev => ({
+            ...prev,
+            publicBots: (charactersData || []).filter(char => char.visibility === 'public').length
+          }));
+        }
+
+      } catch (error) {
+        console.error('Error loading user data:', error);
+        toast.error('Failed to load profile data');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadUserData();
+  }, [user]);
+
+  // Filter characters based on active tab
+  const getCharactersForTab = () => {
+    switch (activeTab) {
+      case 'bots':
+        return userCharacters.filter(char => char.visibility === 'public');
+      case 'favorites':
+        // TODO: Implement favorites functionality
+        return [];
+      case 'posts':
+        // TODO: Implement posts functionality
+        return [];
+      default:
+        return [];
+    }
   };
 
-  // Characters data - these would come from your backend/database in a real app
-  const favoriteCharacters: any[] = [];
+  const displayCharacters = getCharactersForTab();
 
   const tabs = [
     { id: 'bots', label: 'Public Bots', count: stats.publicBots },
@@ -103,24 +146,80 @@ const Profile = () => {
     { id: 'likes', label: 'Likes' }
   ];
 
+  const handleBannerUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file && user) {
+      try {
+        const bannerPath = `${user.id}/banners/${Date.now()}.jpg`;
+        const { publicUrl } = await uploadImage('profiles', bannerPath, file);
+        setUserProfile(prev => ({ ...prev, banner: publicUrl }));
+        toast.success('Banner uploaded successfully');
+      } catch (error) {
+        console.error('Error uploading banner:', error);
+        toast.error('Failed to upload banner');
+      }
+    }
+  };
+
+  const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file && user) {
+      try {
+        // Upload to Supabase storage
+        const avatarPath = `${user.id}/avatars/${Date.now()}.jpg`;
+        const { publicUrl } = await uploadImage('profiles', avatarPath, file);
+
+        // Update Clerk profile image
+        await user.setProfileImage({ file });
+
+        // Update local state
+        setUserProfile(prev => ({ ...prev, avatar: publicUrl }));
+        toast.success('Avatar updated successfully');
+      } catch (error) {
+        console.error('Error uploading avatar:', error);
+        toast.error('Failed to update avatar');
+      }
+    }
+  };
+
   const handleSaveProfile = async () => {
+    if (!user) return;
+
+    setIsSaving(true);
     try {
-      if (user) {
-        // Update Clerk user profile
-        await user.update({
-          firstName: userProfile.name,
+      // Update Clerk user profile
+      await user.update({
+        firstName: userProfile.name,
+      });
+
+      // Update Supabase profile
+      const { error } = await supabase
+        .from('profiles')
+        .upsert({
+          id: user.id,
+          username: userProfile.username,
+          full_name: userProfile.name,
+          email: user.emailAddresses?.[0]?.emailAddress || null,
+          avatar_url: userProfile.avatar,
+          banner_url: userProfile.banner,
+          bio: userProfile.bio,
+          updated_at: new Date().toISOString()
+        }, {
+          onConflict: 'id'
         });
 
-        // Update avatar if changed
-        if (userProfile.avatar && userProfile.avatar !== user.imageUrl) {
-          // Note: Avatar upload would typically require a file upload to Clerk
-          // For now, we'll just update the local state
-        }
+      if (error) {
+        console.error('Error updating profile:', error);
+        toast.error('Failed to save profile');
+      } else {
+        toast.success('Profile updated successfully');
+        setEditModalOpen(false);
       }
-      setEditModalOpen(false);
     } catch (error) {
       console.error('Error updating profile:', error);
-      // Handle error - maybe show a toast notification
+      toast.error('Failed to save profile');
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -367,9 +466,17 @@ const Profile = () => {
                       {/* Save Button */}
                       <Button
                         onClick={handleSaveProfile}
+                        disabled={isSaving}
                         className="w-full bg-blue-600 hover:bg-blue-700 text-white"
                       >
-                        Save
+                        {isSaving ? (
+                          <>
+                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                            Saving...
+                          </>
+                        ) : (
+                          'Save'
+                        )}
                       </Button>
                     </div>
                   </DialogContent>
@@ -420,12 +527,30 @@ const Profile = () => {
           </div>
 
           {/* Content Area */}
-          {activeTab === 'favorites' && favoriteCharacters.length > 0 ? (
+          {isLoading ? (
+            <div className="flex items-center justify-center py-16">
+              <div className="flex flex-col items-center gap-4">
+                <Loader2 className="h-8 w-8 animate-spin" />
+                <p className="text-muted-foreground">Loading...</p>
+              </div>
+            </div>
+          ) : displayCharacters.length > 0 ? (
             <div className="grid grid-cols-2 gap-4">
-              {favoriteCharacters.map((character) => (
-                <FavoriteCharacterCard
+              {displayCharacters.map((character) => (
+                <CharacterCard
                   key={character.id}
-                  character={character}
+                  character={{
+                    id: character.id,
+                    name: character.name,
+                    description: character.intro,
+                    image: character.avatar_url || '/lovable-uploads/3eab3055-d06f-48a5-9790-123de7769f97.png',
+                    category: character.tags?.[0] || 'General',
+                    stats: {
+                      messages: character.messages?.length || 0,
+                      likes: 0 // Placeholder
+                    }
+                  }}
+                  onClick={() => navigate(`/chat/${character.id}`)}
                 />
               ))}
             </div>
