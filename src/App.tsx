@@ -3,6 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { useUserSync } from "@/hooks/useUserSync";
 import Index from "./pages/Index";
 import Chat from "./pages/Chat";
 import CreateCharacter from "./pages/CreateCharacter";
@@ -13,25 +14,46 @@ import ProtectedRoute from "./components/ProtectedRoute";
 
 const queryClient = new QueryClient();
 
+const AppContent = () => {
+  // Sync user with Supabase when authenticated
+  useUserSync();
+
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/auth" element={<AuthPage />} />
+        <Route path="/" element={
+          <ProtectedRoute>
+            <Index />
+          </ProtectedRoute>
+        } />
+        <Route path="/chat/:characterId" element={
+          <ProtectedRoute>
+            <Chat />
+          </ProtectedRoute>
+        } />
+        <Route path="/create" element={
+          <ProtectedRoute>
+            <CreateCharacter />
+          </ProtectedRoute>
+        } />
+        <Route path="/profile" element={
+          <ProtectedRoute>
+            <Profile />
+          </ProtectedRoute>
+        } />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </BrowserRouter>
+  );
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/chat/:characterId" element={<Chat />} />
-          <Route path="/create" element={<CreateCharacter />} />
-          <Route path="/profile" element={
-            <ProtectedRoute>
-              <Profile />
-            </ProtectedRoute>
-          } />
-          <Route path="/auth" element={<AuthPage />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
+      <AppContent />
     </TooltipProvider>
   </QueryClientProvider>
 );
