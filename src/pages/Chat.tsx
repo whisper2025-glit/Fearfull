@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useUser } from "@clerk/clerk-react";
 import { ArrowLeft, Home, MoreHorizontal, Lightbulb, Clock, Users, Bot, ChevronDown, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { ModelsModal, Model } from "@/components/ModelsModal";
 import { openRouterAPI, ChatMessage } from "@/lib/openrouter";
+import { supabase, createOrUpdateProfile } from "@/lib/supabase";
 import { toast } from "sonner";
 
 interface Message {
@@ -57,67 +59,102 @@ const Chat = () => {
   const [currentCharacter, setCurrentCharacter] = useState<Character | null>(null);
   const [isLoadingCharacter, setIsLoadingCharacter] = useState(true);
 
-  // Load scene background and test OpenRouter connection on mount
+  const { user } = useUser();
+
+  // Load character and messages from Supabase
   useEffect(() => {
-    // Load scene background from localStorage
-    const savedBackground = localStorage.getItem('scene-background');
-    if (savedBackground) {
-      setSceneBackground(savedBackground);
-    }
+    const loadCharacterAndMessages = async () => {
+      if (!characterId) return;
 
-    // Load character data if it's a newly created character
-    const savedCharacter = localStorage.getItem('current-character');
-    if (savedCharacter) {
+      setIsLoadingCharacter(true);
+
       try {
-        const characterData = JSON.parse(savedCharacter);
-        if (characterData.id === characterId) {
-          // This is a newly created character, update the characters object
-          console.log('Loaded newly created character:', characterData.name);
+        // Load character data from Supabase
+        const { data: characterData, error: characterError } = await supabase
+          .from('characters')
+          .select('*, profiles!characters_owner_id_fkey(username)')
+          .eq('id', characterId)
+          .single();
 
-          const newCharacter: Character = {
-            name: characterData.name,
-            author: "You", // Mark as user-created
-            intro: characterData.intro || "No introduction provided",
-            scenario: characterData.scenario || "",
-            avatar: characterData.characterImage || "/lovable-uploads/3eab3055-d06f-48a5-9790-123de7769f97.png",
-            messages: [
-              {
-                id: -2,
-                content: characterData.intro || "No introduction provided",
-                isBot: true,
-                timestamp: "now",
-                type: "intro",
-                characterName: characterData.name,
-                author: "You"
-              },
-              // Only add scenario message if scenario exists
-              ...(characterData.scenario ? [{
-                id: -1,
-                content: characterData.scenario,
-                isBot: true,
-                timestamp: "now",
-                type: "scenario" as const
-              }] : []),
-              // Add greeting as first regular message if provided
-              ...(characterData.greeting ? [{
-                id: 1,
-                content: characterData.greeting,
-                isBot: true,
-                timestamp: "now",
-                type: "regular" as const
-              }] : [])
-            ]
-          };
-
-          setCharacters(prev => ({
-            ...prev,
-            [characterData.id]: newCharacter
-          }));
+        if (characterError) {
+          console.error('Error loading character:', characterError);
+          toast.error('Character not found');
+          navigate('/');
+          return;
         }
+
+        // Load messages for this character
+        const { data: messagesData, error: messagesError } = await supabase
+          .from('messages')
+          .select('*')
+          .eq('character_id', characterId)
+          .order('created_at', { ascending: true });
+
+        if (messagesError) {
+          console.error('Error loading messages:', messagesError);
+          toast.error('Failed to load messages');
+        }
+
+        // Convert Supabase data to local format
+        const character: Character = {
+          name: characterData.name,
+          author: characterData.profiles?.username || 'Unknown',
+          intro: characterData.intro,
+          scenario: characterData.scenario || "",
+          avatar: characterData.avatar_url || "/lovable-uploads/3eab3055-d06f-48a5-9790-123de7769f97.png",
+          messages: [
+            // Always include intro message
+            {
+              id: -2,
+              content: characterData.intro,
+              isBot: true,
+              timestamp: "now",
+              type: "intro",
+              characterName: characterData.name,
+              author: characterData.profiles?.username || 'Unknown'
+            },
+            // Include scenario message if it exists
+            ...(characterData.scenario ? [{
+              id: -1,
+              content: characterData.scenario,
+              isBot: true,
+              timestamp: "now",
+              type: "scenario" as const
+            }] : []),
+            // Include greeting as first regular message if it exists
+            ...(characterData.greeting ? [{
+              id: 0,
+              content: characterData.greeting,
+              isBot: true,
+              timestamp: "now",
+              type: "regular" as const
+            }] : []),
+            // Add saved messages from database
+            ...(messagesData || []).map((msg, index) => ({
+              id: index + 1,
+              content: msg.content,
+              isBot: msg.is_bot,
+              timestamp: new Date(msg.created_at).toLocaleTimeString(),
+              type: msg.type as 'intro' | 'scenario' | 'regular'
+            }))
+          ]
+        };
+
+        setCurrentCharacter(character);
+
+        // Set scene background if available
+        if (characterData.scene_url) {
+          setSceneBackground(characterData.scene_url);
+        }
+
       } catch (error) {
-        console.error('Error parsing saved character:', error);
+        console.error('Error loading character data:', error);
+        toast.error('Failed to load character');
+        navigate('/');
+      } finally {
+        setIsLoadingCharacter(false);
       }
-    }
+    };
 
     const testConnection = async () => {
       try {
@@ -133,8 +170,9 @@ const Chat = () => {
       }
     };
 
+    loadCharacterAndMessages();
     testConnection();
-  }, [characterId]);
+  }, [characterId, navigate]);
 
   const handleSendMessage = async () => {
     if (!message.trim() || isLoading) return;
