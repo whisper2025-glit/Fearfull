@@ -367,7 +367,7 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
               {/* Currently Using */}
               <div className="mb-4">
                 <div className="flex items-center justify-end mb-2">
-                  <span className="text-xs text-muted-foreground" style={{ fontSize: '12px' }}>Using</span>
+                  <span className="text-xs text-gray-400" style={{ fontSize: '12px' }}>Using</span>
                 </div>
               </div>
 
