@@ -117,6 +117,51 @@ const Profile = () => {
     // Handle save logic here
   };
 
+  const FavoriteCharacterCard = ({ character }: { character: any }) => (
+    <div className="character-card group cursor-pointer w-full bg-card rounded-2xl overflow-hidden">
+      {/* Image Container */}
+      <div className="relative aspect-[4/5] overflow-hidden">
+        <img
+          src={character.image}
+          alt={character.name}
+          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+        />
+
+        {/* Star/Bookmark Icon */}
+        <div className="absolute top-3 right-3">
+          <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+            <Star className="h-4 w-4 text-white fill-white" />
+          </div>
+        </div>
+
+        {/* Gradient Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent" />
+
+        {/* Content */}
+        <div className="absolute bottom-0 left-0 right-0 p-4">
+          <h3 className="text-lg font-bold text-white mb-1">
+            {character.name}
+          </h3>
+          <p className="text-sm text-gray-300 mb-3 line-clamp-2">
+            {character.description}
+          </p>
+
+          {/* Tags */}
+          <div className="flex flex-wrap gap-2">
+            {character.tags.map((tag: string, index: number) => (
+              <span
+                key={index}
+                className="px-2 py-1 bg-gray-700/80 text-white text-xs rounded-full"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <Layout>
       <div className="flex-1 overflow-auto">
