@@ -165,17 +165,6 @@ const Profile = () => {
   return (
     <Layout>
       <div className="flex-1 overflow-auto">
-        {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-border">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => navigate(-1)}
-          >
-            <ChevronLeft className="h-5 w-5" />
-          </Button>
-        </div>
-
         {/* Banner and Profile Section */}
         <div className="relative">
           {/* Banner */}
