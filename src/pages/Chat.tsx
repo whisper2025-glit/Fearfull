@@ -26,7 +26,7 @@ const Chat = () => {
   const [messages, setMessages] = useState<Array<{id: number; content: string; isBot: boolean; timestamp: string}>>([]);
 
   // Mock character data - in a real app this would come from an API
-  const characters = {
+  const characters: Record<string, Character> = {
     "1": {
       name: "You Are Like Your Father - Angela",
       author: "@Just a Random Guy",
