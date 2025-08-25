@@ -193,9 +193,11 @@ const Profile = () => {
               <Button variant="ghost" size="icon" className="bg-black/20 hover:bg-black/40 text-white">
                 <Gift className="h-5 w-5" />
               </Button>
-              <Button variant="ghost" size="icon" className="bg-black/20 hover:bg-black/40 text-white">
-                <Settings className="h-5 w-5" />
-              </Button>
+              <SettingsSheet>
+                <Button variant="ghost" size="icon" className="bg-black/20 hover:bg-black/40 text-white">
+                  <Settings className="h-5 w-5" />
+                </Button>
+              </SettingsSheet>
             </div>
 
             {/* Profile Info - Positioned at bottom of banner */}
