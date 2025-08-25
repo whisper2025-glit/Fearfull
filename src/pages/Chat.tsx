@@ -117,26 +117,18 @@ Aizawa: "introduce yourself and take`,
 
       {/* Chat Content */}
       <div className="flex-1 flex flex-col max-w-full mx-auto h-[calc(100vh-4rem)]">
+        {/* Scenario Card - In chat flow but with original styling */}
+        <div className="p-4">
+          <Card className="p-3 bg-card/50 border-primary/20">
+            <div className="flex items-start gap-2">
+              <span className="text-primary font-medium text-sm">Scenario:</span>
+              <p className="text-muted-foreground italic text-sm">{currentCharacter.scenario}</p>
+            </div>
+          </Card>
+        </div>
+
         {/* Messages */}
         <div className="flex-1 px-4 pb-4 overflow-y-auto">
-          {/* Scenario as first message */}
-          <div className="mb-4 mt-4">
-            <Card className="p-3 bg-card/30">
-              <div className="flex items-start gap-3">
-                <img
-                  src={currentCharacter.avatar}
-                  alt={currentCharacter.name}
-                  className="w-8 h-8 rounded-full object-cover flex-shrink-0"
-                />
-                <div className="flex-1">
-                  <p className="text-foreground whitespace-pre-wrap chat-text">
-                    <span className="text-primary font-medium">Scenario: </span>
-                    <span className="italic">{currentCharacter.scenario}</span>
-                  </p>
-                </div>
-              </div>
-            </Card>
-          </div>
           {allMessages.map((msg) => (
             <div key={msg.id} className="mb-4">
               <Card className={`p-3 ${msg.isBot ? 'bg-card/30' : 'bg-primary/10 ml-8'}`}>
