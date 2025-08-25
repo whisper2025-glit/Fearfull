@@ -328,11 +328,11 @@ const CreateCharacter = () => {
 
                 {/* Greeting */}
                 <div className="space-y-4">
-                  <Label className="text-primary text-base font-medium flex items-center gap-2">
+                  <Label className="text-primary text-sm font-medium flex items-center gap-2">
                     Greeting <span className="text-primary">*</span>
                     <Info className="h-4 w-4 text-muted-foreground" />
                   </Label>
-                  <p className="text-muted-foreground text-sm leading-relaxed">
+                  <p className="text-muted-foreground text-xs leading-relaxed">
                     The first message your character sends. This will only be included in short-term memory. 
                     <a href="#" className="text-blue-400 underline"> View the guide book.</a>
                   </p>
@@ -340,7 +340,7 @@ const CreateCharacter = () => {
                     placeholder="e.g. Hello {{user}}, how are you today?"
                     value={formData.greeting}
                     onChange={(e) => handleInputChange('greeting', e.target.value)}
-                    className="min-h-[120px] text-sm bg-secondary/50 border-border rounded-lg resize-none placeholder:text-muted-foreground/70"
+                    className="min-h-[120px] text-xs bg-secondary/50 border-border rounded-lg resize-none placeholder:text-muted-foreground/70"
                   />
                   <div className="flex justify-between items-center">
                     <p className="text-muted-foreground text-sm">{getCharacterCount(formData.greeting)} Chars</p>
