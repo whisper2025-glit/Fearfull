@@ -259,7 +259,7 @@ Aizawa: "introduce yourself and take`,
       )}
 
       {/* Header */}
-      <header className="relative z-10 flex items-center justify-between p-4 border-b border-border bg-background/80 backdrop-blur-sm">
+      <header className="relative z-10 flex items-center justify-between p-4 border-b border-border/30 bg-background/20 backdrop-blur-sm">
         <div className="flex items-center gap-3">
           <Button 
             variant="ghost" 
