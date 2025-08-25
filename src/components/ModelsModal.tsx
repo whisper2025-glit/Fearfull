@@ -295,10 +295,10 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
           {view === 'main' ? (
             <>
               {/* Controls */}
-              <div className="flex gap-2 mb-4">
+              <div className="flex gap-3 mb-4">
                 <Button
                   variant="outline"
-                  className="flex items-center gap-2 text-xs"
+                  className="flex items-center gap-2 bg-[#2d2e3e] border-[#3d3e4e] text-white hover:bg-[#34354a] rounded-xl px-4 py-2"
                   style={{ fontSize: '12px' }}
                   onClick={() => setView('allModels')}
                 >
@@ -309,19 +309,19 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
                 <div className="relative">
                   <Button
                     variant="outline"
-                    className="flex items-center gap-2 text-xs"
+                    className="flex items-center gap-2 bg-[#1a1b2e] border-[#3d3e4e] text-white hover:bg-[#2d2e3e] rounded-xl px-4 py-2"
                     style={{ fontSize: '12px' }}
                     onClick={() => setShowDropdown(!showDropdown)}
                   >
                     {filterType === 'active' ? 'Active' : filterType === 'new' ? 'New' : 'Popular'}
                     <ChevronDown className="h-3 w-3" />
                   </Button>
-                  
+
                   {showDropdown && (
-                    <div className="absolute top-full left-0 mt-1 bg-background border border-border rounded-md shadow-lg z-50 min-w-[120px]">
+                    <div className="absolute top-full left-0 mt-1 bg-[#e74c8c] border border-[#c44f93] rounded-xl shadow-lg z-50 min-w-[120px]">
                       <div className="p-1">
                         <button
-                          className="w-full text-left px-3 py-2 text-xs hover:bg-accent rounded text-primary"
+                          className="w-full text-left px-3 py-2 text-xs hover:bg-[#d63384] rounded-lg text-white font-medium"
                           style={{ fontSize: '12px' }}
                           onClick={() => {
                             setFilterType('active');
@@ -331,7 +331,7 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
                           Active
                         </button>
                         <button
-                          className="w-full text-left px-3 py-2 text-xs hover:bg-accent rounded"
+                          className="w-full text-left px-3 py-2 text-xs hover:bg-[#d63384] rounded-lg text-white"
                           style={{ fontSize: '12px' }}
                           onClick={() => {
                             setFilterType('new');
@@ -341,7 +341,7 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
                           New
                         </button>
                         <button
-                          className="w-full text-left px-3 py-2 text-xs hover:bg-accent rounded"
+                          className="w-full text-left px-3 py-2 text-xs hover:bg-[#d63384] rounded-lg text-white"
                           style={{ fontSize: '12px' }}
                           onClick={() => {
                             setFilterType('popular');
@@ -355,16 +355,9 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
                   )}
                 </div>
 
-                <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-3 w-3 text-muted-foreground" />
-                  <Input
-                    placeholder="Search models..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-8 text-xs"
-                    style={{ fontSize: '12px' }}
-                  />
-                </div>
+                <Button variant="ghost" size="icon" className="text-white hover:bg-[#2d2e3e] rounded-xl">
+                  <Search className="h-4 w-4" />
+                </Button>
               </div>
 
               {/* Currently Using */}
