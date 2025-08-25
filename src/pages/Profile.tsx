@@ -172,6 +172,18 @@ const Profile = () => {
             className="h-64 bg-gradient-to-br from-blue-600 to-purple-700 bg-cover bg-center relative"
             style={userProfile.banner ? { backgroundImage: `url(${userProfile.banner})` } : {}}
           >
+            {/* Back button */}
+            <div className="absolute top-4 left-4">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="bg-black/20 hover:bg-black/40 text-white"
+                onClick={() => navigate(-1)}
+              >
+                <ChevronLeft className="h-5 w-5" />
+              </Button>
+            </div>
+
             {/* Overlay buttons */}
             <div className="absolute top-4 right-4 flex items-center gap-2">
               <Button variant="ghost" size="icon" className="bg-black/20 hover:bg-black/40 text-white">
