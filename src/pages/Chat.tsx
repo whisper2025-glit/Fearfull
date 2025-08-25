@@ -292,7 +292,7 @@ Aizawa: "introduce yourself and take`,
       </header>
 
       {/* Chat Content */}
-      <div className="flex-1 flex flex-col max-w-full mx-auto h-[calc(100vh-4rem)]">
+      <div className="relative z-10 flex-1 flex flex-col max-w-full mx-auto h-[calc(100vh-4rem)]">
         {/* Messages */}
         <div className="flex-1 px-4 py-4 overflow-y-auto">
           {allMessages.map((msg) => (
