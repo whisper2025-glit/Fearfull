@@ -51,6 +51,7 @@ const mockModels: Model[] = [
     isActive: true,
     isPremium: false,
     isMain: true,
+    provider: 'mistral',
     tier: 'standard'
   },
   {
@@ -66,6 +67,7 @@ const mockModels: Model[] = [
     isActive: false,
     isPremium: false,
     isMain: false,
+    provider: 'meta',
     tier: 'standard'
   },
   {
@@ -81,6 +83,7 @@ const mockModels: Model[] = [
     isActive: false,
     isPremium: false,
     isMain: false,
+    provider: 'z-ai',
     tier: 'standard'
   },
   {
@@ -96,6 +99,7 @@ const mockModels: Model[] = [
     isActive: false,
     isPremium: false,
     isMain: false,
+    provider: 'openai',
     tier: 'standard'
   },
   {
@@ -111,6 +115,7 @@ const mockModels: Model[] = [
     isActive: false,
     isPremium: false,
     isMain: false,
+    provider: 'deepseek',
     tier: 'standard'
   },
   {
@@ -126,6 +131,7 @@ const mockModels: Model[] = [
     isActive: false,
     isPremium: false,
     isMain: false,
+    provider: 'qwen',
     tier: 'standard'
   }
 ];
