@@ -7,7 +7,9 @@ import Index from "./pages/Index";
 import Chat from "./pages/Chat";
 import CreateCharacter from "./pages/CreateCharacter";
 import Profile from "./pages/Profile";
+import AuthPage from "./pages/AuthPage";
 import NotFound from "./pages/NotFound";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const queryClient = new QueryClient();
 
@@ -21,7 +23,12 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/chat/:characterId" element={<Chat />} />
           <Route path="/create" element={<CreateCharacter />} />
-          <Route path="/profile" element={<Profile />} />
+          <Route path="/profile" element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          } />
+          <Route path="/auth" element={<AuthPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

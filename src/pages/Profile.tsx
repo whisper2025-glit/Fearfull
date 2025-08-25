@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useUser, useClerk } from "@clerk/clerk-react";
 import { Layout } from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { 
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -15,19 +16,36 @@ import { Textarea } from "@/components/ui/textarea";
 import { ChevronLeft, Settings, Gift, MoreHorizontal, X, Camera, Star } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { CharacterCard } from "@/components/CharacterCard";
+import SettingsSheet from "@/components/SettingsSheet";
 
 const Profile = () => {
   const navigate = useNavigate();
+  const { user } = useUser();
   const [activeTab, setActiveTab] = useState('favorites');
   const [sortBy, setSortBy] = useState('newest');
   const [editModalOpen, setEditModalOpen] = useState(false);
+
+  // ProtectedRoute handles authentication, so we can assume user is signed in
+
+  // User profile state with Clerk data
   const [userProfile, setUserProfile] = useState({
-    name: 'Leon',
-    bio: '17 years old',
-    gender: 'Male',
-    avatar: '/lovable-uploads/3eab3055-d06f-48a5-9790-123de7769f97.png',
-    banner: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&h=300&fit=crop'
+    name: user?.firstName || user?.username || 'User',
+    bio: '',
+    gender: '',
+    avatar: user?.imageUrl || '',
+    banner: ''
   });
+
+  // Update profile when user data changes
+  useEffect(() => {
+    if (user) {
+      setUserProfile(prev => ({
+        ...prev,
+        name: user.firstName || user.username || 'User',
+        avatar: user.imageUrl || prev.avatar
+      }));
+    }
+  }, [user]);
 
   const handleBannerUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -40,64 +58,37 @@ const Profile = () => {
     }
   };
 
-  const handleAvatarUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setUserProfile({...userProfile, avatar: e.target?.result as string});
-      };
-      reader.readAsDataURL(file);
+    if (file && user) {
+      try {
+        // Upload avatar to Clerk
+        await user.setProfileImage({ file });
+
+        // Update local state with new avatar URL
+        setUserProfile(prev => ({
+          ...prev,
+          avatar: user.imageUrl || prev.avatar
+        }));
+      } catch (error) {
+        console.error('Error uploading avatar:', error);
+        // Handle error - maybe show a toast notification
+      }
     }
   };
 
+  // User stats - these would come from your backend/database in a real app
   const stats = {
     followers: 0,
-    following: 1,
+    following: 0,
     likes: 0,
     publicBots: 0,
-    favorites: 4,
+    favorites: 0,
     posts: 0
   };
 
-  const favoriteCharacters = [
-    {
-      id: 1,
-      name: 'Mikzu',
-      description: 'Your Personal Freeuse Spanking Maid!',
-      image: '/lovable-uploads/f455db46-8eae-4432-a644-f977619b90eb.png',
-      category: 'Anime',
-      stats: { messages: 1234, likes: 567 },
-      tags: ['Cheerful', 'Resilient', 'Flirty', 'Professional']
-    },
-    {
-      id: 2,
-      name: 'Mason-Kyson th...',
-      description: "You're under our command, darling~",
-      image: '/lovable-uploads/3eab3055-d06f-48a5-9790-123de7769f97.png',
-      category: 'Romance',
-      stats: { messages: 2156, likes: 892 },
-      tags: ['Seductive', 'Dark', 'Male', 'Mafia']
-    },
-    {
-      id: 3,
-      name: 'Luna',
-      description: 'An ancient sorceress wielding powerful magic',
-      image: '/lovable-uploads/f455db46-8eae-4432-a644-f977619b90eb.png',
-      category: 'Fantasy',
-      stats: { messages: 876, likes: 234 },
-      tags: ['Mysterious', 'Powerful', 'Ancient', 'Magic']
-    },
-    {
-      id: 4,
-      name: 'Aria',
-      description: 'A talented musician with a mysterious past',
-      image: '/lovable-uploads/3eab3055-d06f-48a5-9790-123de7769f97.png',
-      category: 'Romance',
-      stats: { messages: 3421, likes: 1567 },
-      tags: ['Musical', 'Mysterious', 'Talented', 'Artist']
-    }
-  ];
+  // Characters data - these would come from your backend/database in a real app
+  const favoriteCharacters: any[] = [];
 
   const tabs = [
     { id: 'bots', label: 'Public Bots', count: stats.publicBots },
@@ -112,9 +103,25 @@ const Profile = () => {
     { id: 'likes', label: 'Likes' }
   ];
 
-  const handleSaveProfile = () => {
-    setEditModalOpen(false);
-    // Handle save logic here
+  const handleSaveProfile = async () => {
+    try {
+      if (user) {
+        // Update Clerk user profile
+        await user.update({
+          firstName: userProfile.name,
+        });
+
+        // Update avatar if changed
+        if (userProfile.avatar && userProfile.avatar !== user.imageUrl) {
+          // Note: Avatar upload would typically require a file upload to Clerk
+          // For now, we'll just update the local state
+        }
+      }
+      setEditModalOpen(false);
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      // Handle error - maybe show a toast notification
+    }
   };
 
   const FavoriteCharacterCard = ({ character }: { character: any }) => (
@@ -162,6 +169,20 @@ const Profile = () => {
     </div>
   );
 
+  // Show loading if user data is not yet available
+  if (!user) {
+    return (
+      <Layout>
+        <div className="flex-1 flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary mx-auto"></div>
+            <p className="mt-4 text-muted-foreground">Loading profile...</p>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
   return (
     <Layout>
       <div className="flex-1 overflow-auto">
@@ -192,9 +213,11 @@ const Profile = () => {
               <Button variant="ghost" size="icon" className="bg-black/20 hover:bg-black/40 text-white">
                 <Gift className="h-5 w-5" />
               </Button>
-              <Button variant="ghost" size="icon" className="bg-black/20 hover:bg-black/40 text-white">
-                <Settings className="h-5 w-5" />
-              </Button>
+              <SettingsSheet>
+                <Button variant="ghost" size="icon" className="bg-black/20 hover:bg-black/40 text-white">
+                  <Settings className="h-5 w-5" />
+                </Button>
+              </SettingsSheet>
             </div>
 
             {/* Profile Info - Positioned at bottom of banner */}

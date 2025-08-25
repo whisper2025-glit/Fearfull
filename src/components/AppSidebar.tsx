@@ -11,6 +11,7 @@ import {
   Crown
 } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useUser, useClerk, SignInButton, SignUpButton } from "@clerk/clerk-react";
 import {
   Sidebar,
   SidebarContent,
@@ -38,7 +39,6 @@ const menuItems = [
   { title: "Search", url: "/search", icon: Search },
   { title: "Joybook", url: "/joybook", icon: BookOpen },
   { title: "Toolkit", url: "/toolkit", icon: Wrench },
-  { title: "My Bots", url: "/my-bots", icon: Bot },
   { title: "Settings", url: "/settings", icon: Settings },
 ];
 
@@ -49,19 +49,27 @@ export function AppSidebar() {
   const currentPath = location.pathname;
   const collapsed = state === "collapsed";
 
+  // Clerk authentication hooks
+  const { isSignedIn, user } = useUser();
+  const { signOut } = useClerk();
+
   const isActive = (path: string) => currentPath === path;
+
+  const handleSignOut = async () => {
+    await signOut();
+  };
 
   return (
     <Sidebar className={`${collapsed ? "w-16" : "w-72"} border-r border-sidebar-border bg-sidebar`}>
       <SidebarContent className="p-4 space-y-6">
         {/* Logo */}
         <div className="flex items-center gap-3 px-2">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-            <div className="w-4 h-4 bg-white rounded-sm transform rotate-45"></div>
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center">
+            <div className="w-4 h-4 bg-white rounded-sm transform rotate-12"></div>
           </div>
           {!collapsed && (
-            <span className="text-xl font-bold gradient-text">
-              AI Pals Place
+            <span className="text-xl font-bold text-white">
+              Joyland
             </span>
           )}
         </div>
@@ -94,54 +102,76 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        {/* Subscribe Button */}
-        <div className="mt-auto">
-          <Button 
-            className="w-full bg-gradient-to-r from-primary to-accent hover:opacity-90 text-white font-medium"
-            size={collapsed ? "icon" : "default"}
-          >
-            <Crown className="h-4 w-4" />
-            {!collapsed && <span className="ml-2">Subscribe -50%</span>}
-          </Button>
-        </div>
+        {/* Bottom Authentication Section */}
+        <div className="mt-auto space-y-3">
+          {isSignedIn ? (
+            <>
+              {/* Subscribe Button for authenticated users */}
+              <Button
+                className="w-full bg-gradient-to-r from-primary to-accent hover:opacity-90 text-white font-medium"
+                size={collapsed ? "icon" : "default"}
+              >
+                <Crown className="h-4 w-4" />
+                {!collapsed && <span className="ml-2">Subscribe -50%</span>}
+              </Button>
 
-        {/* User Profile */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              className="flex items-center gap-3 p-2 rounded-xl bg-sidebar-accent hover:bg-sidebar-accent/80 w-full justify-start h-auto"
-            >
-              <Avatar className="w-8 h-8 flex-shrink-0">
-                <AvatarImage src="/lovable-uploads/3eab3055-d06f-48a5-9790-123de7769f97.png" />
-                <AvatarFallback className="bg-gradient-to-br from-blue-400 to-purple-500 text-white text-sm">L</AvatarFallback>
-              </Avatar>
-              {!collapsed && (
-                <div className="flex-1 text-left">
-                  <p className="text-sm font-medium">Leon</p>
-                  <p className="text-xs text-muted-foreground">Free Plan</p>
-                </div>
-              )}
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent side="top" align="start" className="bg-background border-border mb-2">
-            <DropdownMenuItem onClick={() => navigate('/profile')} className="cursor-pointer">
-              Profile
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => navigate('/settings')} className="cursor-pointer">
-              Settings
-            </DropdownMenuItem>
-            <DropdownMenuItem className="cursor-pointer">
-              Task
-            </DropdownMenuItem>
-            <DropdownMenuItem className="cursor-pointer">
-              User guide
-            </DropdownMenuItem>
-            <DropdownMenuItem className="cursor-pointer">
-              Join Discord
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+              {/* User Profile */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    className="flex items-center gap-3 p-2 rounded-xl bg-sidebar-accent hover:bg-sidebar-accent/80 w-full justify-start h-auto"
+                  >
+                    <Avatar className="w-8 h-8 flex-shrink-0">
+                      <AvatarImage src={user?.imageUrl} />
+                      <AvatarFallback className="bg-gradient-to-br from-blue-400 to-purple-500 text-white text-sm">
+                        {user?.firstName?.charAt(0) || user?.emailAddresses[0]?.emailAddress?.charAt(0) || "U"}
+                      </AvatarFallback>
+                    </Avatar>
+                    {!collapsed && (
+                      <div className="flex-1 text-left">
+                        <p className="text-sm font-medium">
+                          {user?.firstName || user?.emailAddresses[0]?.emailAddress || "User"}
+                        </p>
+                        <p className="text-xs text-muted-foreground">Free Plan</p>
+                      </div>
+                    )}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent side="top" align="start" className="bg-background border-border mb-2">
+                  <DropdownMenuItem onClick={() => navigate('/profile')} className="cursor-pointer">
+                    Profile
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate('/settings')} className="cursor-pointer">
+                    Settings
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="cursor-pointer">
+                    Task
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="cursor-pointer">
+                    User guide
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="cursor-pointer">
+                    Join Discord
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer text-red-600">
+                    Log out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </>
+          ) : (
+            /* Log in / Sign up Button for unauthenticated users */
+            <SignInButton mode="modal" fallbackRedirectUrl="/" signUpFallbackRedirectUrl="/">
+              <Button
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-full h-12"
+                size="default"
+              >
+                {!collapsed ? "Log in / Sign up" : "Login"}
+              </Button>
+            </SignInButton>
+          )}
+        </div>
       </SidebarContent>
     </Sidebar>
   );
