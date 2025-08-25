@@ -164,19 +164,19 @@ Aizawa: "introduce yourself and take`,
             <div key={msg.id} className="mb-4">
               {msg.type === 'intro' ? (
                 <Card className="relative p-4 bg-card/60 border-accent/30 shadow-md overflow-hidden">
-                  {/* Character Avatar - positioned in upper area */}
-                  <div className="absolute top-4 left-4 z-10">
-                    <img
-                      src={currentCharacter.avatar}
-                      alt={currentCharacter.name}
-                      className="w-12 h-12 rounded-full object-cover border-2 border-background/20"
-                    />
-                  </div>
-
                   {/* Background overlay for better text readability */}
                   <div className="absolute inset-0 bg-gradient-to-r from-background/40 to-background/60" />
 
-                  <div className="relative z-10 space-y-3 pl-16">
+                  <div className="relative z-10 space-y-3">
+                    {/* Character Avatar - positioned at top center */}
+                    <div className="flex justify-center">
+                      <img
+                        src={currentCharacter.avatar}
+                        alt={currentCharacter.name}
+                        className="w-16 h-16 rounded-full object-cover border-2 border-background/20"
+                      />
+                    </div>
+
                     {/* Character Title */}
                     <div className="text-center">
                       <h2 className="text-lg font-bold text-foreground">{msg.characterName}</h2>
