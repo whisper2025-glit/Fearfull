@@ -120,9 +120,48 @@ Aizawa: "introduce yourself and take`,
       try {
         const characterData = JSON.parse(savedCharacter);
         if (characterData.id === characterId) {
-          // This is a newly created character, we could update the characters object here
-          // For now, we'll just use the scene background
+          // This is a newly created character, update the characters object
           console.log('Loaded newly created character:', characterData.name);
+
+          const newCharacter: Character = {
+            name: characterData.name,
+            author: "You", // Mark as user-created
+            intro: characterData.intro || "No introduction provided",
+            scenario: characterData.scenario || "",
+            avatar: characterData.characterImage || "/lovable-uploads/3eab3055-d06f-48a5-9790-123de7769f97.png",
+            messages: [
+              {
+                id: -2,
+                content: characterData.intro || "No introduction provided",
+                isBot: true,
+                timestamp: "now",
+                type: "intro",
+                characterName: characterData.name,
+                author: "You"
+              },
+              // Only add scenario message if scenario exists
+              ...(characterData.scenario ? [{
+                id: -1,
+                content: characterData.scenario,
+                isBot: true,
+                timestamp: "now",
+                type: "scenario" as const
+              }] : []),
+              // Add greeting as first regular message if provided
+              ...(characterData.greeting ? [{
+                id: 1,
+                content: characterData.greeting,
+                isBot: true,
+                timestamp: "now",
+                type: "regular" as const
+              }] : [])
+            ]
+          };
+
+          setCharacters(prev => ({
+            ...prev,
+            [characterData.id]: newCharacter
+          }));
         }
       } catch (error) {
         console.error('Error parsing saved character:', error);
