@@ -438,7 +438,7 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
         </div>
 
           {/* Footer */}
-          <div className="p-3 border-t border-[#2d2e3e] flex-shrink-0 mt-2">
+          <div className="p-4 border-t border-[#2d2e3e] flex-shrink-0">
             {selectedModel && (
               <div className="bg-[#1a4d5c] p-2 rounded-lg mb-3">
                 <p className="text-xs text-gray-400 mb-0.5" style={{ fontSize: '11px' }}>Selected Model:</p>
