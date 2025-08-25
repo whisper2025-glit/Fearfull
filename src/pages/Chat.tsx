@@ -53,8 +53,8 @@ const Chat = () => {
   });
   const [isLoading, setIsLoading] = useState(false);
 
-  // Mock character data - in a real app this would come from an API
-  const characters: Record<string, Character> = {
+  // Initialize characters state to allow for dynamic character loading
+  const [characters, setCharacters] = useState<Record<string, Character>>({
     "1": {
       name: "You Are Like Your Father - Angela",
       author: "@Just a Random Guy",
@@ -102,7 +102,7 @@ Aizawa: "introduce yourself and take`,
       ]
     },
     // Add other characters as needed
-  };
+  });
 
   const currentCharacter = characters[characterId as keyof typeof characters] || characters["1"];
 
