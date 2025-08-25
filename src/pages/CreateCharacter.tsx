@@ -209,13 +209,39 @@ const CreateCharacter = () => {
                   <span className="bg-cyan-400 text-black px-2 py-1 rounded-full text-xs font-bold">New</span>
                   <ChevronUp className="h-4 w-4 text-primary ml-auto" />
                 </div>
-                <div className="w-full h-48 relative bg-secondary/30 rounded-lg border-2 border-dashed border-border flex items-center justify-center">
-                  <div className="flex flex-col items-center space-y-4">
-                    <div className="w-24 h-24 bg-muted rounded-lg flex items-center justify-center">
-                      <Upload className="h-12 w-12 text-muted-foreground" />
+                <div
+                  className="w-full h-48 relative bg-secondary/30 rounded-lg border-2 border-dashed border-border flex items-center justify-center cursor-pointer hover:bg-secondary/40 transition-colors"
+                  onClick={() => document.getElementById('scene-image-input')?.click()}
+                >
+                  {formData.sceneImage ? (
+                    <div className="relative w-full h-full">
+                      <img
+                        src={formData.sceneImage}
+                        alt="Scene preview"
+                        className="w-full h-full object-cover rounded-lg"
+                      />
+                      <div className="absolute inset-0 bg-black/20 rounded-lg flex items-center justify-center">
+                        <p className="text-white text-sm font-medium bg-black/50 px-2 py-1 rounded">Scene Background</p>
+                      </div>
                     </div>
-                    <p className="text-muted-foreground text-sm font-medium">Upload Scene Image</p>
-                  </div>
+                  ) : (
+                    <div className="flex flex-col items-center space-y-4">
+                      <div className="w-24 h-24 bg-muted rounded-lg flex items-center justify-center">
+                        <Upload className="h-12 w-12 text-muted-foreground" />
+                      </div>
+                      <p className="text-muted-foreground text-sm font-medium">Upload Scene Image</p>
+                    </div>
+                  )}
+                  <input
+                    id="scene-image-input"
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) handleImageUpload('sceneImage', file);
+                    }}
+                  />
                 </div>
                 <div className="bg-secondary/30 rounded-lg p-4">
                   <p className="text-muted-foreground text-xs leading-relaxed">
