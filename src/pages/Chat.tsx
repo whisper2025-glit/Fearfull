@@ -85,25 +85,27 @@ Aizawa: "introduce yourself and take`,
 
   const handleSendMessage = () => {
     if (!message.trim()) return;
-    
+
     // Add user message
-    const userMessage = {
+    const userMessage: Message = {
       id: Date.now(),
       content: message,
       isBot: false,
-      timestamp: "now"
+      timestamp: "now",
+      type: "regular"
     };
-    
+
     setMessages(prev => [...prev, userMessage]);
     setMessage("");
-    
+
     // Simulate bot response
     setTimeout(() => {
-      const botMessage = {
+      const botMessage: Message = {
         id: Date.now() + 1,
         content: "Thanks for your message! This is a simulated response from the AI character.",
         isBot: true,
-        timestamp: "now"
+        timestamp: "now",
+        type: "regular"
       };
       setMessages(prev => [...prev, botMessage]);
     }, 1000);
