@@ -14,7 +14,9 @@ const Chat = () => {
   // Mock character data - in a real app this would come from an API
   const characters = {
     "1": {
-      name: "Class 1-A",
+      name: "You Are Like Your Father - Angela",
+      author: "@Just a Random Guy",
+      intro: "Since your parents divorced, your mom Angela has never treated you the same. Cold, bitter, and always picking fights, like she blames you for everything your father did.",
       scenario: "You are the new student from Shiketsu high! And today is your first day! (Any gender and quirk!)",
       avatar: "/lovable-uploads/3eab3055-d06f-48a5-9790-123de7769f97.png",
       messages: [
