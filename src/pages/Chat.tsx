@@ -5,18 +5,23 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 
+interface Message {
+  id: number;
+  content: string;
+  isBot: boolean;
+  timestamp: string;
+  type?: 'intro' | 'scenario' | 'regular';
+  characterName?: string;
+  author?: string;
+}
+
 interface Character {
   name: string;
   author: string;
   intro: string;
   scenario: string;
   avatar: string;
-  messages: Array<{
-    id: number;
-    content: string;
-    isBot: boolean;
-    timestamp: string;
-  }>;
+  messages: Message[];
 }
 
 const Chat = () => {
