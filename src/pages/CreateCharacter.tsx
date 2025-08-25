@@ -302,11 +302,11 @@ const CreateCharacter = () => {
 
               {/* Character Definition Section */}
               <div className="space-y-6">
-                <h3 className="text-primary text-lg font-medium">Character Definition</h3>
+                <h3 className="text-primary text-sm font-medium">Character Definition</h3>
                 
                 {/* Public Definition */}
                 <div className="space-y-4">
-                  <Label className="text-primary text-base font-medium flex items-center gap-2">
+                  <Label className="text-primary text-sm font-medium flex items-center gap-2">
                     Public definition <span className="text-primary">*</span>
                     <Info className="h-4 w-4 text-muted-foreground" />
                   </Label>
@@ -317,11 +317,11 @@ const CreateCharacter = () => {
                   >
                     <div className="flex items-center space-x-3">
                       <RadioGroupItem value="yes" id="yes" className="border-primary" />
-                      <Label htmlFor="yes" className="text-sm font-medium">Yes</Label>
+                      <Label htmlFor="yes" className="text-xs font-medium">Yes</Label>
                     </div>
                     <div className="flex items-center space-x-3">
                       <RadioGroupItem value="no" id="no" className="border-primary text-primary" />
-                      <Label htmlFor="no" className="text-sm font-medium">No</Label>
+                      <Label htmlFor="no" className="text-xs font-medium">No</Label>
                     </div>
                   </RadioGroup>
                 </div>
