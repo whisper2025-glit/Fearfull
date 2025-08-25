@@ -119,8 +119,29 @@ Aizawa: "introduce yourself and take`,
 
       {/* Chat Content */}
       <div className="flex-1 flex flex-col max-w-full mx-auto h-[calc(100vh-4rem)]">
+        {/* Intro Block */}
+        <div className="p-4 pb-2">
+          <Card className="p-4 bg-card/60 border-accent/30 shadow-md">
+            <div className="space-y-3">
+              {/* Character Title */}
+              <div className="text-center">
+                <h2 className="text-lg font-bold text-foreground">{currentCharacter.name}</h2>
+                <p className="text-sm text-primary/80 mt-1">{currentCharacter.author}</p>
+              </div>
+
+              {/* Intro Section */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-center">
+                  <span className="text-accent font-semibold text-sm bg-accent/10 px-3 py-1 rounded-full">Intro</span>
+                </div>
+                <p className="text-foreground text-sm leading-relaxed text-center">{currentCharacter.intro}</p>
+              </div>
+            </div>
+          </Card>
+        </div>
+
         {/* Scenario Card - In chat flow but with original styling */}
-        <div className="p-4">
+        <div className="px-4 pb-4">
           <Card className="p-3 bg-card/50 border-primary/20">
             <div className="flex items-start gap-2">
               <span className="text-primary font-medium text-sm">Scenario:</span>
