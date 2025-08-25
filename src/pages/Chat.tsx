@@ -349,7 +349,7 @@ Aizawa: "introduce yourself and take`,
                   </div>
                 </Card>
               ) : (
-                <Card className={`p-3 ${msg.isBot ? 'bg-card/30' : 'bg-primary/10 ml-8'}`}>
+                <Card className={`p-3 ${msg.isBot ? 'bg-card/20 backdrop-blur-sm' : 'bg-primary/20 ml-8 backdrop-blur-sm'}`}>
                   <div className="flex items-start gap-3">
                     {msg.isBot && (
                       <img
