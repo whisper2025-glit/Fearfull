@@ -234,22 +234,22 @@ Aizawa: "introduce yourself and take`,
         </div>
 
         {/* Action Buttons */}
-        <div className="px-4 pb-2">
-          <div className="flex gap-2 mb-3 flex-wrap">
-            <Button variant="outline" size="sm" className="flex items-center gap-2 text-xs">
+        <div className="pb-2">
+          <div className="flex gap-2 mb-3 overflow-x-auto px-4 scrollbar-hide">
+            <Button variant="outline" size="sm" className="flex items-center gap-2 text-xs whitespace-nowrap flex-shrink-0">
               <Lightbulb className="h-3 w-3" />
               Suggest
             </Button>
-            <Button variant="outline" size="sm" className="flex items-center gap-2 text-xs">
+            <Button variant="outline" size="sm" className="flex items-center gap-2 text-xs whitespace-nowrap flex-shrink-0">
               <Clock className="h-3 w-3" />
               Memory
               <div className="w-1.5 h-1.5 bg-pink-500 rounded-full" />
             </Button>
-            <Button variant="outline" size="sm" className="flex items-center gap-2 text-xs">
+            <Button variant="outline" size="sm" className="flex items-center gap-2 text-xs whitespace-nowrap flex-shrink-0">
               <Users className="h-3 w-3" />
               Persona
             </Button>
-            <Button variant="outline" size="sm" className="flex items-center gap-2 text-xs">
+            <Button variant="outline" size="sm" className="flex items-center gap-2 text-xs whitespace-nowrap flex-shrink-0">
               <User className="h-3 w-3" />
               Profile
             </Button>
