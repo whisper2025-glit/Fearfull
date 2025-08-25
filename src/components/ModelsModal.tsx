@@ -228,7 +228,7 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md max-h-[70vh] bg-[#1a1b2e] border-[#2d2e3e] p-0 rounded-2xl fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[90vw] sm:w-auto">
+      <DialogContent className="max-w-lg max-h-[75vh] bg-[#1a1b2e] border-[#2d2e3e] p-0 rounded-2xl w-[95vw] sm:w-auto sm:max-w-lg">
         <div className="flex flex-col h-full">
           <DialogHeader className="p-3 pb-2 flex-shrink-0">
             <div className="flex items-center justify-between">
