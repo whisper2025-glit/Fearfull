@@ -189,9 +189,19 @@ export const generateUniqueUsername = async (baseName: string): Promise<string> 
 };
 
 export const createOrUpdateUser = async (clerkUser: any) => {
+  console.log('🔧 createOrUpdateUser called with:', {
+    id: clerkUser.id,
+    firstName: clerkUser.firstName,
+    fullName: clerkUser.fullName,
+    username: clerkUser.username,
+    email: clerkUser.emailAddresses?.[0]?.emailAddress
+  });
+
   const username = await generateUniqueUsername(
     clerkUser.firstName || clerkUser.username || clerkUser.emailAddresses?.[0]?.emailAddress?.split('@')[0] || 'user'
   );
+
+  console.log('🏷️ Generated username:', username);
 
   const userData = {
     id: clerkUser.id,
@@ -202,6 +212,8 @@ export const createOrUpdateUser = async (clerkUser: any) => {
     updated_at: new Date().toISOString()
   };
 
+  console.log('📊 User data to upsert:', userData);
+
   const { data, error } = await supabase
     .from('users')
     .upsert(userData, {
@@ -210,6 +222,11 @@ export const createOrUpdateUser = async (clerkUser: any) => {
     .select()
     .single();
 
-  if (error) throw error;
+  if (error) {
+    console.error('❌ Supabase upsert error:', error);
+    throw error;
+  }
+
+  console.log('✅ Supabase upsert successful:', data);
   return data;
 };
