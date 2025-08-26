@@ -63,14 +63,6 @@ const Chat = () => {
   const [currentConversationId, setCurrentConversationId] = useState<string | null>(conversationId);
 
   const { user } = useUser();
-  const { getToken } = useAuth();
-
-  // Create authenticated Supabase client
-  const getAuthenticatedSupabase = () => {
-    return createSupabaseClientWithClerkAuth(async () => {
-      return await getToken({ template: 'supabase' });
-    });
-  };
 
   // Load character and messages from Supabase
   useEffect(() => {
