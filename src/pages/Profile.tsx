@@ -32,7 +32,6 @@ const Profile = () => {
 
   // User profile state with Supabase data
   const [userProfile, setUserProfile] = useState({
-    username: '',
     name: '',
     bio: '',
     gender: '',
@@ -68,7 +67,6 @@ const Profile = () => {
           console.error('Error loading user:', userError);
         } else if (userData) {
           setUserProfile({
-            username: userData.username,
             name: userData.full_name || user.firstName || user.username || 'User',
             bio: userData.bio || '',
             gender: '',
@@ -78,7 +76,6 @@ const Profile = () => {
         } else {
           // Set default values from Clerk
           setUserProfile({
-            username: user.username || 'user',
             name: user.firstName || user.username || 'User',
             bio: '',
             gender: '',
@@ -185,30 +182,14 @@ const Profile = () => {
   const handleSaveProfile = async () => {
     if (!user) return;
 
-    // Validate username length
-    if (userProfile.username.length < 2) {
-      toast.error('Username must be at least 2 characters long');
+    // Validate name length
+    if (userProfile.name.length < 2) {
+      toast.error('Name must be at least 2 characters long');
       return;
     }
 
     setIsSaving(true);
     try {
-      // Check if username is already taken by another user
-      const { data: existingUser, error: checkError } = await supabase
-        .from('users')
-        .select('id')
-        .eq('username', userProfile.username)
-        .single();
-
-      if (checkError && checkError.code !== 'PGRST116') {
-        throw checkError;
-      }
-
-      if (existingUser && existingUser.id !== user.id) {
-        toast.error('Username already taken. Please choose a different one.');
-        setIsSaving(false);
-        return;
-      }
 
       // Update Clerk user profile
       await user.update({
@@ -220,7 +201,6 @@ const Profile = () => {
         .from('users')
         .upsert({
           id: user.id,
-          username: userProfile.username,
           full_name: userProfile.name,
           email: user.emailAddresses?.[0]?.emailAddress || null,
           avatar_url: userProfile.avatar,
@@ -241,11 +221,7 @@ const Profile = () => {
         });
 
         // Provide more specific error messages
-        if (error.code === '23505' && error.message?.includes('username')) {
-          toast.error('Username already exists. Please try a different one.');
-        } else if (error.message?.includes('username')) {
-          toast.error('Username error: ' + error.message);
-        } else if (error.message?.includes('authentication') || error.message?.includes('unauthorized')) {
+        if (error.message?.includes('authentication') || error.message?.includes('unauthorized')) {
           toast.error('Authentication error. Please try logging out and back in.');
         } else {
           toast.error('Failed to save profile: ' + (error.message || 'Unknown error'));
@@ -442,10 +418,10 @@ const Profile = () => {
                         </div>
                       </div>
 
-                      {/* Display Name */}
+                      {/* Name */}
                       <div className="space-y-2">
-                        <Label htmlFor="name">Display Name</Label>
-                        <p className="text-xs text-muted-foreground">Your name as it appears on your profile</p>
+                        <Label htmlFor="name">Name</Label>
+                        <p className="text-xs text-muted-foreground">Your name as it appears on your profile and character cards</p>
                         <div className="relative">
                           <Input
                             id="name"
@@ -455,25 +431,7 @@ const Profile = () => {
                             placeholder="e.g. John Doe"
                           />
                           <span className="absolute right-3 top-3 text-xs text-muted-foreground">
-                            {userProfile.name.length}/20
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Username */}
-                      <div className="space-y-2">
-                        <Label htmlFor="username">Username</Label>
-                        <p className="text-xs text-muted-foreground">Your unique handle shown on character cards (lowercase letters and numbers only)</p>
-                        <div className="relative">
-                          <Input
-                            id="username"
-                            value={userProfile.username}
-                            onChange={(e) => setUserProfile({...userProfile, username: e.target.value.toLowerCase().replace(/[^a-z0-9]/g, '')})}
-                            className="bg-background border-border"
-                            placeholder="e.g. johndoe123"
-                          />
-                          <span className="absolute right-3 top-3 text-xs text-muted-foreground">
-                            {userProfile.username.length}/20
+                            {userProfile.name.length}/50
                           </span>
                         </div>
                       </div>
