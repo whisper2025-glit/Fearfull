@@ -9,6 +9,19 @@ if (!supabaseUrl || !supabaseAnonKey) {
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
+// Function to set Clerk token for Supabase authentication
+export const setSupabaseAuth = (token: string | null) => {
+  if (token) {
+    // Set the JWT token for Supabase to use for RLS
+    supabase.realtime.setAuth(token);
+    // Also set for regular API calls
+    supabase.rest.headers['Authorization'] = `Bearer ${token}`;
+  } else {
+    // Clear auth if no token
+    delete supabase.rest.headers['Authorization'];
+  }
+};
+
 // Database types
 export interface Database {
   public: {
