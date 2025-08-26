@@ -18,20 +18,13 @@ interface ChatItem {
   isVip?: boolean;
 }
 
-const chats: ChatItem[] = [
-  { id: "test-1", characterName: "Mika the Strategist", characterAvatar: "https://i.pravatar.cc/150?img=12", messagePreview: "*Mika lays out a daring plan for the next move...", timestamp: "4:09 am" },
-  { id: "test-2", characterName: "Ryo the Wanderer", characterAvatar: "https://i.pravatar.cc/150?img=15", messagePreview: "*Ryo smiles faintly as the campfire crackles...", timestamp: "Yesterday" },
-  { id: "test-3", characterName: "Luna the Healer", characterAvatar: "https://i.pravatar.cc/150?img=16", messagePreview: "*Luna hums softly while wrapping clean bandages...", timestamp: "Yesterday" },
-  { id: "test-4", characterName: "Kai the Scout", characterAvatar: "https://i.pravatar.cc/150?img=17", messagePreview: "*Footprints fade into the dunes as Kai returns...", timestamp: "08/24" },
-  { id: "test-5", characterName: "Iris the Tactician", characterAvatar: "https://i.pravatar.cc/150?img=18", messagePreview: "*Iris sketches a quick map, eyes sharp and calm...", timestamp: "08/24" },
-  { id: "test-6", characterName: "Dax the Outrider", characterAvatar: "https://i.pravatar.cc/150?img=19", messagePreview: "*Dax ties the reins with a practiced motion...", timestamp: "08/23" },
-  { id: "test-7", characterName: "Nia the Archivist", characterAvatar: "https://i.pravatar.cc/150?img=20", messagePreview: "*Nia flips to a bookmarked page with a smile...", timestamp: "08/23" },
-  { id: "test-8", characterName: "Evan the Smith", characterAvatar: "https://i.pravatar.cc/150?img=21", messagePreview: "*A final tap rings out as Evan lifts the blade...", timestamp: "08/23" },
-  { id: "test-9", characterName: "Sora the Courier", characterAvatar: "https://i.pravatar.cc/150?img=22", messagePreview: "*Sora tucks the sealed letter into a pouch...", timestamp: "08/22" },
-  { id: "test-10", characterName: "Arin the Scribe", characterAvatar: "https://i.pravatar.cc/150?img=23", messagePreview: "*Ink dries quickly as Arin sands the page...", timestamp: "08/22" },
-  { id: "test-11", characterName: "Mara the Captain", characterAvatar: "https://i.pravatar.cc/150?img=24", messagePreview: "*Mara raises her hand; the squad falls silent...", timestamp: "08/21" },
-  { id: "test-12", characterName: "Theo the Ranger", characterAvatar: "https://i.pravatar.cc/150?img=25", messagePreview: "*Theo checks the fletching on a fresh arrow...", timestamp: "08/21" }
-];
+const makeChat = (i: number): ChatItem => ({
+  id: `test-${i}`,
+  characterName: `User ${i}`,
+  characterAvatar: `https://i.pravatar.cc/150?img=${10 + (i % 70)}`,
+  messagePreview: `*Sample message snippet number ${i}...`,
+  timestamp: i % 2 === 0 ? 'Yesterday' : '4:09 am'
+});
 
 const Chats = () => {
   const { user } = useUser();
