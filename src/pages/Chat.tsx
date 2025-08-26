@@ -601,9 +601,23 @@ const Chat = () => {
       <PersonaModal
         open={isPersonaModalOpen}
         onOpenChange={setIsPersonaModalOpen}
-        onPersonaSelect={(persona) => {
+        onPersonaSelect={async (persona) => {
           setCurrentPersona(persona);
           setIsPersonaModalOpen(false);
+
+          // Update the current conversation with the new persona
+          if (currentConversationId) {
+            try {
+              await supabase
+                .from('conversations')
+                .update({ persona_id: persona.id })
+                .eq('id', currentConversationId);
+
+              console.log('✅ Conversation updated with new persona');
+            } catch (error) {
+              console.error('Error updating conversation persona:', error);
+            }
+          }
         }}
         currentPersona={currentPersona}
       />
