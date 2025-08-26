@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useUserSync } from "@/hooks/useUserSync";
 import Index from "./pages/Index";
 import Chat from "./pages/Chat";
+import Chats from "./pages/Chats";
 import CreateCharacter from "./pages/CreateCharacter";
 import Profile from "./pages/Profile";
 import AuthPage from "./pages/AuthPage";
@@ -26,6 +27,11 @@ const AppContent = () => {
         <Route path="/" element={
           <ProtectedRoute>
             <Index />
+          </ProtectedRoute>
+        } />
+        <Route path="/chats" element={
+          <ProtectedRoute>
+            <Chats />
           </ProtectedRoute>
         } />
         <Route path="/chat/:characterId" element={
