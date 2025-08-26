@@ -209,7 +209,7 @@ const Chats = () => {
                     onClick={() => startNewChat(character.id)}
                   >
                     <CardContent className="p-2">
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-2">
                         {/* Character Avatar */}
                         <Avatar className="w-12 h-12 flex-shrink-0">
                           <AvatarImage src={character.avatar_url} alt={character.name} />
