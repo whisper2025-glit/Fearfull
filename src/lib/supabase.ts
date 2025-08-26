@@ -392,9 +392,8 @@ export const createPersona = async (userId: string, personaData: Omit<PersonaDat
   }
 };
 
-export const updatePersona = async (personaId: string, personaData: Partial<Omit<PersonaData, 'id'>>, authenticatedClient?: any) => {
+export const updatePersona = async (personaId: string, personaData: Partial<Omit<PersonaData, 'id'>>) => {
   try {
-    const client = authenticatedClient || supabase;
     const updateData: any = {};
 
     if (personaData.name !== undefined) updateData.name = personaData.name;
@@ -402,7 +401,7 @@ export const updatePersona = async (personaId: string, personaData: Partial<Omit
     if (personaData.description !== undefined) updateData.description = personaData.description || null;
     if (personaData.applyToNewChats !== undefined) updateData.is_default = personaData.applyToNewChats;
 
-    const { data, error } = await client
+    const { data, error } = await supabase
       .from('personas')
       .update(updateData)
       .eq('id', personaId)
