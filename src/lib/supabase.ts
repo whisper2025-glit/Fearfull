@@ -52,7 +52,7 @@ export interface Database {
         };
         Insert: {
           id: string;
-          username: string;
+          username?: string | null;
           full_name?: string | null;
           email?: string | null;
           avatar_url?: string | null;
