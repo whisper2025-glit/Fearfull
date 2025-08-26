@@ -69,7 +69,7 @@ const Profile = () => {
           setUserProfile({
             name: userData.full_name || user.firstName || user.username || 'User',
             bio: userData.bio || '',
-            gender: '',
+            gender: userData.gender || '',
             avatar: userData.avatar_url || user.imageUrl || '',
             banner: userData.banner_url || ''
           });
