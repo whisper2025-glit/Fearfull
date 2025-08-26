@@ -1,12 +1,19 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { useUser } from "@clerk/clerk-react";
-import { ArrowLeft, Home, MoreHorizontal, Lightbulb, Clock, Users, Bot, ChevronDown, Loader2 } from "lucide-react";
+import { ArrowLeft, Home, MoreHorizontal, Lightbulb, Clock, Users, Bot, ChevronDown, Loader2, User, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { ModelsModal, Model } from "@/components/ModelsModal";
 import { PersonaModal } from "@/components/PersonaModal";
+import { SuggestModal } from "@/components/SuggestModal";
 import { openRouterAPI, ChatMessage } from "@/lib/openrouter";
 import { supabase, createOrUpdateUser, getDefaultPersona } from "@/lib/supabase";
 import { toast } from "sonner";
@@ -40,6 +47,7 @@ const Chat = () => {
   const [isIntroExpanded, setIsIntroExpanded] = useState(true);
   const [isModelsModalOpen, setIsModelsModalOpen] = useState(false);
   const [isPersonaModalOpen, setIsPersonaModalOpen] = useState(false);
+  const [isSuggestModalOpen, setIsSuggestModalOpen] = useState(false);
   const [currentPersona, setCurrentPersona] = useState<any>(null);
   const [sceneBackground, setSceneBackground] = useState<string>("");
   const [selectedModel, setSelectedModel] = useState<Model | null>({
@@ -243,8 +251,9 @@ const Chat = () => {
     loadDefaultPersona();
   }, [user, currentPersona]);
 
-  const handleSendMessage = async () => {
-    if (!message.trim() || isLoading || !currentCharacter || !user) return;
+  const handleSendMessage = async (messageContent?: string) => {
+    const messageToSend = messageContent || message;
+    if (!messageToSend.trim() || isLoading || !currentCharacter || !user) return;
 
     // Use default model if none selected
     const modelToUse = selectedModel || {
@@ -267,15 +276,18 @@ const Chat = () => {
     // Add user message to local state immediately for UI responsiveness
     const userMessage: Message = {
       id: Date.now(),
-      content: message,
+      content: messageToSend,
       isBot: false,
       timestamp: new Date().toLocaleTimeString(),
       type: "regular"
     };
 
     setMessages(prev => [...prev, userMessage]);
-    const currentMessage = message;
-    setMessage("");
+    const currentMessage = messageToSend;
+    // Only clear input if we're sending the current message (not a suggestion)
+    if (!messageContent) {
+      setMessage("");
+    }
     setIsLoading(true);
 
     try {
@@ -457,13 +469,27 @@ const Chat = () => {
           >
             <Home className="h-4 w-4" />
           </Button>
-          <Button 
-            variant="ghost" 
-            size="icon"
-            className="text-muted-foreground hover:text-foreground"
-          >
-            <MoreHorizontal className="h-4 w-4" />
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="text-muted-foreground hover:text-foreground"
+              >
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuItem onClick={() => console.log('Bot Profile clicked')}>
+                <User className="mr-2 h-4 w-4" />
+                Bot Profile
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => console.log('Chat Settings clicked')}>
+                <Settings className="mr-2 h-4 w-4" />
+                Chat Settings
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </header>
 
@@ -547,14 +573,14 @@ const Chat = () => {
         {/* Action Buttons */}
         <div className="pb-2 bg-background/20 backdrop-blur-sm">
           <div className="flex gap-2 mb-3 overflow-x-auto px-4 scrollbar-hide">
-            <Button variant="outline" size="sm" className="flex items-center gap-2 text-xs whitespace-nowrap flex-shrink-0">
+            <Button
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-2 text-xs whitespace-nowrap flex-shrink-0"
+              onClick={() => setIsSuggestModalOpen(true)}
+            >
               <Lightbulb className="h-3 w-3" />
               Suggest
-            </Button>
-            <Button variant="outline" size="sm" className="flex items-center gap-2 text-xs whitespace-nowrap flex-shrink-0">
-              <Clock className="h-3 w-3" />
-              Memory
-              <div className="w-1.5 h-1.5 bg-pink-500 rounded-full" />
             </Button>
             <Button
               variant="outline"
@@ -640,6 +666,26 @@ const Chat = () => {
           }
         }}
         currentPersona={currentPersona}
+      />
+
+      <SuggestModal
+        open={isSuggestModalOpen}
+        onOpenChange={setIsSuggestModalOpen}
+        onSuggestionSelect={async (suggestion) => {
+          setIsSuggestModalOpen(false);
+          await handleSendMessage(suggestion);
+        }}
+        chatContext={{
+          characterName: currentCharacter.name,
+          characterIntro: currentCharacter.intro,
+          characterScenario: currentCharacter.scenario,
+          recentMessages: allMessages.filter(msg => msg.type === 'regular').slice(-6).map(msg => ({
+            content: msg.content,
+            isBot: msg.isBot
+          })),
+          personaName: currentPersona?.name,
+          personaDescription: currentPersona?.description
+        }}
       />
     </div>
   );
