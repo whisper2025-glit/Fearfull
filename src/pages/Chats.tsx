@@ -30,6 +30,34 @@ const Chats = () => {
   const { user } = useUser();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("individual");
+  const [items, setItems] = useState<ChatItem[]>(Array.from({ length: 20 }, (_, idx) => makeChat(idx + 1)));
+  const loadingRef = useRef(false);
+  const nextIndexRef = useRef(items.length + 1);
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
+
+  const loadMore = useCallback(() => {
+    if (loadingRef.current) return;
+    loadingRef.current = true;
+    const batchSize = 20;
+    const start = nextIndexRef.current;
+    const newItems = Array.from({ length: batchSize }, (_, k) => makeChat(start + k));
+    nextIndexRef.current += batchSize;
+    setItems(prev => [...prev, ...newItems]);
+    setTimeout(() => { loadingRef.current = false; }, 150);
+  }, []);
+
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver((entries) => {
+      const first = entries[0];
+      if (first.isIntersecting) {
+        loadMore();
+      }
+    }, { rootMargin: '200px' });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [loadMore]);
 
   const removeFromRecents = (chatId: string) => {
     // Implementation for removing from recents
