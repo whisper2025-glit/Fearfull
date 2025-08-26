@@ -422,12 +422,13 @@ export const updatePersona = async (personaId: string, userId: string, personaDa
   }
 };
 
-export const deletePersona = async (personaId: string) => {
+export const deletePersona = async (personaId: string, userId: string) => {
   try {
     const { error } = await supabase
       .from('personas')
       .delete()
-      .eq('id', personaId);
+      .eq('id', personaId)
+      .eq('user_id', userId); // ✅ Security: Only delete if user owns the persona
 
     if (error) {
       console.error('❌ Error deleting persona:', error);
