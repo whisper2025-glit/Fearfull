@@ -74,10 +74,11 @@ export function PersonaModal({ open, onOpenChange, onPersonaSelect, currentPerso
 
   const loadPersonas = async () => {
     if (!user) return;
-    
+
     setIsLoading(true);
     try {
-      const userPersonas = await getUserPersonas(user.id);
+      const authenticatedClient = await getAuthenticatedClient();
+      const userPersonas = await getUserPersonas(user.id, authenticatedClient);
       setPersonas(userPersonas);
     } catch (error) {
       console.error('Error loading personas:', error);
