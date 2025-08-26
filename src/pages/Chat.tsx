@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
-import { useUser } from "@clerk/clerk-react";
+import { useUser, useAuth } from "@clerk/clerk-react";
 import { ArrowLeft, Home, MoreHorizontal, Lightbulb, Clock, Users, Bot, ChevronDown, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { ModelsModal, Model } from "@/components/ModelsModal";
 import { openRouterAPI, ChatMessage } from "@/lib/openrouter";
-import { supabase, createOrUpdateUser } from "@/lib/supabase";
+import { supabase, createOrUpdateUser, createSupabaseClientWithClerkAuth } from "@/lib/supabase";
 import { toast } from "sonner";
 
 interface Message {
@@ -63,6 +63,14 @@ const Chat = () => {
   const [currentConversationId, setCurrentConversationId] = useState<string | null>(conversationId);
 
   const { user } = useUser();
+  const { getToken } = useAuth();
+
+  // Create authenticated Supabase client
+  const getAuthenticatedSupabase = () => {
+    return createSupabaseClientWithClerkAuth(async () => {
+      return await getToken({ template: 'supabase' });
+    });
+  };
 
   // Load character and messages from Supabase
   useEffect(() => {
