@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "@clerk/clerk-react";
 import { MoreHorizontal, Trash2 } from "lucide-react";
@@ -8,9 +8,12 @@ import { Badge } from "@/components/ui/badge";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { supabase } from "@/lib/supabase";
+import { toast } from "sonner";
 
 interface ChatItem {
-  id: string;
+  id: string; // conversation id
+  characterId: string;
   characterName: string;
   characterAvatar: string;
   messagePreview: string;
@@ -18,33 +21,89 @@ interface ChatItem {
   isVip?: boolean;
 }
 
-const makeChat = (i: number): ChatItem => ({
-  id: `test-${i}`,
-  characterName: `User ${i}`,
-  characterAvatar: `https://i.pravatar.cc/150?img=${10 + (i % 70)}`,
-  messagePreview: `*Sample message snippet number ${i}...`,
-  timestamp: i % 2 === 0 ? 'Yesterday' : '4:09 am'
-});
+const PAGE_SIZE = 20;
+
+const formatTimestamp = (iso: string | null): string => {
+  if (!iso) return "";
+  const d = new Date(iso);
+  const now = new Date();
+  const diff = now.getTime() - d.getTime();
+  const oneDay = 24 * 60 * 60 * 1000;
+  if (diff < oneDay && now.getDate() === d.getDate()) {
+    return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  }
+  if (diff < 2 * oneDay && new Date(now.getTime() - oneDay).getDate() === d.getDate()) {
+    return "Yesterday";
+  }
+  return d.toLocaleDateString();
+};
 
 const Chats = () => {
   const { user } = useUser();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("individual");
-  const [items, setItems] = useState<ChatItem[]>(Array.from({ length: 20 }, (_, idx) => makeChat(idx + 1)));
+  const [items, setItems] = useState<ChatItem[]>([]);
+  const [hasMore, setHasMore] = useState(true);
   const loadingRef = useRef(false);
-  const nextIndexRef = useRef(items.length + 1);
   const sentinelRef = useRef<HTMLDivElement | null>(null);
 
-  const loadMore = useCallback(() => {
-    if (loadingRef.current) return;
+  const fetchPage = useCallback(async () => {
+    if (!user || loadingRef.current || !hasMore) return;
     loadingRef.current = true;
-    const batchSize = 20;
-    const start = nextIndexRef.current;
-    const newItems = Array.from({ length: batchSize }, (_, k) => makeChat(start + k));
-    nextIndexRef.current += batchSize;
-    setItems(prev => [...prev, ...newItems]);
-    setTimeout(() => { loadingRef.current = false; }, 150);
-  }, []);
+
+    try {
+      const from = items.length;
+      const to = from + PAGE_SIZE - 1;
+
+      const { data, error } = await supabase
+        .from("conversations")
+        .select(
+          `id, character_id, title, started_at, last_message_at, message_count,
+           characters(name, avatar_url),
+           messages(content, created_at, is_bot)`
+        )
+        .eq("user_id", user.id)
+        .eq("is_archived", false)
+        .order("last_message_at", { ascending: false, nullsFirst: false })
+        .range(from, to)
+        .order("created_at", { foreignTable: "messages", ascending: false })
+        .limit(1, { foreignTable: "messages" });
+
+      if (error) {
+        console.error("Failed to load conversations:", error);
+        toast.error("Failed to load recent chats");
+        return;
+      }
+
+      const mapped: ChatItem[] = (data || []).map((c: any) => {
+        const lastMsg = Array.isArray(c.messages) && c.messages.length > 0 ? c.messages[0] : null;
+        return {
+          id: c.id,
+          characterId: c.character_id,
+          characterName: c.characters?.name || "Unknown",
+          characterAvatar: c.characters?.avatar_url || "/placeholder.svg",
+          messagePreview: lastMsg?.content || "No messages yet",
+          timestamp: formatTimestamp(c.last_message_at || c.started_at),
+        };
+      });
+
+      setItems(prev => [...prev, ...mapped]);
+      if (!data || data.length < PAGE_SIZE) setHasMore(false);
+    } finally {
+      loadingRef.current = false;
+    }
+  }, [user, items.length, hasMore]);
+
+  useEffect(() => {
+    setItems([]);
+    setHasMore(true);
+  }, [user?.id]);
+
+  useEffect(() => {
+    if (!user) return;
+    // initial load
+    fetchPage();
+  }, [user, fetchPage]);
 
   useEffect(() => {
     const el = sentinelRef.current;
@@ -52,21 +111,33 @@ const Chats = () => {
     const io = new IntersectionObserver((entries) => {
       const first = entries[0];
       if (first.isIntersecting) {
-        loadMore();
+        fetchPage();
       }
-    }, { rootMargin: '200px' });
+    }, { rootMargin: "200px" });
     io.observe(el);
     return () => io.disconnect();
-  }, [loadMore]);
+  }, [fetchPage]);
 
-  const removeFromRecents = (chatId: string) => {
-    // Implementation for removing from recents
-    console.log("Remove chat:", chatId);
+  const removeFromRecents = async (conversationId: string) => {
+    try {
+      const { error } = await supabase
+        .from("conversations")
+        .update({ is_archived: true })
+        .eq("id", conversationId)
+        .eq("user_id", user?.id || "");
+      if (error) throw error;
+      setItems(prev => prev.filter(i => i.id !== conversationId));
+      toast.success("Removed from recents");
+    } catch (e) {
+      console.error(e);
+      toast.error("Failed to remove");
+    }
   };
 
-  const navigateToChat = (chatId: string) => {
-    // Navigate to individual chat
-    console.log("Navigate to chat:", chatId);
+  const navigateToChat = (conversationId: string) => {
+    const convo = items.find(i => i.id === conversationId);
+    if (!convo) return;
+    navigate(`/chat/${convo.characterId}?conversation=${conversationId}`);
   };
 
   if (!user) {
@@ -176,6 +247,11 @@ const Chats = () => {
                   </div>
                 </div>
               ))}
+              {items.length === 0 && (
+                <div className="p-8 text-center text-gray-400" style={{ fontSize: '12px' }}>
+                  No recent chats yet.
+                </div>
+              )}
             </div>
           </TabsContent>
 
