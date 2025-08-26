@@ -68,12 +68,12 @@ const Chats = () => {
           </TabsList>
         </Tabs>
       }
-      mainOverflow="hidden"
+      mainOverflow="auto"
     >
-      <div className="h-full bg-gray-900 text-white">
-        <Tabs value={activeTab} className="w-full h-full">
+      <div className="bg-gray-900 text-white">
+        <Tabs value={activeTab} className="w-full">
           {/* Individual Chats */}
-          <TabsContent value="individual" className="mt-0 h-full">
+          <TabsContent value="individual" className="mt-0">
             <div className="divide-y divide-gray-700">
               {chats.map((chat) => (
                 <div
@@ -145,7 +145,7 @@ const Chats = () => {
           </TabsContent>
 
           {/* Group Chats */}
-          <TabsContent value="group" className="mt-0 h-full">
+          <TabsContent value="group" className="mt-0">
             <div className="p-8 text-center">
               <p className="text-gray-400" style={{ fontSize: '12px' }}>
                 Group chats will appear here
