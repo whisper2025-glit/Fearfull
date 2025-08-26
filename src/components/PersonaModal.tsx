@@ -132,8 +132,7 @@ export function PersonaModal({ open, onOpenChange, onPersonaSelect, currentPerso
     if (!confirm(`Are you sure you want to delete "${persona.name}"?`)) return;
 
     try {
-      const authenticatedClient = await getAuthenticatedClient();
-      await deletePersona(persona.id, authenticatedClient);
+      await deletePersona(persona.id);
       toast.success('Persona deleted successfully!');
       await loadPersonas(); // Reload the list
     } catch (error) {
