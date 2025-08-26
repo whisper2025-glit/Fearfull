@@ -193,11 +193,35 @@ const Profile = () => {
       // Note: We store the full display name in Supabase, not in Clerk's firstName
       // to avoid validation issues with Clerk's firstName field restrictions
 
+      // First get existing user data to preserve username
+      const { data: existingUser } = await supabase
+        .from('users')
+        .select('username')
+        .eq('id', user.id)
+        .single();
+
+      // Generate username if none exists
+      const generateUsername = (displayName: string, userId: string): string => {
+        let username = displayName.toLowerCase()
+          .replace(/[^a-z0-9]/g, '')
+          .substring(0, 20);
+        if (!username) {
+          username = 'user' + userId.substring(0, 8);
+        }
+        username += userId.substring(0, 4);
+        return username;
+      };
+
+      const username = existingUser?.username ||
+                      user.username ||
+                      generateUsername(userProfile.name, user.id);
+
       // Update Supabase user
       const { error } = await supabase
         .from('users')
         .upsert({
           id: user.id,
+          username: username,
           full_name: userProfile.name,
           email: user.emailAddresses?.[0]?.emailAddress || null,
           avatar_url: userProfile.avatar,
