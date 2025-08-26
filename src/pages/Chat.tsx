@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { ModelsModal, Model } from "@/components/ModelsModal";
 import { openRouterAPI, ChatMessage } from "@/lib/openrouter";
-import { supabase, createOrUpdateProfile } from "@/lib/supabase";
+import { supabase, createOrUpdateUser } from "@/lib/supabase";
 import { toast } from "sonner";
 
 interface Message {
@@ -72,7 +72,7 @@ const Chat = () => {
         // Load character data from Supabase
         const { data: characterData, error: characterError } = await supabase
           .from('characters')
-          .select('*, profiles!characters_owner_id_fkey(username)')
+          .select('*, users!characters_owner_id_fkey(username)')
           .eq('id', characterId)
           .single();
 
@@ -98,7 +98,7 @@ const Chat = () => {
         // Convert Supabase data to local format
         const character: Character = {
           name: characterData.name,
-          author: characterData.profiles?.username || 'Unknown',
+          author: characterData.users?.username || 'Unknown',
           intro: characterData.intro,
           scenario: characterData.scenario || "",
           avatar: characterData.avatar_url || "/lovable-uploads/3eab3055-d06f-48a5-9790-123de7769f97.png",
@@ -111,7 +111,7 @@ const Chat = () => {
               timestamp: "now",
               type: "intro",
               characterName: characterData.name,
-              author: characterData.profiles?.username || 'Unknown'
+              author: characterData.users?.username || 'Unknown'
             },
             // Include scenario message if it exists
             ...(characterData.scenario ? [{

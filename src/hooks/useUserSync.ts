@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useUser } from '@clerk/clerk-react';
-import { createOrUpdateProfile } from '@/lib/supabase';
+import { createOrUpdateUser } from '@/lib/supabase';
 import { toast } from 'sonner';
 
 export const useUserSync = () => {
@@ -11,12 +11,12 @@ export const useUserSync = () => {
       if (!isLoaded || !user) return;
 
       try {
-        // Sync user profile with Supabase
-        await createOrUpdateProfile(user);
-        console.log('User profile synced with Supabase');
+        // Sync user with Supabase
+        await createOrUpdateUser(user);
+        console.log('User synced with Supabase');
       } catch (error) {
-        console.error('Error syncing user profile:', error);
-        toast.error('Failed to sync user profile');
+        console.error('Error syncing user:', error);
+        toast.error('Failed to sync user');
       }
     };
 
