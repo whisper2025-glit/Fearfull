@@ -120,42 +120,27 @@ const Chats = () => {
   return (
     <Layout>
       <div className="h-full bg-gray-900 text-white flex flex-col overflow-hidden">
-        {/* Sticky header within Layout - this will stick under the main Layout header */}
-        <div className="sticky top-0 z-10 bg-gray-800 border-b border-gray-700 flex-shrink-0">
-          <div className="flex items-center justify-end px-4 py-3">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="text-white hover:bg-gray-700"
-            >
-              <UserPlus className="h-5 w-5" />
-            </Button>
-          </div>
-        </div>
-
-        {/* Tabs section - also sticky */}
-        <div className="sticky top-0 z-10 bg-gray-800 border-b border-gray-700 flex-shrink-0">
-          <div className="px-4">
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="grid w-full grid-cols-2 bg-transparent p-0 h-auto">
-                <TabsTrigger 
-                  value="individual" 
-                  className="bg-transparent text-white border-b-2 border-transparent data-[state=active]:border-purple-500 data-[state=active]:bg-transparent rounded-none py-3"
-                >
-                  <span style={{ fontSize: '14px' }}>Individual</span>
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="group" 
-                  className="bg-transparent text-white border-b-2 border-transparent data-[state=active]:border-purple-500 data-[state=active]:bg-transparent rounded-none py-3 relative"
-                >
-                  <span style={{ fontSize: '14px' }}>Group</span>
-                  <Badge className="ml-2 bg-yellow-500 text-black px-2 py-0.5 text-xs font-bold">
-                    VIP
-                  </Badge>
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
-          </div>
+        {/* Simplified tabs section */}
+        <div className="bg-gray-800 border-b border-gray-700 flex-shrink-0 px-4">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <TabsList className="grid w-full grid-cols-2 bg-transparent p-0 h-auto">
+              <TabsTrigger
+                value="individual"
+                className="bg-transparent text-white border-b-2 border-transparent data-[state=active]:border-purple-500 data-[state=active]:bg-transparent rounded-none py-3"
+              >
+                <span style={{ fontSize: '14px' }}>Individual</span>
+              </TabsTrigger>
+              <TabsTrigger
+                value="group"
+                className="bg-transparent text-white border-b-2 border-transparent data-[state=active]:border-purple-500 data-[state=active]:bg-transparent rounded-none py-3 relative"
+              >
+                <span style={{ fontSize: '14px' }}>Group</span>
+                <Badge className="ml-2 bg-yellow-500 text-black px-2 py-0.5 text-xs font-bold">
+                  VIP
+                </Badge>
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
         </div>
 
         {/* Scrollable content area */}
