@@ -13,7 +13,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 export interface Database {
   public: {
     Tables: {
-      profiles: {
+      users: {
         Row: {
           id: string; // Clerk user ID
           username: string;
@@ -51,7 +51,7 @@ export interface Database {
       characters: {
         Row: {
           id: string;
-          owner_id: string; // Clerk user ID
+          owner_id: string; // References users.id (Clerk user ID)
           name: string;
           intro: string;
           scenario: string | null;
@@ -163,20 +163,20 @@ export const generateUniqueUsername = async (baseName: string): Promise<string> 
   const cleanBase = baseName.toLowerCase().replace(/[^a-z0-9]/g, '');
   let username = cleanBase;
   let counter = 1;
-  
+
   // Keep checking until we find a unique username
   while (true) {
     const { data, error } = await supabase
-      .from('profiles')
+      .from('users')
       .select('username')
       .eq('username', username)
       .single();
-    
+
     if (error && error.code === 'PGRST116') {
       // No rows returned, username is available
       return username;
     }
-    
+
     if (data) {
       // Username exists, try with number suffix
       username = `${cleanBase}${counter}`;
@@ -188,12 +188,12 @@ export const generateUniqueUsername = async (baseName: string): Promise<string> 
   }
 };
 
-export const createOrUpdateProfile = async (clerkUser: any) => {
+export const createOrUpdateUser = async (clerkUser: any) => {
   const username = await generateUniqueUsername(
     clerkUser.firstName || clerkUser.username || clerkUser.emailAddresses?.[0]?.emailAddress?.split('@')[0] || 'user'
   );
-  
-  const profileData = {
+
+  const userData = {
     id: clerkUser.id,
     username,
     full_name: clerkUser.fullName || null,
@@ -201,15 +201,15 @@ export const createOrUpdateProfile = async (clerkUser: any) => {
     avatar_url: clerkUser.imageUrl || null,
     updated_at: new Date().toISOString()
   };
-  
+
   const { data, error } = await supabase
-    .from('profiles')
-    .upsert(profileData, {
+    .from('users')
+    .upsert(userData, {
       onConflict: 'id'
     })
     .select()
     .single();
-  
+
   if (error) throw error;
   return data;
 };
