@@ -213,7 +213,7 @@ const Chats = () => {
                         {/* Character Avatar */}
                         <Avatar className="w-10 h-10 flex-shrink-0">
                           <AvatarImage src={character.avatar_url} alt={character.name} />
-                          <AvatarFallback className="bg-gray-600 text-white text-lg">
+                          <AvatarFallback className="bg-gray-600 text-white text-sm">
                             {character.name.charAt(0)}
                           </AvatarFallback>
                         </Avatar>
