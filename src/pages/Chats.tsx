@@ -208,8 +208,8 @@ const Chats = () => {
                     className="bg-gray-800 border-gray-700 hover:bg-gray-750 transition-colors cursor-pointer"
                     onClick={() => startNewChat(character.id)}
                   >
-                    <CardContent className="p-4">
-                      <div className="flex items-center gap-4">
+                    <CardContent className="p-3">
+                      <div className="flex items-center gap-3">
                         {/* Character Avatar */}
                         <Avatar className="w-14 h-14 flex-shrink-0">
                           <AvatarImage src={character.avatar_url} alt={character.name} />
