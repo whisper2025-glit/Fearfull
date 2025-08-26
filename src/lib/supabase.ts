@@ -365,9 +365,10 @@ export interface PersonaData {
   applyToNewChats: boolean;
 }
 
-export const createPersona = async (userId: string, personaData: Omit<PersonaData, 'id'>) => {
+export const createPersona = async (userId: string, personaData: Omit<PersonaData, 'id'>, authenticatedClient?: any) => {
   try {
-    const { data, error } = await supabase
+    const client = authenticatedClient || supabase;
+    const { data, error } = await client
       .from('personas')
       .insert({
         user_id: userId,
