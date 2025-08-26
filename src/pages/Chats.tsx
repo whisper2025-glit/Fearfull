@@ -25,7 +25,7 @@ interface Conversation {
     name: string;
     avatar_url: string | null;
     owner: {
-      username: string;
+      full_name: string;
     };
   };
   last_message?: {
@@ -58,7 +58,7 @@ const Chats = () => {
             character:characters(
               name,
               avatar_url,
-              owner:users!characters_owner_id_fkey(username)
+              owner:users!characters_owner_id_fkey(full_name)
             ),
             last_message:messages(
               content,
@@ -325,7 +325,7 @@ const ConversationList = ({
               </div>
               
               <p className="text-sm text-muted-foreground mb-1">
-                by {conversation.character.owner.username}
+                by {conversation.character.owner.full_name}
               </p>
 
               {conversation.last_message && (

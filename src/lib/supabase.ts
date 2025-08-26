@@ -41,7 +41,7 @@ export interface Database {
       users: {
         Row: {
           id: string; // Clerk user ID
-          username: string;
+          username?: string | null;
           full_name: string | null;
           email: string | null;
           avatar_url: string | null;
@@ -52,7 +52,7 @@ export interface Database {
         };
         Insert: {
           id: string;
-          username: string;
+          username?: string | null;
           full_name?: string | null;
           email?: string | null;
           avatar_url?: string | null;
@@ -227,55 +227,19 @@ export const uploadImage = async (bucket: string, path: string, file: File) => {
   return { data, publicUrl };
 };
 
-export const generateUniqueUsername = async (baseName: string): Promise<string> => {
-  // Clean the base name (remove special characters, convert to lowercase)
-  const cleanBase = baseName.toLowerCase().replace(/[^a-z0-9]/g, '');
-  let username = cleanBase;
-  let counter = 1;
-
-  // Keep checking until we find a unique username
-  while (true) {
-    const { data, error } = await supabase
-      .from('users')
-      .select('username')
-      .eq('username', username)
-      .single();
-
-    if (error && error.code === 'PGRST116') {
-      // No rows returned, username is available
-      return username;
-    }
-
-    if (data) {
-      // Username exists, try with number suffix
-      username = `${cleanBase}${counter}`;
-      counter++;
-    } else {
-      // Some other error occurred
-      throw error;
-    }
-  }
-};
+// Note: generateUniqueUsername removed - now using full_name only
 
 export const createOrUpdateUser = async (clerkUser: any) => {
   console.log('🔧 createOrUpdateUser called with:', {
     id: clerkUser.id,
     firstName: clerkUser.firstName,
     fullName: clerkUser.fullName,
-    username: clerkUser.username,
     email: clerkUser.emailAddresses?.[0]?.emailAddress
   });
 
-  const username = await generateUniqueUsername(
-    clerkUser.firstName || clerkUser.username || clerkUser.emailAddresses?.[0]?.emailAddress?.split('@')[0] || 'user'
-  );
-
-  console.log('🏷️ Generated username:', username);
-
   const userData = {
     id: clerkUser.id,
-    username,
-    full_name: clerkUser.fullName || null,
+    full_name: clerkUser.fullName || clerkUser.firstName || clerkUser.username || 'User',
     email: clerkUser.emailAddresses?.[0]?.emailAddress || null,
     avatar_url: clerkUser.imageUrl || null,
     updated_at: new Date().toISOString()
