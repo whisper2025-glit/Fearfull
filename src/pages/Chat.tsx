@@ -8,6 +8,7 @@ import { Card } from "@/components/ui/card";
 import { ModelsModal, Model } from "@/components/ModelsModal";
 import { PersonaModal } from "@/components/PersonaModal";
 import { SuggestModal } from "@/components/SuggestModal";
+import { ChatSidebar } from "@/components/ChatSidebar";
 import { openRouterAPI, ChatMessage } from "@/lib/openrouter";
 import { supabase, createOrUpdateUser, getDefaultPersona } from "@/lib/supabase";
 import { toast } from "sonner";
@@ -42,6 +43,7 @@ const Chat = () => {
   const [isModelsModalOpen, setIsModelsModalOpen] = useState(false);
   const [isPersonaModalOpen, setIsPersonaModalOpen] = useState(false);
   const [isSuggestModalOpen, setIsSuggestModalOpen] = useState(false);
+  const [isChatSidebarOpen, setIsChatSidebarOpen] = useState(false);
   const [currentPersona, setCurrentPersona] = useState<any>(null);
   const [sceneBackground, setSceneBackground] = useState<string>("");
   const [selectedModel, setSelectedModel] = useState<Model | null>({
@@ -463,10 +465,11 @@ const Chat = () => {
           >
             <Home className="h-4 w-4" />
           </Button>
-          <Button 
-            variant="ghost" 
+          <Button
+            variant="ghost"
             size="icon"
             className="text-muted-foreground hover:text-foreground"
+            onClick={() => setIsChatSidebarOpen(true)}
           >
             <MoreHorizontal className="h-4 w-4" />
           </Button>
@@ -666,6 +669,14 @@ const Chat = () => {
           personaName: currentPersona?.name,
           personaDescription: currentPersona?.description
         }}
+      />
+
+      <ChatSidebar
+        open={isChatSidebarOpen}
+        onOpenChange={setIsChatSidebarOpen}
+        character={currentCharacter}
+        characterId={characterId!}
+        conversationId={currentConversationId}
       />
     </div>
   );
