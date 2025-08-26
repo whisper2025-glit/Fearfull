@@ -245,8 +245,9 @@ const Chat = () => {
     loadDefaultPersona();
   }, [user, currentPersona]);
 
-  const handleSendMessage = async () => {
-    if (!message.trim() || isLoading || !currentCharacter || !user) return;
+  const handleSendMessage = async (messageContent?: string) => {
+    const messageToSend = messageContent || message;
+    if (!messageToSend.trim() || isLoading || !currentCharacter || !user) return;
 
     // Use default model if none selected
     const modelToUse = selectedModel || {
