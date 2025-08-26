@@ -56,6 +56,15 @@ export function PersonaModal({ open, onOpenChange, onPersonaSelect, currentPerso
   const [description, setDescription] = useState("");
   const [applyToNewChats, setApplyToNewChats] = useState(false);
 
+  // Helper function to get authenticated Supabase client
+  const getAuthenticatedClient = async () => {
+    const token = await getToken({ template: 'supabase' });
+    if (!token) {
+      throw new Error('No authentication token available');
+    }
+    return createAuthenticatedSupabaseClient(token);
+  };
+
   // Load personas when modal opens
   useEffect(() => {
     if (open && user) {
