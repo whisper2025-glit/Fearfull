@@ -16,6 +16,7 @@ const queryClient = new QueryClient();
 
 const AppContent = () => {
   // Sync user with Supabase when authenticated
+  console.log('🏗️ AppContent rendering, calling useUserSync...');
   useUserSync();
 
   return (
