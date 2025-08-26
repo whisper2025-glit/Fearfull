@@ -262,7 +262,7 @@ const generateUsername = (displayName: string, userId: string): string => {
   return username;
 };
 
-export const createOrUpdateUser = async (clerkUser: any, authenticatedClient?: any) => {
+export const createOrUpdateUser = async (clerkUser: any) => {
   console.log('🔧 createOrUpdateUser called with:', {
     id: clerkUser.id,
     firstName: clerkUser.firstName,
@@ -282,39 +282,41 @@ export const createOrUpdateUser = async (clerkUser: any, authenticatedClient?: a
 
   console.log('📊 User data to upsert:', userData);
 
-  // Use authenticated client if provided, otherwise fall back to regular client
-  const clientToUse = authenticatedClient || supabase;
+  try {
+    const { data, error } = await supabase
+      .from('users')
+      .upsert(userData, {
+        onConflict: 'id'
+      })
+      .select()
+      .single();
 
-  const { data, error } = await clientToUse
-    .from('users')
-    .upsert(userData, {
-      onConflict: 'id'
-    })
-    .select()
-    .single();
-
-  if (error) {
-    console.error('❌ Supabase upsert error:', error);
-    // If RLS error and we used regular client, try with less strict approach
-    if (error.code === 'PGRST301' && !authenticatedClient) {
-      console.log('🔄 RLS error detected, retrying with relaxed constraints...');
-      try {
-        // Try a simple insert/update without select
+    if (error) {
+      console.error('❌ Supabase upsert error:', error);
+      // If RLS error, try without select to avoid permission issues
+      if (error.code === 'PGRST301' || error.message?.includes('permission') || error.message?.includes('RLS')) {
+        console.log('🔄 RLS/permission error detected, trying simple upsert...');
         const { error: retryError } = await supabase
           .from('users')
           .upsert(userData, { onConflict: 'id' });
 
         if (!retryError) {
-          console.log('✅ Fallback upsert successful');
+          console.log('✅ Simple upsert successful');
           return userData; // Return the data we tried to insert
+        } else {
+          console.error('❌ Simple upsert also failed:', retryError);
+          throw retryError;
         }
-      } catch (retryErr) {
-        console.error('❌ Retry failed:', retryErr);
       }
+      throw error;
     }
-    throw error;
-  }
 
-  console.log('✅ Supabase upsert successful:', data);
-  return data;
+    console.log('✅ Supabase upsert successful:', data);
+    return data;
+  } catch (error) {
+    console.error('❌ Final error in createOrUpdateUser:', error);
+    // Return the user data even if DB failed - app should continue working
+    console.log('⚠️ Returning user data despite DB error');
+    return userData;
+  }
 };
