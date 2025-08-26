@@ -26,13 +26,29 @@ export const useUserSync = () => {
       }
 
       try {
-        // Get Clerk JWT token
-        const token = await getToken({ template: 'supabase' });
-        console.log('🔐 Retrieved Clerk token for Supabase authentication', !!token);
-        
-        // Create Supabase client with Clerk authentication
+        // Try to get Clerk JWT token for Supabase
+        let token;
+        try {
+          token = await getToken({ template: 'supabase' });
+          console.log('🔐 Retrieved Clerk token for Supabase authentication', !!token);
+        } catch (tokenError) {
+          console.warn('⚠️ Supabase JWT template not configured in Clerk. Using fallback authentication.');
+          // Fallback: try to get default token or continue without token
+          try {
+            token = await getToken();
+          } catch {
+            token = null;
+          }
+        }
+
+        // Create Supabase client with Clerk authentication (or fallback)
         const supabaseWithAuth = createSupabaseClientWithClerkAuth(async () => {
-          return await getToken({ template: 'supabase' });
+          try {
+            return await getToken({ template: 'supabase' });
+          } catch {
+            // Fallback to default token
+            return await getToken();
+          }
         });
 
         console.log('🚀 Attempting to sync user with authenticated Supabase client:', {
@@ -46,7 +62,7 @@ export const useUserSync = () => {
         // Sync user with Supabase using the authenticated client
         const result = await createOrUpdateUser(user);
         console.log('✅ User synced with Supabase successfully:', result);
-        toast.success(`User ${result.username} synced successfully!`);
+        toast.success(`Welcome, ${result.username || result.full_name || 'User'}!`);
       } catch (error) {
         console.error('❌ Error syncing user:', error);
         console.error('Error details:', {
@@ -54,7 +70,10 @@ export const useUserSync = () => {
           stack: error instanceof Error ? error.stack : undefined,
           error
         });
-        toast.error(`Failed to sync user: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        // Only show error toast if it's not a JWT template issue
+        if (!error.message?.includes('JWT template')) {
+          toast.error(`Failed to sync user: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        }
       }
     };
 
