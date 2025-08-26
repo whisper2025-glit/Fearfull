@@ -262,7 +262,7 @@ const Chats = () => {
           </TabsContent>
 
           {/* Favorites */}
-          <TabsContent value="favorites" className="mt-6">
+          <TabsContent value="favorites" className="pt-20">
             <div className="p-8 text-center">
               <h3 className="text-lg font-medium text-gray-300 mb-2">Favorites Coming Soon</h3>
               <p className="text-gray-500 mb-4">
