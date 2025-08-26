@@ -81,7 +81,8 @@ const Chat = () => {
 
       try {
         // Load character data from Supabase
-        const { data: characterData, error: characterError } = await supabase
+        const authSupabase = getAuthenticatedSupabase();
+        const { data: characterData, error: characterError } = await authSupabase
           .from('characters')
           .select('*, users!characters_owner_id_fkey(full_name)')
           .eq('id', characterId)
@@ -95,7 +96,7 @@ const Chat = () => {
         }
 
         // Load messages for this character/conversation
-        let messagesQuery = supabase
+        let messagesQuery = authSupabase
           .from('messages')
           .select('*')
           .eq('character_id', characterId);
@@ -105,7 +106,7 @@ const Chat = () => {
           messagesQuery = messagesQuery.eq('conversation_id', conversationId);
         } else {
           // If no conversation ID, get the most recent conversation for this character and user
-          const { data: recentConv } = await supabase
+          const { data: recentConv } = await authSupabase
             .from('conversations')
             .select('id')
             .eq('character_id', characterId)
@@ -270,7 +271,8 @@ const Chat = () => {
       if (conversationToUse) {
         userMessagePayload.conversation_id = conversationToUse;
       }
-      const { data: insertedUserMessage, error: userMessageError } = await supabase
+      const authSupabase = getAuthenticatedSupabase();
+      const { data: insertedUserMessage, error: userMessageError } = await authSupabase
         .from('messages')
         .insert(userMessagePayload)
         .select('id, conversation_id, created_at')
@@ -325,7 +327,7 @@ const Chat = () => {
       setMessages(prev => [...prev, botMessage]);
 
       // Save bot message to Supabase
-      const { error: botMessageError } = await supabase
+      const { error: botMessageError } = await authSupabase
         .from('messages')
         .insert({
           character_id: characterId,
