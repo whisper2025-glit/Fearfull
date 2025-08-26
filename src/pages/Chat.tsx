@@ -102,7 +102,7 @@ const Chat = () => {
           // If no conversation ID, get the most recent conversation for this character and user
           const { data: recentConv } = await supabase
             .from('conversations')
-            .select('id')
+            .select('id, persona_id')
             .eq('character_id', characterId)
             .eq('user_id', user?.id || '')
             .eq('is_archived', false)
@@ -113,6 +113,24 @@ const Chat = () => {
           if (recentConv) {
             setCurrentConversationId(recentConv.id);
             messagesQuery = messagesQuery.eq('conversation_id', recentConv.id);
+
+            // Load the persona associated with this conversation
+            if (recentConv.persona_id && !currentPersona) {
+              try {
+                const { data: conversationPersona } = await supabase
+                  .from('personas')
+                  .select('*')
+                  .eq('id', recentConv.persona_id)
+                  .single();
+
+                if (conversationPersona) {
+                  setCurrentPersona(conversationPersona);
+                  console.log('✅ Conversation persona loaded:', conversationPersona.name);
+                }
+              } catch (error) {
+                console.error('Error loading conversation persona:', error);
+              }
+            }
           } else {
             // No existing conversation, we'll create one when first message is sent
             messagesQuery = messagesQuery.eq('conversation_id', 'none'); // This will return no messages
