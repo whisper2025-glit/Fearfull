@@ -16,7 +16,7 @@ const AuthPage = () => {
             <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center">
               <div className="w-5 h-5 bg-white rounded-sm transform rotate-12"></div>
             </div>
-            <span className="text-2xl font-bold text-white">Joyland</span>
+            <span className="text-sm font-bold text-white">Joyland</span>
           </div>
         </div>
 
