@@ -17,7 +17,7 @@ import { ChevronLeft, Settings, Gift, MoreHorizontal, X, Camera, Star, Loader2 }
 import { useNavigate } from "react-router-dom";
 import { CharacterCard } from "@/components/CharacterCard";
 import SettingsSheet from "@/components/SettingsSheet";
-import { supabase, uploadImage } from "@/lib/supabase";
+import { supabase, uploadImage, generateUniqueUsername } from "@/lib/supabase";
 import { toast } from "sonner";
 
 const Profile = () => {
@@ -185,8 +185,31 @@ const Profile = () => {
   const handleSaveProfile = async () => {
     if (!user) return;
 
+    // Validate username length
+    if (userProfile.username.length < 2) {
+      toast.error('Username must be at least 2 characters long');
+      return;
+    }
+
     setIsSaving(true);
     try {
+      // Check if username is already taken by another user
+      const { data: existingUser, error: checkError } = await supabase
+        .from('users')
+        .select('id')
+        .eq('username', userProfile.username)
+        .single();
+
+      if (checkError && checkError.code !== 'PGRST116') {
+        throw checkError;
+      }
+
+      if (existingUser && existingUser.id !== user.id) {
+        toast.error('Username already taken. Please choose a different one.');
+        setIsSaving(false);
+        return;
+      }
+
       // Update Clerk user profile
       await user.update({
         firstName: userProfile.name,
@@ -210,14 +233,40 @@ const Profile = () => {
 
       if (error) {
         console.error('Error updating profile:', error);
-        toast.error('Failed to save profile');
+        console.error('Error details:', {
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          code: error.code
+        });
+
+        // Provide more specific error messages
+        if (error.code === '23505' && error.message?.includes('username')) {
+          toast.error('Username already exists. Please try a different one.');
+        } else if (error.message?.includes('username')) {
+          toast.error('Username error: ' + error.message);
+        } else if (error.message?.includes('authentication') || error.message?.includes('unauthorized')) {
+          toast.error('Authentication error. Please try logging out and back in.');
+        } else {
+          toast.error('Failed to save profile: ' + (error.message || 'Unknown error'));
+        }
       } else {
         toast.success('Profile updated successfully');
         setEditModalOpen(false);
       }
     } catch (error) {
       console.error('Error updating profile:', error);
-      toast.error('Failed to save profile');
+      console.error('Error details:', error);
+
+      if (error instanceof Error) {
+        if (error.message?.includes('authentication') || error.message?.includes('unauthorized')) {
+          toast.error('Authentication error. Please try logging out and back in.');
+        } else {
+          toast.error('Failed to save profile: ' + error.message);
+        }
+      } else {
+        toast.error('Failed to save profile: Unknown error');
+      }
     } finally {
       setIsSaving(false);
     }
@@ -405,6 +454,23 @@ const Profile = () => {
                           />
                           <span className="absolute right-3 top-3 text-xs text-muted-foreground">
                             {userProfile.name.length}/20
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Username */}
+                      <div className="space-y-2">
+                        <Label htmlFor="username">Username</Label>
+                        <div className="relative">
+                          <Input
+                            id="username"
+                            value={userProfile.username}
+                            onChange={(e) => setUserProfile({...userProfile, username: e.target.value.toLowerCase().replace(/[^a-z0-9]/g, '')})}
+                            className="bg-background border-border"
+                            placeholder="Enter username"
+                          />
+                          <span className="absolute right-3 top-3 text-xs text-muted-foreground">
+                            {userProfile.username.length}/20
                           </span>
                         </div>
                       </div>
