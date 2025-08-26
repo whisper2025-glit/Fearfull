@@ -131,7 +131,10 @@ export function PersonaModal({ open, onOpenChange, onPersonaSelect, currentPerso
     if (!user || !name.trim()) return;
 
     try {
+      console.log('💾 Starting persona save process...');
       const authenticatedClient = await getAuthenticatedClient();
+      console.log('✅ Got authenticated client');
+
       const personaData: Omit<PersonaData, 'id'> = {
         name: name.trim(),
         gender: selectedGender,
@@ -139,12 +142,16 @@ export function PersonaModal({ open, onOpenChange, onPersonaSelect, currentPerso
         applyToNewChats
       };
 
+      console.log('📝 Persona data:', personaData);
+
       if (editingPersona) {
         // Update existing persona
+        console.log('🔄 Updating persona:', editingPersona.id);
         await updatePersona(editingPersona.id, personaData, authenticatedClient);
         toast.success('Persona updated successfully!');
       } else {
         // Create new persona
+        console.log('✨ Creating new persona for user:', user.id);
         await createPersona(user.id, personaData, authenticatedClient);
         toast.success('Persona created successfully!');
       }
@@ -152,8 +159,18 @@ export function PersonaModal({ open, onOpenChange, onPersonaSelect, currentPerso
       await loadPersonas(); // Reload the list
       resetForm();
     } catch (error) {
-      console.error('Error saving persona:', error);
-      toast.error('Failed to save persona');
+      console.error('❌ Error saving persona:', error);
+
+      // More specific error messages
+      if (error.message?.includes('JWT')) {
+        toast.error('Authentication error: Please check Clerk JWT configuration');
+      } else if (error.message?.includes('permission')) {
+        toast.error('Permission denied: Please check database policies');
+      } else if (error.message?.includes('token')) {
+        toast.error('Authentication token missing or invalid');
+      } else {
+        toast.error(`Failed to save persona: ${error.message || 'Unknown error'}`);
+      }
     }
   };
 
