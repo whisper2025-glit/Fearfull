@@ -294,6 +294,11 @@ const Chat = () => {
           role: 'system',
           content: `Character: ${currentCharacter.name}\nIntro: ${currentCharacter.intro}\nScenario: ${currentCharacter.scenario}`
         },
+        // Add persona information if available
+        ...(currentPersona ? [{
+          role: 'system' as const,
+          content: `User Persona: ${currentPersona.name} (${currentPersona.gender})\nDescription: ${currentPersona.description || 'No additional description'}\n\nThe user is roleplaying as this persona. Please interact with them accordingly and acknowledge their persona in your responses.`
+        }] : []),
         // Convert recent messages to chat format (last 10 messages for context)
         ...allMessages.slice(-10).filter(msg => msg.type === 'regular').map(msg => ({
           role: msg.isBot ? 'assistant' as const : 'user' as const,
