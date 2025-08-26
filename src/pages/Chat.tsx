@@ -1,10 +1,16 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { useUser } from "@clerk/clerk-react";
-import { ArrowLeft, Home, MoreHorizontal, Lightbulb, Clock, Users, Bot, ChevronDown, Loader2 } from "lucide-react";
+import { ArrowLeft, Home, MoreHorizontal, Lightbulb, Clock, Users, Bot, ChevronDown, Loader2, User, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { ModelsModal, Model } from "@/components/ModelsModal";
 import { PersonaModal } from "@/components/PersonaModal";
 import { SuggestModal } from "@/components/SuggestModal";
@@ -463,13 +469,27 @@ const Chat = () => {
           >
             <Home className="h-4 w-4" />
           </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="text-muted-foreground hover:text-foreground"
-          >
-            <MoreHorizontal className="h-4 w-4" />
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="text-muted-foreground hover:text-foreground"
+              >
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuItem onClick={() => console.log('Bot Profile clicked')}>
+                <User className="mr-2 h-4 w-4" />
+                Bot Profile
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => console.log('Chat Settings clicked')}>
+                <Settings className="mr-2 h-4 w-4" />
+                Chat Settings
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </header>
 
