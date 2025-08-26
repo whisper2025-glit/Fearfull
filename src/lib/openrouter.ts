@@ -195,19 +195,23 @@ Guidelines:
   // Test the API connection
   async testConnection(): Promise<boolean> {
     try {
+      console.log('OpenRouter API - Testing connection...');
+      console.log('OpenRouter API - API Key available:', !!this.apiKey);
+      console.log('OpenRouter API - API Key starts with:', this.apiKey?.substring(0, 10) + '...');
+
       const testMessages: ChatMessage[] = [
-        { role: 'user', content: 'Hello, this is a test message.' }
+        { role: 'user', content: 'Hi' }
       ];
 
-      // Use the Mistral model for testing (it's marked as main)
+      // Use a more reliable free model for testing
       const testModel: Model = {
         id: 'test',
-        name: 'mistralai/mistral-small-3.2-24b-instruct:free',
+        name: 'mistralai/mistral-7b-instruct:free',
         author: 'Mistral AI',
         description: 'Test',
         price: 0,
         responseTime: '850 ms',
-        memory: '24B',
+        memory: '7B',
         rating: 8.5,
         tags: ['Test'],
         isActive: true,
@@ -217,7 +221,8 @@ Guidelines:
         tier: 'standard'
       };
 
-      await this.createChatCompletion(testModel, testMessages, { max_tokens: 50 });
+      const response = await this.createChatCompletion(testModel, testMessages, { max_tokens: 10 });
+      console.log('OpenRouter API - Test successful, response received');
       return true;
     } catch (error) {
       console.error('OpenRouter connection test failed:', error);
