@@ -236,9 +236,14 @@ Guidelines:
   // Test the API connection
   async testConnection(): Promise<boolean> {
     try {
-      console.log('OpenRouter API - Testing connection...');
-      console.log('OpenRouter API - API Key available:', !!this.apiKey);
-      console.log('OpenRouter API - API Key starts with:', this.apiKey?.substring(0, 10) + '...');
+      console.log('🔍 OpenRouter API - Testing connection...');
+      console.log('🔑 OpenRouter API - API Key available:', !!this.apiKey);
+      console.log('🔑 OpenRouter API - API Key starts with:', this.apiKey?.substring(0, 10) + '...');
+
+      if (!this.isApiKeyValid()) {
+        console.error('❌ OpenRouter API - Invalid or missing API key');
+        return false;
+      }
 
       const testMessages: ChatMessage[] = [
         { role: 'user', content: 'Hi' }
@@ -263,10 +268,10 @@ Guidelines:
       };
 
       const response = await this.createChatCompletion(testModel, testMessages, { max_tokens: 10 });
-      console.log('OpenRouter API - Test successful, response received');
+      console.log('✅ OpenRouter API - Test successful, response received');
       return true;
     } catch (error) {
-      console.error('OpenRouter connection test failed:', error);
+      console.error('❌ OpenRouter connection test failed:', error);
       return false;
     }
   }
