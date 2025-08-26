@@ -543,7 +543,8 @@ const Chat = () => {
               onClick={() => setIsPersonaModalOpen(true)}
             >
               <Users className="h-3 w-3" />
-              Persona
+              {currentPersona ? currentPersona.name : 'Persona'}
+              {currentPersona && <div className="w-1.5 h-1.5 bg-green-500 rounded-full" />}
             </Button>
             <Button
               variant="outline"
