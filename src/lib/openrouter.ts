@@ -199,6 +199,26 @@ Guidelines:
     return basePrompt;
   }
 
+  // Simple test method for debugging
+  async simpleTest(): Promise<void> {
+    try {
+      console.log('Testing basic fetch to OpenRouter...');
+      const response = await fetch('https://openrouter.ai/api/v1/models', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${this.apiKey}`,
+          'Content-Type': 'application/json',
+        }
+      });
+
+      console.log('Models endpoint response status:', response.status);
+      const data = await response.text();
+      console.log('Models endpoint response:', data.substring(0, 200));
+    } catch (error) {
+      console.error('Simple test failed:', error);
+    }
+  }
+
   // Test the API connection
   async testConnection(): Promise<boolean> {
     try {
