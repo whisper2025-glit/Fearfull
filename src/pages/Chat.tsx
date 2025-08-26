@@ -317,7 +317,7 @@ const Chat = () => {
       setMessages(prev => [...prev, botMessage]);
 
       // Save bot message to Supabase
-      const { error: botMessageError } = await authSupabase
+      const { error: botMessageError } = await supabase
         .from('messages')
         .insert({
           character_id: characterId,
