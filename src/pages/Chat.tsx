@@ -248,53 +248,35 @@ const Chat = () => {
         return;
       }
 
-      // Create conversation if none exists
+      // Determine conversation to use; if none, we'll let DB trigger create it on first message insert
       let conversationToUse = currentConversationId;
-      if (!conversationToUse) {
-        const { data: newConversation, error: convError } = await supabase
-          .from('conversations')
-          .insert({
-            user_id: user.id,
-            character_id: characterId,
-            title: `Chat with ${currentCharacter.name}`,
-            started_at: new Date().toISOString(),
-            last_message_at: new Date().toISOString(),
-            message_count: 0,
-            is_archived: false,
-            metadata: {}
-          })
-          .select()
-          .single();
 
-        if (convError) {
-          console.error('Error creating conversation:', convError);
-          toast.error(`Failed to create conversation: ${convError?.message || 'Unknown error'}`);
-          return;
-        }
+      // Save user message to Supabase (omit conversation_id to trigger auto-creation if needed)
+      const userMessagePayload: any = {
+        character_id: characterId,
+        author_id: user.id,
+        content: currentMessage,
+        is_bot: false,
+        type: 'regular'
+      };
+      if (conversationToUse) {
+        userMessagePayload.conversation_id = conversationToUse;
+      }
+      const { data: insertedUserMessage, error: userMessageError } = await supabase
+        .from('messages')
+        .insert(userMessagePayload)
+        .select('id, conversation_id, created_at')
+        .single();
 
-        conversationToUse = newConversation.id;
+      if (userMessageError) {
+        console.error('Error saving user message:', userMessageError);
+      } else if (!conversationToUse && insertedUserMessage?.conversation_id) {
+        conversationToUse = insertedUserMessage.conversation_id;
         setCurrentConversationId(conversationToUse);
-
         // Update URL to include conversation ID
         const newSearchParams = new URLSearchParams(searchParams);
         newSearchParams.set('conversation', conversationToUse);
         navigate(`/chat/${characterId}?${newSearchParams.toString()}`, { replace: true });
-      }
-
-      // Save user message to Supabase
-      const { error: userMessageError } = await supabase
-        .from('messages')
-        .insert({
-          character_id: characterId,
-          conversation_id: conversationToUse,
-          author_id: user.id,
-          content: currentMessage,
-          is_bot: false,
-          type: 'regular'
-        });
-
-      if (userMessageError) {
-        console.error('Error saving user message:', userMessageError);
       }
 
       // Prepare chat messages for OpenRouter
