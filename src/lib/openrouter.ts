@@ -34,6 +34,13 @@ export class OpenRouterAPI {
     if (!this.apiKey) {
       throw new Error('OpenRouter API key not found in environment variables');
     }
+    this.validateApiKey();
+  }
+
+  private validateApiKey(): void {
+    if (!this.apiKey.startsWith('sk-or-v1-')) {
+      console.warn('OpenRouter API key format may be incorrect. Expected format: sk-or-v1-...');
+    }
   }
 
   private getHeaders() {
