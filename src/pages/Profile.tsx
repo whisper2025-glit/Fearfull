@@ -162,7 +162,7 @@ const Profile = () => {
         setUserProfile(prev => ({ ...prev, banner: publicUrl }));
         toast.success('Banner uploaded successfully');
       } catch (error) {
-        console.error('❌ Error uploading banner:', error);
+        console.error('�� Error uploading banner:', error);
         console.error('Error details:', {
           message: error instanceof Error ? error.message : 'Unknown error',
           stack: error instanceof Error ? error.stack : undefined,
@@ -178,7 +178,8 @@ const Profile = () => {
     if (file && user) {
       try {
         // Upload to Supabase storage
-        const avatarPath = `${user.id}/avatars/${Date.now()}.jpg`;
+        const fileExtension = file.name.split('.').pop() || 'jpg';
+        const avatarPath = `${user.id}/avatars/${Date.now()}.${fileExtension}`;
         const { publicUrl } = await uploadImage('profiles', avatarPath, file);
 
         // Update Clerk profile image
