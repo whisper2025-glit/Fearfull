@@ -169,7 +169,7 @@ const Chats = () => {
       <div className="bg-gray-900 text-white min-h-full">
         <Tabs value={activeTab} className="w-full">
           {/* Recent Chats */}
-          <TabsContent value="recent" className="pt-20">
+          <TabsContent value="recent" className="pt-28">
             <div className="px-4 pb-4 space-y-4">
               {isLoading ? (
                 <div className="space-y-4">
