@@ -421,10 +421,9 @@ export const updatePersona = async (personaId: string, personaData: Partial<Omit
   }
 };
 
-export const deletePersona = async (personaId: string, authenticatedClient?: any) => {
+export const deletePersona = async (personaId: string) => {
   try {
-    const client = authenticatedClient || supabase;
-    const { error } = await client
+    const { error } = await supabase
       .from('personas')
       .delete()
       .eq('id', personaId);
