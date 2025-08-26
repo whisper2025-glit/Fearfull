@@ -127,7 +127,7 @@ export function ChatSidebar({
                 <img
                   src={character.avatar}
                   alt={character.name}
-                  className="w-20 h-20 rounded-full object-cover border-2 border-white/20"
+                  className="w-16 h-16 rounded-full object-cover border-2 border-white/20"
                 />
                 <Button
                   variant="ghost"
@@ -139,11 +139,11 @@ export function ChatSidebar({
               </div>
               
               <div className="flex-1">
-                <h1 className="text-white text-xl font-bold leading-tight mb-1">
+                <h1 className="text-white text-sm font-bold leading-tight mb-1">
                   {character.name}
                 </h1>
-                <div className="flex items-center gap-2 text-sm text-white/80">
-                  <MessageCircle className="h-4 w-4" />
+                <div className="flex items-center gap-2 text-xs text-white/80">
+                  <MessageCircle className="h-3 w-3" />
                   <span>55.8K</span>
                   <span>@{character.author}</span>
                 </div>
@@ -163,7 +163,7 @@ export function ChatSidebar({
                   <Music className="h-4 w-4 text-white" />
                 </div>
               </div>
-              <Badge variant="secondary" className="bg-white/20 text-white border-none">
+              <Badge variant="secondary" className="bg-white/20 text-white border-none text-xs px-2 py-1">
                 AnyPOV
               </Badge>
             </div>
@@ -174,7 +174,7 @@ export function ChatSidebar({
                 <Badge
                   key={index}
                   variant="secondary"
-                  className="bg-white/10 text-white border border-white/20 hover:bg-white/20 transition-colors"
+                  className="bg-white/10 text-white border border-white/20 hover:bg-white/20 transition-colors text-xs px-2 py-1"
                 >
                   {tag}
                 </Badge>
@@ -184,10 +184,10 @@ export function ChatSidebar({
             {/* New Chat Button */}
             <Button
               onClick={handleNewChat}
-              className="w-full bg-white/20 hover:bg-white/30 text-white border border-white/30 rounded-xl py-3 mb-6 backdrop-blur-sm"
+              className="w-full bg-white/20 hover:bg-white/30 text-white border border-white/30 rounded-xl py-3 mb-6 backdrop-blur-sm text-xs"
               variant="outline"
             >
-              <Plus className="h-5 w-5 mr-2" />
+              <Plus className="h-4 w-4 mr-2" />
               New Chat
             </Button>
           </div>
@@ -201,9 +201,9 @@ export function ChatSidebar({
                 onClick={index === 0 ? handleCharacterDetail : index === 2 ? handleChatSettings : undefined}
               >
                 <div className="flex items-center gap-3">
-                  <span className="text-white text-lg font-medium">{item.label}</span>
+                  <span className="text-white text-sm font-medium">{item.label}</span>
                 </div>
-                <ChevronRight className="h-5 w-5 text-white/60" />
+                <ChevronRight className="h-4 w-4 text-white/60" />
               </div>
             ))}
           </div>
@@ -212,9 +212,9 @@ export function ChatSidebar({
           <div className="relative z-10 p-4 mt-auto">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
-                <h3 className="text-white text-lg font-medium">Gallery</h3>
-                <span className="text-white/60">• 2</span>
-                <div className="w-4 h-4 bg-white/20 rounded-full flex items-center justify-center">
+                <h3 className="text-white text-sm font-medium">Gallery</h3>
+                <span className="text-white/60 text-xs">• 2</span>
+                <div className="w-3 h-3 bg-white/20 rounded-full flex items-center justify-center">
                   <span className="text-xs text-white">i</span>
                 </div>
               </div>
@@ -224,7 +224,7 @@ export function ChatSidebar({
               {galleryImages.map((image, index) => (
                 <div
                   key={index}
-                  className="w-16 h-16 rounded-lg overflow-hidden bg-white/10 border border-white/20"
+                  className="w-12 h-12 rounded-lg overflow-hidden bg-white/10 border border-white/20"
                 >
                   <img
                     src={image}
