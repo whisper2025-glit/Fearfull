@@ -112,7 +112,7 @@ export function PersonaModal({ open, onOpenChange, onPersonaSelect, currentPerso
 
       if (editingPersona) {
         // Update existing persona
-        await updatePersona(editingPersona.id, personaData);
+        await updatePersona(editingPersona.id, user.id, personaData);
         toast.success('Persona updated successfully!');
       } else {
         // Create new persona
