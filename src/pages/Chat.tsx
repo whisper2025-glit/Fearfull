@@ -381,16 +381,18 @@ const Chat = () => {
       toast.success(`Response received from ${modelToUse.author}`);
     } catch (error) {
       console.error('Error sending message:', error);
-      toast.error(`Failed to get response from ${modelToUse.author}. Please check your API key and try again.`);
 
-      const errorMessage: Message = {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      toast.error(`Failed to get response: ${errorMessage}`);
+
+      const errorBotMessage: Message = {
         id: Date.now() + 1,
         content: "I'm sorry, I'm having trouble responding right now. Please check your API connection and try again.",
         isBot: true,
         timestamp: new Date().toLocaleTimeString(),
         type: "regular"
       };
-      setMessages(prev => [...prev, errorMessage]);
+      setMessages(prev => [...prev, errorBotMessage]);
     } finally {
       setIsLoading(false);
     }
