@@ -236,7 +236,7 @@ const Chats = () => {
                             <span>by {character.author}</span>
                           </div>
 
-                          <p className="text-gray-300 text-xs truncate mb-1">
+                          <p className="text-gray-300 text-xs truncate">
                             "{character.lastMessage}"
                           </p>
                           
