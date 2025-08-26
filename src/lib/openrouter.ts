@@ -36,6 +36,15 @@ export class OpenRouterAPI {
     }
   }
 
+  private getHeaders() {
+    return {
+      'Authorization': `Bearer ${this.apiKey}`,
+      'Content-Type': 'application/json',
+      'HTTP-Referer': window.location.origin,
+      'X-Title': 'Roleplay Chat App'
+    };
+  }
+
   async createChatCompletion(
     model: Model,
     messages: ChatMessage[],
