@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { useUser } from "@clerk/clerk-react";
 import { ArrowLeft, Home, MoreHorizontal, Lightbulb, Clock, Users, Bot, ChevronDown, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -31,7 +31,9 @@ interface Character {
 
 const Chat = () => {
   const { characterId } = useParams();
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const conversationId = searchParams.get('conversation');
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [isIntroExpanded, setIsIntroExpanded] = useState(true);
@@ -58,6 +60,7 @@ const Chat = () => {
   // State for current character and messages loaded from Supabase
   const [currentCharacter, setCurrentCharacter] = useState<Character | null>(null);
   const [isLoadingCharacter, setIsLoadingCharacter] = useState(true);
+  const [currentConversationId, setCurrentConversationId] = useState<string | null>(conversationId);
 
   const { user } = useUser();
 
@@ -83,12 +86,37 @@ const Chat = () => {
           return;
         }
 
-        // Load messages for this character
-        const { data: messagesData, error: messagesError } = await supabase
+        // Load messages for this character/conversation
+        let messagesQuery = supabase
           .from('messages')
           .select('*')
-          .eq('character_id', characterId)
-          .order('created_at', { ascending: true });
+          .eq('character_id', characterId);
+
+        // If conversation ID is provided, filter by conversation
+        if (conversationId) {
+          messagesQuery = messagesQuery.eq('conversation_id', conversationId);
+        } else {
+          // If no conversation ID, get the most recent conversation for this character and user
+          const { data: recentConv } = await supabase
+            .from('conversations')
+            .select('id')
+            .eq('character_id', characterId)
+            .eq('user_id', user?.id || '')
+            .eq('is_archived', false)
+            .order('last_message_at', { ascending: false })
+            .limit(1)
+            .single();
+
+          if (recentConv) {
+            setCurrentConversationId(recentConv.id);
+            messagesQuery = messagesQuery.eq('conversation_id', recentConv.id);
+          } else {
+            // No existing conversation, we'll create one when first message is sent
+            messagesQuery = messagesQuery.eq('conversation_id', 'none'); // This will return no messages
+          }
+        }
+
+        const { data: messagesData, error: messagesError } = await messagesQuery.order('created_at', { ascending: true });
 
         if (messagesError) {
           console.error('Error loading messages:', messagesError);
@@ -172,7 +200,7 @@ const Chat = () => {
 
     loadCharacterAndMessages();
     testConnection();
-  }, [characterId, navigate]);
+  }, [characterId, conversationId, navigate, user]);
 
   const handleSendMessage = async () => {
     if (!message.trim() || isLoading || !currentCharacter || !user) return;
@@ -210,11 +238,40 @@ const Chat = () => {
     setIsLoading(true);
 
     try {
+      // Create conversation if none exists
+      let conversationToUse = currentConversationId;
+      if (!conversationToUse) {
+        const { data: newConversation, error: convError } = await supabase
+          .from('conversations')
+          .insert({
+            user_id: user.id,
+            character_id: characterId,
+            title: `Chat with ${currentCharacter.name}`
+          })
+          .select()
+          .single();
+
+        if (convError) {
+          console.error('Error creating conversation:', convError);
+          toast.error('Failed to create conversation');
+          return;
+        }
+
+        conversationToUse = newConversation.id;
+        setCurrentConversationId(conversationToUse);
+
+        // Update URL to include conversation ID
+        const newSearchParams = new URLSearchParams(searchParams);
+        newSearchParams.set('conversation', conversationToUse);
+        navigate(`/chat/${characterId}?${newSearchParams.toString()}`, { replace: true });
+      }
+
       // Save user message to Supabase
       const { error: userMessageError } = await supabase
         .from('messages')
         .insert({
           character_id: characterId,
+          conversation_id: conversationToUse,
           author_id: user.id,
           content: currentMessage,
           is_bot: false,
@@ -267,6 +324,7 @@ const Chat = () => {
         .from('messages')
         .insert({
           character_id: characterId,
+          conversation_id: conversationToUse,
           author_id: null, // Bot messages have null author_id
           content: botResponseContent,
           is_bot: true,
