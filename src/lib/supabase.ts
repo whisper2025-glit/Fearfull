@@ -392,7 +392,7 @@ export const createPersona = async (userId: string, personaData: Omit<PersonaDat
   }
 };
 
-export const updatePersona = async (personaId: string, personaData: Partial<Omit<PersonaData, 'id'>>) => {
+export const updatePersona = async (personaId: string, userId: string, personaData: Partial<Omit<PersonaData, 'id'>>) => {
   try {
     const updateData: any = {};
 
@@ -405,6 +405,7 @@ export const updatePersona = async (personaId: string, personaData: Partial<Omit
       .from('personas')
       .update(updateData)
       .eq('id', personaId)
+      .eq('user_id', userId) // ✅ Security: Only update if user owns the persona
       .select()
       .single();
 
