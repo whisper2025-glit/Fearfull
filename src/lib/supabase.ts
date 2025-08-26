@@ -441,10 +441,9 @@ export const deletePersona = async (personaId: string) => {
   }
 };
 
-export const getUserPersonas = async (userId: string, authenticatedClient?: any) => {
+export const getUserPersonas = async (userId: string) => {
   try {
-    const client = authenticatedClient || supabase;
-    const { data, error } = await client
+    const { data, error } = await supabase
       .from('personas')
       .select('*')
       .eq('user_id', userId)
