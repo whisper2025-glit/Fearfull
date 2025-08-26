@@ -87,7 +87,7 @@ const Chat = () => {
         }
 
         // Load messages for this character/conversation
-        let messagesQuery = authSupabase
+        let messagesQuery = supabase
           .from('messages')
           .select('*')
           .eq('character_id', characterId);
@@ -97,7 +97,7 @@ const Chat = () => {
           messagesQuery = messagesQuery.eq('conversation_id', conversationId);
         } else {
           // If no conversation ID, get the most recent conversation for this character and user
-          const { data: recentConv } = await authSupabase
+          const { data: recentConv } = await supabase
             .from('conversations')
             .select('id')
             .eq('character_id', characterId)
