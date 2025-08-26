@@ -132,9 +132,9 @@ export function ChatSidebar({
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="absolute -bottom-1 -right-1 w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-full p-1"
+                  className="absolute -bottom-1 -right-1 w-5 h-5 bg-red-500 hover:bg-red-600 text-white rounded-full p-1"
                 >
-                  <Video className="h-3 w-3" />
+                  <Video className="h-2 w-2" />
                 </Button>
               </div>
               
