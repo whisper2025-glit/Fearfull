@@ -206,6 +206,7 @@ const Profile = () => {
           avatar_url: userProfile.avatar,
           banner_url: userProfile.banner,
           bio: userProfile.bio,
+          gender: userProfile.gender,
           updated_at: new Date().toISOString()
         }, {
           onConflict: 'id'
