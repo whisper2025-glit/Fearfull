@@ -190,11 +190,8 @@ const Profile = () => {
 
     setIsSaving(true);
     try {
-
-      // Update Clerk user profile
-      await user.update({
-        firstName: userProfile.name,
-      });
+      // Note: We store the full display name in Supabase, not in Clerk's firstName
+      // to avoid validation issues with Clerk's firstName field restrictions
 
       // Update Supabase user
       const { error } = await supabase
