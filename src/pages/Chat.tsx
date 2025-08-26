@@ -562,11 +562,6 @@ const Chat = () => {
               <Lightbulb className="h-3 w-3" />
               Suggest
             </Button>
-            <Button variant="outline" size="sm" className="flex items-center gap-2 text-xs whitespace-nowrap flex-shrink-0">
-              <Clock className="h-3 w-3" />
-              Memory
-              <div className="w-1.5 h-1.5 bg-pink-500 rounded-full" />
-            </Button>
             <Button
               variant="outline"
               size="sm"
