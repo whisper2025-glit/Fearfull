@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "@clerk/clerk-react";
-import { MoreHorizontal, Trash2 } from "lucide-react";
+import { MoreHorizontal, Trash2, Search, Crown } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -120,27 +120,38 @@ const Chats = () => {
   return (
     <Layout>
       <div className="fixed inset-x-0 bottom-0 top-14 bg-gray-900 text-white flex flex-col overflow-hidden">
-        {/* Header (tabs only) */}
-        <div className="bg-gray-900 border-b border-gray-700 flex-shrink-0 px-4">
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-2 bg-transparent p-0 h-auto">
-              <TabsTrigger
-                value="individual"
-                className="bg-transparent text-white border-b-2 border-transparent data-[state=active]:border-purple-500 data-[state=active]:bg-transparent rounded-none py-3"
-              >
-                <span style={{ fontSize: '14px' }}>Individual</span>
-              </TabsTrigger>
-              <TabsTrigger
-                value="group"
-                className="bg-transparent text-white border-b-2 border-transparent data-[state=active]:border-purple-500 data-[state=active]:bg-transparent rounded-none py-3 relative"
-              >
-                <span style={{ fontSize: '14px' }}>Group</span>
-                <Badge className="ml-2 bg-yellow-500 text-black px-2 py-0.5 text-xs font-bold">
-                  VIP
-                </Badge>
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
+        {/* One combined header: controls + tabs */}
+        <div className="bg-gray-900 flex-shrink-0">
+          <div className="flex items-center justify-between px-4 py-2 border-b border-gray-700">
+            <Button variant="ghost" size="icon" className="text-white hover:bg-gray-800 h-9 w-9">
+              <Search className="h-5 w-5" />
+            </Button>
+            <Button variant="outline" className="border-blue-500/40 text-blue-200 hover:bg-blue-600/20 h-8 px-3 rounded-full">
+              <Crown className="h-4 w-4 mr-1 text-yellow-300" />
+              50% off!
+            </Button>
+          </div>
+          <div className="px-4 border-b border-gray-700">
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+              <TabsList className="grid w-full grid-cols-2 bg-transparent p-0 h-auto">
+                <TabsTrigger
+                  value="individual"
+                  className="bg-transparent text-white border-b-2 border-transparent data-[state=active]:border-purple-500 data-[state=active]:bg-transparent rounded-none py-3"
+                >
+                  <span style={{ fontSize: '14px' }}>Individual</span>
+                </TabsTrigger>
+                <TabsTrigger
+                  value="group"
+                  className="bg-transparent text-white border-b-2 border-transparent data-[state=active]:border-purple-500 data-[state=active]:bg-transparent rounded-none py-3 relative"
+                >
+                  <span style={{ fontSize: '14px' }}>Group</span>
+                  <Badge className="ml-2 bg-yellow-500 text-black px-2 py-0.5 text-xs font-bold">
+                    VIP
+                  </Badge>
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </div>
         </div>
 
         {/* Non-scrollable content area */}
