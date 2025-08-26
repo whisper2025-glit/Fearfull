@@ -73,9 +73,13 @@ export class OpenRouterAPI {
       presence_penalty?: number;
     } = {}
   ): Promise<OpenRouterResponse> {
+    if (!this.isApiKeyValid()) {
+      throw new Error('OpenRouter API key is not configured or invalid');
+    }
+
     try {
-      console.log('OpenRouter API - Making request to:', `${this.baseURL}/chat/completions`);
-      console.log('OpenRouter API - Model:', model.name);
+      console.log('🚀 OpenRouter API - Making request to:', `${this.baseURL}/chat/completions`);
+      console.log('🤖 OpenRouter API - Model:', model.name);
 
       const response = await fetch(`${this.baseURL}/chat/completions`, {
         method: 'POST',
