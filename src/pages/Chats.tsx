@@ -109,144 +109,145 @@ const Chats = () => {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center">
-        <p>Please sign in to view your conversations.</p>
-      </div>
+      <Layout>
+        <div className="flex items-center justify-center h-full">
+          <p>Please sign in to view your conversations.</p>
+        </div>
+      </Layout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
-      {/* Header */}
-      <header className="bg-gray-800 px-4 py-3 border-b border-gray-700">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
+    <Layout>
+      <div className="h-full bg-gray-900 text-white flex flex-col overflow-hidden">
+        {/* Sticky header within Layout - this will stick under the main Layout header */}
+        <div className="sticky top-0 z-10 bg-gray-800 border-b border-gray-700 flex-shrink-0">
+          <div className="flex items-center justify-end px-4 py-3">
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => navigate(-1)}
               className="text-white hover:bg-gray-700"
             >
-              <ArrowLeft className="h-5 w-5" />
+              <UserPlus className="h-5 w-5" />
             </Button>
           </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="text-white hover:bg-gray-700"
-          >
-            <UserPlus className="h-5 w-5" />
-          </Button>
         </div>
-      </header>
 
-      {/* Tabs */}
-      <div className="bg-gray-800 px-4 border-b border-gray-700">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-2 bg-transparent p-0 h-auto">
-            <TabsTrigger 
-              value="individual" 
-              className="bg-transparent text-white border-b-2 border-transparent data-[state=active]:border-purple-500 data-[state=active]:bg-transparent rounded-none py-3"
-            >
-              <span style={{ fontSize: '14px' }}>Individual</span>
-            </TabsTrigger>
-            <TabsTrigger 
-              value="group" 
-              className="bg-transparent text-white border-b-2 border-transparent data-[state=active]:border-purple-500 data-[state=active]:bg-transparent rounded-none py-3 relative"
-            >
-              <span style={{ fontSize: '14px' }}>Group</span>
-              <Badge className="ml-2 bg-yellow-500 text-black px-2 py-0.5 text-xs font-bold">
-                VIP
-              </Badge>
-            </TabsTrigger>
-          </TabsList>
-
-          {/* Individual Chats */}
-          <TabsContent value="individual" className="mt-0">
-            <div className="divide-y divide-gray-700">
-              {mockChats.map((chat) => (
-                <div
-                  key={chat.id}
-                  className="flex items-center gap-3 p-4 hover:bg-gray-800 cursor-pointer"
-                  onClick={() => navigateToChat(chat.id)}
+        {/* Tabs section - also sticky */}
+        <div className="sticky top-0 z-10 bg-gray-800 border-b border-gray-700 flex-shrink-0">
+          <div className="px-4">
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+              <TabsList className="grid w-full grid-cols-2 bg-transparent p-0 h-auto">
+                <TabsTrigger 
+                  value="individual" 
+                  className="bg-transparent text-white border-b-2 border-transparent data-[state=active]:border-purple-500 data-[state=active]:bg-transparent rounded-none py-3"
                 >
-                  {/* Avatar */}
-                  <Avatar className="w-12 h-12 flex-shrink-0">
-                    <AvatarImage src={chat.characterAvatar} alt={chat.characterName} />
-                    <AvatarFallback className="bg-gray-600 text-white">
-                      {chat.characterName.charAt(0)}
-                    </AvatarFallback>
-                  </Avatar>
+                  <span style={{ fontSize: '14px' }}>Individual</span>
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="group" 
+                  className="bg-transparent text-white border-b-2 border-transparent data-[state=active]:border-purple-500 data-[state=active]:bg-transparent rounded-none py-3 relative"
+                >
+                  <span style={{ fontSize: '14px' }}>Group</span>
+                  <Badge className="ml-2 bg-yellow-500 text-black px-2 py-0.5 text-xs font-bold">
+                    VIP
+                  </Badge>
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </div>
+        </div>
 
-                  {/* Chat Info */}
-                  <div className="flex-1 min-w-0">
-                    <h3 
-                      className="font-medium text-white truncate"
-                      style={{ fontSize: '14px' }}
-                    >
-                      {chat.characterName}
-                    </h3>
-                    <p 
-                      className="text-gray-400 truncate mt-0.5"
-                      style={{ fontSize: '12px' }}
-                    >
-                      {chat.messagePreview}
-                    </p>
+        {/* Scrollable content area */}
+        <div className="flex-1 overflow-y-auto">
+          <Tabs value={activeTab} className="w-full">
+            {/* Individual Chats */}
+            <TabsContent value="individual" className="mt-0">
+              <div className="divide-y divide-gray-700">
+                {mockChats.map((chat) => (
+                  <div
+                    key={chat.id}
+                    className="flex items-center gap-3 p-4 hover:bg-gray-800 cursor-pointer"
+                    onClick={() => navigateToChat(chat.id)}
+                  >
+                    {/* Avatar */}
+                    <Avatar className="w-12 h-12 flex-shrink-0">
+                      <AvatarImage src={chat.characterAvatar} alt={chat.characterName} />
+                      <AvatarFallback className="bg-gray-600 text-white">
+                        {chat.characterName.charAt(0)}
+                      </AvatarFallback>
+                    </Avatar>
+
+                    {/* Chat Info */}
+                    <div className="flex-1 min-w-0">
+                      <h3 
+                        className="font-medium text-white truncate"
+                        style={{ fontSize: '14px' }}
+                      >
+                        {chat.characterName}
+                      </h3>
+                      <p 
+                        className="text-gray-400 truncate mt-0.5"
+                        style={{ fontSize: '12px' }}
+                      >
+                        {chat.messagePreview}
+                      </p>
+                    </div>
+
+                    {/* Timestamp and Actions */}
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      <span 
+                        className="text-gray-400"
+                        style={{ fontSize: '12px' }}
+                      >
+                        {chat.timestamp}
+                      </span>
+                      
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="text-gray-400 hover:bg-gray-700 h-8 w-8"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="bg-gray-800 border-gray-700">
+                          <DropdownMenuItem 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              removeFromRecents(chat.id);
+                            }}
+                            className="text-white hover:bg-gray-700 cursor-pointer"
+                          >
+                            <Trash2 className="h-4 w-4 mr-2" />
+                            Remove from recents
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
                   </div>
+                ))}
+              </div>
+            </TabsContent>
 
-                  {/* Timestamp and Actions */}
-                  <div className="flex items-center gap-2 flex-shrink-0">
-                    <span 
-                      className="text-gray-400"
-                      style={{ fontSize: '12px' }}
-                    >
-                      {chat.timestamp}
-                    </span>
-                    
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="text-gray-400 hover:bg-gray-700 h-8 w-8"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="bg-gray-800 border-gray-700">
-                        <DropdownMenuItem 
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            removeFromRecents(chat.id);
-                          }}
-                          className="text-white hover:bg-gray-700 cursor-pointer"
-                        >
-                          <Trash2 className="h-4 w-4 mr-2" />
-                          Remove from recents
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </TabsContent>
-
-          {/* Group Chats */}
-          <TabsContent value="group" className="mt-0">
-            <div className="p-8 text-center">
-              <p className="text-gray-400" style={{ fontSize: '12px' }}>
-                Group chats will appear here
-              </p>
-              <Badge className="mt-2 bg-yellow-500 text-black px-3 py-1">
-                VIP Feature
-              </Badge>
-            </div>
-          </TabsContent>
-        </Tabs>
+            {/* Group Chats */}
+            <TabsContent value="group" className="mt-0">
+              <div className="p-8 text-center">
+                <p className="text-gray-400" style={{ fontSize: '12px' }}>
+                  Group chats will appear here
+                </p>
+                <Badge className="mt-2 bg-yellow-500 text-black px-3 py-1">
+                  VIP Feature
+                </Badge>
+              </div>
+            </TabsContent>
+          </Tabs>
+        </div>
       </div>
-    </div>
+    </Layout>
   );
 };
 
