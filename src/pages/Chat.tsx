@@ -44,19 +44,19 @@ const Chat = () => {
   const [sceneBackground, setSceneBackground] = useState<string>("");
   const [selectedModel, setSelectedModel] = useState<Model | null>({
     id: "mistral-main",
-    name: "mistralai/mistral-small-3.2-24b-instruct:free",
+    name: "mistralai/mistral-7b-instruct:free",
     author: "Mistral AI",
     description: "Excellent for creative roleplay scenarios",
     price: 0,
-    responseTime: "850 ms",
-    memory: "24B",
-    rating: 8.5,
+    responseTime: "1s",
+    memory: "7B",
+    rating: 8.0,
     tags: ["Main", "Roleplay", "Creative", "Free"],
     isActive: true,
     isPremium: false,
     isMain: true,
     provider: 'mistral',
-    tier: 'standard'
+    tier: 'free'
   });
   const [isLoading, setIsLoading] = useState(false);
 
@@ -207,15 +207,15 @@ const Chat = () => {
 
     const testConnection = async () => {
       try {
-        const isConnected = await openRouterAPI.testConnection();
-        if (isConnected) {
-          toast.success('OpenRouter API connected successfully!');
+        const result = await openRouterAPI.testConnection();
+        if (result.success) {
+          toast.success(result.message);
         } else {
-          toast.error('Failed to connect to OpenRouter API. Please check your configuration.');
+          toast.error(result.message);
         }
       } catch (error) {
         console.error('Connection test failed:', error);
-        toast.error('OpenRouter API connection test failed.');
+        toast.error('OpenRouter API connection test failed');
       }
     };
 
@@ -249,19 +249,19 @@ const Chat = () => {
     // Use default model if none selected
     const modelToUse = selectedModel || {
       id: "mistral-main",
-      name: "mistralai/mistral-small-3.2-24b-instruct:free",
+      name: "mistralai/mistral-7b-instruct:free",
       author: "Mistral AI",
       description: "Default roleplay model",
       price: 0,
-      responseTime: "850 ms",
-      memory: "24B",
-      rating: 8.5,
+      responseTime: "1s",
+      memory: "7B",
+      rating: 8.0,
       tags: ["Main", "Roleplay", "Free"],
       isActive: true,
       isPremium: false,
       isMain: true,
       provider: 'mistral',
-      tier: 'standard' as const
+      tier: 'free' as const
     };
 
     // Add user message to local state immediately for UI responsiveness
@@ -381,16 +381,18 @@ const Chat = () => {
       toast.success(`Response received from ${modelToUse.author}`);
     } catch (error) {
       console.error('Error sending message:', error);
-      toast.error(`Failed to get response from ${modelToUse.author}. Please check your API key and try again.`);
 
-      const errorMessage: Message = {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      toast.error(`Failed to get response: ${errorMessage}`);
+
+      const errorBotMessage: Message = {
         id: Date.now() + 1,
         content: "I'm sorry, I'm having trouble responding right now. Please check your API connection and try again.",
         isBot: true,
         timestamp: new Date().toLocaleTimeString(),
         type: "regular"
       };
-      setMessages(prev => [...prev, errorMessage]);
+      setMessages(prev => [...prev, errorBotMessage]);
     } finally {
       setIsLoading(false);
     }

@@ -1,5 +1,10 @@
 import { Model } from '@/components/ModelsModal';
 
+export interface ChatMessage {
+  role: 'system' | 'user' | 'assistant';
+  content: string;
+}
+
 export interface OpenRouterResponse {
   id: string;
   object: string;
@@ -20,112 +25,142 @@ export interface OpenRouterResponse {
   };
 }
 
-export interface ChatMessage {
-  role: 'system' | 'user' | 'assistant';
-  content: string;
+export interface OpenRouterOptions {
+  temperature?: number;
+  max_tokens?: number;
+  top_p?: number;
+  frequency_penalty?: number;
+  presence_penalty?: number;
 }
 
-export class OpenRouterAPI {
-  private apiKey: string;
-  private baseURL = 'https://openrouter.ai/api/v1';
+class OpenRouterService {
+  private readonly apiKey: string;
+  private readonly baseURL = 'https://openrouter.ai/api/v1';
+  private readonly defaultOptions: OpenRouterOptions = {
+    temperature: 0.7,
+    max_tokens: 1000,
+    top_p: 1,
+    frequency_penalty: 0,
+    presence_penalty: 0,
+  };
 
   constructor() {
-    this.apiKey = import.meta.env.VITE_OPENROUTER_API_KEY;
+    this.apiKey = import.meta.env.VITE_OPENROUTER_API_KEY || '';
+    
     if (!this.apiKey) {
-      throw new Error('OpenRouter API key not found in environment variables');
+      console.warn('OpenRouter API key not found in environment variables');
     }
+  }
+
+  private getHeaders(): Record<string, string> {
+    return {
+      'Authorization': `Bearer ${this.apiKey}`,
+      'Content-Type': 'application/json',
+      'HTTP-Referer': window.location.origin,
+      'X-Title': 'Roleplay Chat App',
+    };
+  }
+
+  private validateApiKey(): boolean {
+    if (!this.apiKey) {
+      throw new Error('OpenRouter API key is not configured. Please add VITE_OPENROUTER_API_KEY to your environment variables.');
+    }
+    
+    if (!this.apiKey.startsWith('sk-or-v1-')) {
+      throw new Error('Invalid OpenRouter API key format. Key should start with "sk-or-v1-"');
+    }
+    
+    return true;
   }
 
   async createChatCompletion(
     model: Model,
     messages: ChatMessage[],
-    options: {
-      temperature?: number;
-      max_tokens?: number;
-      top_p?: number;
-      frequency_penalty?: number;
-      presence_penalty?: number;
-    } = {}
+    options: OpenRouterOptions = {}
   ): Promise<OpenRouterResponse> {
+    this.validateApiKey();
+
+    const requestOptions = { ...this.defaultOptions, ...options };
+    
+    const requestBody = {
+      model: model.name,
+      messages,
+      ...requestOptions,
+      stream: false,
+    };
+
     try {
       const response = await fetch(`${this.baseURL}/chat/completions`, {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${this.apiKey}`,
-          'Content-Type': 'application/json',
-          'HTTP-Referer': window.location.origin,
-          'X-Title': 'Roleplay Chat App'
-        },
-        body: JSON.stringify({
-          model: model.name,
-          messages: messages,
-          temperature: options.temperature ?? 0.7,
-          max_tokens: options.max_tokens ?? 1000,
-          top_p: options.top_p ?? 1,
-          frequency_penalty: options.frequency_penalty ?? 0,
-          presence_penalty: options.presence_penalty ?? 0,
-          stream: false
-        })
+        headers: this.getHeaders(),
+        body: JSON.stringify(requestBody),
       });
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(`OpenRouter API error: ${response.status} - ${errorData.error?.message || 'Unknown error'}`);
+        const errorData = await this.handleErrorResponse(response);
+        throw new Error(`OpenRouter API Error (${response.status}): ${errorData.message}`);
       }
 
       return await response.json();
     } catch (error) {
-      console.error('OpenRouter API error:', error);
-      throw error;
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error(`Network error: ${String(error)}`);
     }
   }
 
   async streamChatCompletion(
     model: Model,
     messages: ChatMessage[],
-    options: {
-      temperature?: number;
-      max_tokens?: number;
-      top_p?: number;
-      frequency_penalty?: number;
-      presence_penalty?: number;
-    } = {},
+    options: OpenRouterOptions = {},
     onChunk?: (chunk: string) => void
   ): Promise<string> {
+    this.validateApiKey();
+
+    const requestOptions = { ...this.defaultOptions, ...options };
+    
+    const requestBody = {
+      model: model.name,
+      messages,
+      ...requestOptions,
+      stream: true,
+    };
+
     try {
       const response = await fetch(`${this.baseURL}/chat/completions`, {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${this.apiKey}`,
-          'Content-Type': 'application/json',
-          'HTTP-Referer': window.location.origin,
-          'X-Title': 'Roleplay Chat App'
-        },
-        body: JSON.stringify({
-          model: model.name,
-          messages: messages,
-          temperature: options.temperature ?? 0.7,
-          max_tokens: options.max_tokens ?? 1000,
-          top_p: options.top_p ?? 1,
-          frequency_penalty: options.frequency_penalty ?? 0,
-          presence_penalty: options.presence_penalty ?? 0,
-          stream: true
-        })
+        headers: this.getHeaders(),
+        body: JSON.stringify(requestBody),
       });
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(`OpenRouter API error: ${response.status} - ${errorData.error?.message || 'Unknown error'}`);
+        const errorData = await this.handleErrorResponse(response);
+        throw new Error(`OpenRouter API Error (${response.status}): ${errorData.message}`);
       }
 
-      const reader = response.body?.getReader();
-      if (!reader) {
-        throw new Error('Failed to get response reader');
+      return await this.processStreamResponse(response, onChunk);
+    } catch (error) {
+      if (error instanceof Error) {
+        throw error;
       }
+      throw new Error(`Network error: ${String(error)}`);
+    }
+  }
 
-      let fullContent = '';
-      const decoder = new TextDecoder();
+  private async processStreamResponse(
+    response: Response,
+    onChunk?: (chunk: string) => void
+  ): Promise<string> {
+    const reader = response.body?.getReader();
+    if (!reader) {
+      throw new Error('Failed to get response reader');
+    }
 
+    let fullContent = '';
+    const decoder = new TextDecoder();
+
+    try {
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
@@ -135,31 +170,81 @@ export class OpenRouterAPI {
 
         for (const line of lines) {
           if (line.startsWith('data: ')) {
-            const data = line.slice(6);
-            if (data === '[DONE]') break;
+            const data = line.slice(6).trim();
+            if (data === '[DONE]') continue;
 
             try {
               const parsed = JSON.parse(data);
-              const content = parsed.choices[0]?.delta?.content;
+              const content = parsed.choices?.[0]?.delta?.content;
               if (content) {
                 fullContent += content;
                 onChunk?.(content);
               }
-            } catch (e) {
+            } catch {
               // Ignore JSON parse errors for incomplete chunks
             }
           }
         }
       }
+    } finally {
+      reader.releaseLock();
+    }
 
-      return fullContent;
-    } catch (error) {
-      console.error('OpenRouter streaming error:', error);
-      throw error;
+    return fullContent;
+  }
+
+  private async handleErrorResponse(response: Response): Promise<{ message: string }> {
+    try {
+      const errorData = await response.json();
+      return {
+        message: errorData.error?.message || errorData.message || 'Unknown error occurred',
+      };
+    } catch {
+      return {
+        message: `HTTP ${response.status}: ${response.statusText}`,
+      };
     }
   }
 
-  // Roleplay-optimized system prompts for different model types
+  async testConnection(): Promise<{ success: boolean; message: string }> {
+    try {
+      this.validateApiKey();
+
+      const testModel: Model = {
+        id: 'test-model',
+        name: 'mistralai/mistral-7b-instruct:free',
+        author: 'Mistral AI',
+        description: 'Test model',
+        price: 0,
+        responseTime: '1s',
+        memory: '7B',
+        rating: 8.0,
+        tags: ['test'],
+        isActive: true,
+        isPremium: false,
+        isMain: false,
+        provider: 'mistral',
+        tier: 'free',
+      };
+
+      const testMessages: ChatMessage[] = [
+        { role: 'user', content: 'Hello' }
+      ];
+
+      await this.createChatCompletion(testModel, testMessages, { max_tokens: 5 });
+      
+      return {
+        success: true,
+        message: 'OpenRouter API connection successful'
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: error instanceof Error ? error.message : 'Unknown connection error'
+      };
+    }
+  }
+
   getRoleplaySystemPrompt(model: Model, characterName?: string): string {
     const basePrompt = `You are a skilled roleplay AI assistant. Your role is to engage in immersive, creative roleplay scenarios while maintaining character consistency and narrative flow.
 
@@ -176,40 +261,7 @@ Guidelines:
 
     return basePrompt;
   }
-
-  // Test the API connection
-  async testConnection(): Promise<boolean> {
-    try {
-      const testMessages: ChatMessage[] = [
-        { role: 'user', content: 'Hello, this is a test message.' }
-      ];
-
-      // Use the Mistral model for testing (it's marked as main)
-      const testModel: Model = {
-        id: 'test',
-        name: 'mistralai/mistral-small-3.2-24b-instruct:free',
-        author: 'Mistral AI',
-        description: 'Test',
-        price: 0,
-        responseTime: '850 ms',
-        memory: '24B',
-        rating: 8.5,
-        tags: ['Test'],
-        isActive: true,
-        isPremium: false,
-        isMain: true,
-        provider: 'mistral',
-        tier: 'standard'
-      };
-
-      await this.createChatCompletion(testModel, testMessages, { max_tokens: 50 });
-      return true;
-    } catch (error) {
-      console.error('OpenRouter connection test failed:', error);
-      return false;
-    }
-  }
 }
 
-// Export a singleton instance
-export const openRouterAPI = new OpenRouterAPI();
+// Export singleton instance
+export const openRouterAPI = new OpenRouterService();
