@@ -52,10 +52,7 @@ const AppContent = () => {
         } />
         <Route path="/bot-profile" element={
           <ProtectedRoute>
-            {/** Static demo bot profile page replicating screenshots */}
-            <div style={{ height: '100%' }}>
-              {/* Lazy import to keep routing simple */}
-            </div>
+            <BotProfile />
           </ProtectedRoute>
         } />
         <Route path="*" element={<NotFound />} />
