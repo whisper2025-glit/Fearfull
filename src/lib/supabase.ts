@@ -47,6 +47,7 @@ export interface Database {
           avatar_url: string | null;
           banner_url: string | null;
           bio: string | null;
+          gender: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -58,6 +59,7 @@ export interface Database {
           avatar_url?: string | null;
           banner_url?: string | null;
           bio?: string | null;
+          gender?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -69,6 +71,7 @@ export interface Database {
           avatar_url?: string | null;
           banner_url?: string | null;
           bio?: string | null;
+          gender?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -227,7 +230,23 @@ export const uploadImage = async (bucket: string, path: string, file: File) => {
   return { data, publicUrl };
 };
 
-// Note: generateUniqueUsername removed - now using full_name only
+// Helper function to generate username from display name
+const generateUsername = (displayName: string, userId: string): string => {
+  // Remove spaces and special characters, convert to lowercase
+  let username = displayName.toLowerCase()
+    .replace(/[^a-z0-9]/g, '')
+    .substring(0, 20); // Limit length
+
+  // If empty after cleaning, use part of user ID
+  if (!username) {
+    username = 'user' + userId.substring(0, 8);
+  }
+
+  // Add part of user ID to ensure uniqueness
+  username += userId.substring(0, 4);
+
+  return username;
+};
 
 export const createOrUpdateUser = async (clerkUser: any) => {
   console.log('🔧 createOrUpdateUser called with:', {
@@ -237,9 +256,11 @@ export const createOrUpdateUser = async (clerkUser: any) => {
     email: clerkUser.emailAddresses?.[0]?.emailAddress
   });
 
+  const displayName = clerkUser.fullName || clerkUser.firstName || clerkUser.username || 'User';
   const userData = {
     id: clerkUser.id,
-    full_name: clerkUser.fullName || clerkUser.firstName || clerkUser.username || 'User',
+    username: clerkUser.username || generateUsername(displayName, clerkUser.id),
+    full_name: displayName,
     email: clerkUser.emailAddresses?.[0]?.emailAddress || null,
     avatar_url: clerkUser.imageUrl || null,
     updated_at: new Date().toISOString()

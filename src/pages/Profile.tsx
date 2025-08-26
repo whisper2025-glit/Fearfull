@@ -50,65 +50,65 @@ const Profile = () => {
   });
 
   // Load user profile and data from Supabase
-  useEffect(() => {
-    const loadUserData = async () => {
-      if (!user) return;
+  const loadUserData = async () => {
+    if (!user) return;
 
-      setIsLoading(true);
-      try {
-        // Load user data from Supabase
-        const { data: userData, error: userError } = await supabase
-          .from('users')
-          .select('*')
-          .eq('id', user.id)
-          .single();
+    setIsLoading(true);
+    try {
+      // Load user data from Supabase
+      const { data: userData, error: userError } = await supabase
+        .from('users')
+        .select('*')
+        .eq('id', user.id)
+        .single();
 
-        if (userError && userError.code !== 'PGRST116') {
-          console.error('Error loading user:', userError);
-        } else if (userData) {
-          setUserProfile({
-            name: userData.full_name || user.firstName || user.username || 'User',
-            bio: userData.bio || '',
-            gender: '',
-            avatar: userData.avatar_url || user.imageUrl || '',
-            banner: userData.banner_url || ''
-          });
-        } else {
-          // Set default values from Clerk
-          setUserProfile({
-            name: user.firstName || user.username || 'User',
-            bio: '',
-            gender: '',
-            avatar: user.imageUrl || '',
-            banner: ''
-          });
-        }
-
-        // Load user's characters
-        const { data: charactersData, error: charactersError } = await supabase
-          .from('characters')
-          .select('*, messages(id)')
-          .eq('owner_id', user.id)
-          .order('created_at', { ascending: false });
-
-        if (charactersError) {
-          console.error('Error loading characters:', charactersError);
-        } else {
-          setUserCharacters(charactersData || []);
-          setStats(prev => ({
-            ...prev,
-            publicBots: (charactersData || []).filter(char => char.visibility === 'public').length
-          }));
-        }
-
-      } catch (error) {
-        console.error('Error loading user data:', error);
-        toast.error('Failed to load profile data');
-      } finally {
-        setIsLoading(false);
+      if (userError && userError.code !== 'PGRST116') {
+        console.error('Error loading user:', userError);
+      } else if (userData) {
+        setUserProfile({
+          name: userData.full_name || user.firstName || user.username || 'User',
+          bio: userData.bio || '',
+          gender: userData.gender || '',
+          avatar: userData.avatar_url || user.imageUrl || '',
+          banner: userData.banner_url || ''
+        });
+      } else {
+        // Set default values from Clerk
+        setUserProfile({
+          name: user.firstName || user.username || 'User',
+          bio: '',
+          gender: '',
+          avatar: user.imageUrl || '',
+          banner: ''
+        });
       }
-    };
 
+      // Load user's characters
+      const { data: charactersData, error: charactersError } = await supabase
+        .from('characters')
+        .select('*, messages(id)')
+        .eq('owner_id', user.id)
+        .order('created_at', { ascending: false });
+
+      if (charactersError) {
+        console.error('Error loading characters:', charactersError);
+      } else {
+        setUserCharacters(charactersData || []);
+        setStats(prev => ({
+          ...prev,
+          publicBots: (charactersData || []).filter(char => char.visibility === 'public').length
+        }));
+      }
+
+    } catch (error) {
+      console.error('Error loading user data:', error);
+      toast.error('Failed to load profile data');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
     loadUserData();
   }, [user]);
 
@@ -147,13 +147,30 @@ const Profile = () => {
     const file = event.target.files?.[0];
     if (file && user) {
       try {
-        const bannerPath = `${user.id}/banners/${Date.now()}.jpg`;
+        console.log('🖼️ Starting banner upload:', {
+          fileName: file.name,
+          fileSize: file.size,
+          fileType: file.type
+        });
+
+        // Get file extension from the uploaded file
+        const fileExtension = file.name.split('.').pop() || 'jpg';
+        const bannerPath = `${user.id}/banners/${Date.now()}.${fileExtension}`;
+        console.log('📁 Upload path:', bannerPath);
+
         const { publicUrl } = await uploadImage('profiles', bannerPath, file);
+        console.log('✅ Banner uploaded successfully, URL:', publicUrl);
+
         setUserProfile(prev => ({ ...prev, banner: publicUrl }));
         toast.success('Banner uploaded successfully');
       } catch (error) {
-        console.error('Error uploading banner:', error);
-        toast.error('Failed to upload banner');
+        console.error('�� Error uploading banner:', error);
+        console.error('Error details:', {
+          message: error instanceof Error ? error.message : 'Unknown error',
+          stack: error instanceof Error ? error.stack : undefined,
+          error
+        });
+        toast.error(`Failed to upload banner: ${error instanceof Error ? error.message : 'Unknown error'}`);
       }
     }
   };
@@ -163,7 +180,8 @@ const Profile = () => {
     if (file && user) {
       try {
         // Upload to Supabase storage
-        const avatarPath = `${user.id}/avatars/${Date.now()}.jpg`;
+        const fileExtension = file.name.split('.').pop() || 'jpg';
+        const avatarPath = `${user.id}/avatars/${Date.now()}.${fileExtension}`;
         const { publicUrl } = await uploadImage('profiles', avatarPath, file);
 
         // Update Clerk profile image
@@ -190,30 +208,53 @@ const Profile = () => {
 
     setIsSaving(true);
     try {
+      // Note: We store the full display name in Supabase, not in Clerk's firstName
+      // to avoid validation issues with Clerk's firstName field restrictions
 
-      // Update Clerk user profile
-      await user.update({
-        firstName: userProfile.name,
-      });
+      // First get existing user data to preserve username
+      const { data: existingUser } = await supabase
+        .from('users')
+        .select('username')
+        .eq('id', user.id)
+        .single();
+
+      // Generate username if none exists
+      const generateUsername = (displayName: string, userId: string): string => {
+        let username = displayName.toLowerCase()
+          .replace(/[^a-z0-9]/g, '')
+          .substring(0, 20);
+        if (!username) {
+          username = 'user' + userId.substring(0, 8);
+        }
+        username += userId.substring(0, 4);
+        return username;
+      };
+
+      const username = existingUser?.username ||
+                      user.username ||
+                      generateUsername(userProfile.name, user.id);
 
       // Update Supabase user
       const { error } = await supabase
         .from('users')
         .upsert({
           id: user.id,
+          username: username,
           full_name: userProfile.name,
           email: user.emailAddresses?.[0]?.emailAddress || null,
           avatar_url: userProfile.avatar,
           banner_url: userProfile.banner,
           bio: userProfile.bio,
+          gender: userProfile.gender,
           updated_at: new Date().toISOString()
         }, {
           onConflict: 'id'
         });
 
       if (error) {
-        console.error('Error updating profile:', error);
-        console.error('Error details:', {
+        console.error('❌ Error updating profile:', error);
+        console.error('🔍 Current userProfile state:', userProfile);
+        console.error('📊 Error details:', {
           message: error.message,
           details: error.details,
           hint: error.hint,
@@ -229,6 +270,9 @@ const Profile = () => {
       } else {
         toast.success('Profile updated successfully');
         setEditModalOpen(false);
+
+        // Reload user data to reflect changes
+        await loadUserData();
       }
     } catch (error) {
       console.error('Error updating profile:', error);
