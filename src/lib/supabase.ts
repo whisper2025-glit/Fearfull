@@ -489,16 +489,17 @@ export const getDefaultPersona = async (userId: string, authenticatedClient?: an
   }
 };
 
-export const setDefaultPersona = async (personaId: string, userId: string) => {
+export const setDefaultPersona = async (personaId: string, userId: string, authenticatedClient?: any) => {
   try {
+    const client = authenticatedClient || supabase;
     // First, unset all other defaults for this user
-    await supabase
+    await client
       .from('personas')
       .update({ is_default: false })
       .eq('user_id', userId);
 
     // Then set the specified persona as default
-    const { data, error } = await supabase
+    const { data, error } = await client
       .from('personas')
       .update({ is_default: true })
       .eq('id', personaId)
