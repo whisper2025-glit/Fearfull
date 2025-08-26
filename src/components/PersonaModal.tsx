@@ -66,8 +66,7 @@ export function PersonaModal({ open, onOpenChange, onPersonaSelect, currentPerso
 
     setIsLoading(true);
     try {
-      const authenticatedClient = await getAuthenticatedClient();
-      const userPersonas = await getUserPersonas(user.id, authenticatedClient);
+      const userPersonas = await getUserPersonas(user.id);
       setPersonas(userPersonas);
     } catch (error) {
       console.error('Error loading personas:', error);
