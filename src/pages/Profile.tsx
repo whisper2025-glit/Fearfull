@@ -57,23 +57,23 @@ const Profile = () => {
 
       setIsLoading(true);
       try {
-        // Load user profile from Supabase
-        const { data: profileData, error: profileError } = await supabase
-          .from('profiles')
+        // Load user data from Supabase
+        const { data: userData, error: userError } = await supabase
+          .from('users')
           .select('*')
           .eq('id', user.id)
           .single();
 
-        if (profileError && profileError.code !== 'PGRST116') {
-          console.error('Error loading profile:', profileError);
-        } else if (profileData) {
+        if (userError && userError.code !== 'PGRST116') {
+          console.error('Error loading user:', userError);
+        } else if (userData) {
           setUserProfile({
-            username: profileData.username,
-            name: profileData.full_name || user.firstName || user.username || 'User',
-            bio: profileData.bio || '',
+            username: userData.username,
+            name: userData.full_name || user.firstName || user.username || 'User',
+            bio: userData.bio || '',
             gender: '',
-            avatar: profileData.avatar_url || user.imageUrl || '',
-            banner: profileData.banner_url || ''
+            avatar: userData.avatar_url || user.imageUrl || '',
+            banner: userData.banner_url || ''
           });
         } else {
           // Set default values from Clerk
@@ -192,9 +192,9 @@ const Profile = () => {
         firstName: userProfile.name,
       });
 
-      // Update Supabase profile
+      // Update Supabase user
       const { error } = await supabase
-        .from('profiles')
+        .from('users')
         .upsert({
           id: user.id,
           username: userProfile.username,
