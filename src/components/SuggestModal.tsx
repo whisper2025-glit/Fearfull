@@ -201,7 +201,7 @@ Example format:
                 {suggestions.map((suggestion, index) => (
                   <Card
                     key={index}
-                    className="bg-[#232438] border-[#2d2e3e] hover:border-[#e74c8c]/60 cursor-pointer transition-all duration-200 hover:bg-[#2a2b42]"
+                    className="group bg-[#232438] border-[#2d2e3e] hover:border-[#e74c8c]/60 cursor-pointer transition-all duration-200 hover:bg-[#2a2b42]"
                     onClick={() => handleSuggestionClick(suggestion)}
                   >
                     <CardContent className="p-4">
