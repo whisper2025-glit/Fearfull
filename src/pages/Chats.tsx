@@ -191,6 +191,7 @@ const Chats = () => {
             </div>
           </TabsContent>
         </Tabs>
+        <div ref={sentinelRef} className="h-8" />
       </div>
     </Layout>
   );
