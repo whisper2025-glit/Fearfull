@@ -39,17 +39,10 @@ const formatDate = (dateString: string): string => {
 
 const Chats = () => {
   const { user } = useUser();
-  const { getToken } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("recent");
   const [characterHistory, setCharacterHistory] = useState<CharacterHistory[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-
-  const getAuthenticatedSupabase = () => {
-    return createSupabaseClientWithClerkAuth(async () => {
-      return await getToken({ template: 'supabase' });
-    });
-  };
 
   useEffect(() => {
     const loadCharacterHistory = async () => {
@@ -57,10 +50,8 @@ const Chats = () => {
 
       setIsLoading(true);
       try {
-        const authSupabase = getAuthenticatedSupabase();
-        
         // Get characters the user has chatted with by querying messages
-        const { data: messageData, error } = await authSupabase
+        const { data: messageData, error } = await supabase
           .from('messages')
           .select(`
             character_id,
