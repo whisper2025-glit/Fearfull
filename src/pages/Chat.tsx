@@ -270,15 +270,18 @@ const Chat = () => {
     // Add user message to local state immediately for UI responsiveness
     const userMessage: Message = {
       id: Date.now(),
-      content: message,
+      content: messageToSend,
       isBot: false,
       timestamp: new Date().toLocaleTimeString(),
       type: "regular"
     };
 
     setMessages(prev => [...prev, userMessage]);
-    const currentMessage = message;
-    setMessage("");
+    const currentMessage = messageToSend;
+    // Only clear input if we're sending the current message (not a suggestion)
+    if (!messageContent) {
+      setMessage("");
+    }
     setIsLoading(true);
 
     try {
@@ -653,9 +656,9 @@ const Chat = () => {
       <SuggestModal
         open={isSuggestModalOpen}
         onOpenChange={setIsSuggestModalOpen}
-        onSuggestionSelect={(suggestion) => {
-          setMessage(suggestion);
+        onSuggestionSelect={async (suggestion) => {
           setIsSuggestModalOpen(false);
+          await handleSendMessage(suggestion);
         }}
         chatContext={{
           characterName: currentCharacter.name,
