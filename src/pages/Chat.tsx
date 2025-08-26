@@ -48,15 +48,15 @@ const Chat = () => {
     author: "Mistral AI",
     description: "Excellent for creative roleplay scenarios",
     price: 0,
-    responseTime: "850 ms",
-    memory: "24B",
-    rating: 8.5,
+    responseTime: "1s",
+    memory: "7B",
+    rating: 8.0,
     tags: ["Main", "Roleplay", "Creative", "Free"],
     isActive: true,
     isPremium: false,
     isMain: true,
     provider: 'mistral',
-    tier: 'standard'
+    tier: 'free'
   });
   const [isLoading, setIsLoading] = useState(false);
 
