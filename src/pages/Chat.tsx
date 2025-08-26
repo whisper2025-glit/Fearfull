@@ -249,19 +249,19 @@ const Chat = () => {
     // Use default model if none selected
     const modelToUse = selectedModel || {
       id: "mistral-main",
-      name: "mistralai/mistral-small-3.2-24b-instruct:free",
+      name: "mistralai/mistral-7b-instruct:free",
       author: "Mistral AI",
       description: "Default roleplay model",
       price: 0,
-      responseTime: "850 ms",
-      memory: "24B",
-      rating: 8.5,
+      responseTime: "1s",
+      memory: "7B",
+      rating: 8.0,
       tags: ["Main", "Roleplay", "Free"],
       isActive: true,
       isPremium: false,
       isMain: true,
       provider: 'mistral',
-      tier: 'standard' as const
+      tier: 'free' as const
     };
 
     // Add user message to local state immediately for UI responsiveness
