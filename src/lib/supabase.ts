@@ -200,6 +200,7 @@ export interface Database {
           id?: string;
           user_id: string;
           character_id: string;
+          persona_id?: string | null;
           title?: string | null;
           started_at?: string;
           last_message_at?: string;
