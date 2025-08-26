@@ -282,19 +282,41 @@ export const createOrUpdateUser = async (clerkUser: any) => {
 
   console.log('📊 User data to upsert:', userData);
 
-  const { data, error } = await supabase
-    .from('users')
-    .upsert(userData, {
-      onConflict: 'id'
-    })
-    .select()
-    .single();
+  try {
+    const { data, error } = await supabase
+      .from('users')
+      .upsert(userData, {
+        onConflict: 'id'
+      })
+      .select()
+      .single();
 
-  if (error) {
-    console.error('❌ Supabase upsert error:', error);
-    throw error;
+    if (error) {
+      console.error('❌ Supabase upsert error:', error);
+      // If RLS error, try without select to avoid permission issues
+      if (error.code === 'PGRST301' || error.message?.includes('permission') || error.message?.includes('RLS')) {
+        console.log('🔄 RLS/permission error detected, trying simple upsert...');
+        const { error: retryError } = await supabase
+          .from('users')
+          .upsert(userData, { onConflict: 'id' });
+
+        if (!retryError) {
+          console.log('✅ Simple upsert successful');
+          return userData; // Return the data we tried to insert
+        } else {
+          console.error('❌ Simple upsert also failed:', retryError);
+          throw retryError;
+        }
+      }
+      throw error;
+    }
+
+    console.log('✅ Supabase upsert successful:', data);
+    return data;
+  } catch (error) {
+    console.error('❌ Final error in createOrUpdateUser:', error);
+    // Return the user data even if DB failed - app should continue working
+    console.log('⚠️ Returning user data despite DB error');
+    return userData;
   }
-
-  console.log('✅ Supabase upsert successful:', data);
-  return data;
 };

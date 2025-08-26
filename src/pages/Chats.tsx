@@ -1,160 +1,140 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useUser, useAuth } from "@clerk/clerk-react";
-import { MoreHorizontal, Trash2 } from "lucide-react";
+import { useUser } from "@clerk/clerk-react";
+import { MessageCircle, Clock, User } from "lucide-react";
 import { Layout } from "@/components/Layout";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { supabase, createSupabaseClientWithClerkAuth } from "@/lib/supabase";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 
-interface ChatItem {
-  id: string; // conversation id
-  characterId: string;
-  characterName: string;
-  characterAvatar: string;
-  messagePreview: string;
-  timestamp: string;
+interface CharacterHistory {
+  id: string;
+  name: string;
+  avatar_url: string;
+  author: string;
+  lastChatDate: string;
+  totalMessages: number;
+  lastMessage: string;
   isVip?: boolean;
 }
 
-const PAGE_SIZE = 20;
-
-const formatTimestamp = (iso: string | null): string => {
-  if (!iso) return "";
-  const d = new Date(iso);
+const formatDate = (dateString: string): string => {
+  const date = new Date(dateString);
   const now = new Date();
-  const diff = now.getTime() - d.getTime();
-  const oneDay = 24 * 60 * 60 * 1000;
-  if (diff < oneDay && now.getDate() === d.getDate()) {
-    return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-  }
-  if (diff < 2 * oneDay && new Date(now.getTime() - oneDay).getDate() === d.getDate()) {
+  const diffInHours = (now.getTime() - date.getTime()) / (1000 * 60 * 60);
+  
+  if (diffInHours < 1) {
+    return "Just now";
+  } else if (diffInHours < 24) {
+    return `${Math.floor(diffInHours)}h ago`;
+  } else if (diffInHours < 48) {
     return "Yesterday";
+  } else {
+    return date.toLocaleDateString();
   }
-  return d.toLocaleDateString();
 };
 
 const Chats = () => {
   const { user } = useUser();
-  const { getToken } = useAuth();
   const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState("recent");
+  const [characterHistory, setCharacterHistory] = useState<CharacterHistory[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Create authenticated Supabase client
-  const getAuthenticatedSupabase = () => {
-    return createSupabaseClientWithClerkAuth(async () => {
-      return await getToken({ template: 'supabase' });
-    });
-  };
-  const [activeTab, setActiveTab] = useState("individual");
-  const [items, setItems] = useState<ChatItem[]>([]);
-  const [hasMore, setHasMore] = useState(true);
-  const loadingRef = useRef(false);
-  const sentinelRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    const loadCharacterHistory = async () => {
+      if (!user) return;
 
-  const fetchPage = useCallback(async () => {
-    if (!user || loadingRef.current || !hasMore) return;
-    loadingRef.current = true;
+      setIsLoading(true);
+      try {
+        // Get characters the user has chatted with by querying messages
+        const { data: messageData, error } = await supabase
+          .from('messages')
+          .select(`
+            character_id,
+            content,
+            created_at,
+            characters!inner(
+              id,
+              name,
+              avatar_url,
+              users!characters_owner_id_fkey(full_name)
+            )
+          `)
+          .eq('author_id', user.id)
+          .eq('is_bot', false)
+          .order('created_at', { ascending: false });
 
-    try {
-      const from = items.length;
-      const to = from + PAGE_SIZE - 1;
+        if (error) {
+          console.error('Error loading character history:', error);
+          toast.error('Failed to load chat history');
+          return;
+        }
 
-      const authSupabase = getAuthenticatedSupabase();
-      const { data, error } = await authSupabase
-        .from("conversations")
-        .select(
-          `id, character_id, title, started_at, last_message_at, message_count,
-           characters(name, avatar_url),
-           messages(content, created_at, is_bot)`
-        )
-        .eq("user_id", user.id)
-        .eq("is_archived", false)
-        .order("last_message_at", { ascending: false, nullsFirst: false })
-        .range(from, to)
-        .order("created_at", { foreignTable: "messages", ascending: false })
-        .limit(1, { foreignTable: "messages" });
+        if (!messageData || messageData.length === 0) {
+          setCharacterHistory([]);
+          return;
+        }
 
-      if (error) {
-        console.error("Failed to load conversations:", error);
-        toast.error("Failed to load recent chats");
-        return;
+        // Group messages by character and create history objects
+        const characterMap = new Map<string, CharacterHistory>();
+
+        messageData.forEach((message: any) => {
+          const characterId = message.character_id;
+          const character = message.characters;
+          
+          if (!character) return;
+
+          if (!characterMap.has(characterId)) {
+            characterMap.set(characterId, {
+              id: characterId,
+              name: character.name,
+              avatar_url: character.avatar_url || "/placeholder.svg",
+              author: character.users?.full_name || "Unknown",
+              lastChatDate: message.created_at,
+              totalMessages: 1,
+              lastMessage: message.content,
+            });
+          } else {
+            const existing = characterMap.get(characterId)!;
+            existing.totalMessages += 1;
+            // Keep the most recent message date and content
+            if (new Date(message.created_at) > new Date(existing.lastChatDate)) {
+              existing.lastChatDate = message.created_at;
+              existing.lastMessage = message.content;
+            }
+          }
+        });
+
+        // Convert map to array and sort by last chat date
+        const historyArray = Array.from(characterMap.values()).sort(
+          (a, b) => new Date(b.lastChatDate).getTime() - new Date(a.lastChatDate).getTime()
+        );
+
+        setCharacterHistory(historyArray);
+      } catch (error) {
+        console.error('Error loading character history:', error);
+        toast.error('Failed to load chat history');
+      } finally {
+        setIsLoading(false);
       }
+    };
 
-      const mapped: ChatItem[] = (data || []).map((c: any) => {
-        const lastMsg = Array.isArray(c.messages) && c.messages.length > 0 ? c.messages[0] : null;
-        return {
-          id: c.id,
-          characterId: c.character_id,
-          characterName: c.characters?.name || "Unknown",
-          characterAvatar: c.characters?.avatar_url || "/placeholder.svg",
-          messagePreview: lastMsg?.content || "No messages yet",
-          timestamp: formatTimestamp(c.last_message_at || c.started_at),
-        };
-      });
+    loadCharacterHistory();
+  }, [user]);
 
-      setItems(prev => [...prev, ...mapped]);
-      if (!data || data.length < PAGE_SIZE) setHasMore(false);
-    } finally {
-      loadingRef.current = false;
-    }
-  }, [user, items.length, hasMore]);
-
-  useEffect(() => {
-    setItems([]);
-    setHasMore(true);
-  }, [user?.id]);
-
-  useEffect(() => {
-    if (!user) return;
-    // initial load
-    fetchPage();
-  }, [user, fetchPage]);
-
-  useEffect(() => {
-    const el = sentinelRef.current;
-    if (!el) return;
-    const io = new IntersectionObserver((entries) => {
-      const first = entries[0];
-      if (first.isIntersecting) {
-        fetchPage();
-      }
-    }, { rootMargin: "200px" });
-    io.observe(el);
-    return () => io.disconnect();
-  }, [fetchPage]);
-
-  const removeFromRecents = async (conversationId: string) => {
-    try {
-      const authSupabase = getAuthenticatedSupabase();
-      const { error } = await authSupabase
-        .from("conversations")
-        .update({ is_archived: true })
-        .eq("id", conversationId)
-        .eq("user_id", user?.id || "");
-      if (error) throw error;
-      setItems(prev => prev.filter(i => i.id !== conversationId));
-      toast.success("Removed from recents");
-    } catch (e) {
-      console.error(e);
-      toast.error("Failed to remove");
-    }
-  };
-
-  const navigateToChat = (conversationId: string) => {
-    const convo = items.find(i => i.id === conversationId);
-    if (!convo) return;
-    navigate(`/chat/${convo.characterId}?conversation=${conversationId}`);
+  const startNewChat = (characterId: string) => {
+    navigate(`/chat/${characterId}`);
   };
 
   if (!user) {
     return (
       <Layout>
         <div className="flex items-center justify-center h-full">
-          <p>Please sign in to view your conversations.</p>
+          <p className="text-gray-400">Please sign in to view your chat history.</p>
         </div>
       </Layout>
     );
@@ -166,18 +146,18 @@ const Chats = () => {
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-2 bg-transparent p-0 h-auto">
             <TabsTrigger
-              value="individual"
+              value="recent"
               className="bg-transparent text-white border-b-2 border-transparent data-[state=active]:border-purple-500 data-[state=active]:bg-transparent rounded-none py-3"
             >
-              <span style={{ fontSize: '14px' }}>Individual</span>
+              <span className="text-sm">Recent Chats</span>
             </TabsTrigger>
             <TabsTrigger
-              value="group"
+              value="favorites"
               className="bg-transparent text-white border-b-2 border-transparent data-[state=active]:border-purple-500 data-[state=active]:bg-transparent rounded-none py-3 relative"
             >
-              <span style={{ fontSize: '14px' }}>Group</span>
+              <span className="text-sm">Favorites</span>
               <Badge className="ml-2 bg-yellow-500 text-black px-2 py-0.5 text-xs font-bold">
-                VIP
+                SOON
               </Badge>
             </TabsTrigger>
           </TabsList>
@@ -186,98 +166,114 @@ const Chats = () => {
       mainOverflow="auto"
       headerPosition="fixed"
     >
-      <div className="bg-gray-900 text-white">
+      <div className="bg-gray-900 text-white min-h-full">
         <Tabs value={activeTab} className="w-full">
-          {/* Individual Chats */}
-          <TabsContent value="individual" className="mt-0">
-            <div className="divide-y divide-gray-700">
-              {items.map((chat) => (
-                <div
-                  key={chat.id}
-                  className="flex items-center gap-3 p-4 hover:bg-gray-800 cursor-pointer"
-                  onClick={() => navigateToChat(chat.id)}
-                >
-                  {/* Avatar */}
-                  <Avatar className="w-12 h-12 flex-shrink-0">
-                    <AvatarImage src={chat.characterAvatar} alt={chat.characterName} />
-                    <AvatarFallback className="bg-gray-600 text-white">
-                      {chat.characterName.charAt(0)}
-                    </AvatarFallback>
-                  </Avatar>
-
-                  {/* Chat Info */}
-                  <div className="flex-1 min-w-0">
-                    <h3
-                      className="font-medium text-white truncate"
-                      style={{ fontSize: '14px' }}
-                    >
-                      {chat.characterName}
-                    </h3>
-                    <p
-                      className="text-gray-400 truncate mt-0.5"
-                      style={{ fontSize: '12px' }}
-                    >
-                      {chat.messagePreview}
-                    </p>
-                  </div>
-
-                  {/* Timestamp and Actions */}
-                  <div className="flex items-center gap-2 flex-shrink-0">
-                    <span
-                      className="text-gray-400"
-                      style={{ fontSize: '12px' }}
-                    >
-                      {chat.timestamp}
-                    </span>
-
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="text-gray-400 hover:bg-gray-700 h-8 w-8"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="bg-gray-800 border-gray-700">
-                        <DropdownMenuItem
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            removeFromRecents(chat.id);
-                          }}
-                          className="text-white hover:bg-gray-700 cursor-pointer"
-                        >
-                          <Trash2 className="h-4 w-4 mr-2" />
-                          Remove from recents
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
+          {/* Recent Chats */}
+          <TabsContent value="recent" className="mt-6">
+            <div className="px-4 pb-4 space-y-4">
+              {isLoading ? (
+                <div className="space-y-4">
+                  {[...Array(3)].map((_, i) => (
+                    <Card key={i} className="bg-gray-800 border-gray-700 animate-pulse">
+                      <CardContent className="p-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-12 h-12 bg-gray-600 rounded-full"></div>
+                          <div className="flex-1 space-y-2">
+                            <div className="h-4 bg-gray-600 rounded w-1/3"></div>
+                            <div className="h-3 bg-gray-600 rounded w-1/2"></div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
                 </div>
-              ))}
-              {items.length === 0 && (
-                <div className="p-8 text-center text-gray-400" style={{ fontSize: '12px' }}>
-                  No recent chats yet.
+              ) : characterHistory.length === 0 ? (
+                <div className="text-center py-12">
+                  <MessageCircle className="h-16 w-16 text-gray-500 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-300 mb-2">No chat history yet</h3>
+                  <p className="text-gray-500 mb-6">
+                    Start chatting with characters to see them here
+                  </p>
+                  <button
+                    onClick={() => navigate('/')}
+                    className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg transition-colors"
+                  >
+                    Explore Characters
+                  </button>
                 </div>
+              ) : (
+                characterHistory.map((character) => (
+                  <Card
+                    key={character.id}
+                    className="bg-gray-800 border-gray-700 hover:bg-gray-750 transition-colors cursor-pointer"
+                    onClick={() => startNewChat(character.id)}
+                  >
+                    <CardContent className="p-4">
+                      <div className="flex items-center gap-4">
+                        {/* Character Avatar */}
+                        <Avatar className="w-14 h-14 flex-shrink-0">
+                          <AvatarImage src={character.avatar_url} alt={character.name} />
+                          <AvatarFallback className="bg-gray-600 text-white text-lg">
+                            {character.name.charAt(0)}
+                          </AvatarFallback>
+                        </Avatar>
+
+                        {/* Character Info */}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-1">
+                            <h3 className="font-semibold text-white truncate text-base">
+                              {character.name}
+                            </h3>
+                            {character.isVip && (
+                              <Badge className="bg-yellow-500 text-black text-xs px-2 py-0.5">
+                                VIP
+                              </Badge>
+                            )}
+                          </div>
+                          
+                          <div className="flex items-center gap-2 text-gray-400 text-xs mb-2">
+                            <User className="h-3 w-3" />
+                            <span>by {character.author}</span>
+                          </div>
+                          
+                          <p className="text-gray-300 text-sm truncate mb-2">
+                            "{character.lastMessage}"
+                          </p>
+                          
+                          <div className="flex items-center justify-between text-xs text-gray-500">
+                            <div className="flex items-center gap-3">
+                              <div className="flex items-center gap-1">
+                                <MessageCircle className="h-3 w-3" />
+                                <span>{character.totalMessages} messages</span>
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <Clock className="h-3 w-3" />
+                                <span>{formatDate(character.lastChatDate)}</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))
               )}
             </div>
           </TabsContent>
 
-          {/* Group Chats */}
-          <TabsContent value="group" className="mt-0">
+          {/* Favorites */}
+          <TabsContent value="favorites" className="mt-6">
             <div className="p-8 text-center">
-              <p className="text-gray-400" style={{ fontSize: '12px' }}>
-                Group chats will appear here
+              <h3 className="text-lg font-medium text-gray-300 mb-2">Favorites Coming Soon</h3>
+              <p className="text-gray-500 mb-4">
+                Soon you'll be able to mark your favorite characters for quick access
               </p>
-              <Badge className="mt-2 bg-yellow-500 text-black px-3 py-1">
-                VIP Feature
+              <Badge className="bg-yellow-500 text-black px-4 py-2">
+                Feature in Development
               </Badge>
             </div>
           </TabsContent>
         </Tabs>
-        <div ref={sentinelRef} className="h-8" />
       </div>
     </Layout>
   );

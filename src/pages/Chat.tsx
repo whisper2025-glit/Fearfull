@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
-import { useUser, useAuth } from "@clerk/clerk-react";
+import { useUser } from "@clerk/clerk-react";
 import { ArrowLeft, Home, MoreHorizontal, Lightbulb, Clock, Users, Bot, ChevronDown, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { ModelsModal, Model } from "@/components/ModelsModal";
 import { openRouterAPI, ChatMessage } from "@/lib/openrouter";
-import { supabase, createOrUpdateUser, createSupabaseClientWithClerkAuth } from "@/lib/supabase";
+import { supabase, createOrUpdateUser } from "@/lib/supabase";
 import { toast } from "sonner";
 
 interface Message {
@@ -63,14 +63,6 @@ const Chat = () => {
   const [currentConversationId, setCurrentConversationId] = useState<string | null>(conversationId);
 
   const { user } = useUser();
-  const { getToken } = useAuth();
-
-  // Create authenticated Supabase client
-  const getAuthenticatedSupabase = () => {
-    return createSupabaseClientWithClerkAuth(async () => {
-      return await getToken({ template: 'supabase' });
-    });
-  };
 
   // Load character and messages from Supabase
   useEffect(() => {
@@ -81,8 +73,7 @@ const Chat = () => {
 
       try {
         // Load character data from Supabase
-        const authSupabase = getAuthenticatedSupabase();
-        const { data: characterData, error: characterError } = await authSupabase
+        const { data: characterData, error: characterError } = await supabase
           .from('characters')
           .select('*, users!characters_owner_id_fkey(full_name)')
           .eq('id', characterId)
@@ -96,7 +87,7 @@ const Chat = () => {
         }
 
         // Load messages for this character/conversation
-        let messagesQuery = authSupabase
+        let messagesQuery = supabase
           .from('messages')
           .select('*')
           .eq('character_id', characterId);
@@ -106,7 +97,7 @@ const Chat = () => {
           messagesQuery = messagesQuery.eq('conversation_id', conversationId);
         } else {
           // If no conversation ID, get the most recent conversation for this character and user
-          const { data: recentConv } = await authSupabase
+          const { data: recentConv } = await supabase
             .from('conversations')
             .select('id')
             .eq('character_id', characterId)
@@ -271,8 +262,7 @@ const Chat = () => {
       if (conversationToUse) {
         userMessagePayload.conversation_id = conversationToUse;
       }
-      const authSupabase = getAuthenticatedSupabase();
-      const { data: insertedUserMessage, error: userMessageError } = await authSupabase
+      const { data: insertedUserMessage, error: userMessageError } = await supabase
         .from('messages')
         .insert(userMessagePayload)
         .select('id, conversation_id, created_at')
@@ -327,7 +317,7 @@ const Chat = () => {
       setMessages(prev => [...prev, botMessage]);
 
       // Save bot message to Supabase
-      const { error: botMessageError } = await authSupabase
+      const { error: botMessageError } = await supabase
         .from('messages')
         .insert({
           character_id: characterId,
