@@ -58,11 +58,27 @@ export function PersonaModal({ open, onOpenChange, onPersonaSelect, currentPerso
 
   // Helper function to get authenticated Supabase client
   const getAuthenticatedClient = async () => {
-    const token = await getToken({ template: 'supabase' });
-    if (!token) {
-      throw new Error('No authentication token available');
+    try {
+      console.log('🔑 Getting Clerk token for Supabase...');
+      const token = await getToken({ template: 'supabase' });
+      console.log('🔑 Token received:', token ? 'Yes' : 'No');
+
+      if (!token) {
+        console.error('❌ No token available, trying default token...');
+        // Try getting default token if supabase template doesn't exist
+        const defaultToken = await getToken();
+        console.log('🔑 Default token received:', defaultToken ? 'Yes' : 'No');
+
+        if (!defaultToken) {
+          throw new Error('No authentication token available');
+        }
+        return createAuthenticatedSupabaseClient(defaultToken);
+      }
+      return createAuthenticatedSupabaseClient(token);
+    } catch (error) {
+      console.error('❌ Error getting authenticated client:', error);
+      throw error;
     }
-    return createAuthenticatedSupabaseClient(token);
   };
 
   // Load personas when modal opens
