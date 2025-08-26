@@ -241,7 +241,7 @@ const Chats = () => {
                           </p>
                           
                           <div className="flex items-center justify-between text-xs text-gray-500">
-                            <div className="flex items-center gap-3">
+                            <div className="flex items-center gap-2">
                               <div className="flex items-center gap-1">
                                 <MessageCircle className="h-3 w-3" />
                                 <span>{character.totalMessages} messages</span>
