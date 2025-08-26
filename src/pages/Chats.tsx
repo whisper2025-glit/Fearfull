@@ -69,6 +69,7 @@ const Chats = () => {
         </Tabs>
       }
       mainOverflow="auto"
+      headerPosition="fixed"
     >
       <div className="bg-gray-900 text-white">
         <Tabs value={activeTab} className="w-full">
