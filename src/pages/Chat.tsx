@@ -207,21 +207,15 @@ const Chat = () => {
 
     const testConnection = async () => {
       try {
-        console.log('Starting OpenRouter connection test...');
-
-        // First run a simple test for debugging
-        await openRouterAPI.simpleTest();
-
-        // Then run the full test
-        const isConnected = await openRouterAPI.testConnection();
-        if (isConnected) {
-          toast.success('OpenRouter API connected successfully!');
+        const result = await openRouterAPI.testConnection();
+        if (result.success) {
+          toast.success(result.message);
         } else {
-          toast.error('Failed to connect to OpenRouter API. Please check your configuration.');
+          toast.error(result.message);
         }
       } catch (error) {
         console.error('Connection test failed:', error);
-        toast.error(`OpenRouter API connection test failed: ${error.message}`);
+        toast.error('OpenRouter API connection test failed');
       }
     };
 
