@@ -14,12 +14,12 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Plus, Edit, Trash2, User, Check } from "lucide-react";
-import { 
-  createPersona, 
-  updatePersona, 
-  deletePersona, 
-  getUserPersonas, 
-  PersonaData 
+import {
+  createPersona,
+  updatePersona,
+  deletePersona,
+  getUserPersonas,
+  PersonaData
 } from "@/lib/supabase";
 import { toast } from "sonner";
 
@@ -63,7 +63,7 @@ export function PersonaModal({ open, onOpenChange, onPersonaSelect, currentPerso
 
   const loadPersonas = async () => {
     if (!user) return;
-    
+
     setIsLoading(true);
     try {
       const userPersonas = await getUserPersonas(user.id);
@@ -112,7 +112,7 @@ export function PersonaModal({ open, onOpenChange, onPersonaSelect, currentPerso
 
       if (editingPersona) {
         // Update existing persona
-        await updatePersona(editingPersona.id, personaData);
+        await updatePersona(editingPersona.id, user.id, personaData);
         toast.success('Persona updated successfully!');
       } else {
         // Create new persona
@@ -129,10 +129,11 @@ export function PersonaModal({ open, onOpenChange, onPersonaSelect, currentPerso
   };
 
   const handleDelete = async (persona: PersonaRecord) => {
+    if (!user) return;
     if (!confirm(`Are you sure you want to delete "${persona.name}"?`)) return;
 
     try {
-      await deletePersona(persona.id);
+      await deletePersona(persona.id, user.id);
       toast.success('Persona deleted successfully!');
       await loadPersonas(); // Reload the list
     } catch (error) {

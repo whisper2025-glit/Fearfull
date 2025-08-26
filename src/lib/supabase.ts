@@ -392,7 +392,7 @@ export const createPersona = async (userId: string, personaData: Omit<PersonaDat
   }
 };
 
-export const updatePersona = async (personaId: string, personaData: Partial<Omit<PersonaData, 'id'>>) => {
+export const updatePersona = async (personaId: string, userId: string, personaData: Partial<Omit<PersonaData, 'id'>>) => {
   try {
     const updateData: any = {};
 
@@ -405,6 +405,7 @@ export const updatePersona = async (personaId: string, personaData: Partial<Omit
       .from('personas')
       .update(updateData)
       .eq('id', personaId)
+      .eq('user_id', userId) // ✅ Security: Only update if user owns the persona
       .select()
       .single();
 
@@ -421,12 +422,13 @@ export const updatePersona = async (personaId: string, personaData: Partial<Omit
   }
 };
 
-export const deletePersona = async (personaId: string) => {
+export const deletePersona = async (personaId: string, userId: string) => {
   try {
     const { error } = await supabase
       .from('personas')
       .delete()
-      .eq('id', personaId);
+      .eq('id', personaId)
+      .eq('user_id', userId); // ✅ Security: Only delete if user owns the persona
 
     if (error) {
       console.error('❌ Error deleting persona:', error);
@@ -492,11 +494,12 @@ export const setDefaultPersona = async (personaId: string, userId: string) => {
       .update({ is_default: false })
       .eq('user_id', userId);
 
-    // Then set the specified persona as default
+    // Then set the specified persona as default (only if user owns it)
     const { data, error } = await supabase
       .from('personas')
       .update({ is_default: true })
       .eq('id', personaId)
+      .eq('user_id', userId) // ✅ Security: Only set default if user owns the persona
       .select()
       .single();
 
