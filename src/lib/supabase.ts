@@ -41,7 +41,7 @@ export interface Database {
       users: {
         Row: {
           id: string; // Clerk user ID
-          username: string;
+          username?: string | null;
           full_name: string | null;
           email: string | null;
           avatar_url: string | null;
