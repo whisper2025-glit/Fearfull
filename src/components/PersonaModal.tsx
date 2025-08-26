@@ -162,15 +162,22 @@ export function PersonaModal({ open, onOpenChange, onPersonaSelect, currentPerso
     } catch (error) {
       console.error('❌ Error saving persona:', error);
 
+      // Test basic connectivity
+      console.log('🧪 Running basic connectivity test...');
+      const testResult = await testPersonaCreation(user.id);
+      console.log('🧪 Test result:', testResult);
+
       // More specific error messages
-      if (error.message?.includes('JWT')) {
-        toast.error('Authentication error: Please check Clerk JWT configuration');
-      } else if (error.message?.includes('permission')) {
-        toast.error('Permission denied: Please check database policies');
+      if (error.message?.includes('JWT') || error.message?.includes('template')) {
+        toast.error('❌ Clerk JWT template not configured. Please set up Supabase integration in Clerk dashboard.');
+      } else if (error.message?.includes('permission') || error.message?.includes('policy')) {
+        toast.error('❌ Database permission denied. RLS policies may need adjustment.');
       } else if (error.message?.includes('token')) {
-        toast.error('Authentication token missing or invalid');
+        toast.error('❌ Authentication token issue. Please sign out and back in.');
+      } else if (!testResult.success) {
+        toast.error('❌ Database connection issue. Check Supabase configuration.');
       } else {
-        toast.error(`Failed to save persona: ${error.message || 'Unknown error'}`);
+        toast.error(`❌ Failed to save persona: ${error.message || 'Unknown error'}`);
       }
     }
   };
