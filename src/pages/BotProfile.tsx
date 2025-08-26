@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { ChevronLeft, Share2, MessageCircle, Heart, Send, ThumbsUp, ThumbsDown, Clock } from "lucide-react";
 
 const HERO_IMAGE = "https://cdn.builder.io/api/v1/image/assets%2F1def39c99b334f56b1a37c019ef7ea60%2F881e74fa92134d51b0fa94b36bab6d7d?format=webp&width=1200";
