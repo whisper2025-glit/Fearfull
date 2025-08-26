@@ -18,7 +18,22 @@ interface ChatItem {
   isVip?: boolean;
 }
 
-const chats: ChatItem[] = [];
+const chats: ChatItem[] = [
+  {
+    id: "test-1",
+    characterName: "Mika the Strategist",
+    characterAvatar: "https://i.pravatar.cc/150?img=12",
+    messagePreview: "*Mika lays out a daring plan for the next move...",
+    timestamp: "4:09 am"
+  },
+  {
+    id: "test-2",
+    characterName: "Ryo the Wanderer",
+    characterAvatar: "https://i.pravatar.cc/150?img=15",
+    messagePreview: "*Ryo smiles faintly as the campfire crackles...",
+    timestamp: "Yesterday"
+  }
+];
 
 const Chats = () => {
   const { user } = useUser();
