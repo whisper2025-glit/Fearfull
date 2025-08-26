@@ -185,8 +185,31 @@ const Profile = () => {
   const handleSaveProfile = async () => {
     if (!user) return;
 
+    // Validate username length
+    if (userProfile.username.length < 2) {
+      toast.error('Username must be at least 2 characters long');
+      return;
+    }
+
     setIsSaving(true);
     try {
+      // Check if username is already taken by another user
+      const { data: existingUser, error: checkError } = await supabase
+        .from('users')
+        .select('id')
+        .eq('username', userProfile.username)
+        .single();
+
+      if (checkError && checkError.code !== 'PGRST116') {
+        throw checkError;
+      }
+
+      if (existingUser && existingUser.id !== user.id) {
+        toast.error('Username already taken. Please choose a different one.');
+        setIsSaving(false);
+        return;
+      }
+
       // Update Clerk user profile
       await user.update({
         firstName: userProfile.name,
