@@ -129,10 +129,11 @@ export function PersonaModal({ open, onOpenChange, onPersonaSelect, currentPerso
   };
 
   const handleDelete = async (persona: PersonaRecord) => {
+    if (!user) return;
     if (!confirm(`Are you sure you want to delete "${persona.name}"?`)) return;
 
     try {
-      await deletePersona(persona.id);
+      await deletePersona(persona.id, user.id);
       toast.success('Persona deleted successfully!');
       await loadPersonas(); // Reload the list
     } catch (error) {
