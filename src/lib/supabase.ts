@@ -262,20 +262,12 @@ export const createOrUpdateUser = async (clerkUser: any) => {
     id: clerkUser.id,
     firstName: clerkUser.firstName,
     fullName: clerkUser.fullName,
-    username: clerkUser.username,
     email: clerkUser.emailAddresses?.[0]?.emailAddress
   });
 
-  const username = await generateUniqueUsername(
-    clerkUser.firstName || clerkUser.username || clerkUser.emailAddresses?.[0]?.emailAddress?.split('@')[0] || 'user'
-  );
-
-  console.log('🏷️ Generated username:', username);
-
   const userData = {
     id: clerkUser.id,
-    username,
-    full_name: clerkUser.fullName || null,
+    full_name: clerkUser.fullName || clerkUser.firstName || clerkUser.username || 'User',
     email: clerkUser.emailAddresses?.[0]?.emailAddress || null,
     avatar_url: clerkUser.imageUrl || null,
     updated_at: new Date().toISOString()
