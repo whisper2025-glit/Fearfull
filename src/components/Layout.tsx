@@ -43,13 +43,6 @@ export function Layout({ children, headerBottom, mainOverflow = 'auto', headerPo
             ) : null}
           </header>
 
-          {headerPosition === 'fixed' ? (
-            <>
-              <div className="h-14" />
-              {headerBottom ? <div className="h-12" /> : null}
-            </>
-          ) : null}
-
           {/* Main Content */}
           <main className={mainOverflow === 'hidden' ? 'flex-1 overflow-hidden' : 'flex-1 overflow-auto'}>
             {children}
