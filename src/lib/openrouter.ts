@@ -1,5 +1,10 @@
 import { Model } from '@/components/ModelsModal';
 
+export interface ChatMessage {
+  role: 'system' | 'user' | 'assistant';
+  content: string;
+}
+
 export interface OpenRouterResponse {
   id: string;
   object: string;
@@ -20,148 +25,142 @@ export interface OpenRouterResponse {
   };
 }
 
-export interface ChatMessage {
-  role: 'system' | 'user' | 'assistant';
-  content: string;
+export interface OpenRouterOptions {
+  temperature?: number;
+  max_tokens?: number;
+  top_p?: number;
+  frequency_penalty?: number;
+  presence_penalty?: number;
 }
 
-export class OpenRouterAPI {
-  private apiKey: string;
-  private baseURL = 'https://openrouter.ai/api/v1';
+class OpenRouterService {
+  private readonly apiKey: string;
+  private readonly baseURL = 'https://openrouter.ai/api/v1';
+  private readonly defaultOptions: OpenRouterOptions = {
+    temperature: 0.7,
+    max_tokens: 1000,
+    top_p: 1,
+    frequency_penalty: 0,
+    presence_penalty: 0,
+  };
 
   constructor() {
-    this.apiKey = import.meta.env.VITE_OPENROUTER_API_KEY;
+    this.apiKey = import.meta.env.VITE_OPENROUTER_API_KEY || '';
+    
     if (!this.apiKey) {
-      console.error('❌ OpenRouter API key not found in environment variables');
-      this.apiKey = ''; // Set empty string to prevent further errors
-    } else {
-      this.validateApiKey();
-      console.log('✅ OpenRouter API key loaded successfully');
+      console.warn('OpenRouter API key not found in environment variables');
     }
   }
 
-  private validateApiKey(): void {
-    if (!this.apiKey.startsWith('sk-or-v1-')) {
-      console.warn('⚠️ OpenRouter API key format may be incorrect. Expected format: sk-or-v1-...');
-      console.log('Current key starts with:', this.apiKey.substring(0, 10) + '...');
-    } else {
-      console.log('✅ OpenRouter API key format is correct');
-    }
-  }
-
-  private isApiKeyValid(): boolean {
-    return !!this.apiKey && this.apiKey.length > 0;
-  }
-
-  private getHeaders() {
+  private getHeaders(): Record<string, string> {
     return {
       'Authorization': `Bearer ${this.apiKey}`,
       'Content-Type': 'application/json',
       'HTTP-Referer': window.location.origin,
-      'X-Title': 'Roleplay Chat App'
+      'X-Title': 'Roleplay Chat App',
     };
+  }
+
+  private validateApiKey(): boolean {
+    if (!this.apiKey) {
+      throw new Error('OpenRouter API key is not configured. Please add VITE_OPENROUTER_API_KEY to your environment variables.');
+    }
+    
+    if (!this.apiKey.startsWith('sk-or-v1-')) {
+      throw new Error('Invalid OpenRouter API key format. Key should start with "sk-or-v1-"');
+    }
+    
+    return true;
   }
 
   async createChatCompletion(
     model: Model,
     messages: ChatMessage[],
-    options: {
-      temperature?: number;
-      max_tokens?: number;
-      top_p?: number;
-      frequency_penalty?: number;
-      presence_penalty?: number;
-    } = {}
+    options: OpenRouterOptions = {}
   ): Promise<OpenRouterResponse> {
-    if (!this.isApiKeyValid()) {
-      throw new Error('OpenRouter API key is not configured or invalid');
-    }
+    this.validateApiKey();
+
+    const requestOptions = { ...this.defaultOptions, ...options };
+    
+    const requestBody = {
+      model: model.name,
+      messages,
+      ...requestOptions,
+      stream: false,
+    };
 
     try {
-      console.log('🚀 OpenRouter API - Making request to:', `${this.baseURL}/chat/completions`);
-      console.log('🤖 OpenRouter API - Model:', model.name);
-
       const response = await fetch(`${this.baseURL}/chat/completions`, {
         method: 'POST',
         headers: this.getHeaders(),
-        body: JSON.stringify({
-          model: model.name,
-          messages: messages,
-          temperature: options.temperature ?? 0.7,
-          max_tokens: options.max_tokens ?? 1000,
-          top_p: options.top_p ?? 1,
-          frequency_penalty: options.frequency_penalty ?? 0,
-          presence_penalty: options.presence_penalty ?? 0,
-          stream: false
-        })
+        body: JSON.stringify(requestBody),
       });
 
-      console.log('OpenRouter API - Response status:', response.status);
-
       if (!response.ok) {
-        const errorText = await response.text();
-        console.error('OpenRouter API - Error response:', errorText);
-
-        let errorData;
-        try {
-          errorData = JSON.parse(errorText);
-        } catch {
-          errorData = { error: { message: errorText } };
-        }
-
-        throw new Error(`OpenRouter API error: ${response.status} - ${errorData.error?.message || errorText || 'Unknown error'}`);
+        const errorData = await this.handleErrorResponse(response);
+        throw new Error(`OpenRouter API Error (${response.status}): ${errorData.message}`);
       }
 
-      const result = await response.json();
-      console.log('OpenRouter API - Success response received');
-      return result;
+      return await response.json();
     } catch (error) {
-      console.error('OpenRouter API error:', error);
-      throw error;
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error(`Network error: ${String(error)}`);
     }
   }
 
   async streamChatCompletion(
     model: Model,
     messages: ChatMessage[],
-    options: {
-      temperature?: number;
-      max_tokens?: number;
-      top_p?: number;
-      frequency_penalty?: number;
-      presence_penalty?: number;
-    } = {},
+    options: OpenRouterOptions = {},
     onChunk?: (chunk: string) => void
   ): Promise<string> {
+    this.validateApiKey();
+
+    const requestOptions = { ...this.defaultOptions, ...options };
+    
+    const requestBody = {
+      model: model.name,
+      messages,
+      ...requestOptions,
+      stream: true,
+    };
+
     try {
       const response = await fetch(`${this.baseURL}/chat/completions`, {
         method: 'POST',
         headers: this.getHeaders(),
-        body: JSON.stringify({
-          model: model.name,
-          messages: messages,
-          temperature: options.temperature ?? 0.7,
-          max_tokens: options.max_tokens ?? 1000,
-          top_p: options.top_p ?? 1,
-          frequency_penalty: options.frequency_penalty ?? 0,
-          presence_penalty: options.presence_penalty ?? 0,
-          stream: true
-        })
+        body: JSON.stringify(requestBody),
       });
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(`OpenRouter API error: ${response.status} - ${errorData.error?.message || 'Unknown error'}`);
+        const errorData = await this.handleErrorResponse(response);
+        throw new Error(`OpenRouter API Error (${response.status}): ${errorData.message}`);
       }
 
-      const reader = response.body?.getReader();
-      if (!reader) {
-        throw new Error('Failed to get response reader');
+      return await this.processStreamResponse(response, onChunk);
+    } catch (error) {
+      if (error instanceof Error) {
+        throw error;
       }
+      throw new Error(`Network error: ${String(error)}`);
+    }
+  }
 
-      let fullContent = '';
-      const decoder = new TextDecoder();
+  private async processStreamResponse(
+    response: Response,
+    onChunk?: (chunk: string) => void
+  ): Promise<string> {
+    const reader = response.body?.getReader();
+    if (!reader) {
+      throw new Error('Failed to get response reader');
+    }
 
+    let fullContent = '';
+    const decoder = new TextDecoder();
+
+    try {
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
@@ -171,31 +170,81 @@ export class OpenRouterAPI {
 
         for (const line of lines) {
           if (line.startsWith('data: ')) {
-            const data = line.slice(6);
-            if (data === '[DONE]') break;
+            const data = line.slice(6).trim();
+            if (data === '[DONE]') continue;
 
             try {
               const parsed = JSON.parse(data);
-              const content = parsed.choices[0]?.delta?.content;
+              const content = parsed.choices?.[0]?.delta?.content;
               if (content) {
                 fullContent += content;
                 onChunk?.(content);
               }
-            } catch (e) {
+            } catch {
               // Ignore JSON parse errors for incomplete chunks
             }
           }
         }
       }
+    } finally {
+      reader.releaseLock();
+    }
 
-      return fullContent;
-    } catch (error) {
-      console.error('OpenRouter streaming error:', error);
-      throw error;
+    return fullContent;
+  }
+
+  private async handleErrorResponse(response: Response): Promise<{ message: string }> {
+    try {
+      const errorData = await response.json();
+      return {
+        message: errorData.error?.message || errorData.message || 'Unknown error occurred',
+      };
+    } catch {
+      return {
+        message: `HTTP ${response.status}: ${response.statusText}`,
+      };
     }
   }
 
-  // Roleplay-optimized system prompts for different model types
+  async testConnection(): Promise<{ success: boolean; message: string }> {
+    try {
+      this.validateApiKey();
+
+      const testModel: Model = {
+        id: 'test-model',
+        name: 'mistralai/mistral-7b-instruct:free',
+        author: 'Mistral AI',
+        description: 'Test model',
+        price: 0,
+        responseTime: '1s',
+        memory: '7B',
+        rating: 8.0,
+        tags: ['test'],
+        isActive: true,
+        isPremium: false,
+        isMain: false,
+        provider: 'mistral',
+        tier: 'free',
+      };
+
+      const testMessages: ChatMessage[] = [
+        { role: 'user', content: 'Hello' }
+      ];
+
+      await this.createChatCompletion(testModel, testMessages, { max_tokens: 5 });
+      
+      return {
+        success: true,
+        message: 'OpenRouter API connection successful'
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: error instanceof Error ? error.message : 'Unknown connection error'
+      };
+    }
+  }
+
   getRoleplaySystemPrompt(model: Model, characterName?: string): string {
     const basePrompt = `You are a skilled roleplay AI assistant. Your role is to engage in immersive, creative roleplay scenarios while maintaining character consistency and narrative flow.
 
@@ -212,82 +261,7 @@ Guidelines:
 
     return basePrompt;
   }
-
-  // Simple test method for debugging
-  async simpleTest(): Promise<void> {
-    try {
-      console.log('🧪 Testing basic fetch to OpenRouter...');
-
-      if (!this.isApiKeyValid()) {
-        console.error('❌ Cannot run simple test - API key is invalid or missing');
-        return;
-      }
-
-      const response = await fetch('https://openrouter.ai/api/v1/models', {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${this.apiKey}`,
-          'Content-Type': 'application/json',
-        }
-      });
-
-      console.log('📊 Models endpoint response status:', response.status);
-
-      if (response.ok) {
-        const data = await response.json();
-        console.log('✅ Models endpoint working, found', data.data?.length || 0, 'models');
-      } else {
-        const errorText = await response.text();
-        console.log('❌ Models endpoint error:', errorText.substring(0, 200));
-      }
-    } catch (error) {
-      console.error('🚨 Simple test failed:', error);
-    }
-  }
-
-  // Test the API connection
-  async testConnection(): Promise<boolean> {
-    try {
-      console.log('🔍 OpenRouter API - Testing connection...');
-      console.log('🔑 OpenRouter API - API Key available:', !!this.apiKey);
-      console.log('🔑 OpenRouter API - API Key starts with:', this.apiKey?.substring(0, 10) + '...');
-
-      if (!this.isApiKeyValid()) {
-        console.error('❌ OpenRouter API - Invalid or missing API key');
-        return false;
-      }
-
-      const testMessages: ChatMessage[] = [
-        { role: 'user', content: 'Hi' }
-      ];
-
-      // Use a more reliable free model for testing
-      const testModel: Model = {
-        id: 'test',
-        name: 'mistralai/mistral-7b-instruct:free',
-        author: 'Mistral AI',
-        description: 'Test',
-        price: 0,
-        responseTime: '850 ms',
-        memory: '7B',
-        rating: 8.5,
-        tags: ['Test'],
-        isActive: true,
-        isPremium: false,
-        isMain: true,
-        provider: 'mistral',
-        tier: 'standard'
-      };
-
-      const response = await this.createChatCompletion(testModel, testMessages, { max_tokens: 10 });
-      console.log('✅ OpenRouter API - Test successful, response received');
-      return true;
-    } catch (error) {
-      console.error('❌ OpenRouter connection test failed:', error);
-      return false;
-    }
-  }
 }
 
-// Export a singleton instance
-export const openRouterAPI = new OpenRouterAPI();
+// Export singleton instance
+export const openRouterAPI = new OpenRouterService();
