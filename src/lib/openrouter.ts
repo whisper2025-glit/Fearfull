@@ -32,15 +32,25 @@ export class OpenRouterAPI {
   constructor() {
     this.apiKey = import.meta.env.VITE_OPENROUTER_API_KEY;
     if (!this.apiKey) {
-      throw new Error('OpenRouter API key not found in environment variables');
+      console.error('❌ OpenRouter API key not found in environment variables');
+      this.apiKey = ''; // Set empty string to prevent further errors
+    } else {
+      this.validateApiKey();
+      console.log('✅ OpenRouter API key loaded successfully');
     }
-    this.validateApiKey();
   }
 
   private validateApiKey(): void {
     if (!this.apiKey.startsWith('sk-or-v1-')) {
-      console.warn('OpenRouter API key format may be incorrect. Expected format: sk-or-v1-...');
+      console.warn('⚠️ OpenRouter API key format may be incorrect. Expected format: sk-or-v1-...');
+      console.log('Current key starts with:', this.apiKey.substring(0, 10) + '...');
+    } else {
+      console.log('✅ OpenRouter API key format is correct');
     }
+  }
+
+  private isApiKeyValid(): boolean {
+    return !!this.apiKey && this.apiKey.length > 0;
   }
 
   private getHeaders() {
