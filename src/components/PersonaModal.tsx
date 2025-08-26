@@ -43,7 +43,6 @@ interface PersonaRecord {
 
 export function PersonaModal({ open, onOpenChange, onPersonaSelect, currentPersona }: PersonaModalProps) {
   const { user } = useUser();
-  const { getToken } = useAuth();
   const [personas, setPersonas] = useState<PersonaRecord[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isCreating, setIsCreating] = useState(false);
