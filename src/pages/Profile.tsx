@@ -17,7 +17,7 @@ import { ChevronLeft, Settings, Gift, MoreHorizontal, X, Camera, Star, Loader2 }
 import { useNavigate } from "react-router-dom";
 import { CharacterCard } from "@/components/CharacterCard";
 import SettingsSheet from "@/components/SettingsSheet";
-import { supabase, uploadImage, generateUniqueUsername } from "@/lib/supabase";
+import { supabase, uploadImage } from "@/lib/supabase";
 import { toast } from "sonner";
 
 const Profile = () => {
