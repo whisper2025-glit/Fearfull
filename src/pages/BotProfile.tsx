@@ -12,7 +12,7 @@ export default function BotProfile() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-[#111216] text-white">
+    <div className="min-h-screen bg-[#111216] text-white text-xs">
       {/* Header */}
       <div className="sticky top-0 z-20 flex items-center gap-2 px-4 py-3 bg-[#1a1b22] border-b border-white/10">
         <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="text-white">
@@ -40,7 +40,7 @@ export default function BotProfile() {
               <Button variant="outline" size="icon" className="border-white/20 text-white bg-transparent hover:bg-white/10">
                 <Share2 className="h-4 w-4" />
               </Button>
-              <Button className="bg-[#2a74ff] hover:bg-[#2363d6] text-white px-3">Chat with me</Button>
+              <Button className="bg-[#2a74ff] hover:bg-[#2363d6] text-white text-xs px-3">Chat with me</Button>
             </div>
           </div>
 
@@ -76,13 +76,13 @@ export default function BotProfile() {
               <span>Create by</span>
               <Avatar className="h-5 w-5">
                 <AvatarImage src={HERO_IMAGE} alt="creator" />
-                <AvatarFallback>LC</AvatarFallback>
+                <AvatarFallback className="text-xs">LC</AvatarFallback>
               </Avatar>
-              <span className="font-semibold tracking-wider">LOCARD</span>
+              <span className="font-semibold tracking-wider text-xs">LOCARD</span>
               <span>👑</span>
             </div>
             <div className="flex items-center gap-2">
-              <Button className="bg-[#2a74ff] hover:bg-[#2363d6] text-white px-3 py-1 h-8">+ Follow</Button>
+              <Button className="bg-[#2a74ff] hover:bg-[#2363d6] text-white text-xs px-3 py-1 h-8">+ Follow</Button>
               <Button variant="outline" size="icon" className="border-white/20 text-white bg-transparent hover:bg-white/10 h-8 w-8">
                 <Send className="h-4 w-4" />
               </Button>
@@ -92,8 +92,8 @@ export default function BotProfile() {
 
         {/* Reviews */}
         <Card className="bg-[#171821] border-white/10 p-3 rounded-xl">
-          <Tabs defaultValue="review" className="w-full text-xs">
-            <TabsList className="bg-transparent p-0 h-auto text-xs">
+          <Tabs defaultValue="review" className="w-full">
+            <TabsList className="bg-transparent p-0 h-auto">
               <TabsTrigger value="review" className="text-xs data-[state=active]:bg-transparent data-[state=active]:text-white text-white/70">Review</TabsTrigger>
               <TabsTrigger value="post" className="text-xs data-[state=active]:bg-transparent data-[state=active]:text-white text-white/70">Post</TabsTrigger>
             </TabsList>
@@ -106,7 +106,7 @@ export default function BotProfile() {
                     <Button variant="ghost" size="icon" className="text-white/80 hover:bg-white/10"><ThumbsDown className="h-4 w-4" /></Button>
                     <Button variant="ghost" size="icon" className="text-white/80 hover:bg-white/10"><Clock className="h-4 w-4" /></Button>
                   </div>
-                  <Button className="bg-[#2a74ff] hover:bg-[#2363d6] text-white">Post review</Button>
+                  <Button className="bg-[#2a74ff] hover:bg-[#2363d6] text-white text-xs">Post review</Button>
                 </div>
               </div>
 
@@ -116,10 +116,10 @@ export default function BotProfile() {
               <div className="mt-3 flex items-start gap-3">
                 <Avatar className="h-8 w-8">
                   <AvatarImage src={HERO_IMAGE} />
-                  <AvatarFallback>EG</AvatarFallback>
+                  <AvatarFallback className="text-xs">EG</AvatarFallback>
                 </Avatar>
                 <div>
-                  <div className="font-semibold">egg</div>
+                  <div className="font-semibold text-xs">egg</div>
                   <p className="text-white/80 text-xs">first of all why she stuck second of all why she not bullet proof</p>
                 </div>
               </div>
