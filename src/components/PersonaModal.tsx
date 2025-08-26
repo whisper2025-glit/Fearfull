@@ -22,6 +22,7 @@ import {
   PersonaData,
   createAuthenticatedSupabaseClient
 } from "@/lib/supabase";
+import { testPersonaCreation } from "@/lib/testPersona";
 import { toast } from "sonner";
 
 interface PersonaModalProps {
