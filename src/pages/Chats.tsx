@@ -119,9 +119,9 @@ const Chats = () => {
 
   return (
     <Layout>
-      <div className="h-full bg-gray-900 text-white flex flex-col overflow-hidden">
-        {/* Functional sticky header: tabs only */}
-        <div className="sticky top-0 z-20 bg-gray-900 border-b border-gray-700 flex-shrink-0 px-4">
+      <div className="fixed inset-x-0 bottom-0 top-14 bg-gray-900 text-white flex flex-col overflow-hidden">
+        {/* Header (tabs only) */}
+        <div className="bg-gray-900 border-b border-gray-700 flex-shrink-0 px-4">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="grid w-full grid-cols-2 bg-transparent p-0 h-auto">
               <TabsTrigger
@@ -143,11 +143,11 @@ const Chats = () => {
           </Tabs>
         </div>
 
-        {/* Scrollable content area */}
-        <div className="flex-1 overflow-y-auto">
-          <Tabs value={activeTab} className="w-full">
+        {/* Non-scrollable content area */}
+        <div className="flex-1 overflow-hidden">
+          <Tabs value={activeTab} className="w-full h-full">
             {/* Individual Chats */}
-            <TabsContent value="individual" className="mt-0">
+            <TabsContent value="individual" className="mt-0 h-full">
               <div className="divide-y divide-gray-700">
                 {mockChats.map((chat) => (
                   <div
@@ -165,13 +165,13 @@ const Chats = () => {
 
                     {/* Chat Info */}
                     <div className="flex-1 min-w-0">
-                      <h3 
+                      <h3
                         className="font-medium text-white truncate"
                         style={{ fontSize: '14px' }}
                       >
                         {chat.characterName}
                       </h3>
-                      <p 
+                      <p
                         className="text-gray-400 truncate mt-0.5"
                         style={{ fontSize: '12px' }}
                       >
@@ -181,13 +181,13 @@ const Chats = () => {
 
                     {/* Timestamp and Actions */}
                     <div className="flex items-center gap-2 flex-shrink-0">
-                      <span 
+                      <span
                         className="text-gray-400"
                         style={{ fontSize: '12px' }}
                       >
                         {chat.timestamp}
                       </span>
-                      
+
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button
@@ -200,7 +200,7 @@ const Chats = () => {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="bg-gray-800 border-gray-700">
-                          <DropdownMenuItem 
+                          <DropdownMenuItem
                             onClick={(e) => {
                               e.stopPropagation();
                               removeFromRecents(chat.id);
@@ -219,7 +219,7 @@ const Chats = () => {
             </TabsContent>
 
             {/* Group Chats */}
-            <TabsContent value="group" className="mt-0">
+            <TabsContent value="group" className="mt-0 h-full">
               <div className="p-8 text-center">
                 <p className="text-gray-400" style={{ fontSize: '12px' }}>
                   Group chats will appear here
