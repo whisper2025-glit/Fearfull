@@ -216,7 +216,13 @@ Guidelines:
   // Simple test method for debugging
   async simpleTest(): Promise<void> {
     try {
-      console.log('Testing basic fetch to OpenRouter...');
+      console.log('🧪 Testing basic fetch to OpenRouter...');
+
+      if (!this.isApiKeyValid()) {
+        console.error('❌ Cannot run simple test - API key is invalid or missing');
+        return;
+      }
+
       const response = await fetch('https://openrouter.ai/api/v1/models', {
         method: 'GET',
         headers: {
@@ -225,11 +231,17 @@ Guidelines:
         }
       });
 
-      console.log('Models endpoint response status:', response.status);
-      const data = await response.text();
-      console.log('Models endpoint response:', data.substring(0, 200));
+      console.log('📊 Models endpoint response status:', response.status);
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log('✅ Models endpoint working, found', data.data?.length || 0, 'models');
+      } else {
+        const errorText = await response.text();
+        console.log('❌ Models endpoint error:', errorText.substring(0, 200));
+      }
     } catch (error) {
-      console.error('Simple test failed:', error);
+      console.error('🚨 Simple test failed:', error);
     }
   }
 
