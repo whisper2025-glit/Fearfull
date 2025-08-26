@@ -40,6 +40,7 @@ const Chat = () => {
   const [isIntroExpanded, setIsIntroExpanded] = useState(true);
   const [isModelsModalOpen, setIsModelsModalOpen] = useState(false);
   const [isPersonaModalOpen, setIsPersonaModalOpen] = useState(false);
+  const [currentPersona, setCurrentPersona] = useState<any>(null);
   const [sceneBackground, setSceneBackground] = useState<string>("");
   const [selectedModel, setSelectedModel] = useState<Model | null>({
     id: "mistral-main",
