@@ -230,6 +230,9 @@ const Profile = () => {
       } else {
         toast.success('Profile updated successfully');
         setEditModalOpen(false);
+
+        // Force a reload of user data to reflect changes
+        window.location.reload();
       }
     } catch (error) {
       console.error('Error updating profile:', error);
