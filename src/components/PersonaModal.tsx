@@ -14,12 +14,13 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Plus, Edit, Trash2, User, Check } from "lucide-react";
-import { 
-  createPersona, 
-  updatePersona, 
-  deletePersona, 
-  getUserPersonas, 
-  PersonaData 
+import {
+  createPersona,
+  updatePersona,
+  deletePersona,
+  getUserPersonas,
+  PersonaData,
+  createAuthenticatedSupabaseClient
 } from "@/lib/supabase";
 import { toast } from "sonner";
 
