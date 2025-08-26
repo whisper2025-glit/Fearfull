@@ -50,65 +50,65 @@ const Profile = () => {
   });
 
   // Load user profile and data from Supabase
-  useEffect(() => {
-    const loadUserData = async () => {
-      if (!user) return;
+  const loadUserData = async () => {
+    if (!user) return;
 
-      setIsLoading(true);
-      try {
-        // Load user data from Supabase
-        const { data: userData, error: userError } = await supabase
-          .from('users')
-          .select('*')
-          .eq('id', user.id)
-          .single();
+    setIsLoading(true);
+    try {
+      // Load user data from Supabase
+      const { data: userData, error: userError } = await supabase
+        .from('users')
+        .select('*')
+        .eq('id', user.id)
+        .single();
 
-        if (userError && userError.code !== 'PGRST116') {
-          console.error('Error loading user:', userError);
-        } else if (userData) {
-          setUserProfile({
-            name: userData.full_name || user.firstName || user.username || 'User',
-            bio: userData.bio || '',
-            gender: userData.gender || '',
-            avatar: userData.avatar_url || user.imageUrl || '',
-            banner: userData.banner_url || ''
-          });
-        } else {
-          // Set default values from Clerk
-          setUserProfile({
-            name: user.firstName || user.username || 'User',
-            bio: '',
-            gender: '',
-            avatar: user.imageUrl || '',
-            banner: ''
-          });
-        }
-
-        // Load user's characters
-        const { data: charactersData, error: charactersError } = await supabase
-          .from('characters')
-          .select('*, messages(id)')
-          .eq('owner_id', user.id)
-          .order('created_at', { ascending: false });
-
-        if (charactersError) {
-          console.error('Error loading characters:', charactersError);
-        } else {
-          setUserCharacters(charactersData || []);
-          setStats(prev => ({
-            ...prev,
-            publicBots: (charactersData || []).filter(char => char.visibility === 'public').length
-          }));
-        }
-
-      } catch (error) {
-        console.error('Error loading user data:', error);
-        toast.error('Failed to load profile data');
-      } finally {
-        setIsLoading(false);
+      if (userError && userError.code !== 'PGRST116') {
+        console.error('Error loading user:', userError);
+      } else if (userData) {
+        setUserProfile({
+          name: userData.full_name || user.firstName || user.username || 'User',
+          bio: userData.bio || '',
+          gender: userData.gender || '',
+          avatar: userData.avatar_url || user.imageUrl || '',
+          banner: userData.banner_url || ''
+        });
+      } else {
+        // Set default values from Clerk
+        setUserProfile({
+          name: user.firstName || user.username || 'User',
+          bio: '',
+          gender: '',
+          avatar: user.imageUrl || '',
+          banner: ''
+        });
       }
-    };
 
+      // Load user's characters
+      const { data: charactersData, error: charactersError } = await supabase
+        .from('characters')
+        .select('*, messages(id)')
+        .eq('owner_id', user.id)
+        .order('created_at', { ascending: false });
+
+      if (charactersError) {
+        console.error('Error loading characters:', charactersError);
+      } else {
+        setUserCharacters(charactersData || []);
+        setStats(prev => ({
+          ...prev,
+          publicBots: (charactersData || []).filter(char => char.visibility === 'public').length
+        }));
+      }
+
+    } catch (error) {
+      console.error('Error loading user data:', error);
+      toast.error('Failed to load profile data');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
     loadUserData();
   }, [user]);
 
@@ -231,8 +231,8 @@ const Profile = () => {
         toast.success('Profile updated successfully');
         setEditModalOpen(false);
 
-        // Force a reload of user data to reflect changes
-        window.location.reload();
+        // Reload user data to reflect changes
+        await loadUserData();
       }
     } catch (error) {
       console.error('Error updating profile:', error);
