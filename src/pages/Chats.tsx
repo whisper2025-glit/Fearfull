@@ -170,7 +170,7 @@ const Chats = () => {
         <Tabs value={activeTab} className="w-full">
           {/* Recent Chats */}
           <TabsContent value="recent" className="pt-28">
-            <div className="px-4 pb-4 space-y-4">
+            <div className="px-4 pb-4 space-y-3">
               {isLoading ? (
                 <div className="space-y-4">
                   {[...Array(3)].map((_, i) => (
