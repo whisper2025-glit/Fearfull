@@ -238,6 +238,16 @@ const Chat = () => {
     setIsLoading(true);
 
     try {
+      // Ensure user record exists in Supabase (avoids FK/RLS issues)
+      try {
+        await createOrUpdateUser(user);
+      } catch (err) {
+        console.error('Error ensuring user exists before conversation:', err);
+        toast.error('Account sync failed. Please try again.');
+        setIsLoading(false);
+        return;
+      }
+
       // Create conversation if none exists
       let conversationToUse = currentConversationId;
       if (!conversationToUse) {
@@ -246,14 +256,19 @@ const Chat = () => {
           .insert({
             user_id: user.id,
             character_id: characterId,
-            title: `Chat with ${currentCharacter.name}`
+            title: `Chat with ${currentCharacter.name}`,
+            started_at: new Date().toISOString(),
+            last_message_at: new Date().toISOString(),
+            message_count: 0,
+            is_archived: false,
+            metadata: {}
           })
           .select()
           .single();
 
         if (convError) {
           console.error('Error creating conversation:', convError);
-          toast.error('Failed to create conversation');
+          toast.error(`Failed to create conversation: ${convError?.message || 'Unknown error'}`);
           return;
         }
 
