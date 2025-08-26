@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useUser, useAuth } from '@clerk/clerk-react';
-import { createOrUpdateUser, setSupabaseAuth } from '@/lib/supabase';
+import { createOrUpdateUser, createSupabaseClientWithClerkAuth } from '@/lib/supabase';
 import { toast } from 'sonner';
 
 export const useUserSync = () => {
@@ -22,31 +22,28 @@ export const useUserSync = () => {
 
       if (!user) {
         console.log('❌ No user signed in');
-        setSupabaseAuth(null); // Clear auth when no user
         return;
       }
 
       try {
-        // Get Clerk JWT token and set it for Supabase
-        const token = await getToken();
-        console.log('🔐 Setting Clerk token for Supabase authentication');
-        setSupabaseAuth(token);
-      } catch (tokenError) {
-        console.error('❌ Error getting Clerk token:', tokenError);
-        toast.error('Authentication token error');
-        return;
-      }
+        // Get Clerk JWT token
+        const token = await getToken({ template: 'supabase' });
+        console.log('🔐 Retrieved Clerk token for Supabase authentication', !!token);
+        
+        // Create Supabase client with Clerk authentication
+        const supabaseWithAuth = createSupabaseClientWithClerkAuth(async () => {
+          return await getToken({ template: 'supabase' });
+        });
 
-      console.log('🚀 Attempting to sync user:', {
-        id: user.id,
-        firstName: user.firstName,
-        fullName: user.fullName,
-        username: user.username,
-        email: user.emailAddresses?.[0]?.emailAddress
-      });
+        console.log('🚀 Attempting to sync user with authenticated Supabase client:', {
+          id: user.id,
+          firstName: user.firstName,
+          fullName: user.fullName,
+          username: user.username,
+          email: user.emailAddresses?.[0]?.emailAddress
+        });
 
-      try {
-        // Sync user with Supabase
+        // Sync user with Supabase using the authenticated client
         const result = await createOrUpdateUser(user);
         console.log('✅ User synced with Supabase successfully:', result);
         toast.success(`User ${result.username} synced successfully!`);
