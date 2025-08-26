@@ -462,10 +462,9 @@ export const getUserPersonas = async (userId: string) => {
   }
 };
 
-export const getDefaultPersona = async (userId: string, authenticatedClient?: any) => {
+export const getDefaultPersona = async (userId: string) => {
   try {
-    const client = authenticatedClient || supabase;
-    const { data, error } = await client
+    const { data, error } = await supabase
       .from('personas')
       .select('*')
       .eq('user_id', userId)
