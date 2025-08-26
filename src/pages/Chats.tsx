@@ -211,7 +211,7 @@ const Chats = () => {
                     <CardContent className="p-2">
                       <div className="flex items-center gap-2">
                         {/* Character Avatar */}
-                        <Avatar className="w-12 h-12 flex-shrink-0">
+                        <Avatar className="w-10 h-10 flex-shrink-0">
                           <AvatarImage src={character.avatar_url} alt={character.name} />
                           <AvatarFallback className="bg-gray-600 text-white text-lg">
                             {character.name.charAt(0)}
