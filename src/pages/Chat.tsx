@@ -570,6 +570,15 @@ const Chat = () => {
         onModelSelect={setSelectedModel}
         selectedModel={selectedModel}
       />
+
+      <PersonaModal
+        open={isPersonaModalOpen}
+        onOpenChange={setIsPersonaModalOpen}
+        onPersonaSave={(persona) => {
+          console.log('Persona saved:', persona);
+          toast.success('Persona saved successfully!');
+        }}
+      />
     </div>
   );
 };
