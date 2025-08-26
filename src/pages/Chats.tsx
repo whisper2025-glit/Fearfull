@@ -110,7 +110,7 @@ const Chats = () => {
           {/* Individual Chats */}
           <TabsContent value="individual" className="mt-0">
             <div className="divide-y divide-gray-700">
-              {chats.map((chat) => (
+              {items.map((chat) => (
                 <div
                   key={chat.id}
                   className="flex items-center gap-3 p-4 hover:bg-gray-800 cursor-pointer"
