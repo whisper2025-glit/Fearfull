@@ -186,7 +186,7 @@ Example format:
               </DialogTitle>
             </div>
             <p className="text-sm text-gray-400 mt-1">
-              AI-generated suggestions for your next response
+              Click any suggestion to send it immediately
             </p>
           </DialogHeader>
 
