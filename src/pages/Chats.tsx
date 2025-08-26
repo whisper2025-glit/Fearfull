@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "@clerk/clerk-react";
-import { MoreHorizontal, UserPlus, Trash2, Search, Crown } from "lucide-react";
+import { MoreHorizontal, Trash2 } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -120,46 +120,27 @@ const Chats = () => {
   return (
     <Layout>
       <div className="h-full bg-gray-900 text-white flex flex-col overflow-hidden">
-        {/* Sticky Header */}
-        <div className="sticky top-0 z-20 bg-gray-900 border-b border-gray-700 flex-shrink-0">
-          {/* Top header with search and crown */}
-          <div className="flex items-center justify-between px-4 py-2 bg-gray-800">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="text-white hover:bg-gray-700 h-10 w-10"
-            >
-              <Search className="h-5 w-5" />
-            </Button>
-
-            <div className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded-full">
-              <Crown className="h-4 w-4 text-yellow-300" />
-              <span className="text-white text-sm font-medium">50% off!</span>
-            </div>
-          </div>
-
-          {/* Tabs section */}
-          <div className="bg-gray-800 px-4">
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="grid w-full grid-cols-2 bg-transparent p-0 h-auto">
-                <TabsTrigger
-                  value="individual"
-                  className="bg-transparent text-white border-b-2 border-transparent data-[state=active]:border-purple-500 data-[state=active]:bg-transparent rounded-none py-3"
-                >
-                  <span style={{ fontSize: '14px' }}>Individual</span>
-                </TabsTrigger>
-                <TabsTrigger
-                  value="group"
-                  className="bg-transparent text-white border-b-2 border-transparent data-[state=active]:border-purple-500 data-[state=active]:bg-transparent rounded-none py-3 relative"
-                >
-                  <span style={{ fontSize: '14px' }}>Group</span>
-                  <Badge className="ml-2 bg-yellow-500 text-black px-2 py-0.5 text-xs font-bold">
-                    VIP
-                  </Badge>
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
-          </div>
+        {/* Functional sticky header: tabs only */}
+        <div className="sticky top-0 z-20 bg-gray-900 border-b border-gray-700 flex-shrink-0 px-4">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <TabsList className="grid w-full grid-cols-2 bg-transparent p-0 h-auto">
+              <TabsTrigger
+                value="individual"
+                className="bg-transparent text-white border-b-2 border-transparent data-[state=active]:border-purple-500 data-[state=active]:bg-transparent rounded-none py-3"
+              >
+                <span style={{ fontSize: '14px' }}>Individual</span>
+              </TabsTrigger>
+              <TabsTrigger
+                value="group"
+                className="bg-transparent text-white border-b-2 border-transparent data-[state=active]:border-purple-500 data-[state=active]:bg-transparent rounded-none py-3 relative"
+              >
+                <span style={{ fontSize: '14px' }}>Group</span>
+                <Badge className="ml-2 bg-yellow-500 text-black px-2 py-0.5 text-xs font-bold">
+                  VIP
+                </Badge>
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
         </div>
 
         {/* Scrollable content area */}
