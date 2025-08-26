@@ -8,9 +8,10 @@ interface LayoutProps {
   children: ReactNode;
   headerBottom?: ReactNode;
   mainOverflow?: 'auto' | 'hidden';
+  headerPosition?: 'sticky' | 'fixed';
 }
 
-export function Layout({ children, headerBottom, mainOverflow = 'auto' }: LayoutProps) {
+export function Layout({ children, headerBottom, mainOverflow = 'auto', headerPosition = 'sticky' }: LayoutProps) {
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full overflow-x-hidden">
@@ -18,7 +19,7 @@ export function Layout({ children, headerBottom, mainOverflow = 'auto' }: Layout
 
         <div className="flex-1 flex flex-col min-w-0">
           {/* Header */}
-          <header className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border">
+          <header className={(headerPosition === 'fixed' ? 'fixed top-0 left-0 right-0 ' : 'sticky top-0 ') + 'z-40 bg-background/95 backdrop-blur-sm border-b border-border'}>
             <div className="h-14 flex items-center justify-between px-4">
               <div className="flex items-center gap-3">
                 <SidebarTrigger className="text-foreground hover:text-primary" />
@@ -36,11 +37,18 @@ export function Layout({ children, headerBottom, mainOverflow = 'auto' }: Layout
               </div>
             </div>
             {headerBottom ? (
-              <div className="px-4 border-t border-border">
+              <div className="h-12 flex items-center px-4 border-t border-border">
                 {headerBottom}
               </div>
             ) : null}
           </header>
+
+          {headerPosition === 'fixed' ? (
+            <>
+              <div className="h-14" />
+              {headerBottom ? <div className="h-12" /> : null}
+            </>
+          ) : null}
 
           {/* Main Content */}
           <main className={mainOverflow === 'hidden' ? 'flex-1 overflow-hidden' : 'flex-1 overflow-auto'}>
