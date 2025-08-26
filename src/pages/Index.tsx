@@ -25,7 +25,7 @@ const Index = () => {
           .from('characters')
           .select(`
             *,
-            users!characters_owner_id_fkey(username),
+            users!characters_owner_id_fkey(full_name),
             messages(id)
           `)
           .eq('visibility', 'public')
