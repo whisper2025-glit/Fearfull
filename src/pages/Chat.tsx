@@ -44,7 +44,7 @@ const Chat = () => {
   const [sceneBackground, setSceneBackground] = useState<string>("");
   const [selectedModel, setSelectedModel] = useState<Model | null>({
     id: "mistral-main",
-    name: "mistralai/mistral-small-3.2-24b-instruct:free",
+    name: "mistralai/mistral-7b-instruct:free",
     author: "Mistral AI",
     description: "Excellent for creative roleplay scenarios",
     price: 0,
