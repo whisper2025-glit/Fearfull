@@ -19,10 +19,8 @@ import {
   updatePersona,
   deletePersona,
   getUserPersonas,
-  PersonaData,
-  createAuthenticatedSupabaseClient
+  PersonaData
 } from "@/lib/supabase";
-import { testPersonaCreation } from "@/lib/testPersona";
 import { toast } from "sonner";
 
 interface PersonaModalProps {
