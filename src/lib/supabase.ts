@@ -9,6 +9,20 @@ if (!supabaseUrl || !supabaseAnonKey) {
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
+// Function to create Supabase client with Clerk authentication
+export const createSupabaseClientWithClerkAuth = (getToken: () => Promise<string | null>) => {
+  return createClient(supabaseUrl, supabaseAnonKey, {
+    global: {
+      headers: {
+        Authorization: async () => {
+          const token = await getToken();
+          return token ? `Bearer ${token}` : '';
+        }
+      }
+    }
+  });
+};
+
 // Function to set Clerk token for Supabase authentication
 export const setSupabaseAuth = async (token: string | null) => {
   if (token) {

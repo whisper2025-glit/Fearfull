@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useUser } from "@clerk/clerk-react";
+import { useUser, useAuth } from "@clerk/clerk-react";
 import { MoreHorizontal, Trash2 } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { Button } from "@/components/ui/button";
@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { supabase } from "@/lib/supabase";
+import { supabase, createSupabaseClientWithClerkAuth } from "@/lib/supabase";
 import { toast } from "sonner";
 
 interface ChatItem {
@@ -40,7 +40,15 @@ const formatTimestamp = (iso: string | null): string => {
 
 const Chats = () => {
   const { user } = useUser();
+  const { getToken } = useAuth();
   const navigate = useNavigate();
+
+  // Create authenticated Supabase client
+  const getAuthenticatedSupabase = () => {
+    return createSupabaseClientWithClerkAuth(async () => {
+      return await getToken({ template: 'supabase' });
+    });
+  };
   const [activeTab, setActiveTab] = useState("individual");
   const [items, setItems] = useState<ChatItem[]>([]);
   const [hasMore, setHasMore] = useState(true);
@@ -55,7 +63,8 @@ const Chats = () => {
       const from = items.length;
       const to = from + PAGE_SIZE - 1;
 
-      const { data, error } = await supabase
+      const authSupabase = getAuthenticatedSupabase();
+      const { data, error } = await authSupabase
         .from("conversations")
         .select(
           `id, character_id, title, started_at, last_message_at, message_count,
@@ -120,7 +129,8 @@ const Chats = () => {
 
   const removeFromRecents = async (conversationId: string) => {
     try {
-      const { error } = await supabase
+      const authSupabase = getAuthenticatedSupabase();
+      const { error } = await authSupabase
         .from("conversations")
         .update({ is_archived: true })
         .eq("id", conversationId)
