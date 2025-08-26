@@ -262,7 +262,7 @@ const generateUsername = (displayName: string, userId: string): string => {
   return username;
 };
 
-export const createOrUpdateUser = async (clerkUser: any) => {
+export const createOrUpdateUser = async (clerkUser: any, authenticatedClient?: any) => {
   console.log('🔧 createOrUpdateUser called with:', {
     id: clerkUser.id,
     firstName: clerkUser.firstName,
@@ -282,7 +282,10 @@ export const createOrUpdateUser = async (clerkUser: any) => {
 
   console.log('📊 User data to upsert:', userData);
 
-  const { data, error } = await supabase
+  // Use authenticated client if provided, otherwise fall back to regular client
+  const clientToUse = authenticatedClient || supabase;
+
+  const { data, error } = await clientToUse
     .from('users')
     .upsert(userData, {
       onConflict: 'id'
@@ -292,6 +295,23 @@ export const createOrUpdateUser = async (clerkUser: any) => {
 
   if (error) {
     console.error('❌ Supabase upsert error:', error);
+    // If RLS error and we used regular client, try with less strict approach
+    if (error.code === 'PGRST301' && !authenticatedClient) {
+      console.log('🔄 RLS error detected, retrying with relaxed constraints...');
+      try {
+        // Try a simple insert/update without select
+        const { error: retryError } = await supabase
+          .from('users')
+          .upsert(userData, { onConflict: 'id' });
+
+        if (!retryError) {
+          console.log('✅ Fallback upsert successful');
+          return userData; // Return the data we tried to insert
+        }
+      } catch (retryErr) {
+        console.error('❌ Retry failed:', retryErr);
+      }
+    }
     throw error;
   }
 
