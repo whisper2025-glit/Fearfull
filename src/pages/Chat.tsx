@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useUser } from "@clerk/clerk-react";
 import { ArrowLeft, Home, MoreHorizontal, Lightbulb, Clock, Users, Bot, ChevronDown, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { ModelsModal, Model } from "@/components/ModelsModal";
 import { openRouterAPI, ChatMessage } from "@/lib/openrouter";
+import { supabase, createOrUpdateUser } from "@/lib/supabase";
 import { toast } from "sonner";
 
 interface Message {
@@ -53,81 +55,106 @@ const Chat = () => {
   });
   const [isLoading, setIsLoading] = useState(false);
 
-  // Mock character data - in a real app this would come from an API
-  const characters: Record<string, Character> = {
-    "1": {
-      name: "You Are Like Your Father - Angela",
-      author: "@Just a Random Guy",
-      intro: "Since your parents divorced, your mom Angela has never treated you the same. Cold, bitter, and always picking fights, like she blames you for everything your father did.",
-      scenario: "You are the new student from Shiketsu high! And today is your first day! (Any gender and quirk!)",
-      avatar: "/lovable-uploads/3eab3055-d06f-48a5-9790-123de7769f97.png",
-      messages: [
-        {
-          id: -2,
-          content: "Since your parents divorced, your mom Angela has never treated you the same. Cold, bitter, and always picking fights, like she blames you for everything your father did.",
-          isBot: true,
-          timestamp: "now",
-          type: "intro",
-          characterName: "You Are Like Your Father - Angela",
-          author: "@Just a Random Guy"
-        },
-        {
-          id: -1,
-          content: "You are the new student from Shiketsu high! And today is your first day! (Any gender and quirk!)",
-          isBot: true,
-          timestamp: "now",
-          type: "scenario"
-        },
-        {
-          id: 1,
-          content: `The class looked at you as you entered
+  // State for current character and messages loaded from Supabase
+  const [currentCharacter, setCurrentCharacter] = useState<Character | null>(null);
+  const [isLoadingCharacter, setIsLoadingCharacter] = useState(true);
 
-Katsuki: "Hah!? Who the hell is this extra!?" He said annoyed,
+  const { user } = useUser();
 
-Izuku: "Kacchan that's the new exchange student," he whispered
-
-Denki: "are they a girl?...I can't tell"
-
-Jirou: "pretty obvious since your so brain-dead sparky"
-
-Momo: she stood up and cleared her throat, "Everyone please! Let's let them introduce their self" she smiled
-
-Shoto: he looked at you curious
-
-Aizawa: "introduce yourself and take`,
-          isBot: true,
-          timestamp: "now",
-          type: "regular"
-        }
-      ]
-    },
-    // Add other characters as needed
-  };
-
-  const currentCharacter = characters[characterId as keyof typeof characters] || characters["1"];
-
-  // Load scene background and test OpenRouter connection on mount
+  // Load character and messages from Supabase
   useEffect(() => {
-    // Load scene background from localStorage
-    const savedBackground = localStorage.getItem('scene-background');
-    if (savedBackground) {
-      setSceneBackground(savedBackground);
-    }
+    const loadCharacterAndMessages = async () => {
+      if (!characterId) return;
 
-    // Load character data if it's a newly created character
-    const savedCharacter = localStorage.getItem('current-character');
-    if (savedCharacter) {
+      setIsLoadingCharacter(true);
+
       try {
-        const characterData = JSON.parse(savedCharacter);
-        if (characterData.id === characterId) {
-          // This is a newly created character, we could update the characters object here
-          // For now, we'll just use the scene background
-          console.log('Loaded newly created character:', characterData.name);
+        // Load character data from Supabase
+        const { data: characterData, error: characterError } = await supabase
+          .from('characters')
+          .select('*, users!characters_owner_id_fkey(username)')
+          .eq('id', characterId)
+          .single();
+
+        if (characterError) {
+          console.error('Error loading character:', characterError);
+          toast.error('Character not found');
+          navigate('/');
+          return;
         }
+
+        // Load messages for this character
+        const { data: messagesData, error: messagesError } = await supabase
+          .from('messages')
+          .select('*')
+          .eq('character_id', characterId)
+          .order('created_at', { ascending: true });
+
+        if (messagesError) {
+          console.error('Error loading messages:', messagesError);
+          toast.error('Failed to load messages');
+        }
+
+        // Convert Supabase data to local format
+        const character: Character = {
+          name: characterData.name,
+          author: characterData.users?.username || 'Unknown',
+          intro: characterData.intro,
+          scenario: characterData.scenario || "",
+          avatar: characterData.avatar_url || "/lovable-uploads/3eab3055-d06f-48a5-9790-123de7769f97.png",
+          messages: [
+            // Always include intro message
+            {
+              id: -2,
+              content: characterData.intro,
+              isBot: true,
+              timestamp: "now",
+              type: "intro",
+              characterName: characterData.name,
+              author: characterData.users?.username || 'Unknown'
+            },
+            // Include scenario message if it exists
+            ...(characterData.scenario ? [{
+              id: -1,
+              content: characterData.scenario,
+              isBot: true,
+              timestamp: "now",
+              type: "scenario" as const
+            }] : []),
+            // Include greeting as first regular message if it exists
+            ...(characterData.greeting ? [{
+              id: 0,
+              content: characterData.greeting,
+              isBot: true,
+              timestamp: "now",
+              type: "regular" as const
+            }] : []),
+            // Add saved messages from database
+            ...(messagesData || []).map((msg, index) => ({
+              id: index + 1,
+              content: msg.content,
+              isBot: msg.is_bot,
+              timestamp: new Date(msg.created_at).toLocaleTimeString(),
+              type: msg.type as 'intro' | 'scenario' | 'regular'
+            }))
+          ]
+        };
+
+        setCurrentCharacter(character);
+
+        // Set scene background if available
+        if (characterData.scene_url) {
+          setSceneBackground(characterData.scene_url);
+        }
+
       } catch (error) {
-        console.error('Error parsing saved character:', error);
+        console.error('Error loading character data:', error);
+        toast.error('Failed to load character');
+        navigate('/');
+      } finally {
+        setIsLoadingCharacter(false);
       }
-    }
+    };
 
     const testConnection = async () => {
       try {
@@ -143,11 +170,12 @@ Aizawa: "introduce yourself and take`,
       }
     };
 
+    loadCharacterAndMessages();
     testConnection();
-  }, [characterId]);
+  }, [characterId, navigate]);
 
   const handleSendMessage = async () => {
-    if (!message.trim() || isLoading) return;
+    if (!message.trim() || isLoading || !currentCharacter || !user) return;
 
     // Use default model if none selected
     const modelToUse = selectedModel || {
@@ -167,12 +195,12 @@ Aizawa: "introduce yourself and take`,
       tier: 'standard' as const
     };
 
-    // Add user message
+    // Add user message to local state immediately for UI responsiveness
     const userMessage: Message = {
       id: Date.now(),
       content: message,
       isBot: false,
-      timestamp: "now",
+      timestamp: new Date().toLocaleTimeString(),
       type: "regular"
     };
 
@@ -182,6 +210,21 @@ Aizawa: "introduce yourself and take`,
     setIsLoading(true);
 
     try {
+      // Save user message to Supabase
+      const { error: userMessageError } = await supabase
+        .from('messages')
+        .insert({
+          character_id: characterId,
+          author_id: user.id,
+          content: currentMessage,
+          is_bot: false,
+          type: 'regular'
+        });
+
+      if (userMessageError) {
+        console.error('Error saving user message:', userMessageError);
+      }
+
       // Prepare chat messages for OpenRouter
       const allMessages = [...currentCharacter.messages, ...messages, userMessage];
       const chatMessages: ChatMessage[] = [
@@ -207,15 +250,33 @@ Aizawa: "introduce yourself and take`,
         max_tokens: 1000
       });
 
+      const botResponseContent = response.choices[0]?.message?.content || "I apologize, but I couldn't generate a response.";
+
       const botMessage: Message = {
         id: Date.now() + 1,
-        content: response.choices[0]?.message?.content || "I apologize, but I couldn't generate a response.",
+        content: botResponseContent,
         isBot: true,
-        timestamp: "now",
+        timestamp: new Date().toLocaleTimeString(),
         type: "regular"
       };
 
       setMessages(prev => [...prev, botMessage]);
+
+      // Save bot message to Supabase
+      const { error: botMessageError } = await supabase
+        .from('messages')
+        .insert({
+          character_id: characterId,
+          author_id: null, // Bot messages have null author_id
+          content: botResponseContent,
+          is_bot: true,
+          type: 'regular'
+        });
+
+      if (botMessageError) {
+        console.error('Error saving bot message:', botMessageError);
+      }
+
       toast.success(`Response received from ${modelToUse.author}`);
     } catch (error) {
       console.error('Error sending message:', error);
@@ -225,7 +286,7 @@ Aizawa: "introduce yourself and take`,
         id: Date.now() + 1,
         content: "I'm sorry, I'm having trouble responding right now. Please check your API connection and try again.",
         isBot: true,
-        timestamp: "now",
+        timestamp: new Date().toLocaleTimeString(),
         type: "regular"
       };
       setMessages(prev => [...prev, errorMessage]);
@@ -241,7 +302,19 @@ Aizawa: "introduce yourself and take`,
     }
   };
 
-  const allMessages = [...currentCharacter.messages, ...messages];
+  const allMessages = currentCharacter ? [...currentCharacter.messages, ...messages] : [];
+
+  // Show loading state while character is being loaded
+  if (isLoadingCharacter || !currentCharacter) {
+    return (
+      <div className="min-h-screen bg-background text-foreground flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="h-8 w-8 animate-spin" />
+          <p className="text-muted-foreground">Loading character...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -269,7 +342,7 @@ Aizawa: "introduce yourself and take`,
           >
             <ArrowLeft className="h-4 w-4" />
           </Button>
-          <h1 className="text-sm font-semibold">Angela</h1>
+          <h1 className="text-sm font-semibold">{currentCharacter.name}</h1>
         </div>
         
         <div className="flex items-center gap-2">

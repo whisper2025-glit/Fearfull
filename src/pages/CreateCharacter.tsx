@@ -6,12 +6,17 @@ import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Upload, Info, ChevronUp, Heart, RotateCcw } from "lucide-react";
+import { ArrowLeft, Upload, Info, ChevronUp, Heart, RotateCcw, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useUser } from "@clerk/clerk-react";
+import { supabase, uploadImage } from "@/lib/supabase";
+import { toast } from "sonner";
 
 const CreateCharacter = () => {
   const navigate = useNavigate();
+  const { user } = useUser();
   const [activeTab, setActiveTab] = useState<'create' | 'preview'>('create');
+  const [isCreating, setIsCreating] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     age: '',
@@ -508,21 +513,98 @@ const CreateCharacter = () => {
           <div className="pb-8 pt-4">
             <Button
               className="w-full bg-primary hover:bg-primary/90 text-white h-14 text-xs font-medium rounded-full shadow-lg"
-              onClick={() => {
-                // Save character data to localStorage
-                const characterData = {
-                  ...formData,
-                  id: Date.now().toString(),
-                  createdAt: new Date().toISOString()
-                };
-                localStorage.setItem('current-character', JSON.stringify(characterData));
-                localStorage.setItem('scene-background', formData.sceneImage);
+              disabled={isCreating || !user}
+              onClick={async () => {
+                if (!user || !formData.name || !formData.intro) {
+                  toast.error('Please fill in required fields');
+                  return;
+                }
 
-                // Navigate to chat with the new character
-                navigate(`/chat/${characterData.id}`);
+                setIsCreating(true);
+                try {
+                  let avatarUrl = null;
+                  let sceneUrl = null;
+
+                  // Upload character image if provided
+                  if (formData.characterImage) {
+                    try {
+                      // Convert data URL to File
+                      const response = await fetch(formData.characterImage);
+                      const blob = await response.blob();
+                      const file = new File([blob], 'character-avatar.jpg', { type: blob.type });
+
+                      const avatarPath = `${user.id}/avatars/${Date.now()}.jpg`;
+                      const { publicUrl } = await uploadImage('avatars', avatarPath, file);
+                      avatarUrl = publicUrl;
+                    } catch (error) {
+                      console.error('Error uploading character image:', error);
+                      toast.error('Failed to upload character image');
+                    }
+                  }
+
+                  // Upload scene image if provided
+                  if (formData.sceneImage) {
+                    try {
+                      // Convert data URL to File
+                      const response = await fetch(formData.sceneImage);
+                      const blob = await response.blob();
+                      const file = new File([blob], 'scene-background.jpg', { type: blob.type });
+
+                      const scenePath = `${user.id}/scenes/${Date.now()}.jpg`;
+                      const { publicUrl } = await uploadImage('scenes', scenePath, file);
+                      sceneUrl = publicUrl;
+                    } catch (error) {
+                      console.error('Error uploading scene image:', error);
+                      toast.error('Failed to upload scene image');
+                    }
+                  }
+
+                  // Create character in Supabase
+                  const { data: characterData, error } = await supabase
+                    .from('characters')
+                    .insert({
+                      owner_id: user.id,
+                      name: formData.name,
+                      intro: formData.intro,
+                      scenario: formData.scenario || null,
+                      greeting: formData.greeting || null,
+                      personality: formData.personality || null,
+                      appearance: formData.appearance || null,
+                      avatar_url: avatarUrl,
+                      scene_url: sceneUrl,
+                      visibility: formData.visibility as 'public' | 'unlisted' | 'private',
+                      rating: formData.rating as 'filtered' | 'unfiltered',
+                      tags: formData.tags ? [formData.tags] : null,
+                      gender: formData.gender || null,
+                      age: formData.age || null
+                    })
+                    .select()
+                    .single();
+
+                  if (error) {
+                    console.error('Error creating character:', error);
+                    toast.error('Failed to create character');
+                    return;
+                  }
+
+                  toast.success('Character created successfully!');
+                  navigate(`/chat/${characterData.id}`);
+                } catch (error) {
+                  console.error('Error creating character:', error);
+                  toast.error('Failed to create character');
+                } finally {
+                  setIsCreating(false);
+                }
               }}
             >
-              Create and Chat!
+              {isCreating ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Creating...
+                </>
+              ) : (
+                'Create and Chat!'
+              )}
             </Button>
           </div>
         </div>
