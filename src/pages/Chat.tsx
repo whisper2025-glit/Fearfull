@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { ModelsModal, Model } from "@/components/ModelsModal";
 import { PersonaModal } from "@/components/PersonaModal";
+import { SuggestModal } from "@/components/SuggestModal";
 import { openRouterAPI, ChatMessage } from "@/lib/openrouter";
 import { supabase, createOrUpdateUser, getDefaultPersona } from "@/lib/supabase";
 import { toast } from "sonner";
@@ -40,6 +41,7 @@ const Chat = () => {
   const [isIntroExpanded, setIsIntroExpanded] = useState(true);
   const [isModelsModalOpen, setIsModelsModalOpen] = useState(false);
   const [isPersonaModalOpen, setIsPersonaModalOpen] = useState(false);
+  const [isSuggestModalOpen, setIsSuggestModalOpen] = useState(false);
   const [currentPersona, setCurrentPersona] = useState<any>(null);
   const [sceneBackground, setSceneBackground] = useState<string>("");
   const [selectedModel, setSelectedModel] = useState<Model | null>({
@@ -547,7 +549,12 @@ const Chat = () => {
         {/* Action Buttons */}
         <div className="pb-2 bg-background/20 backdrop-blur-sm">
           <div className="flex gap-2 mb-3 overflow-x-auto px-4 scrollbar-hide">
-            <Button variant="outline" size="sm" className="flex items-center gap-2 text-xs whitespace-nowrap flex-shrink-0">
+            <Button
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-2 text-xs whitespace-nowrap flex-shrink-0"
+              onClick={() => setIsSuggestModalOpen(true)}
+            >
               <Lightbulb className="h-3 w-3" />
               Suggest
             </Button>
@@ -640,6 +647,26 @@ const Chat = () => {
           }
         }}
         currentPersona={currentPersona}
+      />
+
+      <SuggestModal
+        open={isSuggestModalOpen}
+        onOpenChange={setIsSuggestModalOpen}
+        onSuggestionSelect={(suggestion) => {
+          setMessage(suggestion);
+          setIsSuggestModalOpen(false);
+        }}
+        chatContext={{
+          characterName: currentCharacter.name,
+          characterIntro: currentCharacter.intro,
+          characterScenario: currentCharacter.scenario,
+          recentMessages: allMessages.filter(msg => msg.type === 'regular').slice(-6).map(msg => ({
+            content: msg.content,
+            isBot: msg.isBot
+          })),
+          personaName: currentPersona?.name,
+          personaDescription: currentPersona?.description
+        }}
       />
     </div>
   );
