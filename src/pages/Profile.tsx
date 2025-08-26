@@ -147,13 +147,28 @@ const Profile = () => {
     const file = event.target.files?.[0];
     if (file && user) {
       try {
+        console.log('🖼️ Starting banner upload:', {
+          fileName: file.name,
+          fileSize: file.size,
+          fileType: file.type
+        });
+
         const bannerPath = `${user.id}/banners/${Date.now()}.jpg`;
+        console.log('📁 Upload path:', bannerPath);
+
         const { publicUrl } = await uploadImage('profiles', bannerPath, file);
+        console.log('✅ Banner uploaded successfully, URL:', publicUrl);
+
         setUserProfile(prev => ({ ...prev, banner: publicUrl }));
         toast.success('Banner uploaded successfully');
       } catch (error) {
-        console.error('Error uploading banner:', error);
-        toast.error('Failed to upload banner');
+        console.error('❌ Error uploading banner:', error);
+        console.error('Error details:', {
+          message: error instanceof Error ? error.message : 'Unknown error',
+          stack: error instanceof Error ? error.stack : undefined,
+          error
+        });
+        toast.error(`Failed to upload banner: ${error instanceof Error ? error.message : 'Unknown error'}`);
       }
     }
   };
@@ -234,8 +249,9 @@ const Profile = () => {
         });
 
       if (error) {
-        console.error('Error updating profile:', error);
-        console.error('Error details:', {
+        console.error('❌ Error updating profile:', error);
+        console.error('🔍 Current userProfile state:', userProfile);
+        console.error('📊 Error details:', {
           message: error.message,
           details: error.details,
           hint: error.hint,
