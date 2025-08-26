@@ -213,6 +213,9 @@ Example format:
                           <p className="text-white text-sm leading-relaxed">
                             {suggestion}
                           </p>
+                          <p className="text-xs text-gray-500 mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            Click to send
+                          </p>
                         </div>
                         <MessageCircle className="h-4 w-4 text-gray-400 flex-shrink-0 mt-0.5" />
                       </div>
