@@ -262,8 +262,7 @@ const Chat = () => {
       if (conversationToUse) {
         userMessagePayload.conversation_id = conversationToUse;
       }
-      const authSupabase = getAuthenticatedSupabase();
-      const { data: insertedUserMessage, error: userMessageError } = await authSupabase
+      const { data: insertedUserMessage, error: userMessageError } = await supabase
         .from('messages')
         .insert(userMessagePayload)
         .select('id, conversation_id, created_at')
