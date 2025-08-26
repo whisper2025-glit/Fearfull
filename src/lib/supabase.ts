@@ -107,10 +107,52 @@ export interface Database {
           updated_at?: string;
         };
       };
+      conversations: {
+        Row: {
+          id: string;
+          user_id: string; // Clerk user ID
+          character_id: string;
+          title: string | null;
+          started_at: string;
+          last_message_at: string;
+          message_count: number;
+          is_archived: boolean;
+          metadata: any; // JSONB
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          character_id: string;
+          title?: string | null;
+          started_at?: string;
+          last_message_at?: string;
+          message_count?: number;
+          is_archived?: boolean;
+          metadata?: any;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          character_id?: string;
+          title?: string | null;
+          started_at?: string;
+          last_message_at?: string;
+          message_count?: number;
+          is_archived?: boolean;
+          metadata?: any;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
       messages: {
         Row: {
           id: string;
           character_id: string;
+          conversation_id: string | null; // References conversations.id
           author_id: string | null; // Clerk user ID for user messages, null for bot
           content: string;
           is_bot: boolean;
@@ -120,6 +162,7 @@ export interface Database {
         Insert: {
           id?: string;
           character_id: string;
+          conversation_id?: string | null;
           author_id?: string | null;
           content: string;
           is_bot?: boolean;
@@ -129,6 +172,7 @@ export interface Database {
         Update: {
           id?: string;
           character_id?: string;
+          conversation_id?: string | null;
           author_id?: string | null;
           content?: string;
           is_bot?: boolean;
