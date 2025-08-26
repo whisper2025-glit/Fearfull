@@ -9,6 +9,31 @@ if (!supabaseUrl || !supabaseAnonKey) {
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
+// Function to set Clerk token for Supabase authentication
+export const setSupabaseAuth = async (token: string | null) => {
+  if (token) {
+    // Use Supabase's built-in auth system to set the session
+    await supabase.auth.setSession({
+      access_token: token,
+      refresh_token: '', // Clerk handles refresh
+    });
+  } else {
+    // Sign out from Supabase when no Clerk token
+    await supabase.auth.signOut();
+  }
+};
+
+// Create authenticated Supabase client for user operations
+export const createAuthenticatedSupabaseClient = (token: string) => {
+  return createClient(supabaseUrl, supabaseAnonKey, {
+    global: {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    }
+  });
+};
+
 // Database types
 export interface Database {
   public: {

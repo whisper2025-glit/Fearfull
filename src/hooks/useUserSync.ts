@@ -1,10 +1,11 @@
 import { useEffect } from 'react';
-import { useUser } from '@clerk/clerk-react';
-import { createOrUpdateUser } from '@/lib/supabase';
+import { useUser, useAuth } from '@clerk/clerk-react';
+import { createOrUpdateUser, setSupabaseAuth } from '@/lib/supabase';
 import { toast } from 'sonner';
 
 export const useUserSync = () => {
   const { user, isLoaded } = useUser();
+  const { getToken } = useAuth();
 
   useEffect(() => {
     console.log('🔄 useUserSync useEffect triggered', {
@@ -21,6 +22,18 @@ export const useUserSync = () => {
 
       if (!user) {
         console.log('❌ No user signed in');
+        setSupabaseAuth(null); // Clear auth when no user
+        return;
+      }
+
+      try {
+        // Get Clerk JWT token and set it for Supabase
+        const token = await getToken();
+        console.log('🔐 Setting Clerk token for Supabase authentication');
+        setSupabaseAuth(token);
+      } catch (tokenError) {
+        console.error('❌ Error getting Clerk token:', tokenError);
+        toast.error('Authentication token error');
         return;
       }
 
@@ -49,7 +62,7 @@ export const useUserSync = () => {
     };
 
     syncUser();
-  }, [user, isLoaded]);
+  }, [user, isLoaded, getToken]);
 
   return { user, isLoaded };
 };
