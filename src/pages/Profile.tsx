@@ -435,6 +435,23 @@ const Profile = () => {
                         </div>
                       </div>
 
+                      {/* Username */}
+                      <div className="space-y-2">
+                        <Label htmlFor="username">Username</Label>
+                        <div className="relative">
+                          <Input
+                            id="username"
+                            value={userProfile.username}
+                            onChange={(e) => setUserProfile({...userProfile, username: e.target.value.toLowerCase().replace(/[^a-z0-9]/g, '')})}
+                            className="bg-background border-border"
+                            placeholder="Enter username"
+                          />
+                          <span className="absolute right-3 top-3 text-xs text-muted-foreground">
+                            {userProfile.username.length}/20
+                          </span>
+                        </div>
+                      </div>
+
                       {/* Gender */}
                       <div className="space-y-2">
                         <Label>Gender</Label>
