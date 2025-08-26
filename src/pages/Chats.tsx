@@ -231,7 +231,7 @@ const Chats = () => {
                             )}
                           </div>
                           
-                          <div className="flex items-center gap-2 text-gray-400 text-xs mb-1">
+                          <div className="flex items-center gap-1 text-gray-400 text-xs">
                             <User className="h-3 w-3" />
                             <span>by {character.author}</span>
                           </div>
