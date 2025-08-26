@@ -205,6 +205,26 @@ const Chat = () => {
     testConnection();
   }, [characterId, conversationId, navigate, user]);
 
+  // Load default persona when user is available
+  useEffect(() => {
+    const loadDefaultPersona = async () => {
+      if (!user || currentPersona) return;
+
+      try {
+        const defaultPersona = await getDefaultPersona(user.id);
+        if (defaultPersona) {
+          setCurrentPersona(defaultPersona);
+          console.log('✅ Default persona loaded:', defaultPersona.name);
+        }
+      } catch (error) {
+        console.error('Error loading default persona:', error);
+        // Don't show error toast for this as it's not critical
+      }
+    };
+
+    loadDefaultPersona();
+  }, [user, currentPersona]);
+
   const handleSendMessage = async () => {
     if (!message.trim() || isLoading || !currentCharacter || !user) return;
 
