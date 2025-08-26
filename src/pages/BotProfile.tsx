@@ -26,9 +26,9 @@ export default function BotProfile() {
       <div className="px-4 py-3 space-y-3">
         {/* Hero Image */}
         <Card className="bg-black/40 border-white/10 overflow-hidden rounded-xl">
-          <AspectRatio ratio={16/9}>
+          <div className="w-full h-[560px] sm:h-[600px] md:h-[640px] lg:h-[720px]">
             <img src={HERO_IMAGE} alt="Bea" className="h-full w-full object-cover" />
-          </AspectRatio>
+          </div>
         </Card>
 
         {/* Title + Actions */}
