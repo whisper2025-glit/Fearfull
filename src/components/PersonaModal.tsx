@@ -103,10 +103,6 @@ export function PersonaModal({ open, onOpenChange, onPersonaSelect, currentPerso
     if (!user || !name.trim()) return;
 
     try {
-      console.log('💾 Starting persona save process...');
-      const authenticatedClient = await getAuthenticatedClient();
-      console.log('✅ Got authenticated client');
-
       const personaData: Omit<PersonaData, 'id'> = {
         name: name.trim(),
         gender: selectedGender,
@@ -114,42 +110,21 @@ export function PersonaModal({ open, onOpenChange, onPersonaSelect, currentPerso
         applyToNewChats
       };
 
-      console.log('📝 Persona data:', personaData);
-
       if (editingPersona) {
         // Update existing persona
-        console.log('🔄 Updating persona:', editingPersona.id);
-        await updatePersona(editingPersona.id, personaData, authenticatedClient);
+        await updatePersona(editingPersona.id, personaData);
         toast.success('Persona updated successfully!');
       } else {
         // Create new persona
-        console.log('✨ Creating new persona for user:', user.id);
-        await createPersona(user.id, personaData, authenticatedClient);
+        await createPersona(user.id, personaData);
         toast.success('Persona created successfully!');
       }
 
       await loadPersonas(); // Reload the list
       resetForm();
     } catch (error) {
-      console.error('❌ Error saving persona:', error);
-
-      // Test basic connectivity
-      console.log('🧪 Running basic connectivity test...');
-      const testResult = await testPersonaCreation(user.id);
-      console.log('🧪 Test result:', testResult);
-
-      // More specific error messages
-      if (error.message?.includes('JWT') || error.message?.includes('template')) {
-        toast.error('❌ Clerk JWT template not configured. Please set up Supabase integration in Clerk dashboard.');
-      } else if (error.message?.includes('permission') || error.message?.includes('policy')) {
-        toast.error('❌ Database permission denied. RLS policies may need adjustment.');
-      } else if (error.message?.includes('token')) {
-        toast.error('❌ Authentication token issue. Please sign out and back in.');
-      } else if (!testResult.success) {
-        toast.error('❌ Database connection issue. Check Supabase configuration.');
-      } else {
-        toast.error(`❌ Failed to save persona: ${error.message || 'Unknown error'}`);
-      }
+      console.error('Error saving persona:', error);
+      toast.error('Failed to save persona');
     }
   };
 
