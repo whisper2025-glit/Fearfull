@@ -115,12 +115,7 @@ export class OpenRouterAPI {
     try {
       const response = await fetch(`${this.baseURL}/chat/completions`, {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${this.apiKey}`,
-          'Content-Type': 'application/json',
-          'HTTP-Referer': window.location.origin,
-          'X-Title': 'Roleplay Chat App'
-        },
+        headers: this.getHeaders(),
         body: JSON.stringify({
           model: model.name,
           messages: messages,
