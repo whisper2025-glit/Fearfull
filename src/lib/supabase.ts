@@ -355,3 +355,160 @@ export const createOrUpdateUser = async (clerkUser: any) => {
     return userData;
   }
 };
+
+// Persona CRUD operations
+export interface PersonaData {
+  id?: string;
+  name: string;
+  gender: 'Male' | 'Female' | 'Non-binary';
+  description: string;
+  applyToNewChats: boolean;
+}
+
+export const createPersona = async (userId: string, personaData: Omit<PersonaData, 'id'>) => {
+  try {
+    const { data, error } = await supabase
+      .from('personas')
+      .insert({
+        user_id: userId,
+        name: personaData.name,
+        gender: personaData.gender,
+        description: personaData.description || null,
+        is_default: personaData.applyToNewChats
+      })
+      .select()
+      .single();
+
+    if (error) {
+      console.error('❌ Error creating persona:', error);
+      throw error;
+    }
+
+    console.log('✅ Persona created successfully:', data);
+    return data;
+  } catch (error) {
+    console.error('❌ Final error in createPersona:', error);
+    throw error;
+  }
+};
+
+export const updatePersona = async (personaId: string, personaData: Partial<Omit<PersonaData, 'id'>>) => {
+  try {
+    const updateData: any = {};
+
+    if (personaData.name !== undefined) updateData.name = personaData.name;
+    if (personaData.gender !== undefined) updateData.gender = personaData.gender;
+    if (personaData.description !== undefined) updateData.description = personaData.description || null;
+    if (personaData.applyToNewChats !== undefined) updateData.is_default = personaData.applyToNewChats;
+
+    const { data, error } = await supabase
+      .from('personas')
+      .update(updateData)
+      .eq('id', personaId)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('❌ Error updating persona:', error);
+      throw error;
+    }
+
+    console.log('✅ Persona updated successfully:', data);
+    return data;
+  } catch (error) {
+    console.error('❌ Final error in updatePersona:', error);
+    throw error;
+  }
+};
+
+export const deletePersona = async (personaId: string) => {
+  try {
+    const { error } = await supabase
+      .from('personas')
+      .delete()
+      .eq('id', personaId);
+
+    if (error) {
+      console.error('❌ Error deleting persona:', error);
+      throw error;
+    }
+
+    console.log('✅ Persona deleted successfully');
+    return true;
+  } catch (error) {
+    console.error('❌ Final error in deletePersona:', error);
+    throw error;
+  }
+};
+
+export const getUserPersonas = async (userId: string) => {
+  try {
+    const { data, error } = await supabase
+      .from('personas')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('❌ Error fetching personas:', error);
+      throw error;
+    }
+
+    console.log('✅ Personas fetched successfully:', data);
+    return data || [];
+  } catch (error) {
+    console.error('❌ Final error in getUserPersonas:', error);
+    return [];
+  }
+};
+
+export const getDefaultPersona = async (userId: string) => {
+  try {
+    const { data, error } = await supabase
+      .from('personas')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('is_default', true)
+      .single();
+
+    if (error && error.code !== 'PGRST116') { // PGRST116 = no rows returned
+      console.error('❌ Error fetching default persona:', error);
+      throw error;
+    }
+
+    console.log('✅ Default persona fetched:', data);
+    return data || null;
+  } catch (error) {
+    console.error('❌ Final error in getDefaultPersona:', error);
+    return null;
+  }
+};
+
+export const setDefaultPersona = async (personaId: string, userId: string) => {
+  try {
+    // First, unset all other defaults for this user
+    await supabase
+      .from('personas')
+      .update({ is_default: false })
+      .eq('user_id', userId);
+
+    // Then set the specified persona as default
+    const { data, error } = await supabase
+      .from('personas')
+      .update({ is_default: true })
+      .eq('id', personaId)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('❌ Error setting default persona:', error);
+      throw error;
+    }
+
+    console.log('✅ Default persona set successfully:', data);
+    return data;
+  } catch (error) {
+    console.error('❌ Final error in setDefaultPersona:', error);
+    throw error;
+  }
+};
