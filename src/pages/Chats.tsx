@@ -18,79 +18,7 @@ interface ChatItem {
   isVip?: boolean;
 }
 
-// Mock data matching the screenshots
-const mockChats: ChatItem[] = [
-  {
-    id: "1",
-    characterName: "You Subscribed To My Onlyf...",
-    characterAvatar: "https://i.pravatar.cc/150?img=1",
-    messagePreview: "*Lana lies on the bed, her body still tingling fr...",
-    timestamp: "4:09 am"
-  },
-  {
-    id: "2", 
-    characterName: "Misty \"Desperate Paparazzi\"",
-    characterAvatar: "https://i.pravatar.cc/150?img=2",
-    messagePreview: "*Panic sets in as Misty sees the security gua...",
-    timestamp: "Yesterday"
-  },
-  {
-    id: "3",
-    characterName: "Succubus Gyaru Friend Fo...",
-    characterAvatar: "https://i.pravatar.cc/150?img=3", 
-    messagePreview: "*A soft moan escaped Mai's lips at your cons...",
-    timestamp: "Yesterday"
-  },
-  {
-    id: "4",
-    characterName: "My Pregnant Stepmom and Si...",
-    characterAvatar: "https://i.pravatar.cc/150?img=4",
-    messagePreview: "*Aya's fingers traced gentle circles on Dante'...",
-    timestamp: "08/24"
-  },
-  {
-    id: "5",
-    characterName: "Cody \"My Way\"",
-    characterAvatar: "https://i.pravatar.cc/150?img=5",
-    messagePreview: "*Cody's heart races as she is carried through...",
-    timestamp: "08/23"
-  },
-  {
-    id: "6",
-    characterName: "I Hypnotized You Bro!",
-    characterAvatar: "https://i.pravatar.cc/150?img=6",
-    messagePreview: "*A startled gasp escapes Luna's lips as your I...",
-    timestamp: "08/23"
-  },
-  {
-    id: "7",
-    characterName: "She Will Be Yours",
-    characterAvatar: "https://i.pravatar.cc/150?img=7",
-    messagePreview: "**Ciera** *collapses into your embrace, her b...",
-    timestamp: "08/22"
-  },
-  {
-    id: "8",
-    characterName: "Misha – the amateur heist",
-    characterAvatar: "https://i.pravatar.cc/150?img=8",
-    messagePreview: "*A wave of shock crashed over Misha's face, ...",
-    timestamp: "08/22"
-  },
-  {
-    id: "9",
-    characterName: "Revy \"Say it in a proper way\"",
-    characterAvatar: "https://i.pravatar.cc/150?img=9",
-    messagePreview: "*A sharp laugh bursts from Revy's lips, a blen...",
-    timestamp: "08/21"
-  },
-  {
-    id: "10",
-    characterName: "Leticia \"Girlfriend's mother\"",
-    characterAvatar: "https://i.pravatar.cc/150?img=10",
-    messagePreview: "*She looks at you with a mixture of surprise...",
-    timestamp: "08/17"
-  }
-];
+const chats: ChatItem[] = [];
 
 const Chats = () => {
   const { user } = useUser();
@@ -147,7 +75,7 @@ const Chats = () => {
           {/* Individual Chats */}
           <TabsContent value="individual" className="mt-0 h-full">
             <div className="divide-y divide-gray-700">
-              {mockChats.map((chat) => (
+              {chats.map((chat) => (
                 <div
                   key={chat.id}
                   className="flex items-center gap-3 p-4 hover:bg-gray-800 cursor-pointer"
