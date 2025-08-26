@@ -169,8 +169,8 @@ const Chats = () => {
       <div className="bg-gray-900 text-white min-h-full">
         <Tabs value={activeTab} className="w-full">
           {/* Recent Chats */}
-          <TabsContent value="recent" className="mt-6">
-            <div className="px-4 pb-4 space-y-4">
+          <TabsContent value="recent" className="pt-28">
+            <div className="px-4 pb-4 space-y-2">
               {isLoading ? (
                 <div className="space-y-4">
                   {[...Array(3)].map((_, i) => (
@@ -208,20 +208,20 @@ const Chats = () => {
                     className="bg-gray-800 border-gray-700 hover:bg-gray-750 transition-colors cursor-pointer"
                     onClick={() => startNewChat(character.id)}
                   >
-                    <CardContent className="p-4">
-                      <div className="flex items-center gap-4">
+                    <CardContent className="p-2">
+                      <div className="flex items-center gap-2">
                         {/* Character Avatar */}
-                        <Avatar className="w-14 h-14 flex-shrink-0">
+                        <Avatar className="w-10 h-10 flex-shrink-0">
                           <AvatarImage src={character.avatar_url} alt={character.name} />
-                          <AvatarFallback className="bg-gray-600 text-white text-lg">
+                          <AvatarFallback className="bg-gray-600 text-white text-sm">
                             {character.name.charAt(0)}
                           </AvatarFallback>
                         </Avatar>
 
                         {/* Character Info */}
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            <h3 className="font-semibold text-white truncate text-base">
+                          <div className="flex items-center gap-2">
+                            <h3 className="font-semibold text-white truncate text-sm">
                               {character.name}
                             </h3>
                             {character.isVip && (
@@ -231,17 +231,17 @@ const Chats = () => {
                             )}
                           </div>
                           
-                          <div className="flex items-center gap-2 text-gray-400 text-xs mb-2">
+                          <div className="flex items-center gap-1 text-gray-400 text-xs">
                             <User className="h-3 w-3" />
                             <span>by {character.author}</span>
                           </div>
-                          
-                          <p className="text-gray-300 text-sm truncate mb-2">
+
+                          <p className="text-gray-300 text-xs truncate">
                             "{character.lastMessage}"
                           </p>
                           
                           <div className="flex items-center justify-between text-xs text-gray-500">
-                            <div className="flex items-center gap-3">
+                            <div className="flex items-center gap-2">
                               <div className="flex items-center gap-1">
                                 <MessageCircle className="h-3 w-3" />
                                 <span>{character.totalMessages} messages</span>
@@ -262,7 +262,7 @@ const Chats = () => {
           </TabsContent>
 
           {/* Favorites */}
-          <TabsContent value="favorites" className="mt-6">
+          <TabsContent value="favorites" className="pt-28">
             <div className="p-8 text-center">
               <h3 className="text-lg font-medium text-gray-300 mb-2">Favorites Coming Soon</h3>
               <p className="text-gray-500 mb-4">

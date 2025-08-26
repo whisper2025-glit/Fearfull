@@ -6,8 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { ModelsModal, Model } from "@/components/ModelsModal";
+import { PersonaModal } from "@/components/PersonaModal";
 import { openRouterAPI, ChatMessage } from "@/lib/openrouter";
-import { supabase, createOrUpdateUser } from "@/lib/supabase";
+import { supabase, createOrUpdateUser, getDefaultPersona } from "@/lib/supabase";
 import { toast } from "sonner";
 
 interface Message {
@@ -38,6 +39,8 @@ const Chat = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isIntroExpanded, setIsIntroExpanded] = useState(true);
   const [isModelsModalOpen, setIsModelsModalOpen] = useState(false);
+  const [isPersonaModalOpen, setIsPersonaModalOpen] = useState(false);
+  const [currentPersona, setCurrentPersona] = useState<any>(null);
   const [sceneBackground, setSceneBackground] = useState<string>("");
   const [selectedModel, setSelectedModel] = useState<Model | null>({
     id: "mistral-main",
@@ -99,7 +102,7 @@ const Chat = () => {
           // If no conversation ID, get the most recent conversation for this character and user
           const { data: recentConv } = await supabase
             .from('conversations')
-            .select('id')
+            .select('id, persona_id')
             .eq('character_id', characterId)
             .eq('user_id', user?.id || '')
             .eq('is_archived', false)
@@ -110,6 +113,24 @@ const Chat = () => {
           if (recentConv) {
             setCurrentConversationId(recentConv.id);
             messagesQuery = messagesQuery.eq('conversation_id', recentConv.id);
+
+            // Load the persona associated with this conversation
+            if (recentConv.persona_id && !currentPersona) {
+              try {
+                const { data: conversationPersona } = await supabase
+                  .from('personas')
+                  .select('*')
+                  .eq('id', recentConv.persona_id)
+                  .single();
+
+                if (conversationPersona) {
+                  setCurrentPersona(conversationPersona);
+                  console.log('✅ Conversation persona loaded:', conversationPersona.name);
+                }
+              } catch (error) {
+                console.error('Error loading conversation persona:', error);
+              }
+            }
           } else {
             // No existing conversation, we'll create one when first message is sent
             messagesQuery = messagesQuery.eq('conversation_id', 'none'); // This will return no messages
@@ -202,6 +223,26 @@ const Chat = () => {
     testConnection();
   }, [characterId, conversationId, navigate, user]);
 
+  // Load default persona when user is available
+  useEffect(() => {
+    const loadDefaultPersona = async () => {
+      if (!user || currentPersona) return;
+
+      try {
+        const defaultPersona = await getDefaultPersona(user.id);
+        if (defaultPersona) {
+          setCurrentPersona(defaultPersona);
+          console.log('✅ Default persona loaded:', defaultPersona.name);
+        }
+      } catch (error) {
+        console.error('Error loading default persona:', error);
+        // Don't show error toast for this as it's not critical
+      }
+    };
+
+    loadDefaultPersona();
+  }, [user, currentPersona]);
+
   const handleSendMessage = async () => {
     if (!message.trim() || isLoading || !currentCharacter || !user) return;
 
@@ -291,6 +332,11 @@ const Chat = () => {
           role: 'system',
           content: `Character: ${currentCharacter.name}\nIntro: ${currentCharacter.intro}\nScenario: ${currentCharacter.scenario}`
         },
+        // Add persona information if available
+        ...(currentPersona ? [{
+          role: 'system' as const,
+          content: `User Persona: ${currentPersona.name} (${currentPersona.gender})\nDescription: ${currentPersona.description || 'No additional description'}\n\nThe user is roleplaying as this persona. Please interact with them accordingly and acknowledge their persona in your responses.`
+        }] : []),
         // Convert recent messages to chat format (last 10 messages for context)
         ...allMessages.slice(-10).filter(msg => msg.type === 'regular').map(msg => ({
           role: msg.isBot ? 'assistant' as const : 'user' as const,
@@ -508,9 +554,15 @@ const Chat = () => {
               Memory
               <div className="w-1.5 h-1.5 bg-pink-500 rounded-full" />
             </Button>
-            <Button variant="outline" size="sm" className="flex items-center gap-2 text-xs whitespace-nowrap flex-shrink-0">
+            <Button
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-2 text-xs whitespace-nowrap flex-shrink-0"
+              onClick={() => setIsPersonaModalOpen(true)}
+            >
               <Users className="h-3 w-3" />
-              Persona
+              {currentPersona ? currentPersona.name : 'Persona'}
+              {currentPersona && <div className="w-1.5 h-1.5 bg-green-500 rounded-full" />}
             </Button>
             <Button
               variant="outline"
@@ -562,6 +614,30 @@ const Chat = () => {
         onOpenChange={setIsModelsModalOpen}
         onModelSelect={setSelectedModel}
         selectedModel={selectedModel}
+      />
+
+      <PersonaModal
+        open={isPersonaModalOpen}
+        onOpenChange={setIsPersonaModalOpen}
+        onPersonaSelect={async (persona) => {
+          setCurrentPersona(persona);
+          setIsPersonaModalOpen(false);
+
+          // Update the current conversation with the new persona
+          if (currentConversationId) {
+            try {
+              await supabase
+                .from('conversations')
+                .update({ persona_id: persona.id })
+                .eq('id', currentConversationId);
+
+              console.log('✅ Conversation updated with new persona');
+            } catch (error) {
+              console.error('Error updating conversation persona:', error);
+            }
+          }
+        }}
+        currentPersona={currentPersona}
       />
     </div>
   );
