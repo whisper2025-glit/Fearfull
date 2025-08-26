@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { ModelsModal, Model } from "@/components/ModelsModal";
+import { PersonaModal } from "@/components/PersonaModal";
 import { openRouterAPI, ChatMessage } from "@/lib/openrouter";
 import { supabase, createOrUpdateUser } from "@/lib/supabase";
 import { toast } from "sonner";
