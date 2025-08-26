@@ -8,7 +8,7 @@ import { Card } from "@/components/ui/card";
 import { ModelsModal, Model } from "@/components/ModelsModal";
 import { PersonaModal } from "@/components/PersonaModal";
 import { openRouterAPI, ChatMessage } from "@/lib/openrouter";
-import { supabase, createOrUpdateUser } from "@/lib/supabase";
+import { supabase, createOrUpdateUser, getDefaultPersona } from "@/lib/supabase";
 import { toast } from "sonner";
 
 interface Message {
