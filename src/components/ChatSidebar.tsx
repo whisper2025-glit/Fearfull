@@ -1,15 +1,20 @@
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { 
   Plus, 
   FileText, 
   Settings, 
   ChevronRight,
+  Heart,
+  Share,
+  ArrowLeft,
+  Clock,
   Users,
-  MessageCircle
+  MessageCircle,
+  Image as ImageIcon,
+  Music,
+  Video
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -29,6 +34,15 @@ interface ChatSidebarProps {
   conversationId?: string | null;
 }
 
+const characterTags = [
+  "Fantasy", "Furry", "Monster", "Mystery", "Non-Human", "OC"
+];
+
+const galleryImages = [
+  "/placeholder.svg",
+  "/placeholder.svg"
+];
+
 export function ChatSidebar({ 
   open, 
   onOpenChange, 
@@ -39,41 +53,40 @@ export function ChatSidebar({
   const navigate = useNavigate();
 
   const handleNewChat = () => {
-    // Navigate to a new chat with the same character (without conversation ID)
     navigate(`/chat/${characterId}`);
     onOpenChange(false);
   };
 
   const handleCharacterDetail = () => {
-    // Navigate to character detail page (you can implement this route later)
     console.log('Character detail clicked');
     onOpenChange(false);
   };
 
   const handleChatSettings = () => {
-    // Open chat settings (you can implement this modal later)
     console.log('Chat settings clicked');
     onOpenChange(false);
   };
 
   const menuItems = [
     {
-      icon: Plus,
-      label: "New Chat",
-      onClick: handleNewChat,
-      description: "Start a fresh conversation"
+      icon: FileText,
+      label: "Character Detail"
     },
     {
-      icon: FileText,
-      label: "Character Detail",
-      onClick: handleCharacterDetail,
-      description: "View character information"
+      icon: Clock,
+      label: "History"
     },
     {
       icon: Settings,
-      label: "Chat Settings",
-      onClick: handleChatSettings,
-      description: "Configure chat preferences"
+      label: "Chat Settings"
+    },
+    {
+      icon: Users,
+      label: "Persona"
+    },
+    {
+      icon: MessageCircle,
+      label: "Comments"
     }
   ];
 
@@ -81,81 +94,146 @@ export function ChatSidebar({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent 
         side="right" 
-        className="w-[350px] sm:w-[400px] bg-[#1a1b2e] border-[#2d2e3e] p-0 overflow-hidden"
+        className="w-full sm:w-full bg-gradient-to-b from-purple-900/95 via-purple-800/95 to-purple-900/95 border-none p-0 overflow-hidden backdrop-blur-sm"
       >
-        <div className="flex flex-col h-full">
-          {/* Header with Character Info */}
-          <div className="relative p-6 border-b border-[#2d2e3e]">
-            {/* Background gradient */}
-            <div className="absolute inset-0 bg-gradient-to-br from-[#e74c8c]/10 to-[#c44f93]/5" />
-            
-            <div className="relative z-10">
-              <SheetHeader className="space-y-4">
-                <div className="flex items-center gap-4">
-                  <Avatar className="w-16 h-16 border-2 border-[#e74c8c]/30">
-                    <AvatarImage src={character.avatar} alt={character.name} />
-                    <AvatarFallback className="bg-[#232438] text-white text-lg">
-                      {character.name.charAt(0)}
-                    </AvatarFallback>
-                  </Avatar>
-                  
-                  <div className="flex-1 min-w-0">
-                    <SheetTitle className="text-white text-lg font-bold truncate">
-                      {character.name}
-                    </SheetTitle>
-                    <div className="flex items-center gap-2 mt-1">
-                      <Users className="h-3 w-3 text-gray-400" />
-                      <span className="text-sm text-gray-400 truncate">
-                        by {character.author}
-                      </span>
-                    </div>
-                    {conversationId && (
-                      <Badge variant="secondary" className="mt-2 bg-[#e74c8c]/20 text-[#e74c8c] border-[#e74c8c]/30">
-                        <MessageCircle className="h-3 w-3 mr-1" />
-                        Active Chat
-                      </Badge>
-                    )}
-                  </div>
-                </div>
-              </SheetHeader>
+        <div className="flex flex-col h-full relative">
+          {/* Background overlay */}
+          <div className="absolute inset-0 bg-black/20" />
+          
+          {/* Header */}
+          <div className="relative z-10 p-4">
+            <div className="flex items-center justify-between mb-4">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => onOpenChange(false)}
+                className="text-white hover:bg-white/10"
+              >
+                <ArrowLeft className="h-5 w-5" />
+              </Button>
+              <div className="flex items-center gap-2">
+                <Button variant="ghost" size="icon" className="text-white hover:bg-white/10">
+                  <Heart className="h-5 w-5" />
+                </Button>
+                <Button variant="ghost" size="icon" className="text-white hover:bg-white/10">
+                  <Share className="h-5 w-5" />
+                </Button>
+              </div>
             </div>
+
+            {/* Character Info */}
+            <div className="flex items-start gap-4 mb-4">
+              <div className="relative">
+                <img
+                  src={character.avatar}
+                  alt={character.name}
+                  className="w-20 h-20 rounded-full object-cover border-2 border-white/20"
+                />
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute -bottom-1 -right-1 w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-full p-1"
+                >
+                  <Video className="h-3 w-3" />
+                </Button>
+              </div>
+              
+              <div className="flex-1">
+                <h1 className="text-white text-xl font-bold leading-tight mb-1">
+                  {character.name}
+                </h1>
+                <div className="flex items-center gap-2 text-sm text-white/80">
+                  <MessageCircle className="h-4 w-4" />
+                  <span>55.8K</span>
+                  <span>@{character.author}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Content Type Icons */}
+            <div className="flex items-center gap-4 mb-4">
+              <div className="flex items-center gap-1">
+                <div className="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center">
+                  <ImageIcon className="h-4 w-4 text-white" />
+                </div>
+                <div className="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center">
+                  <Video className="h-4 w-4 text-white" />
+                </div>
+                <div className="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center">
+                  <Music className="h-4 w-4 text-white" />
+                </div>
+              </div>
+              <Badge variant="secondary" className="bg-white/20 text-white border-none">
+                AnyPOV
+              </Badge>
+            </div>
+
+            {/* Tags */}
+            <div className="flex flex-wrap gap-2 mb-6">
+              {characterTags.map((tag, index) => (
+                <Badge
+                  key={index}
+                  variant="secondary"
+                  className="bg-white/10 text-white border border-white/20 hover:bg-white/20 transition-colors"
+                >
+                  {tag}
+                </Badge>
+              ))}
+            </div>
+
+            {/* New Chat Button */}
+            <Button
+              onClick={handleNewChat}
+              className="w-full bg-white/20 hover:bg-white/30 text-white border border-white/30 rounded-xl py-3 mb-6 backdrop-blur-sm"
+              variant="outline"
+            >
+              <Plus className="h-5 w-5 mr-2" />
+              New Chat
+            </Button>
           </div>
 
           {/* Menu Items */}
-          <div className="flex-1 p-4 space-y-3">
+          <div className="relative z-10 flex-1 px-4 space-y-1">
             {menuItems.map((item, index) => (
-              <Card
+              <div
                 key={index}
-                className="bg-[#232438] border-[#2d2e3e] hover:border-[#e74c8c]/40 cursor-pointer transition-all duration-200 hover:bg-[#2a2b42]"
-                onClick={item.onClick}
+                className="flex items-center justify-between p-4 hover:bg-white/5 rounded-lg cursor-pointer transition-colors"
+                onClick={index === 0 ? handleCharacterDetail : index === 2 ? handleChatSettings : undefined}
               >
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-[#e74c8c]/10 rounded-lg flex items-center justify-center">
-                        <item.icon className="h-5 w-5 text-[#e74c8c]" />
-                      </div>
-                      <div>
-                        <h3 className="text-white font-medium">{item.label}</h3>
-                        <p className="text-xs text-gray-400">{item.description}</p>
-                      </div>
-                    </div>
-                    <ChevronRight className="h-4 w-4 text-gray-400" />
-                  </div>
-                </CardContent>
-              </Card>
+                <div className="flex items-center gap-3">
+                  <span className="text-white text-lg font-medium">{item.label}</span>
+                </div>
+                <ChevronRight className="h-5 w-5 text-white/60" />
+              </div>
             ))}
           </div>
 
-          {/* Footer */}
-          <div className="p-4 border-t border-[#2d2e3e]">
-            <Button
-              variant="outline"
-              className="w-full bg-[#2d2e3e] border-[#3d3e4e] text-white hover:bg-[#34354a]"
-              onClick={() => onOpenChange(false)}
-            >
-              Close
-            </Button>
+          {/* Gallery Section */}
+          <div className="relative z-10 p-4 mt-auto">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <h3 className="text-white text-lg font-medium">Gallery</h3>
+                <span className="text-white/60">• 2</span>
+                <div className="w-4 h-4 bg-white/20 rounded-full flex items-center justify-center">
+                  <span className="text-xs text-white">i</span>
+                </div>
+              </div>
+            </div>
+            
+            <div className="flex gap-2">
+              {galleryImages.map((image, index) => (
+                <div
+                  key={index}
+                  className="w-16 h-16 rounded-lg overflow-hidden bg-white/10 border border-white/20"
+                >
+                  <img
+                    src={image}
+                    alt={`Gallery ${index + 1}`}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </SheetContent>
