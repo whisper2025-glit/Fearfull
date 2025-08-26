@@ -494,11 +494,12 @@ export const setDefaultPersona = async (personaId: string, userId: string) => {
       .update({ is_default: false })
       .eq('user_id', userId);
 
-    // Then set the specified persona as default
+    // Then set the specified persona as default (only if user owns it)
     const { data, error } = await supabase
       .from('personas')
       .update({ is_default: true })
       .eq('id', personaId)
+      .eq('user_id', userId) // ✅ Security: Only set default if user owns the persona
       .select()
       .single();
 
