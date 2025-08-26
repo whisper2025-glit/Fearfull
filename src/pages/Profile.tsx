@@ -442,15 +442,17 @@ const Profile = () => {
                         </div>
                       </div>
 
-                      {/* Name */}
+                      {/* Display Name */}
                       <div className="space-y-2">
-                        <Label htmlFor="name">Name</Label>
+                        <Label htmlFor="name">Display Name</Label>
+                        <p className="text-xs text-muted-foreground">Your name as it appears on your profile</p>
                         <div className="relative">
                           <Input
                             id="name"
                             value={userProfile.name}
                             onChange={(e) => setUserProfile({...userProfile, name: e.target.value})}
                             className="bg-background border-border"
+                            placeholder="e.g. John Doe"
                           />
                           <span className="absolute right-3 top-3 text-xs text-muted-foreground">
                             {userProfile.name.length}/20
@@ -461,13 +463,14 @@ const Profile = () => {
                       {/* Username */}
                       <div className="space-y-2">
                         <Label htmlFor="username">Username</Label>
+                        <p className="text-xs text-muted-foreground">Your unique handle shown on character cards (lowercase letters and numbers only)</p>
                         <div className="relative">
                           <Input
                             id="username"
                             value={userProfile.username}
                             onChange={(e) => setUserProfile({...userProfile, username: e.target.value.toLowerCase().replace(/[^a-z0-9]/g, '')})}
                             className="bg-background border-border"
-                            placeholder="Enter username"
+                            placeholder="e.g. johndoe123"
                           />
                           <span className="absolute right-3 top-3 text-xs text-muted-foreground">
                             {userProfile.username.length}/20
