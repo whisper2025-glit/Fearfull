@@ -153,7 +153,9 @@ const Profile = () => {
           fileType: file.type
         });
 
-        // Get file extension from the uploaded file\n        const fileExtension = file.name.split('.').pop() || 'jpg';\n        const bannerPath = `${user.id}/banners/${Date.now()}.${fileExtension}`;
+        // Get file extension from the uploaded file
+        const fileExtension = file.name.split('.').pop() || 'jpg';
+        const bannerPath = `${user.id}/banners/${Date.now()}.${fileExtension}`;
         console.log('📁 Upload path:', bannerPath);
 
         const { publicUrl } = await uploadImage('profiles', bannerPath, file);
