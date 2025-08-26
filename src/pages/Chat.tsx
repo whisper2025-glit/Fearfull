@@ -575,10 +575,11 @@ const Chat = () => {
       <PersonaModal
         open={isPersonaModalOpen}
         onOpenChange={setIsPersonaModalOpen}
-        onPersonaSave={(persona) => {
-          console.log('Persona saved:', persona);
-          toast.success('Persona saved successfully!');
+        onPersonaSelect={(persona) => {
+          setCurrentPersona(persona);
+          setIsPersonaModalOpen(false);
         }}
+        currentPersona={currentPersona}
       />
     </div>
   );
