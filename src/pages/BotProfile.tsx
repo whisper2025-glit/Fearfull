@@ -18,7 +18,7 @@ export default function BotProfile() {
         <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="text-white">
           <ChevronLeft className="h-5 w-5" />
         </Button>
-        <h1 className="text-lg font-semibold">Bot profile</h1>
+        <h1 className="text-sm font-semibold">Bot profile</h1>
       </div>
 
       {/* Content */}
@@ -34,7 +34,7 @@ export default function BotProfile() {
         <Card className="bg-[#171821] border-white/10 p-3 rounded-xl">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 min-w-0">
-              <h2 className="text-base font-semibold truncate">Bea | Elf stuck in a wall</h2>
+              <h2 className="text-sm font-semibold truncate">Bea | Elf stuck in a wall</h2>
             </div>
             <div className="flex items-center gap-2">
               <Button variant="outline" size="icon" className="border-white/20 text-white bg-transparent hover:bg-white/10">
@@ -45,7 +45,7 @@ export default function BotProfile() {
           </div>
 
           {/* Stats */}
-          <div className="flex items-center gap-4 text-sm text-white/80 mt-2">
+          <div className="flex items-center gap-4 text-xs text-white/80 mt-2">
             <div className="flex items-center gap-1">
               <MessageCircle className="h-4 w-4" />
               <span>22.6k</span>
@@ -57,7 +57,7 @@ export default function BotProfile() {
           </div>
 
           {/* Subtitle */}
-          <p className="text-sm text-white/80 mt-2">Naeth! Someone help me get out of here!!</p>
+          <p className="text-xs text-white/80 mt-2">Naeth! Someone help me get out of here!!</p>
 
           {/* Tags */}
           <div className="flex flex-wrap gap-2 mt-2">
@@ -72,7 +72,7 @@ export default function BotProfile() {
 
           {/* Creator Row */}
           <div className="mt-3 flex items-center justify-between">
-            <div className="flex items-center gap-2 text-sm text-white/80">
+            <div className="flex items-center gap-2 text-xs text-white/80">
               <span>Create by</span>
               <Avatar className="h-5 w-5">
                 <AvatarImage src={HERO_IMAGE} alt="creator" />
@@ -92,14 +92,14 @@ export default function BotProfile() {
 
         {/* Reviews */}
         <Card className="bg-[#171821] border-white/10 p-3 rounded-xl">
-          <Tabs defaultValue="review" className="w-full">
-            <TabsList className="bg-transparent p-0 h-auto">
-              <TabsTrigger value="review" className="data-[state=active]:bg-transparent data-[state=active]:text-white text-white/70">Review</TabsTrigger>
-              <TabsTrigger value="post" className="data-[state=active]:bg-transparent data-[state=active]:text-white text-white/70">Post</TabsTrigger>
+          <Tabs defaultValue="review" className="w-full text-xs">
+            <TabsList className="bg-transparent p-0 h-auto text-xs">
+              <TabsTrigger value="review" className="text-xs data-[state=active]:bg-transparent data-[state=active]:text-white text-white/70">Review</TabsTrigger>
+              <TabsTrigger value="post" className="text-xs data-[state=active]:bg-transparent data-[state=active]:text-white text-white/70">Post</TabsTrigger>
             </TabsList>
             <TabsContent value="review" className="mt-2">
               <div className="rounded-xl border border-white/10 bg-black/20 p-3">
-                <div className="text-white/60 text-sm">Type your reviews about character</div>
+                <div className="text-white/60 text-xs">Type your reviews about character</div>
                 <div className="flex items-center justify-between mt-2">
                   <div className="flex items-center gap-2">
                     <Button variant="ghost" size="icon" className="text-white/80 hover:bg-white/10"><ThumbsUp className="h-4 w-4" /></Button>
@@ -110,7 +110,7 @@ export default function BotProfile() {
                 </div>
               </div>
 
-              <div className="text-white/70 text-sm mt-3">7 reviews ( 3 👍 | 2 😐 )</div>
+              <div className="text-white/70 text-xs mt-3">7 reviews ( 3 👍 | 2 😐 )</div>
 
               {/* Review item */}
               <div className="mt-3 flex items-start gap-3">
@@ -120,7 +120,7 @@ export default function BotProfile() {
                 </Avatar>
                 <div>
                   <div className="font-semibold">egg</div>
-                  <p className="text-white/80 text-sm">first of all why she stuck second of all why she not bullet proof</p>
+                  <p className="text-white/80 text-xs">first of all why she stuck second of all why she not bullet proof</p>
                 </div>
               </div>
             </TabsContent>
