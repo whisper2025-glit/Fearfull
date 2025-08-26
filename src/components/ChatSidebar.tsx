@@ -92,9 +92,9 @@ export function ChatSidebar({
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent 
-        side="right" 
-        className="w-full sm:w-full bg-gradient-to-b from-purple-900/95 via-purple-800/95 to-purple-900/95 border-none p-0 overflow-hidden backdrop-blur-sm"
+      <SheetContent
+        side="right"
+        className="w-[50vw] sm:w-[50vw] bg-gradient-to-b from-purple-900/95 via-purple-800/95 to-purple-900/95 border-none p-0 overflow-hidden backdrop-blur-sm"
       >
         <div className="flex flex-col h-full relative">
           {/* Background overlay */}
