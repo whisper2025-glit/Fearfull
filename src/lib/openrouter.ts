@@ -57,14 +57,12 @@ export class OpenRouterAPI {
     } = {}
   ): Promise<OpenRouterResponse> {
     try {
+      console.log('OpenRouter API - Making request to:', `${this.baseURL}/chat/completions`);
+      console.log('OpenRouter API - Model:', model.name);
+
       const response = await fetch(`${this.baseURL}/chat/completions`, {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${this.apiKey}`,
-          'Content-Type': 'application/json',
-          'HTTP-Referer': window.location.origin,
-          'X-Title': 'Roleplay Chat App'
-        },
+        headers: this.getHeaders(),
         body: JSON.stringify({
           model: model.name,
           messages: messages,
@@ -77,12 +75,25 @@ export class OpenRouterAPI {
         })
       });
 
+      console.log('OpenRouter API - Response status:', response.status);
+
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(`OpenRouter API error: ${response.status} - ${errorData.error?.message || 'Unknown error'}`);
+        const errorText = await response.text();
+        console.error('OpenRouter API - Error response:', errorText);
+
+        let errorData;
+        try {
+          errorData = JSON.parse(errorText);
+        } catch {
+          errorData = { error: { message: errorText } };
+        }
+
+        throw new Error(`OpenRouter API error: ${response.status} - ${errorData.error?.message || errorText || 'Unknown error'}`);
       }
 
-      return await response.json();
+      const result = await response.json();
+      console.log('OpenRouter API - Success response received');
+      return result;
     } catch (error) {
       console.error('OpenRouter API error:', error);
       throw error;
