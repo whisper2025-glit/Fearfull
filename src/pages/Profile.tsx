@@ -210,14 +210,40 @@ const Profile = () => {
 
       if (error) {
         console.error('Error updating profile:', error);
-        toast.error('Failed to save profile');
+        console.error('Error details:', {
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          code: error.code
+        });
+
+        // Provide more specific error messages
+        if (error.code === '23505' && error.message?.includes('username')) {
+          toast.error('Username already exists. Please try a different one.');
+        } else if (error.message?.includes('username')) {
+          toast.error('Username error: ' + error.message);
+        } else if (error.message?.includes('authentication') || error.message?.includes('unauthorized')) {
+          toast.error('Authentication error. Please try logging out and back in.');
+        } else {
+          toast.error('Failed to save profile: ' + (error.message || 'Unknown error'));
+        }
       } else {
         toast.success('Profile updated successfully');
         setEditModalOpen(false);
       }
     } catch (error) {
       console.error('Error updating profile:', error);
-      toast.error('Failed to save profile');
+      console.error('Error details:', error);
+
+      if (error instanceof Error) {
+        if (error.message?.includes('authentication') || error.message?.includes('unauthorized')) {
+          toast.error('Authentication error. Please try logging out and back in.');
+        } else {
+          toast.error('Failed to save profile: ' + error.message);
+        }
+      } else {
+        toast.error('Failed to save profile: Unknown error');
+      }
     } finally {
       setIsSaving(false);
     }
