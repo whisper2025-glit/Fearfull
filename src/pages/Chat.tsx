@@ -73,8 +73,7 @@ const Chat = () => {
 
       try {
         // Load character data from Supabase
-        const authSupabase = getAuthenticatedSupabase();
-        const { data: characterData, error: characterError } = await authSupabase
+        const { data: characterData, error: characterError } = await supabase
           .from('characters')
           .select('*, users!characters_owner_id_fkey(full_name)')
           .eq('id', characterId)
