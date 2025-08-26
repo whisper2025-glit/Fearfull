@@ -221,7 +221,7 @@ const Chats = () => {
                         {/* Character Info */}
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1">
-                            <h3 className="font-semibold text-white truncate text-base">
+                            <h3 className="font-semibold text-white truncate text-sm">
                               {character.name}
                             </h3>
                             {character.isVip && (
@@ -231,12 +231,12 @@ const Chats = () => {
                             )}
                           </div>
                           
-                          <div className="flex items-center gap-2 text-gray-400 text-xs mb-2">
+                          <div className="flex items-center gap-2 text-gray-400 text-xs mb-1">
                             <User className="h-3 w-3" />
                             <span>by {character.author}</span>
                           </div>
-                          
-                          <p className="text-gray-300 text-sm truncate mb-2">
+
+                          <p className="text-gray-300 text-xs truncate mb-1">
                             "{character.lastMessage}"
                           </p>
                           
