@@ -115,6 +115,7 @@ export function PersonaModal({ open, onOpenChange, onPersonaSelect, currentPerso
     if (!user || !name.trim()) return;
 
     try {
+      const authenticatedClient = await getAuthenticatedClient();
       const personaData: Omit<PersonaData, 'id'> = {
         name: name.trim(),
         gender: selectedGender,
@@ -124,11 +125,11 @@ export function PersonaModal({ open, onOpenChange, onPersonaSelect, currentPerso
 
       if (editingPersona) {
         // Update existing persona
-        await updatePersona(editingPersona.id, personaData);
+        await updatePersona(editingPersona.id, personaData, authenticatedClient);
         toast.success('Persona updated successfully!');
       } else {
         // Create new persona
-        await createPersona(user.id, personaData);
+        await createPersona(user.id, personaData, authenticatedClient);
         toast.success('Persona created successfully!');
       }
 
