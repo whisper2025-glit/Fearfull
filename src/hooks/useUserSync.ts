@@ -60,7 +60,7 @@ export const useUserSync = () => {
         });
 
         // Sync user with Supabase using the authenticated client
-        const result = await createOrUpdateUser(user);
+        const result = await createOrUpdateUser(user, supabaseWithAuth);
         console.log('✅ User synced with Supabase successfully:', result);
         toast.success(`Welcome, ${result.username || result.full_name || 'User'}!`);
       } catch (error) {
