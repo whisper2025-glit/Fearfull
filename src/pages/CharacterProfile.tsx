@@ -30,6 +30,8 @@ export default function CharacterProfile() {
   const [isLoading, setIsLoading] = useState(true);
   const [scrollY, setScrollY] = useState(0);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [activeTab, setActiveTab] = useState('details');
+  const [commentCount, setCommentCount] = useState(5);
 
   useEffect(() => {
     const loadCharacter = async () => {
