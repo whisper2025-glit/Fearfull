@@ -74,6 +74,7 @@ const Chat = () => {
   const [currentCharacter, setCurrentCharacter] = useState<Character | null>(null);
   const [isLoadingCharacter, setIsLoadingCharacter] = useState(true);
   const [currentConversationId, setCurrentConversationId] = useState<string | null>(conversationId);
+  const [currentChatSettings, setCurrentChatSettings] = useState<ChatSettings | null>(null);
 
   const { user } = useUser();
 
