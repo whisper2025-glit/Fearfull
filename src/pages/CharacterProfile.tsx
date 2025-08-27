@@ -125,7 +125,7 @@ export default function CharacterProfile() {
 
       {/* Scrollable Header - appears on scroll */}
       <div
-        className="absolute top-0 left-0 right-0 z-50 transition-all duration-300"
+        className={`absolute top-0 left-0 right-0 z-50 transition-all duration-300 ${shouldTabsBeSticky ? 'opacity-0 pointer-events-none' : ''}`}
         style={{
           backgroundColor: `rgba(17, 18, 22, ${headerOpacity})`,
           backdropFilter: headerOpacity > 0.5 ? 'blur(10px)' : 'none',
@@ -329,7 +329,7 @@ export default function CharacterProfile() {
             <TabsContent value="details" className={`space-y-4 ${shouldTabsBeSticky ? 'mt-0 pt-4' : 'mt-4'}`}>
               {/* Tags */}
               <div className="flex flex-wrap gap-2">
-                {['��', '📷', '🎵', 'AnyPOV', 'Fantasy', 'Furry', 'Monster', 'Mystery', 'Non-Human', 'OC', 'Sci-Fi'].map((tag, index) => (
+                {['🎭', '📷', '🎵', 'AnyPOV', 'Fantasy', 'Furry', 'Monster', 'Mystery', 'Non-Human', 'OC', 'Sci-Fi'].map((tag, index) => (
                   <Badge 
                     key={tag} 
                     variant="secondary" 
