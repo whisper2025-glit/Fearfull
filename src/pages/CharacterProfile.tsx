@@ -583,7 +583,10 @@ export default function CharacterProfile() {
                 {/* Header */}
                 <div className="flex items-center justify-between">
                   <h3 className="text-lg font-semibold text-white">Creation Info</h3>
-                  <button className="text-pink-400 text-sm font-medium hover:text-pink-300 transition-colors flex items-center gap-1">
+                  <button
+                    className="text-pink-400 text-sm font-medium hover:text-pink-300 transition-colors flex items-center gap-1"
+                    onClick={() => navigate(`/creator/${character.owner_id}`)}
+                  >
                     View Profile
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -622,19 +625,13 @@ export default function CharacterProfile() {
                           <span className="text-sm font-medium text-white">{userStats.likesCount}</span>
                           <span className="text-xs text-white/60">Likes</span>
                         </div>
-                        <div className="flex items-center gap-1">
-                          <span className="text-sm font-medium text-white">{userStats.charactersCount}</span>
-                          <span className="text-xs text-white/60">Bots</span>
-                        </div>
                       </div>
                     </div>
                   </div>
-                  <button
-                    className="bg-gray-600/50 text-white text-sm px-4 py-2 rounded-full hover:bg-gray-600/70 transition-colors"
-                    onClick={() => navigate('/profile')}
-                  >
-                    View Profile
-                  </button>
+                  <div className="flex items-center gap-1">
+                    <span className="text-sm font-medium text-white">{userStats.charactersCount}</span>
+                    <span className="text-xs text-white/60">Bots</span>
+                  </div>
                 </div>
 
                 {/* Bio */}
