@@ -107,6 +107,10 @@ export default function CharacterProfile() {
   // Calculate tabs visibility - only show after scrolling starts (hide initially)
   const tabsOpacity = Math.min(Math.max(scrollY - 150, 0) / 200, 1);
 
+  // Calculate when tabs should become sticky header
+  const tabsStickyThreshold = 350; // Adjust this value based on when tabs should stick
+  const shouldTabsBeSticky = scrollY >= tabsStickyThreshold;
+
   return (
     <div className="fixed inset-0 bg-[#111216] text-white overflow-hidden">
       {/* Character Image Background - Fixed */}
