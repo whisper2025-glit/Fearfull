@@ -13,8 +13,23 @@ import {
   Trash2,
   ChevronDown,
   Flame,
-  MessageCircle
+  MessageCircle,
+  ChevronUp
 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+  SheetClose
+} from "@/components/ui/sheet";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 
@@ -32,6 +47,17 @@ const Search = () => {
   const [sortBy, setSortBy] = useState('Recommend');
   const [filterTags, setFilterTags] = useState('All Tags');
   const [filterGender, setFilterGender] = useState('Gender All');
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [isTagsSheetOpen, setIsTagsSheetOpen] = useState(false);
+
+  const sortOptions = ['Recommend', 'Popular', 'Latest'];
+  const genderOptions = ['Gender All', 'Male', 'Female', 'Non-binary', 'Other'];
+  const availableTags = [
+    'NSFW', 'Romance', 'Adventure', 'Fantasy', 'Sci-Fi', 'Horror', 'Comedy',
+    'Drama', 'Action', 'Mystery', 'Thriller', 'Historical', 'Contemporary',
+    'Supernatural', 'Slice of Life', 'Educational', 'Family Friendly',
+    'Dark', 'Wholesome', 'Mature', 'Teen', 'Adult'
+  ];
 
   const popularSearches = [
     'Submissive', 'Masochism', 'Vore', 'Bondage', 'Futa', 'Bisexual', 
@@ -434,27 +460,122 @@ const Search = () => {
                   <>
                     {/* Filter Controls */}
                     <div className="flex items-center gap-2 flex-wrap">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="text-xs border-green-500 text-green-400 hover:bg-green-500/10"
-                      >
-                        {sortBy} <ChevronDown className="ml-1 h-3 w-3" />
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="text-xs border-green-500 text-green-400 hover:bg-green-500/10"
-                      >
-                        {filterTags}
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="text-xs"
-                      >
-                        {filterGender} <ChevronDown className="ml-1 h-3 w-3" />
-                      </Button>
+                      {/* Sort Dropdown */}
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="text-xs border-green-500 text-green-400 hover:bg-green-500/10"
+                          >
+                            {sortBy} <ChevronDown className="ml-1 h-3 w-3" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className="bg-background border-border">
+                          {sortOptions.map((option) => (
+                            <DropdownMenuItem
+                              key={option}
+                              onClick={() => setSortBy(option)}
+                              className={`text-xs cursor-pointer ${
+                                sortBy === option ? 'bg-green-500/20 text-green-400' : 'text-foreground'
+                              }`}
+                            >
+                              {option}
+                            </DropdownMenuItem>
+                          ))}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+
+                      {/* Tags Sheet */}
+                      <Sheet open={isTagsSheetOpen} onOpenChange={setIsTagsSheetOpen}>
+                        <SheetTrigger asChild>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="text-xs border-green-500 text-green-400 hover:bg-green-500/10"
+                          >
+                            {selectedTags.length > 0 ? `${selectedTags.length} Tags` : filterTags}
+                          </Button>
+                        </SheetTrigger>
+                        <SheetContent side="bottom" className="h-[80vh]">
+                          <SheetHeader>
+                            <SheetTitle className="text-sm">Select Tags</SheetTitle>
+                          </SheetHeader>
+                          <div className="mt-4 space-y-4">
+                            <div className="flex flex-wrap gap-2">
+                              {availableTags.map((tag) => (
+                                <Badge
+                                  key={tag}
+                                  variant={selectedTags.includes(tag) ? "default" : "secondary"}
+                                  className={`cursor-pointer text-xs ${
+                                    selectedTags.includes(tag)
+                                      ? 'bg-primary text-primary-foreground'
+                                      : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                                  }`}
+                                  onClick={() => {
+                                    setSelectedTags(prev =>
+                                      prev.includes(tag)
+                                        ? prev.filter(t => t !== tag)
+                                        : [...prev, tag]
+                                    );
+                                  }}
+                                >
+                                  {tag}
+                                </Badge>
+                              ))}
+                            </div>
+                            <div className="flex gap-2 pt-4">
+                              <Button
+                                size="sm"
+                                onClick={() => {
+                                  setFilterTags(selectedTags.length > 0 ? `${selectedTags.length} Tags` : 'All Tags');
+                                  setIsTagsSheetOpen(false);
+                                }}
+                                className="text-xs"
+                              >
+                                Apply ({selectedTags.length})
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => {
+                                  setSelectedTags([]);
+                                  setFilterTags('All Tags');
+                                }}
+                                className="text-xs"
+                              >
+                                Clear All
+                              </Button>
+                            </div>
+                          </div>
+                        </SheetContent>
+                      </Sheet>
+
+                      {/* Gender Dropdown */}
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="text-xs"
+                          >
+                            {filterGender} <ChevronDown className="ml-1 h-3 w-3" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className="bg-background border-border">
+                          {genderOptions.map((option) => (
+                            <DropdownMenuItem
+                              key={option}
+                              onClick={() => setFilterGender(option)}
+                              className={`text-xs cursor-pointer ${
+                                filterGender === option ? 'bg-accent text-accent-foreground' : 'text-foreground'
+                              }`}
+                            >
+                              {option}
+                            </DropdownMenuItem>
+                          ))}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </div>
 
                     {/* GIF Toggle */}
