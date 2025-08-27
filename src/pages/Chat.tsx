@@ -224,6 +224,11 @@ const Chat = () => {
     };
 
     const testConnection = async () => {
+      // 🔍 DEBUG: Track who's calling testConnection
+      console.log('🚨 testConnection() called!', {
+        stack: new Error().stack?.split('\n').slice(1, 5).join('\n')
+      });
+
       try {
         const result = await openRouterAPI.testConnection();
         if (result.success) {
