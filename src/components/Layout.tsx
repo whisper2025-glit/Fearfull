@@ -13,6 +13,8 @@ interface LayoutProps {
 }
 
 export function Layout({ children, headerBottom, mainOverflow = 'auto', headerPosition = 'sticky' }: LayoutProps) {
+  const navigate = useNavigate();
+
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full overflow-x-hidden">
