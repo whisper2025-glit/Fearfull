@@ -2,7 +2,7 @@ import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Share2, MessageCircle, Heart, User, ChevronLeft } from "lucide-react";
+import { Share2, MessageCircle, Heart, User, ChevronLeft, ChevronDown } from "lucide-react";
 import { useState } from "react";
 import { CommentsList } from "./CommentsList";
 import { toast } from "sonner";
@@ -11,6 +11,7 @@ const HERO_IMAGE = "https://cdn.builder.io/api/v1/image/assets%2F420adf53974e411
 
 export function BotProfileSheet() {
   const [scrollY, setScrollY] = useState(0);
+  const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
 
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     setScrollY(e.currentTarget.scrollTop);
@@ -98,7 +99,7 @@ export function BotProfileSheet() {
             className="relative z-10 h-full overflow-y-auto"
             onScroll={handleScroll}
           >
-            <div className="h-[65vh]"></div>
+            <div className="h-[40vh]"></div>
             
             {/* Character Info Section */}
             <div className="bg-[#111216] p-4 space-y-4">
@@ -126,20 +127,14 @@ export function BotProfileSheet() {
               {/* Tabs */}
               <Tabs defaultValue="details" className="w-full">
                 <TabsList className="bg-transparent p-0 h-auto w-full justify-start">
-                  <TabsTrigger 
-                    value="details" 
+                  <TabsTrigger
+                    value="details"
                     className="text-white data-[state=active]:text-pink-400 data-[state=active]:bg-transparent bg-transparent border-b-2 border-transparent data-[state=active]:border-pink-400 rounded-none px-0 mr-6"
                   >
                     Details
                   </TabsTrigger>
-                  <TabsTrigger 
-                    value="gallery" 
-                    className="text-white/60 data-[state=active]:text-pink-400 data-[state=active]:bg-transparent bg-transparent border-b-2 border-transparent data-[state=active]:border-pink-400 rounded-none px-0 mr-6"
-                  >
-                    Gallery (2)
-                  </TabsTrigger>
-                  <TabsTrigger 
-                    value="comments" 
+                  <TabsTrigger
+                    value="comments"
                     className="text-white/60 data-[state=active]:text-pink-400 data-[state=active]:bg-transparent bg-transparent border-b-2 border-transparent data-[state=active]:border-pink-400 rounded-none px-0"
                   >
                     Comments (0)
@@ -149,48 +144,43 @@ export function BotProfileSheet() {
                 <TabsContent value="details" className="mt-4 space-y-4">
                   {/* Tags */}
                   <div className="flex flex-wrap gap-2">
-                    {['🎭', '📷', '🎵', 'AnyPOV', 'Fantasy', 'Furry', 'Monster', 'Mystery', 'Non-Human', 'OC', 'Sci-Fi'].map((tag, index) => (
-                      <Badge 
-                        key={tag} 
-                        variant="secondary" 
-                        className={`${index < 3 ? 'bg-pink-500/20 text-pink-300 border-pink-500/30' : 'bg-white/10 text-white/70 border-white/20'} text-xs px-2 py-1 rounded-full`}
+                    {['AnyPOV', 'Fantasy', 'Sci-Fi'].map((tag, index) => (
+                      <Badge
+                        key={tag}
+                        variant="secondary"
+                        className={`${index === 0 ? 'bg-pink-500/20 text-pink-300 border-pink-500/30' : 'bg-white/10 text-white/70 border-white/20'} text-xs px-2 py-1 rounded-full`}
                       >
                         {tag}
                       </Badge>
                     ))}
                   </div>
 
-                  {/* Audio */}
-                  <div className="flex items-center gap-3 py-2">
-                    <div className="w-8 h-8 bg-pink-500 rounded-full flex items-center justify-center">
-                      <div className="w-0 h-0 border-l-4 border-l-white border-y-2 border-y-transparent ml-1"></div>
-                    </div>
-                    <div className="flex-1">
-                      <div className="text-sm font-medium text-white">Final Fantasy VII - Woozy Spec...</div>
-                      <div className="text-xs text-white/60 flex items-center gap-2">
-                        <span className="w-16 h-1 bg-gradient-to-r from-pink-500 to-transparent rounded"></span>
-                        <span>SOUNDCLOUD</span>
-                      </div>
-                    </div>
-                  </div>
-
                   {/* Description */}
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     <h3 className="text-white font-semibold">[Cute, Alien, Oblivious]</h3>
-                    <p className="text-white/80 text-sm leading-relaxed">
-                      While investigating strange lights in the woods, you come across a cute alien woman who is fascinated by Earth but knows very little about it.
-                    </p>
+                    <div className="space-y-2">
+                      <div className={`text-white/80 text-sm leading-relaxed transition-all duration-300 ${
+                        isDescriptionExpanded ? 'max-h-none' : 'max-h-16 overflow-hidden'
+                      }`}>
+                        <p className="text-white/80 text-sm leading-relaxed">
+                          While investigating strange lights in the woods, you come across a cute alien woman who is fascinated by Earth but knows very little about it. She has bright, curious eyes and an innocent demeanor that makes her endearing to humans. Despite her advanced alien technology and abilities, she approaches every earthly experience with wonder and excitement, often asking many questions about the simplest things.
+                        </p>
+                      </div>
+
+                      {/* View More/Less Button */}
+                      <button
+                        onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
+                        className="text-pink-400 text-sm font-medium flex items-center gap-1 hover:text-pink-300 transition-colors"
+                      >
+                        {isDescriptionExpanded ? 'View Less' : 'View More'}
+                        <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isDescriptionExpanded ? 'rotate-180' : ''}`} />
+                      </button>
+                    </div>
                   </div>
                 </TabsContent>
-                
-                <TabsContent value="gallery" className="mt-4">
-                  <div className="text-center text-white/60 py-8">
-                    Gallery content would go here
-                  </div>
-                </TabsContent>
-                
+
                 <TabsContent value="comments" className="mt-4">
-                  <div className="bg-[#1a1a1a] rounded-lg border border-white/10 h-[500px]">
+                  <div className="bg-[#1a1a1a] rounded-lg border border-white/10 max-h-[300px]">
                     <CommentsList
                       onAddComment={async (content) => {
                         console.log('Adding comment:', content);

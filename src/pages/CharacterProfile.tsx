@@ -396,7 +396,7 @@ export default function CharacterProfile() {
           </div>
 
           {/* Content Section - Conditional based on activeTab */}
-          <div className={`space-y-4 ${shouldTabsBeSticky ? 'mt-0 pt-4' : 'mt-4'}`}>
+          <div className={`${activeTab === 'comments' ? '' : 'space-y-4'} ${shouldTabsBeSticky ? 'mt-0 pt-4' : 'mt-4'}`}>
             {activeTab === 'details' && (
               <>
               <div
@@ -555,7 +555,7 @@ export default function CharacterProfile() {
             )}
 
             {activeTab === 'comments' && (
-              <div className="bg-[#1a1a1a] rounded-lg border border-white/10" style={{ height: 'calc(100vh - 200px)' }}>
+              <div className="w-full h-full -mx-2 -my-4" style={{ minHeight: 'calc(100vh - 120px)' }}>
                 <CommentsList
                   onAddComment={async (content) => {
                     console.log('Adding comment:', content);
@@ -577,8 +577,8 @@ export default function CharacterProfile() {
         </div>
 
 
-        {/* Extra space to allow scrolling content to reach top navigation */}
-        <div className="h-[100vh] bg-[#111216]"></div>
+        {/* Small padding at bottom */}
+        <div className="h-20 bg-[#111216]"></div>
       </div>
     </div>
   );
