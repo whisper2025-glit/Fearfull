@@ -4,6 +4,8 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Share2, MessageCircle, Heart, User, ChevronLeft } from "lucide-react";
 import { useState } from "react";
+import { CommentsList } from "./CommentsList";
+import { toast } from "sonner";
 
 const HERO_IMAGE = "https://cdn.builder.io/api/v1/image/assets%2F420adf53974e411387df983f01823d73%2F4635cc3157e045f592ade58eeea4af3b?format=webp&width=800";
 
@@ -188,8 +190,22 @@ export function BotProfileSheet() {
                 </TabsContent>
                 
                 <TabsContent value="comments" className="mt-4">
-                  <div className="text-center text-white/60 py-8">
-                    No comments yet
+                  <div className="bg-[#1a1a1a] rounded-lg border border-white/10 h-[500px]">
+                    <CommentsList
+                      onAddComment={async (content) => {
+                        console.log('Adding comment:', content);
+                        // TODO: Implement comment submission to Supabase
+                        toast.success('Comment added!');
+                      }}
+                      onLikeComment={(commentId) => {
+                        console.log('Liking comment:', commentId);
+                        // TODO: Implement comment liking
+                      }}
+                      onReplyToComment={(commentId) => {
+                        console.log('Replying to comment:', commentId);
+                        // TODO: Implement comment replies
+                      }}
+                    />
                   </div>
                 </TabsContent>
               </Tabs>

@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Share2, MessageCircle, Heart, ChevronLeft } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
+import { CommentsList } from "@/components/CommentsList";
 
 interface Character {
   id: string;
@@ -30,6 +31,8 @@ export default function CharacterProfile() {
   const [isLoading, setIsLoading] = useState(true);
   const [scrollY, setScrollY] = useState(0);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [activeTab, setActiveTab] = useState('details');
+  const [commentCount, setCommentCount] = useState(5);
 
   useEffect(() => {
     const loadCharacter = async () => {
@@ -281,11 +284,21 @@ export default function CharacterProfile() {
         {/* Sticky Tabs */}
         <div className="px-4 py-3 bg-[#111216]">
           <div className="flex gap-6">
-            <button className="text-sm font-medium text-pink-400 border-b-2 border-pink-400 pb-2">
+            <button
+              onClick={() => setActiveTab('details')}
+              className={`text-sm font-medium pb-2 border-b-2 transition-colors ${
+                activeTab === 'details' ? 'text-pink-400 border-pink-400' : 'text-white/60 border-transparent'
+              }`}
+            >
               Details
             </button>
-            <button className="text-sm font-medium text-white/60 pb-2">
-              Comments (0)
+            <button
+              onClick={() => setActiveTab('comments')}
+              className={`text-sm font-medium pb-2 border-b-2 transition-colors ${
+                activeTab === 'comments' ? 'text-pink-400 border-pink-400' : 'text-white/60 border-transparent'
+              }`}
+            >
+              Comments ({commentCount})
             </button>
           </div>
         </div>
@@ -363,18 +376,29 @@ export default function CharacterProfile() {
             }}
           >
             <div className="flex gap-6 border-b border-white/10 pb-3">
-              <button className="text-sm font-medium text-pink-400 border-b-2 border-pink-400 pb-2">
+              <button
+                onClick={() => setActiveTab('details')}
+                className={`text-sm font-medium pb-2 border-b-2 transition-colors ${
+                  activeTab === 'details' ? 'text-pink-400 border-pink-400' : 'text-white/60 border-transparent'
+                }`}
+              >
                 Details
               </button>
-              <button className="text-sm font-medium text-white/60 pb-2">
-                Comments (0)
+              <button
+                onClick={() => setActiveTab('comments')}
+                className={`text-sm font-medium pb-2 border-b-2 transition-colors ${
+                  activeTab === 'comments' ? 'text-pink-400 border-pink-400' : 'text-white/60 border-transparent'
+                }`}
+              >
+                Comments ({commentCount})
               </button>
             </div>
           </div>
 
-          {/* Content Section - Always visible */}
+          {/* Content Section - Conditional based on activeTab */}
           <div className={`space-y-4 ${shouldTabsBeSticky ? 'mt-0 pt-4' : 'mt-4'}`}>
-              {/* Introduction Block - Hidden initially, shown when scrolled */}
+            {activeTab === 'details' && (
+              <>
               <div
                 className="bg-[#1a1a1a] rounded-lg p-4 space-y-4 border border-white/10 transition-all duration-300"
                 style={{
@@ -475,63 +499,83 @@ export default function CharacterProfile() {
                   </button>
                 </div>
               </div>
-          </div>
 
-          {/* Comments Section - Hidden by default, can be shown later */}
-          <div className="hidden">
-            <div className="text-center text-white/60 py-8">
-              No comments yet
-            </div>
-          </div>
-        </div>
-
-        {/* Extended bottom content area */}
-        <div className="bg-[#111216] px-4 pb-8 space-y-6">
-
-          {/* Creation Info Block */}
-          <div className="bg-[#1a1a1a] rounded-lg p-4 space-y-4 border border-white/10">
-            {/* Header */}
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-white">Creation Info</h3>
-              <button className="text-pink-400 text-sm font-medium hover:text-pink-300 transition-colors flex items-center gap-1">
-                View Profile
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </button>
-            </div>
-
-            {/* Creator Profile */}
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-pink-500 rounded-full flex items-center justify-center">
-                  <span className="text-white font-bold text-lg">
-                    {character.users?.full_name?.charAt(0) || 'U'}
-                  </span>
+              {/* Creation Info Block */}
+              <div className="bg-[#1a1a1a] rounded-lg p-4 space-y-4 border border-white/10 mt-4">
+                {/* Header */}
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-semibold text-white">Creation Info</h3>
+                  <button className="text-pink-400 text-sm font-medium hover:text-pink-300 transition-colors flex items-center gap-1">
+                    View Profile
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </button>
                 </div>
-                <div>
-                  <h4 className="text-base font-semibold text-white">
-                    {character.users?.full_name || 'Unknown Creator'}
-                  </h4>
+
+                {/* Creator Profile */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-pink-500 rounded-full flex items-center justify-center">
+                      <span className="text-white font-bold text-lg">
+                        {character.users?.full_name?.charAt(0) || 'U'}
+                      </span>
+                    </div>
+                    <div>
+                      <h4 className="text-base font-semibold text-white">
+                        {character.users?.full_name || 'Unknown Creator'}
+                      </h4>
+                      {/* Creator Stats */}
+                      <div className="flex items-center gap-4 mt-1">
+                        <div className="flex items-center gap-1">
+                          <span className="text-sm font-medium text-white">324</span>
+                          <span className="text-xs text-white/60">Followers</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Heart className="h-3 w-3 text-pink-400" />
+                          <span className="text-sm font-medium text-white">1.2K</span>
+                          <span className="text-xs text-white/60">Likes</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <button className="bg-gray-600/50 text-white text-sm px-4 py-2 rounded-full hover:bg-gray-600/70 transition-colors">
+                    Following
+                  </button>
+                </div>
+
+                {/* Bio */}
+                <div className="text-sm text-white/80 leading-relaxed">
+                  <p>
+                    ----&gt; https://linktr.ee/BPAtis &lt;----- Formerly Burrito Princess. Hello nerds💖 One and only bot creator of ...
+                  </p>
                 </div>
               </div>
-              <button className="bg-gray-600/50 text-white text-sm px-4 py-2 rounded-full hover:bg-gray-600/70 transition-colors">
-                Following
-              </button>
-            </div>
+              </>
+            )}
 
-
-
-            {/* Bio */}
-            <div className="text-sm text-white/80 leading-relaxed">
-              <p>
-                ----&gt; https://linktr.ee/BPAtis &lt;----- Formerly Burrito Princess. Hello nerds💖 One and only bot creator of ...
-              </p>
-            </div>
-
-
+            {activeTab === 'comments' && (
+              <div className="bg-[#1a1a1a] rounded-lg border border-white/10" style={{ height: 'calc(100vh - 200px)' }}>
+                <CommentsList
+                  onAddComment={async (content) => {
+                    console.log('Adding comment:', content);
+                    // TODO: Implement comment submission to Supabase
+                    toast.success('Comment added!');
+                  }}
+                  onLikeComment={(commentId) => {
+                    console.log('Liking comment:', commentId);
+                    // TODO: Implement comment liking
+                  }}
+                  onReplyToComment={(commentId) => {
+                    console.log('Replying to comment:', commentId);
+                    // TODO: Implement comment replies
+                  }}
+                />
+              </div>
+            )}
           </div>
         </div>
+
 
         {/* Extra space to allow scrolling content to reach top navigation */}
         <div className="h-[100vh] bg-[#111216]"></div>
