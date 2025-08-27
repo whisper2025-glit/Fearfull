@@ -16,26 +16,29 @@ export function BotProfileSheet() {
         </Button>
       </DrawerTrigger>
       <DrawerContent className="bg-[#111216] text-white h-screen border-0">
-        <div className="relative h-full overflow-y-auto">
-          {/* Character Image Background */}
-          <div className="relative w-full h-screen">
+        <div className="relative h-full overflow-hidden">
+          {/* Character Image Background - Fixed */}
+          <div className="fixed inset-0 z-0">
             <img src={HERO_IMAGE} alt="Character" className="w-full h-full object-cover" />
-            
-            {/* Gradient overlay */}
             <div className="absolute inset-0 bg-gradient-to-t from-[#111216] via-[#111216]/60 to-transparent" />
+          </div>
+          
+          {/* Top Navigation */}
+          <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-20">
+            <Button variant="ghost" size="icon" className="h-10 w-10 text-white">
+              <ChevronLeft className="h-5 w-5" />
+            </Button>
+            <Button variant="ghost" size="icon" className="h-10 w-10 text-white">
+              <Share2 className="h-5 w-5" />
+            </Button>
+          </div>
+
+          {/* Scrollable Content that starts lower to show character info at bottom initially */}
+          <div className="relative z-10 h-full overflow-y-auto">
+            <div className="h-[65vh]"></div>
             
-            {/* Top Navigation */}
-            <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-10">
-              <Button variant="ghost" size="icon" className="h-10 w-10 text-white">
-                <ChevronLeft className="h-5 w-5" />
-              </Button>
-              <Button variant="ghost" size="icon" className="h-10 w-10 text-white">
-                <Share2 className="h-5 w-5" />
-              </Button>
-            </div>
-            
-            {/* Character Info Overlay */}
-            <div className="absolute bottom-0 left-0 right-0 p-4 space-y-4">
+            {/* Character Info Section */}
+            <div className="bg-[#111216] p-4 space-y-4">
               <div>
                 <h1 className="text-2xl font-bold text-white">Cata | Curious Innocent Alien</h1>
                 <div className="flex items-center gap-4 text-sm text-white/80 mt-1">
@@ -56,83 +59,80 @@ export function BotProfileSheet() {
                   </Button>
                 </div>
               </div>
-            </div>
-          </div>
 
-          {/* Content Section */}
-          <div className="bg-[#111216] p-4 space-y-4">
-            {/* Tabs */}
-            <Tabs defaultValue="details" className="w-full">
-              <TabsList className="bg-transparent p-0 h-auto w-full justify-start">
-                <TabsTrigger 
-                  value="details" 
-                  className="text-white data-[state=active]:text-pink-400 data-[state=active]:bg-transparent bg-transparent border-b-2 border-transparent data-[state=active]:border-pink-400 rounded-none px-0 mr-6"
-                >
-                  Details
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="gallery" 
-                  className="text-white/60 data-[state=active]:text-pink-400 data-[state=active]:bg-transparent bg-transparent border-b-2 border-transparent data-[state=active]:border-pink-400 rounded-none px-0 mr-6"
-                >
-                  Gallery (2)
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="comments" 
-                  className="text-white/60 data-[state=active]:text-pink-400 data-[state=active]:bg-transparent bg-transparent border-b-2 border-transparent data-[state=active]:border-pink-400 rounded-none px-0"
-                >
-                  Comments (0)
-                </TabsTrigger>
-              </TabsList>
-              
-              <TabsContent value="details" className="mt-4 space-y-4">
-                {/* Tags */}
-                <div className="flex flex-wrap gap-2">
-                  {['🎭', '📷', '🎵', 'AnyPOV', 'Fantasy', 'Furry', 'Monster', 'Mystery', 'Non-Human', 'OC', 'Sci-Fi'].map((tag, index) => (
-                    <Badge 
-                      key={tag} 
-                      variant="secondary" 
-                      className={`${index < 3 ? 'bg-pink-500/20 text-pink-300 border-pink-500/30' : 'bg-white/10 text-white/70 border-white/20'} text-xs px-2 py-1 rounded-full`}
-                    >
-                      {tag}
-                    </Badge>
-                  ))}
-                </div>
-
-                {/* Audio */}
-                <div className="flex items-center gap-3 py-2">
-                  <div className="w-8 h-8 bg-pink-500 rounded-full flex items-center justify-center">
-                    <div className="w-0 h-0 border-l-4 border-l-white border-y-2 border-y-transparent ml-1"></div>
+              {/* Tabs */}
+              <Tabs defaultValue="details" className="w-full">
+                <TabsList className="bg-transparent p-0 h-auto w-full justify-start">
+                  <TabsTrigger 
+                    value="details" 
+                    className="text-white data-[state=active]:text-pink-400 data-[state=active]:bg-transparent bg-transparent border-b-2 border-transparent data-[state=active]:border-pink-400 rounded-none px-0 mr-6"
+                  >
+                    Details
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="gallery" 
+                    className="text-white/60 data-[state=active]:text-pink-400 data-[state=active]:bg-transparent bg-transparent border-b-2 border-transparent data-[state=active]:border-pink-400 rounded-none px-0 mr-6"
+                  >
+                    Gallery (2)
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="comments" 
+                    className="text-white/60 data-[state=active]:text-pink-400 data-[state=active]:bg-transparent bg-transparent border-b-2 border-transparent data-[state=active]:border-pink-400 rounded-none px-0"
+                  >
+                    Comments (0)
+                  </TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="details" className="mt-4 space-y-4">
+                  {/* Tags */}
+                  <div className="flex flex-wrap gap-2">
+                    {['🎭', '📷', '🎵', 'AnyPOV', 'Fantasy', 'Furry', 'Monster', 'Mystery', 'Non-Human', 'OC', 'Sci-Fi'].map((tag, index) => (
+                      <Badge 
+                        key={tag} 
+                        variant="secondary" 
+                        className={`${index < 3 ? 'bg-pink-500/20 text-pink-300 border-pink-500/30' : 'bg-white/10 text-white/70 border-white/20'} text-xs px-2 py-1 rounded-full`}
+                      >
+                        {tag}
+                      </Badge>
+                    ))}
                   </div>
-                  <div className="flex-1">
-                    <div className="text-sm font-medium text-white">Final Fantasy VII - Woozy Spec...</div>
-                    <div className="text-xs text-white/60 flex items-center gap-2">
-                      <span className="w-16 h-1 bg-gradient-to-r from-pink-500 to-transparent rounded"></span>
-                      <span>SOUNDCLOUD</span>
+
+                  {/* Audio */}
+                  <div className="flex items-center gap-3 py-2">
+                    <div className="w-8 h-8 bg-pink-500 rounded-full flex items-center justify-center">
+                      <div className="w-0 h-0 border-l-4 border-l-white border-y-2 border-y-transparent ml-1"></div>
+                    </div>
+                    <div className="flex-1">
+                      <div className="text-sm font-medium text-white">Final Fantasy VII - Woozy Spec...</div>
+                      <div className="text-xs text-white/60 flex items-center gap-2">
+                        <span className="w-16 h-1 bg-gradient-to-r from-pink-500 to-transparent rounded"></span>
+                        <span>SOUNDCLOUD</span>
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                {/* Description */}
-                <div className="space-y-2">
-                  <h3 className="text-white font-semibold">[Cute, Alien, Oblivious]</h3>
-                  <p className="text-white/80 text-sm leading-relaxed">
-                    While investigating strange lights in the woods, you come across a cute alien woman who is fascinated by Earth but knows very little about it.
-                  </p>
-                </div>
-              </TabsContent>
-              
-              <TabsContent value="gallery" className="mt-4">
-                <div className="text-center text-white/60 py-8">
-                  Gallery content would go here
-                </div>
-              </TabsContent>
-              
-              <TabsContent value="comments" className="mt-4">
-                <div className="text-center text-white/60 py-8">
-                  No comments yet
-                </div>
-              </TabsContent>
-            </Tabs>
+                  {/* Description */}
+                  <div className="space-y-2">
+                    <h3 className="text-white font-semibold">[Cute, Alien, Oblivious]</h3>
+                    <p className="text-white/80 text-sm leading-relaxed">
+                      While investigating strange lights in the woods, you come across a cute alien woman who is fascinated by Earth but knows very little about it.
+                    </p>
+                  </div>
+                </TabsContent>
+                
+                <TabsContent value="gallery" className="mt-4">
+                  <div className="text-center text-white/60 py-8">
+                    Gallery content would go here
+                  </div>
+                </TabsContent>
+                
+                <TabsContent value="comments" className="mt-4">
+                  <div className="text-center text-white/60 py-8">
+                    No comments yet
+                  </div>
+                </TabsContent>
+              </Tabs>
+            </div>
           </div>
         </div>
       </DrawerContent>
