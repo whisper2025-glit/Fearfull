@@ -108,7 +108,7 @@ export default function CharacterProfile() {
   const tabsOpacity = Math.min(Math.max(scrollY - 150, 0) / 200, 1);
 
   // Calculate when tabs should become sticky header
-  const tabsStickyThreshold = 350; // Adjust this value based on when tabs should stick
+  const tabsStickyThreshold = 450; // Adjust this value based on when tabs should stick
   const shouldTabsBeSticky = scrollY >= tabsStickyThreshold;
 
   return (
