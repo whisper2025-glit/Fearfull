@@ -21,13 +21,35 @@ export function BotProfileSheet() {
         <div className="relative h-full">
           {/* Scrollable Content */}
           <div className="overflow-y-auto h-full">
-            {/* Hero Image */}
-            <div className="absolute top-0 left-0 w-full h-[400px] sm:h-[450px] md:h-[500px]">
-              <img src={HERO_IMAGE} alt="Bea" className="h-full w-full object-cover" />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#111216] via-[#111216]/80 to-transparent"></div>
+            {/* Hero Image with overlayed info */}
+            <div className="relative w-full h-[460px] sm:h-[520px] md:h-[560px]">
+              <img src={HERO_IMAGE} alt="Character" className="h-full w-full object-cover" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#111216] via-[#111216]/60 to-transparent" />
+
+              <div className="absolute inset-x-0 bottom-0 px-4 pb-4 space-y-3">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-sm font-semibold truncate">Cata | Curious Innocent Alien</h2>
+                  <Button variant="outline" size="icon" className="border-white/20 text-white bg-transparent hover:bg-white/10">
+                    <Share2 className="h-4 w-4" />
+                  </Button>
+                </div>
+                <div className="flex items-center gap-4 text-xs text-white/80">
+                  <div className="flex items-center gap-1">
+                    <MessageCircle className="h-4 w-4" />
+                    <span>59.6K</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Heart className="h-4 w-4" />
+                    <span>1008 tokens</span>
+                  </div>
+                </div>
+                <div className="w-full rounded-full p-[2px] bg-gradient-to-r from-pink-500 to-cyan-400">
+                  <Button className="w-full rounded-full bg-[#00000033] hover:bg-[#00000055] text-white text-sm py-2">Start Chat</Button>
+                </div>
+              </div>
             </div>
 
-            <div className="relative z-10 pt-[300px] sm:pt-[350px] md:pt-[400px] px-4 pb-4 space-y-3">
+            <div className="relative z-10 -mt-6 px-4 pb-4 space-y-3">
               {/* Title + Actions */}
               <Card className="bg-[#171821]/80 backdrop-blur-sm border-white/10 p-3 rounded-xl">
                 <div className="flex items-center justify-between">
