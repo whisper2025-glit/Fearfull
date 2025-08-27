@@ -7,6 +7,7 @@ import { Share2, MessageCircle, Heart, ChevronLeft } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 import { CommentsList } from "@/components/CommentsList";
+import { useComments } from "@/hooks/useComments";
 
 interface Character {
   id: string;
@@ -32,7 +33,15 @@ export default function CharacterProfile() {
   const [scrollY, setScrollY] = useState(0);
   const [isExpanded, setIsExpanded] = useState(false);
   const [activeTab, setActiveTab] = useState('details');
-  const [commentCount, setCommentCount] = useState(5);
+
+  // Use the comments hook for real-time data
+  const {
+    comments,
+    isLoading: commentsLoading,
+    handleAddComment,
+    handleLikeComment,
+    handleReplyToComment
+  } = useComments(characterId || '');
 
   useEffect(() => {
     const loadCharacter = async () => {
@@ -298,7 +307,7 @@ export default function CharacterProfile() {
                 activeTab === 'comments' ? 'text-pink-400 border-pink-400' : 'text-white/60 border-transparent'
               }`}
             >
-              Comments ({commentCount})
+              Comments ({comments.length})
             </button>
           </div>
         </div>
@@ -390,7 +399,7 @@ export default function CharacterProfile() {
                   activeTab === 'comments' ? 'text-pink-400 border-pink-400' : 'text-white/60 border-transparent'
                 }`}
               >
-                Comments ({commentCount})
+                Comments ({comments.length})
               </button>
             </div>
           </div>
@@ -557,19 +566,12 @@ export default function CharacterProfile() {
             {activeTab === 'comments' && (
               <div className="w-full h-full -mx-2 -my-4" style={{ minHeight: 'calc(100vh - 120px)' }}>
                 <CommentsList
-                  onAddComment={async (content) => {
-                    console.log('Adding comment:', content);
-                    // TODO: Implement comment submission to Supabase
-                    toast.success('Comment added!');
-                  }}
-                  onLikeComment={(commentId) => {
-                    console.log('Liking comment:', commentId);
-                    // TODO: Implement comment liking
-                  }}
-                  onReplyToComment={(commentId) => {
-                    console.log('Replying to comment:', commentId);
-                    // TODO: Implement comment replies
-                  }}
+                  comments={comments}
+                  isLoading={commentsLoading}
+                  characterId={characterId}
+                  onAddComment={handleAddComment}
+                  onLikeComment={handleLikeComment}
+                  onReplyToComment={handleReplyToComment}
                 />
               </div>
             )}
