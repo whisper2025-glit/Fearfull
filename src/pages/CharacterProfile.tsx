@@ -299,12 +299,20 @@ export default function CharacterProfile() {
         <div className="h-[65vh]" style={{ minHeight: '65vh' }}></div>
         
         {/* Character Info Section */}
-        <div className={`bg-[#111216] p-4 space-y-4 transition-all duration-300 ${shouldTabsBeSticky ? 'pt-[120px]' : ''}`}>
+        <div
+          className="bg-[#111216] p-4 space-y-4 will-change-transform"
+          style={{
+            paddingTop: shouldTabsBeSticky ? `${120 + (stickyOpacity * 20)}px` : '16px',
+            transition: 'padding-top 0.4s cubic-bezier(0.23, 1, 0.32, 1)'
+          }}
+        >
           <div
-            className="transition-opacity duration-300"
+            className="will-change-transform"
             style={{
-              opacity: shouldTabsBeSticky ? 0 : 1,
-              display: shouldTabsBeSticky ? 'none' : 'block'
+              opacity: 1 - contentHideProgress,
+              transform: `translateY(${contentHideProgress * 15}px)`,
+              transition: 'transform 0.5s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.5s cubic-bezier(0.23, 1, 0.32, 1)',
+              pointerEvents: contentHideProgress > 0.7 ? 'none' : 'auto'
             }}
           >
             <h1 className="text-2xl font-bold text-white">{character.name}</h1>
