@@ -43,7 +43,6 @@ const Search = () => {
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [hasSearched, setHasSearched] = useState(false);
   const [recentSearches, setRecentSearches] = useState<string[]>(['Submissive']);
-  const [gifMode, setGifMode] = useState(false);
   const [sortBy, setSortBy] = useState('Recommend');
   const [filterTags, setFilterTags] = useState('All Tags');
   const [filterGender, setFilterGender] = useState('Gender All');
@@ -578,22 +577,6 @@ const Search = () => {
                       </DropdownMenu>
                     </div>
 
-                    {/* GIF Toggle */}
-                    <div className="flex items-center gap-2">
-                      <div
-                        className={`w-10 h-6 rounded-full p-1 cursor-pointer transition-colors ${
-                          gifMode ? 'bg-primary' : 'bg-muted'
-                        }`}
-                        onClick={() => setGifMode(!gifMode)}
-                      >
-                        <div
-                          className={`w-4 h-4 rounded-full bg-white transition-transform ${
-                            gifMode ? 'translate-x-4' : 'translate-x-0'
-                          }`}
-                        />
-                      </div>
-                      <span className="text-xs text-muted-foreground">GIF</span>
-                    </div>
 
                     {/* Character Results Grid */}
                     <div className="grid grid-cols-2 gap-4">
@@ -667,18 +650,17 @@ const Search = () => {
 
                 {activeTab === 'User' && (
                   <div className="space-y-3">
-                    <div className="text-xs text-muted-foreground">GIF</div>
                     {searchResults.map((user: any) => (
                       <div key={user.id} className="bg-card rounded-xl p-4 flex items-center justify-between">
                         <div className="flex items-center gap-3">
                           <Avatar className="w-12 h-12">
                             <AvatarImage src={user.avatar} />
-                            <AvatarFallback className="bg-gradient-to-br from-blue-400 to-purple-500 text-white">
+                            <AvatarFallback className="bg-gradient-to-br from-blue-400 to-purple-500 text-white text-sm">
                               {user.username.charAt(0).toUpperCase()}
                             </AvatarFallback>
                           </Avatar>
                           <div>
-                            <h3 className="text-sm font-semibold">{user.username}</h3>
+                            <h3 className="text-sm font-semibold text-white">{user.username}</h3>
                             <p className="text-xs text-green-400">
                               {user.characters} Characters  {user.memories} Memories
                             </p>
@@ -687,9 +669,9 @@ const Search = () => {
                             )}
                           </div>
                         </div>
-                        <Button 
-                          size="sm" 
-                          className="bg-primary text-primary-foreground rounded-full text-xs px-4"
+                        <Button
+                          size="sm"
+                          className="bg-pink-500 hover:bg-pink-600 text-white rounded-full text-xs px-6 h-8"
                         >
                           Follow
                         </Button>
