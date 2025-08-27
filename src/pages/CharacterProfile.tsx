@@ -21,14 +21,26 @@ interface Character {
   greeting?: string | null;
   rating?: 'filtered' | 'unfiltered';
   users?: {
+    id: string;
     full_name: string;
+    username?: string | null;
+    bio?: string | null;
+    avatar_url?: string | null;
+    banner_url?: string | null;
   };
+}
+
+interface UserStats {
+  charactersCount: number;
+  followersCount: number;
+  likesCount: number;
 }
 
 export default function CharacterProfile() {
   const { characterId } = useParams();
   const navigate = useNavigate();
   const [character, setCharacter] = useState<Character | null>(null);
+  const [userStats, setUserStats] = useState<UserStats>({ charactersCount: 0, followersCount: 0, likesCount: 0 });
   const [isLoading, setIsLoading] = useState(true);
   const [scrollY, setScrollY] = useState(0);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -48,9 +60,20 @@ export default function CharacterProfile() {
       if (!characterId) return;
 
       try {
+        // Fetch character with complete user data
         const { data: characterData, error } = await supabase
           .from('characters')
-          .select('*, users!characters_owner_id_fkey(full_name)')
+          .select(`
+            *,
+            users!characters_owner_id_fkey(
+              id,
+              full_name,
+              username,
+              bio,
+              avatar_url,
+              banner_url
+            )
+          `)
           .eq('id', characterId)
           .single();
 
@@ -62,6 +85,11 @@ export default function CharacterProfile() {
         }
 
         setCharacter(characterData);
+
+        // Fetch user stats if we have the owner ID
+        if (characterData.owner_id) {
+          await loadUserStats(characterData.owner_id);
+        }
       } catch (error) {
         console.error('Error loading character:', error);
         toast.error('Failed to load character');
@@ -73,6 +101,47 @@ export default function CharacterProfile() {
 
     loadCharacter();
   }, [characterId, navigate]);
+
+  const loadUserStats = async (userId: string) => {
+    try {
+      // Get user's character count
+      const { data: userCharacters, error: charactersError } = await supabase
+        .from('characters')
+        .select('id')
+        .eq('owner_id', userId)
+        .eq('visibility', 'public');
+
+      if (charactersError) {
+        console.error('Error loading user characters:', charactersError);
+      }
+
+      // Get user's total likes count on their characters
+      const { data: likesData, error: likesError } = await supabase
+        .from('comments')
+        .select('likes_count')
+        .in('character_id', (userCharacters || []).map(char => char.id));
+
+      if (likesError) {
+        console.error('Error loading likes count:', likesError);
+      }
+
+      const totalLikes = (likesData || []).reduce((sum, comment) => sum + (comment.likes_count || 0), 0);
+
+      // TODO: Implement followers system when available
+      // For now, we'll use placeholder data or calculate based on available metrics
+      const followersCount = Math.floor(totalLikes / 10) + (userCharacters?.length || 0) * 5; // Estimated followers
+
+      setUserStats({
+        charactersCount: userCharacters?.length || 0,
+        followersCount: followersCount,
+        likesCount: totalLikes
+      });
+    } catch (error) {
+      console.error('Error loading user stats:', error);
+      // Set default stats on error
+      setUserStats({ charactersCount: 0, followersCount: 0, likesCount: 0 });
+    }
+  };
 
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     setScrollY(e.currentTarget.scrollTop);
@@ -345,12 +414,12 @@ export default function CharacterProfile() {
           >
             <h1 className="text-base font-bold text-white leading-tight">{character.name}</h1>
             <div className="flex items-center gap-2 text-xs text-white/80">
-              <span>@{character.users?.full_name || 'Unknown'}</span>
+              <span>@{character.users?.username || character.users?.full_name || 'Unknown'}</span>
               <div className="flex items-center gap-1">
                 <MessageCircle className="h-3 w-3" />
-                <span>59.6K</span>
+                <span>{comments.length}</span>
               </div>
-              <span>1008 tokens</span>
+              <span>{(character.intro?.length || 0) + (character.scenario?.length || 0) + (character.personality?.length || 0)} tokens</span>
             </div>
           </div>
           
@@ -525,11 +594,19 @@ export default function CharacterProfile() {
                 {/* Creator Profile */}
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-pink-500 rounded-full flex items-center justify-center">
-                      <span className="text-white font-bold text-lg">
-                        {character.users?.full_name?.charAt(0) || 'U'}
-                      </span>
-                    </div>
+                    {character.users?.avatar_url ? (
+                      <img
+                        src={character.users.avatar_url}
+                        alt={character.users.full_name || 'User'}
+                        className="w-12 h-12 rounded-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-pink-500 rounded-full flex items-center justify-center">
+                        <span className="text-white font-bold text-lg">
+                          {character.users?.full_name?.charAt(0) || 'U'}
+                        </span>
+                      </div>
+                    )}
                     <div>
                       <h4 className="text-base font-semibold text-white">
                         {character.users?.full_name || 'Unknown Creator'}
@@ -537,28 +614,35 @@ export default function CharacterProfile() {
                       {/* Creator Stats */}
                       <div className="flex items-center gap-4 mt-1">
                         <div className="flex items-center gap-1">
-                          <span className="text-sm font-medium text-white">324</span>
+                          <span className="text-sm font-medium text-white">{userStats.followersCount}</span>
                           <span className="text-xs text-white/60">Followers</span>
                         </div>
                         <div className="flex items-center gap-1">
                           <Heart className="h-3 w-3 text-pink-400" />
-                          <span className="text-sm font-medium text-white">1.2K</span>
+                          <span className="text-sm font-medium text-white">{userStats.likesCount}</span>
                           <span className="text-xs text-white/60">Likes</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <span className="text-sm font-medium text-white">{userStats.charactersCount}</span>
+                          <span className="text-xs text-white/60">Bots</span>
                         </div>
                       </div>
                     </div>
                   </div>
-                  <button className="bg-gray-600/50 text-white text-sm px-4 py-2 rounded-full hover:bg-gray-600/70 transition-colors">
-                    Following
+                  <button
+                    className="bg-gray-600/50 text-white text-sm px-4 py-2 rounded-full hover:bg-gray-600/70 transition-colors"
+                    onClick={() => navigate('/profile')}
+                  >
+                    View Profile
                   </button>
                 </div>
 
                 {/* Bio */}
-                <div className="text-sm text-white/80 leading-relaxed">
-                  <p>
-                    ----&gt; https://linktr.ee/BPAtis &lt;----- Formerly Burrito Princess. Hello nerds💖 One and only bot creator of ...
-                  </p>
-                </div>
+                {character.users?.bio && (
+                  <div className="text-sm text-white/80 leading-relaxed">
+                    <p>{character.users.bio}</p>
+                  </div>
+                )}
               </div>
               </>
             )}
