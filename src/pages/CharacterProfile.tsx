@@ -396,7 +396,7 @@ export default function CharacterProfile() {
           </div>
 
           {/* Content Section - Conditional based on activeTab */}
-          <div className={`space-y-4 ${shouldTabsBeSticky ? 'mt-0 pt-4' : 'mt-4'}`}>
+          <div className={`${activeTab === 'comments' ? '' : 'space-y-4'} ${shouldTabsBeSticky ? 'mt-0 pt-4' : 'mt-4'}`}>
             {activeTab === 'details' && (
               <>
               <div
