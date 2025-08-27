@@ -14,9 +14,13 @@ export function BotProfileSheet() {
     setScrollY(e.currentTarget.scrollTop);
   };
 
-  // Calculate header opacity based on scroll position
-  const headerOpacity = Math.min(scrollY / 200, 1);
-  const titleOpacity = Math.min(Math.max(scrollY - 100, 0) / 100, 1);
+  // Calculate header opacity based on when content actually reaches the top
+  // Content starts at 65vh, so header should only activate when content approaches top
+  const contentStart = window.innerHeight * 0.65; // 65vh in pixels
+  const headerActivationPoint = contentStart - 100; // Start activation 100px before content reaches top
+
+  const headerOpacity = Math.min(Math.max(scrollY - headerActivationPoint, 0) / 150, 1);
+  const titleOpacity = Math.min(Math.max(scrollY - headerActivationPoint - 50, 0) / 100, 1);
 
   return (
     <Drawer>
