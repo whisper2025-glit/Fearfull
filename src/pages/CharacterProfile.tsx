@@ -195,8 +195,12 @@ export default function CharacterProfile() {
 
       {/* Initial Top Navigation - visible when not scrolled */}
       <div
-        className="absolute top-3 left-4 right-4 flex items-center justify-between z-20 transition-opacity duration-300"
-        style={{ opacity: 1 - headerOpacity }}
+        className="absolute top-3 left-4 right-4 flex items-center justify-between z-20 will-change-transform"
+        style={{
+          opacity: 1 - headerOpacity,
+          transform: `translateY(${headerOpacity * -5}px) scale(${1 - headerOpacity * 0.05})`,
+          transition: 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1)'
+        }}
       >
         <Button
           variant="ghost"
