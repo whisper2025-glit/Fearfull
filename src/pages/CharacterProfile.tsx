@@ -577,8 +577,8 @@ export default function CharacterProfile() {
         </div>
 
 
-        {/* Extra space to allow scrolling content to reach top navigation */}
-        <div className="h-[100vh] bg-[#111216]"></div>
+        {/* Small padding at bottom */}
+        <div className="h-20 bg-[#111216]"></div>
       </div>
     </div>
   );
