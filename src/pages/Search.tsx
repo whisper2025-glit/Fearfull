@@ -26,6 +26,7 @@ const Search = () => {
   const [activeRankTab, setActiveRankTab] = useState<'Creators' | 'Characters'>('Creators');
   const [isSearching, setIsSearching] = useState(false);
   const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [hasSearched, setHasSearched] = useState(false);
   const [recentSearches, setRecentSearches] = useState<string[]>(['Submissive']);
   const [gifMode, setGifMode] = useState(false);
   const [sortBy, setSortBy] = useState('Recommend');
@@ -169,11 +170,13 @@ const Search = () => {
     if (!query.trim()) {
       setSearchResults([]);
       setIsSearching(false);
+      setHasSearched(false);
       return;
     }
 
     setIsSearching(true);
-    
+    setHasSearched(true);
+
     // Add to recent searches
     setRecentSearches(prev => {
       const filtered = prev.filter(search => search.toLowerCase() !== query.toLowerCase());
@@ -205,6 +208,7 @@ const Search = () => {
     setSearchParams({});
     setSearchResults([]);
     setIsSearching(false);
+    setHasSearched(false);
   };
 
   const removeRecentSearch = (searchTerm: string) => {
@@ -221,7 +225,7 @@ const Search = () => {
     performSearch(term);
   };
 
-  const isSearchActive = searchQuery.trim().length > 0;
+  const isSearchActive = hasSearched && searchQuery.trim().length > 0;
 
   return (
     <Layout>
