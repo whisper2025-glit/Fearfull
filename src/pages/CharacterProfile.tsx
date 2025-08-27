@@ -374,8 +374,15 @@ export default function CharacterProfile() {
 
           {/* Content Section - Always visible */}
           <div className={`space-y-4 ${shouldTabsBeSticky ? 'mt-0 pt-4' : 'mt-4'}`}>
-              {/* Introduction Block */}
-              <div className="bg-[#1a1a1a] rounded-lg p-4 space-y-4 border border-white/10">
+              {/* Introduction Block - Hidden initially, shown when scrolled */}
+              <div
+                className="bg-[#1a1a1a] rounded-lg p-4 space-y-4 border border-white/10 transition-all duration-300"
+                style={{
+                  opacity: tabsOpacity,
+                  transform: `translateY(${(1 - tabsOpacity) * 20}px)`,
+                  pointerEvents: tabsOpacity > 0.3 ? 'auto' : 'none'
+                }}
+              >
                 <h3 className="text-lg font-semibold text-white">Introduction</h3>
 
                 {/* Tags */}
