@@ -417,22 +417,53 @@ export default function CharacterProfile() {
 
                 {/* Introduction Text */}
                 <div className="space-y-3">
-                  <p className="text-white/80 text-sm leading-relaxed">
-                    {character.intro}
-                  </p>
+                  <div className={`text-white/80 text-sm leading-relaxed transition-all duration-300 ${
+                    isExpanded ? 'max-h-none' : 'max-h-20 overflow-hidden'
+                  }`}>
+                    <p className="text-white/80 text-sm leading-relaxed">
+                      {character.intro}
+                    </p>
 
-                  {character.scenario && (
-                    <div className="mt-4">
-                      <p className="text-white/70 text-sm leading-relaxed">
-                        {character.scenario}
-                      </p>
-                    </div>
-                  )}
+                    {character.scenario && isExpanded && (
+                      <div className="mt-4">
+                        <h4 className="text-white font-medium mb-2">Scenario:</h4>
+                        <p className="text-white/70 text-sm leading-relaxed">
+                          {character.scenario}
+                        </p>
+                      </div>
+                    )}
 
-                  {/* View More Button */}
-                  <button className="text-pink-400 text-sm font-medium flex items-center gap-1 mt-3 hover:text-pink-300 transition-colors">
-                    View More
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    {character.appearance && isExpanded && (
+                      <div className="mt-4">
+                        <h4 className="text-white font-medium mb-2">Appearance:</h4>
+                        <p className="text-white/70 text-sm leading-relaxed">
+                          {character.appearance}
+                        </p>
+                      </div>
+                    )}
+
+                    {character.greeting && isExpanded && (
+                      <div className="mt-4">
+                        <h4 className="text-white font-medium mb-2">Greeting:</h4>
+                        <p className="text-white/70 text-sm leading-relaxed">
+                          {character.greeting}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* View More/Less Button */}
+                  <button
+                    onClick={() => setIsExpanded(!isExpanded)}
+                    className="text-pink-400 text-sm font-medium flex items-center gap-1 mt-3 hover:text-pink-300 transition-colors"
+                  >
+                    {isExpanded ? 'View Less' : 'View More'}
+                    <svg
+                      className={`w-4 h-4 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                     </svg>
                   </button>
