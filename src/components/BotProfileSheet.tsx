@@ -59,17 +59,12 @@ export function BotProfileSheet() {
           >
             {/* Hero Image with overlayed info */}
             <div className="relative w-full h-[100vh]">
-              <div
-                className="absolute inset-0"
-                style={{
-                  transform: `translateY(${headerTranslateY}px)`,
-                  transformOrigin: 'center top'
-                }}
-              >
+              {/* Fixed character image that doesn't move */}
+              <div className="fixed top-0 left-0 right-0 bottom-0 z-0">
                 <img src={HERO_IMAGE} alt="Character" className="h-full w-full object-cover" />
               </div>
 
-              <div className="absolute inset-0 bg-gradient-to-t from-[#111216] via-[#111216]/60 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#111216] via-[#111216]/60 to-transparent z-10" />
 
               {/* Character info overlay at bottom */}
               <div className="absolute inset-x-0 bottom-0 px-4 pb-6 space-y-3">
