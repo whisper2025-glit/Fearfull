@@ -29,6 +29,7 @@ export default function CharacterProfile() {
   const [character, setCharacter] = useState<Character | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [scrollY, setScrollY] = useState(0);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   useEffect(() => {
     const loadCharacter = async () => {
