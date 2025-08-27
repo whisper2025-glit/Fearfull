@@ -17,7 +17,7 @@ import { ChevronLeft, Settings, Gift, MoreHorizontal, X, Camera, Star, Loader2 }
 import { useNavigate } from "react-router-dom";
 import { CharacterCard } from "@/components/CharacterCard";
 import SettingsSheet from "@/components/SettingsSheet";
-import { supabase, uploadImage } from "@/lib/supabase";
+import { supabase, uploadImage, getFavoriteCharacters, checkIsFavorited } from "@/lib/supabase";
 import { toast } from "sonner";
 
 const Profile = () => {
@@ -29,6 +29,8 @@ const Profile = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [userCharacters, setUserCharacters] = useState<any[]>([]);
+  const [favoriteCharacters, setFavoriteCharacters] = useState<any[]>([]);
+  const [favoritedCharacterIds, setFavoritedCharacterIds] = useState<string[]>([]);
 
   // User profile state with Supabase data
   const [userProfile, setUserProfile] = useState({
@@ -100,6 +102,21 @@ const Profile = () => {
         }));
       }
 
+      // Load user's favorite characters
+      const favoriteChars = await getFavoriteCharacters(user.id);
+      setFavoriteCharacters(favoriteChars);
+      setStats(prev => ({
+        ...prev,
+        favorites: favoriteChars.length
+      }));
+
+      // Get favorited status for all characters
+      const allCharacterIds = (charactersData || []).map(char => char.id);
+      if (allCharacterIds.length > 0) {
+        const favoritedIds = await checkIsFavorited(user.id, allCharacterIds);
+        setFavoritedCharacterIds(favoritedIds);
+      }
+
     } catch (error) {
       console.error('Error loading user data:', error);
       toast.error('Failed to load profile data');
@@ -118,13 +135,30 @@ const Profile = () => {
       case 'bots':
         return userCharacters.filter(char => char.visibility === 'public');
       case 'favorites':
-        // TODO: Implement favorites functionality
-        return [];
+        return favoriteCharacters;
       case 'posts':
         // TODO: Implement posts functionality
         return [];
       default:
         return [];
+    }
+  };
+
+  // Handle favorite status changes
+  const handleFavoriteChange = async (characterId: string, isFavorited: boolean) => {
+    if (isFavorited) {
+      setFavoritedCharacterIds(prev => [...prev, characterId]);
+    } else {
+      setFavoritedCharacterIds(prev => prev.filter(id => id !== characterId));
+      // If we're on favorites tab and character was unfavorited, reload favorites
+      if (activeTab === 'favorites') {
+        const updatedFavorites = await getFavoriteCharacters(user.id);
+        setFavoriteCharacters(updatedFavorites);
+        setStats(prev => ({
+          ...prev,
+          favorites: updatedFavorites.length
+        }));
+      }
     }
   };
 
@@ -619,9 +653,11 @@ const Profile = () => {
                     stats: {
                       messages: character.messages?.length || 0,
                       likes: 0 // Placeholder
-                    }
+                    },
+                    isFavorited: favoritedCharacterIds.includes(character.id)
                   }}
                   onClick={() => navigate(`/character/${character.id}`)}
+                  onFavoriteChange={handleFavoriteChange}
                 />
               ))}
             </div>
