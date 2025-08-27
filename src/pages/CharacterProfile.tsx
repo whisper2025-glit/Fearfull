@@ -109,7 +109,7 @@ export default function CharacterProfile() {
   const easeInOutCubic = (t: number) => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 
   // Calculate header opacity based on scroll with smooth easing
-  const contentStart = window.innerHeight * 0.45;
+  const contentStart = window.innerHeight * 0.30;
   const headerActivationPoint = contentStart - 100;
   const rawHeaderProgress = Math.min(Math.max(scrollY - headerActivationPoint, 0) / 150, 1);
   const headerOpacity = easeOutCubic(rawHeaderProgress);
