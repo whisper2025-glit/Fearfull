@@ -177,13 +177,10 @@ export function ChatSettingsModal({ open, onOpenChange }: ChatSettingsModalProps
 
               {/* Max AI message length */}
               <div className="mb-4">
-                <div className="flex items-center gap-2 mb-2">
+                <div className="mb-2">
                   <h4 className="text-white font-medium" style={{ fontSize: '14px' }}>
                     Max AI message length
                   </h4>
-                  <Badge className="bg-green-500 text-black text-xs px-2 py-0.5 rounded" style={{ fontSize: '10px' }}>
-                    VIP
-                  </Badge>
                 </div>
                 <p className="text-gray-400 mb-3" style={{ fontSize: '12px' }}>
                   The maximum amount of tokens that an AI will generate to respond. One word is approximately 3-4 tokens.
@@ -199,22 +196,9 @@ export function ChatSettingsModal({ open, onOpenChange }: ChatSettingsModalProps
                   step={25}
                   className="mb-2"
                 />
-                <div className="flex justify-between text-xs" style={{ fontSize: '11px' }}>
-                  <span className="text-gray-400">225</span>
-                  <div className="flex gap-2">
-                    <Badge className="bg-green-500 text-black text-xs px-2 py-0.5 rounded" style={{ fontSize: '8px' }}>
-                      Luxe
-                    </Badge>
-                    <span className="text-gray-400">450</span>
-                    <Badge className="bg-yellow-500 text-black text-xs px-2 py-0.5 rounded" style={{ fontSize: '8px' }}>
-                      Elite
-                    </Badge>
-                    <span className="text-gray-400">550</span>
-                    <Badge className="bg-purple-500 text-white text-xs px-2 py-0.5 rounded" style={{ fontSize: '8px' }}>
-                      Imperial
-                    </Badge>
-                    <span className="text-gray-400">650</span>
-                  </div>
+                <div className="flex justify-between text-xs text-gray-400" style={{ fontSize: '11px' }}>
+                  <span>225</span>
+                  <span>650</span>
                 </div>
               </div>
             </div>
