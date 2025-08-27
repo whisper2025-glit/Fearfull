@@ -328,10 +328,12 @@ export default function CharacterProfile() {
           
           {/* Start Chat Button */}
           <div
-            className="w-full transition-opacity duration-300"
+            className="w-full will-change-transform"
             style={{
-              opacity: shouldTabsBeSticky ? 0 : 1,
-              display: shouldTabsBeSticky ? 'none' : 'block'
+              opacity: 1 - contentHideProgress,
+              transform: `translateY(${contentHideProgress * 10}px) scale(${1 - contentHideProgress * 0.02})`,
+              transition: 'transform 0.5s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.5s cubic-bezier(0.23, 1, 0.32, 1)',
+              pointerEvents: contentHideProgress > 0.7 ? 'none' : 'auto'
             }}
           >
             <div className="w-full rounded-full p-[1px] bg-gradient-to-r from-pink-500 to-cyan-400">
