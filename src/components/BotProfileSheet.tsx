@@ -127,20 +127,14 @@ export function BotProfileSheet() {
               {/* Tabs */}
               <Tabs defaultValue="details" className="w-full">
                 <TabsList className="bg-transparent p-0 h-auto w-full justify-start">
-                  <TabsTrigger 
-                    value="details" 
+                  <TabsTrigger
+                    value="details"
                     className="text-white data-[state=active]:text-pink-400 data-[state=active]:bg-transparent bg-transparent border-b-2 border-transparent data-[state=active]:border-pink-400 rounded-none px-0 mr-6"
                   >
                     Details
                   </TabsTrigger>
-                  <TabsTrigger 
-                    value="gallery" 
-                    className="text-white/60 data-[state=active]:text-pink-400 data-[state=active]:bg-transparent bg-transparent border-b-2 border-transparent data-[state=active]:border-pink-400 rounded-none px-0 mr-6"
-                  >
-                    Gallery (2)
-                  </TabsTrigger>
-                  <TabsTrigger 
-                    value="comments" 
+                  <TabsTrigger
+                    value="comments"
                     className="text-white/60 data-[state=active]:text-pink-400 data-[state=active]:bg-transparent bg-transparent border-b-2 border-transparent data-[state=active]:border-pink-400 rounded-none px-0"
                   >
                     Comments (0)
@@ -150,29 +144,15 @@ export function BotProfileSheet() {
                 <TabsContent value="details" className="mt-4 space-y-4">
                   {/* Tags */}
                   <div className="flex flex-wrap gap-2">
-                    {['🎭', '📷', '🎵', 'AnyPOV', 'Fantasy', 'Furry', 'Monster', 'Mystery', 'Non-Human', 'OC', 'Sci-Fi'].map((tag, index) => (
-                      <Badge 
-                        key={tag} 
-                        variant="secondary" 
-                        className={`${index < 3 ? 'bg-pink-500/20 text-pink-300 border-pink-500/30' : 'bg-white/10 text-white/70 border-white/20'} text-xs px-2 py-1 rounded-full`}
+                    {['AnyPOV', 'Fantasy', 'Sci-Fi'].map((tag, index) => (
+                      <Badge
+                        key={tag}
+                        variant="secondary"
+                        className={`${index === 0 ? 'bg-pink-500/20 text-pink-300 border-pink-500/30' : 'bg-white/10 text-white/70 border-white/20'} text-xs px-2 py-1 rounded-full`}
                       >
                         {tag}
                       </Badge>
                     ))}
-                  </div>
-
-                  {/* Audio */}
-                  <div className="flex items-center gap-3 py-2">
-                    <div className="w-8 h-8 bg-pink-500 rounded-full flex items-center justify-center">
-                      <div className="w-0 h-0 border-l-4 border-l-white border-y-2 border-y-transparent ml-1"></div>
-                    </div>
-                    <div className="flex-1">
-                      <div className="text-sm font-medium text-white">Final Fantasy VII - Woozy Spec...</div>
-                      <div className="text-xs text-white/60 flex items-center gap-2">
-                        <span className="w-16 h-1 bg-gradient-to-r from-pink-500 to-transparent rounded"></span>
-                        <span>SOUNDCLOUD</span>
-                      </div>
-                    </div>
                   </div>
 
                   {/* Description */}
@@ -198,13 +178,7 @@ export function BotProfileSheet() {
                     </div>
                   </div>
                 </TabsContent>
-                
-                <TabsContent value="gallery" className="mt-4">
-                  <div className="text-center text-white/60 py-8">
-                    Gallery content would go here
-                  </div>
-                </TabsContent>
-                
+
                 <TabsContent value="comments" className="mt-4">
                   <div className="bg-[#1a1a1a] rounded-lg border border-white/10 h-[500px]">
                     <CommentsList
