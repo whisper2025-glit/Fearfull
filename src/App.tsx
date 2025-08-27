@@ -40,6 +40,11 @@ const AppContent = () => {
             <Chat />
           </ProtectedRoute>
         } />
+        <Route path="/character/:characterId" element={
+          <ProtectedRoute>
+            <CharacterProfile />
+          </ProtectedRoute>
+        } />
         <Route path="/create" element={
           <ProtectedRoute>
             <CreateCharacter />
