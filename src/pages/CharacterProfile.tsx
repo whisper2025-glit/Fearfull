@@ -204,9 +204,14 @@ export default function CharacterProfile() {
 
       {/* Scrollable Content */}
       <div
-        className="relative z-10 h-full overflow-y-auto"
+        className="relative z-30 h-full overflow-y-auto overscroll-none"
         onScroll={handleScroll}
-        style={{ paddingTop: 0, marginTop: 0 }}
+        style={{
+          paddingTop: 0,
+          marginTop: 0,
+          scrollBehavior: 'smooth',
+          WebkitOverflowScrolling: 'touch'
+        }}
       >
         <div className="h-[65vh]" style={{ minHeight: '65vh' }}></div>
         
