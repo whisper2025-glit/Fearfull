@@ -15,6 +15,7 @@ import { ModelsModal, Model } from "@/components/ModelsModal";
 import { PersonaModal } from "@/components/PersonaModal";
 import { SuggestModal } from "@/components/SuggestModal";
 import { ChatSettingsModal } from "@/components/ChatSettingsModal";
+import { DebugMenu } from "@/components/DebugMenu";
 import { openRouterAPI, ChatMessage } from "@/lib/openrouter";
 import { supabase, createOrUpdateUser, getDefaultPersona, getChatSettings, getDefaultChatSettings, ChatSettings } from "@/lib/supabase";
 import { toast } from "sonner";
@@ -75,6 +76,12 @@ const Chat = () => {
   const [isLoadingCharacter, setIsLoadingCharacter] = useState(true);
   const [currentConversationId, setCurrentConversationId] = useState<string | null>(conversationId);
   const [currentChatSettings, setCurrentChatSettings] = useState<ChatSettings | null>(null);
+  const [lastAPICall, setLastAPICall] = useState<{
+    temperature: number;
+    max_tokens: number;
+    top_p: number;
+    timestamp: string;
+  } | null>(null);
 
   const { user } = useUser();
 
@@ -403,12 +410,22 @@ const Chat = () => {
         max_tokens: 195
       };
 
-      const response = await openRouterAPI.createChatCompletion(modelToUse, chatMessages, {
+      const apiOptions = {
         temperature: settingsToUse.temperature,
         max_tokens: settingsToUse.max_tokens,
         // Note: content_diversity (top_p) may need different parameter name based on OpenRouter API
         top_p: settingsToUse.content_diversity
+      };
+
+      // Track API call for debugging
+      setLastAPICall({
+        temperature: apiOptions.temperature,
+        max_tokens: apiOptions.max_tokens,
+        top_p: apiOptions.top_p,
+        timestamp: new Date().toISOString()
       });
+
+      const response = await openRouterAPI.createChatCompletion(modelToUse, chatMessages, apiOptions);
 
       const botResponseContent = response.choices[0]?.message?.content || "I apologize, but I couldn't generate a response.";
 
@@ -744,6 +761,14 @@ const Chat = () => {
           setIsChatSettingsModalOpen(false);
           setIsModelsModalOpen(true);
         }}
+        onSettingsChange={setCurrentChatSettings}
+      />
+
+      {/* Debug Menu */}
+      <DebugMenu
+        selectedModel={selectedModel}
+        currentChatSettings={currentChatSettings}
+        lastAPICall={lastAPICall}
       />
     </div>
   );
