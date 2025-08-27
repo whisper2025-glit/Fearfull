@@ -761,6 +761,14 @@ const Chat = () => {
           setIsChatSettingsModalOpen(false);
           setIsModelsModalOpen(true);
         }}
+        onSettingsChange={setCurrentChatSettings}
+      />
+
+      {/* Debug Menu */}
+      <DebugMenu
+        selectedModel={selectedModel}
+        currentChatSettings={currentChatSettings}
+        lastAPICall={lastAPICall}
       />
     </div>
   );
