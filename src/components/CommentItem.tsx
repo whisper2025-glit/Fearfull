@@ -19,7 +19,7 @@ interface Comment {
 
 interface CommentItemProps {
   comment: Comment;
-  onLike?: (commentId: string) => void;
+  onLike?: (commentId: string) => Promise<void>;
   onReply?: (commentId: string) => void;
   onViewReplies?: (commentId: string) => void;
 }
