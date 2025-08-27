@@ -78,6 +78,13 @@ class OpenRouterService {
     messages: ChatMessage[],
     options: OpenRouterOptions = {}
   ): Promise<OpenRouterResponse> {
+    // 🔍 DEBUG: Log what's calling the API
+    console.log('🚨 OpenRouter API Call:', {
+      model: model.name,
+      options,
+      stack: new Error().stack?.split('\n').slice(1, 4).join('\n')
+    });
+
     this.validateApiKey();
 
     const requestOptions = { ...this.defaultOptions, ...options };
