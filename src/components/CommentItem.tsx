@@ -28,11 +28,21 @@ export function CommentItem({ comment, onLike, onReply, onViewReplies }: Comment
   const [isLiked, setIsLiked] = useState(comment.isLiked || false);
   const [likeCount, setLikeCount] = useState(comment.likes);
 
-  const handleLike = () => {
-    const newIsLiked = !isLiked;
-    setIsLiked(newIsLiked);
-    setLikeCount(prev => newIsLiked ? prev + 1 : prev - 1);
-    onLike?.(comment.id);
+  const handleLike = async () => {
+    try {
+      // Optimistic UI update
+      const newIsLiked = !isLiked;
+      setIsLiked(newIsLiked);
+      setLikeCount(prev => newIsLiked ? prev + 1 : prev - 1);
+
+      // Call the async like function
+      await onLike?.(comment.id);
+    } catch (error) {
+      // Revert optimistic update on error
+      setIsLiked(comment.isLiked || false);
+      setLikeCount(comment.likes);
+      console.error('Error liking comment:', error);
+    }
   };
 
   return (
