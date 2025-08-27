@@ -311,6 +311,38 @@ export interface Database {
           created_at?: string;
         };
       };
+      chat_settings: {
+        Row: {
+          id: string;
+          user_id: string; // Clerk user ID
+          model_id: string;
+          temperature: number;
+          content_diversity: number;
+          max_tokens: number;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          model_id: string;
+          temperature?: number;
+          content_diversity?: number;
+          max_tokens?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          model_id?: string;
+          temperature?: number;
+          content_diversity?: number;
+          max_tokens?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
       favorited: {
         Row: {
           id: string;
