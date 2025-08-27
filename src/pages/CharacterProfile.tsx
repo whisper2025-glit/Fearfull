@@ -104,6 +104,9 @@ export default function CharacterProfile() {
   const headerOpacity = Math.min(Math.max(scrollY - headerActivationPoint, 0) / 150, 1);
   const titleOpacity = Math.min(Math.max(scrollY - headerActivationPoint - 50, 0) / 100, 1);
 
+  // Calculate tabs visibility - only show after scrolling starts (hide initially)
+  const tabsOpacity = Math.min(Math.max(scrollY - 150, 0) / 200, 1);
+
   return (
     <div className="fixed inset-0 bg-[#111216] text-white overflow-hidden">
       {/* Character Image Background - Fixed */}
