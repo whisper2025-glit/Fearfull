@@ -321,11 +321,11 @@ export default function CharacterProfile() {
               pointerEvents: contentHideProgress > 0.7 ? 'none' : 'auto'
             }}
           >
-            <h1 className="text-xl font-bold text-white">{character.name}</h1>
-            <div className="flex items-center gap-4 text-sm text-white/80">
+            <h1 className="text-lg font-bold text-white">{character.name}</h1>
+            <div className="flex items-center gap-3 text-xs text-white/80">
               <span>@{character.users?.full_name || 'Unknown'}</span>
               <div className="flex items-center gap-1">
-                <MessageCircle className="h-4 w-4" />
+                <MessageCircle className="h-3 w-3" />
                 <span>59.6K</span>
               </div>
               <span>1008 tokens</span>
