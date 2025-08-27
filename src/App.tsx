@@ -10,6 +10,7 @@ import Chats from "./pages/Chats";
 import CreateCharacter from "./pages/CreateCharacter";
 import Profile from "./pages/Profile";
 import CharacterProfile from "./pages/CharacterProfile";
+import CreatorProfile from "./pages/CreatorProfile";
 import AuthPage from "./pages/AuthPage";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -53,6 +54,11 @@ const AppContent = () => {
         <Route path="/profile" element={
           <ProtectedRoute>
             <Profile />
+          </ProtectedRoute>
+        } />
+        <Route path="/creator/:userId" element={
+          <ProtectedRoute>
+            <CreatorProfile />
           </ProtectedRoute>
         } />
         <Route path="*" element={<NotFound />} />
