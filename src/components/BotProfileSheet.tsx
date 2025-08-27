@@ -3,10 +3,21 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Share2, MessageCircle, Heart, User, ChevronLeft } from "lucide-react";
+import { useState } from "react";
 
 const HERO_IMAGE = "https://cdn.builder.io/api/v1/image/assets%2F420adf53974e411387df983f01823d73%2F4635cc3157e045f592ade58eeea4af3b?format=webp&width=800";
 
 export function BotProfileSheet() {
+  const [scrollY, setScrollY] = useState(0);
+
+  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    setScrollY(e.currentTarget.scrollTop);
+  };
+
+  // Calculate header opacity based on scroll position
+  const headerOpacity = Math.min(scrollY / 200, 1);
+  const titleOpacity = Math.min(Math.max(scrollY - 100, 0) / 100, 1);
+
   return (
     <Drawer>
       <DrawerTrigger asChild>
