@@ -30,24 +30,14 @@ export function BotProfileSheet() {
       </DrawerTrigger>
       <DrawerContent className="bg-[#111216] text-white text-xs h-screen border-0">
         <div className="relative h-full overflow-hidden">
-          {/* Fixed Header that appears on scroll */}
-          <div
-            className="fixed top-0 left-0 right-0 z-50 bg-[#111216]/95 backdrop-blur-sm border-b border-white/10 px-4 py-3 transition-all duration-300"
-            style={{
-              opacity: headerOpacity,
-              transform: `translateY(${headerOpacity < 1 ? -100 : 0}%)`,
-              pointerEvents: headerOpacity > 0.5 ? 'auto' : 'none'
-            }}
-          >
+          {/* Fixed Top Navigation - Always Visible */}
+          <div className="absolute top-4 left-4 right-4 z-50">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <Button variant="ghost" size="icon" className="h-8 w-8">
-                  <ChevronLeft className="h-4 w-4" />
-                </Button>
-                <h2 className="text-sm font-semibold">Cata | Curious Innocent Alien</h2>
-              </div>
-              <Button variant="outline" size="icon" className="h-8 w-8 border-white/20 text-white bg-transparent hover:bg-white/10">
-                <Share2 className="h-4 w-4" />
+              <Button variant="ghost" size="icon" className="h-10 w-10 text-white" aria-label="Back">
+                <ChevronLeft className="h-5 w-5" />
+              </Button>
+              <Button variant="outline" size="icon" className="h-10 w-10 border-white/20 text-white bg-black/20 backdrop-blur-sm hover:bg-white/10" aria-label="Share">
+                <Share2 className="h-5 w-5" />
               </Button>
             </div>
           </div>
@@ -66,42 +56,42 @@ export function BotProfileSheet() {
 
               <div className="absolute inset-0 bg-gradient-to-t from-[#111216] via-[#111216]/60 to-transparent z-10" />
 
-              {/* Character info overlay at bottom */}
-              <div className="absolute inset-x-0 bottom-0 px-4 pb-6 space-y-3 z-20">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <Button variant="ghost" size="icon" className="h-8 w-8 text-white">
-                      <ChevronLeft className="h-4 w-4" />
-                    </Button>
-                    <h2 className="text-base font-semibold truncate">Cata | Curious Innocent Alien</h2>
-                  </div>
-                  <Button variant="outline" size="icon" className="h-8 w-8 border-white/20 text-white bg-transparent hover:bg-white/10">
-                    <Share2 className="h-4 w-4" />
-                  </Button>
-                </div>
-
-                <div className="text-xs text-white/80 ml-11">
-                  <div className="mb-1">@Venom Master</div>
-                  <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-1">
-                      <MessageCircle className="h-3 w-3" />
-                      <span>59.6K</span>
+              {/* Character info overlay at bottom - Fixed position */}
+              <div
+                className="fixed inset-x-4 bottom-4 z-40 space-y-3"
+                style={{
+                  paddingBottom: 'env(safe-area-inset-bottom, 16px)',
+                  pointerEvents: 'auto'
+                }}
+              >
+                <div className="space-y-2">
+                  <h2 className="text-xl font-bold text-white truncate">Cata | Curious Innocent Alien</h2>
+                  <div className="flex items-center justify-between">
+                    <div className="text-sm text-white/80">@Venom Master</div>
+                    <div className="flex items-center gap-4 text-xs text-white/70">
+                      <div className="flex items-center gap-1">
+                        <MessageCircle className="h-4 w-4" />
+                        <span>59.6K</span>
+                      </div>
+                      <span>1008 tokens</span>
                     </div>
-                    <span>1008 tokens</span>
                   </div>
                 </div>
 
-                <div className="w-full rounded-full p-[1px] bg-gradient-to-r from-pink-500 to-cyan-400 ml-11 mr-11">
-                  <Button className="w-full rounded-full bg-[#00000033] hover:bg-[#00000055] text-white text-sm py-3">
+                <div className="w-full rounded-full p-[1px] bg-gradient-to-r from-pink-500 to-cyan-400">
+                  <Button className="w-full rounded-full bg-[#00000033] hover:bg-[#00000055] text-white text-base py-4">
                     Start Chat
                   </Button>
                 </div>
               </div>
             </div>
 
-            {/* Content that slides over the image */}
-            <div className="relative z-30 bg-[#111216] min-h-screen">
-              <div className="px-4 pt-6 pb-4 space-y-4">
+            {/* Content sheet that slides over the image */}
+            <div className="relative z-30 bg-[#111216] min-h-screen rounded-t-3xl -mt-20 pt-6">
+              {/* Sheet handle */}
+              <div className="w-10 h-1 bg-white/20 rounded-full mx-auto mb-4" />
+
+              <div className="px-4 pb-4 space-y-4">
                 {/* Tabs */}
                 <div className="flex items-center justify-between border-b border-white/10">
                   <Tabs defaultValue="details" className="w-full">
