@@ -16,10 +16,9 @@ export function BotProfileSheet() {
     setScrollY(e.currentTarget.scrollTop);
   };
 
-  // Calculate header opacity and transform based on scroll position
+  // Calculate header opacity based on scroll position
   const maxScroll = 300; // Adjust this value to control when overlay is fully visible
   const headerOpacity = Math.min(scrollY / maxScroll, 1);
-  const headerTranslateY = Math.max(-scrollY / 2, -150); // Parallax effect
 
   return (
     <Drawer>
