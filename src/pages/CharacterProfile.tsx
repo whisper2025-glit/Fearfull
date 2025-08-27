@@ -13,6 +13,11 @@ interface Character {
   intro: string;
   scenario: string;
   avatar_url: string;
+  tags?: string[] | null;
+  personality?: string | null;
+  appearance?: string | null;
+  greeting?: string | null;
+  rating?: 'filtered' | 'unfiltered';
   users?: {
     full_name: string;
   };
