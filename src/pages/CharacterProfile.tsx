@@ -306,7 +306,7 @@ export default function CharacterProfile() {
         
         {/* Character Info Section */}
         <div
-          className="bg-black/30 backdrop-blur-sm p-2 space-y-1.5 rounded-t-xl will-change-transform"
+          className="bg-black/15 backdrop-blur-sm p-2 space-y-1.5 rounded-t-xl will-change-transform"
           style={{
             paddingTop: shouldTabsBeSticky ? `${120 + (stickyOpacity * 20)}px` : '16px',
             transition: 'padding-top 0.4s cubic-bezier(0.23, 1, 0.32, 1)'
