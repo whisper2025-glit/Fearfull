@@ -14,6 +14,7 @@ import {
 import { ModelsModal, Model } from "@/components/ModelsModal";
 import { PersonaModal } from "@/components/PersonaModal";
 import { SuggestModal } from "@/components/SuggestModal";
+import { BotProfileSheet } from "@/components/BotProfileSheet";
 import { openRouterAPI, ChatMessage } from "@/lib/openrouter";
 import { supabase, createOrUpdateUser, getDefaultPersona } from "@/lib/supabase";
 import { toast } from "sonner";
@@ -480,10 +481,7 @@ const Chat = () => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48">
-              <DropdownMenuItem onClick={() => console.log('Bot Profile clicked')}>
-                <User className="mr-2 h-4 w-4" />
-                Bot Profile
-              </DropdownMenuItem>
+              <BotProfileSheet />
               <DropdownMenuItem onClick={() => console.log('Chat Settings clicked')}>
                 <Settings className="mr-2 h-4 w-4" />
                 Chat Settings
