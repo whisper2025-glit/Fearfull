@@ -207,42 +207,12 @@ class OpenRouterService {
   }
 
   async testConnection(): Promise<{ success: boolean; message: string }> {
-    try {
-      this.validateApiKey();
-
-      const testModel: Model = {
-        id: 'test-model',
-        name: 'mistralai/mistral-7b-instruct:free',
-        author: 'Mistral AI',
-        description: 'Test model',
-        price: 0,
-        responseTime: '1s',
-        memory: '7B',
-        rating: 8.0,
-        tags: ['test'],
-        isActive: true,
-        isPremium: false,
-        isMain: false,
-        provider: 'mistral',
-        tier: 'free',
-      };
-
-      const testMessages: ChatMessage[] = [
-        { role: 'user', content: 'Hello' }
-      ];
-
-      await this.createChatCompletion(testModel, testMessages, { max_tokens: 5 });
-      
-      return {
-        success: true,
-        message: 'OpenRouter API connection successful'
-      };
-    } catch (error) {
-      return {
-        success: false,
-        message: error instanceof Error ? error.message : 'Unknown connection error'
-      };
-    }
+    // 🚫 DISABLED: Preventing automatic token usage
+    console.log('🚫 testConnection() disabled to prevent token usage');
+    return {
+      success: true,
+      message: 'Connection test disabled (tokens saved)'
+    };
   }
 
   getRoleplaySystemPrompt(model: Model, characterName?: string): string {
