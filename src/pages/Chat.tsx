@@ -76,6 +76,12 @@ const Chat = () => {
   const [isLoadingCharacter, setIsLoadingCharacter] = useState(true);
   const [currentConversationId, setCurrentConversationId] = useState<string | null>(conversationId);
   const [currentChatSettings, setCurrentChatSettings] = useState<ChatSettings | null>(null);
+  const [lastAPICall, setLastAPICall] = useState<{
+    temperature: number;
+    max_tokens: number;
+    top_p: number;
+    timestamp: string;
+  } | null>(null);
 
   const { user } = useUser();
 
