@@ -108,27 +108,6 @@ export function ChatSettingsModal({ open, onOpenChange }: ChatSettingsModalProps
               </div>
             </div>
 
-            {/* Language */}
-            <div>
-              <h4 className="text-white font-medium mb-2" style={{ fontSize: '14px' }}>
-                Language
-              </h4>
-              <p className="text-gray-400 mb-3" style={{ fontSize: '12px' }}>
-                It affects the language used for character replies. Language availability varies among models.
-              </p>
-              <Select value={language} onValueChange={setLanguage}>
-                <SelectTrigger className="bg-[#2d2e3e] border-[#3d3e4e] text-white rounded-full h-10">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-[#2d2e3e] border-[#3d3e4e]">
-                  <SelectItem value="english" className="text-white hover:bg-[#34354a]">English</SelectItem>
-                  <SelectItem value="spanish" className="text-white hover:bg-[#34354a]">Spanish</SelectItem>
-                  <SelectItem value="french" className="text-white hover:bg-[#34354a]">French</SelectItem>
-                  <SelectItem value="german" className="text-white hover:bg-[#34354a]">German</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
             {/* Parameters */}
             <div>
               <div className="flex items-center justify-between mb-4">
