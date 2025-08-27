@@ -335,7 +335,7 @@ export default function CharacterProfile() {
               </TabsTrigger>
             </TabsList>
             
-            <TabsContent value="details" className={`space-y-4 ${shouldTabsBeSticky ? 'mt-0 pt-32' : 'mt-4'}`}>
+            <TabsContent value="details" className={`space-y-4 ${shouldTabsBeSticky ? 'mt-0 pt-4' : 'mt-4'}`}>
               {/* Tags */}
               <div className="flex flex-wrap gap-2">
                 {['🎭', '📷', '🎵', 'AnyPOV', 'Fantasy', 'Furry', 'Monster', 'Mystery', 'Non-Human', 'OC', 'Sci-Fi'].map((tag, index) => (
