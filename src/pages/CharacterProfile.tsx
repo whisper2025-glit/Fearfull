@@ -98,9 +98,11 @@ export default function CharacterProfile() {
     );
   }
 
-  // Calculate header opacity based on scroll - simplified to allow full scroll reach
-  const headerOpacity = Math.min(scrollY / 100, 1);
-  const titleOpacity = Math.min(Math.max(scrollY - 50, 0) / 100, 1);
+  // Calculate header opacity based on scroll
+  const contentStart = window.innerHeight * 0.65;
+  const headerActivationPoint = contentStart - 100;
+  const headerOpacity = Math.min(Math.max(scrollY - headerActivationPoint, 0) / 150, 1);
+  const titleOpacity = Math.min(Math.max(scrollY - headerActivationPoint - 50, 0) / 100, 1);
 
   return (
     <div className="fixed inset-0 bg-[#111216] text-white overflow-hidden">
@@ -205,6 +207,8 @@ export default function CharacterProfile() {
         className="relative z-10 h-full overflow-y-auto"
         onScroll={handleScroll}
       >
+        <div className="h-[65vh]"></div>
+        
         {/* Character Info Section */}
         <div className="bg-[#111216] p-4 space-y-4">
           <div>
