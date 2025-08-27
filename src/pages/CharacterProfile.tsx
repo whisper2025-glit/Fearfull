@@ -553,12 +553,12 @@ export default function CharacterProfile() {
                   {/* Creator Stats */}
                   <div className="flex items-center gap-4 mt-1">
                     <div className="flex items-center gap-1">
-                      <span className="text-sm font-medium text-white">2.1K</span>
+                      <span className="text-sm font-medium text-white">324</span>
                       <span className="text-xs text-white/60">Followers</span>
                     </div>
                     <div className="flex items-center gap-1">
                       <Heart className="h-3 w-3 text-pink-400" />
-                      <span className="text-sm font-medium text-white">15.2K</span>
+                      <span className="text-sm font-medium text-white">1.2K</span>
                       <span className="text-xs text-white/60">Likes</span>
                     </div>
                   </div>
