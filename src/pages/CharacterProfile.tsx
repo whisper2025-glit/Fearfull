@@ -348,10 +348,12 @@ export default function CharacterProfile() {
 
           {/* Tab Navigation - Hidden initially, revealed on scroll, hidden when sticky header is active */}
           <div
-            className="w-full transition-opacity duration-300"
+            className="w-full will-change-transform"
             style={{
-              opacity: shouldTabsBeSticky ? 0 : tabsOpacity,
-              display: shouldTabsBeSticky ? 'none' : 'block'
+              opacity: (1 - contentHideProgress) * tabsOpacity,
+              transform: `translateY(${contentHideProgress * 8}px)`,
+              transition: 'transform 0.4s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.4s cubic-bezier(0.23, 1, 0.32, 1)',
+              pointerEvents: contentHideProgress > 0.5 ? 'none' : 'auto'
             }}
           >
             <div className="flex gap-6 border-b border-white/10 pb-3">
@@ -450,7 +452,7 @@ export default function CharacterProfile() {
               <div className="bg-white/5 rounded-lg p-3">
                 <div className="w-full aspect-square bg-gradient-to-br from-purple-600 to-pink-600 rounded-lg mb-2"></div>
                 <h4 className="text-sm font-medium text-white truncate">Character 1</h4>
-                <p className="text-xs text-white/60">Fantasy • Adventure</p>
+                <p className="text-xs text-white/60">Fantasy ��� Adventure</p>
               </div>
               <div className="bg-white/5 rounded-lg p-3">
                 <div className="w-full aspect-square bg-gradient-to-br from-blue-600 to-green-600 rounded-lg mb-2"></div>
