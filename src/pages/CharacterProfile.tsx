@@ -306,7 +306,7 @@ export default function CharacterProfile() {
         
         {/* Character Info Section */}
         <div
-          className="bg-[#111216] p-4 space-y-4 will-change-transform"
+          className="bg-[#111216] p-3 space-y-3 will-change-transform"
           style={{
             paddingTop: shouldTabsBeSticky ? `${120 + (stickyOpacity * 20)}px` : '16px',
             transition: 'padding-top 0.4s cubic-bezier(0.23, 1, 0.32, 1)'
