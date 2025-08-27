@@ -238,7 +238,7 @@ const Chat = () => {
     };
 
     loadCharacterAndMessages();
-    testConnection();
+    // testConnection(); // Removed automatic API call to save tokens
   }, [characterId, conversationId, navigate, user]);
 
   // Load default persona when user is available
