@@ -410,12 +410,22 @@ const Chat = () => {
         max_tokens: 195
       };
 
-      const response = await openRouterAPI.createChatCompletion(modelToUse, chatMessages, {
+      const apiOptions = {
         temperature: settingsToUse.temperature,
         max_tokens: settingsToUse.max_tokens,
         // Note: content_diversity (top_p) may need different parameter name based on OpenRouter API
         top_p: settingsToUse.content_diversity
+      };
+
+      // Track API call for debugging
+      setLastAPICall({
+        temperature: apiOptions.temperature,
+        max_tokens: apiOptions.max_tokens,
+        top_p: apiOptions.top_p,
+        timestamp: new Date().toISOString()
       });
+
+      const response = await openRouterAPI.createChatCompletion(modelToUse, chatMessages, apiOptions);
 
       const botResponseContent = response.choices[0]?.message?.content || "I apologize, but I couldn't generate a response.";
 
