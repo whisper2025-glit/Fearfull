@@ -302,7 +302,7 @@ export default function CharacterProfile() {
           WebkitOverflowScrolling: 'touch'
         }}
       >
-        <div className="h-[60vh]" style={{ minHeight: '60vh' }}></div>
+        <div className="h-[70vh]" style={{ minHeight: '70vh' }}></div>
         
         {/* Character Info Section */}
         <div
