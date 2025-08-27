@@ -693,6 +693,11 @@ const Chat = () => {
       <ChatSettingsModal
         open={isChatSettingsModalOpen}
         onOpenChange={setIsChatSettingsModalOpen}
+        selectedModel={selectedModel}
+        onOpenModelsModal={() => {
+          setIsChatSettingsModalOpen(false);
+          setIsModelsModalOpen(true);
+        }}
       />
     </div>
   );
