@@ -395,9 +395,9 @@ export default function CharacterProfile() {
             </div>
           </div>
 
-          {/* Content Section - Always visible */}
+          {/* Content Section - Conditional based on activeTab */}
           <div className={`space-y-4 ${shouldTabsBeSticky ? 'mt-0 pt-4' : 'mt-4'}`}>
-              {/* Introduction Block - Hidden initially, shown when scrolled */}
+            {activeTab === 'details' && (
               <div
                 className="bg-[#1a1a1a] rounded-lg p-4 space-y-4 border border-white/10 transition-all duration-300"
                 style={{
@@ -498,13 +498,27 @@ export default function CharacterProfile() {
                   </button>
                 </div>
               </div>
-          </div>
+            )}
 
-          {/* Comments Section - Hidden by default, can be shown later */}
-          <div className="hidden">
-            <div className="text-center text-white/60 py-8">
-              No comments yet
-            </div>
+            {activeTab === 'comments' && (
+              <div className="bg-[#1a1a1a] rounded-lg border border-white/10 h-[600px]">
+                <CommentsList
+                  onAddComment={async (content) => {
+                    console.log('Adding comment:', content);
+                    // TODO: Implement comment submission to Supabase
+                    toast.success('Comment added!');
+                  }}
+                  onLikeComment={(commentId) => {
+                    console.log('Liking comment:', commentId);
+                    // TODO: Implement comment liking
+                  }}
+                  onReplyToComment={(commentId) => {
+                    console.log('Replying to comment:', commentId);
+                    // TODO: Implement comment replies
+                  }}
+                />
+              </div>
+            )}
           </div>
         </div>
 
