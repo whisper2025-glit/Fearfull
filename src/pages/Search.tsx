@@ -41,26 +41,23 @@ const Search = () => {
     {
       id: '1',
       name: 'Just a Random Guy',
-      stats: { characters: 150, messages: '71.3M' },
-      description: 'Welcome to my page your new guilty pleasure 🥰...',
-      rank: 1,
-      points: '780.6K'
+      avatar: '/placeholder.svg',
+      stats: { characters: 150, messages: '71.3M', followers: '780.6K' },
+      description: 'Welcome to my page your new guilty pleasure 🥰...'
     },
     {
-      id: '2', 
+      id: '2',
       name: 'The Burrito Queen 女...',
-      stats: { characters: '1.4K', messages: '551.3M' },
-      description: "You know who I am. I've made more people cry...",
-      rank: 2,
-      points: '665.6K'
+      avatar: '/placeholder.svg',
+      stats: { characters: '1.4K', messages: '551.3M', followers: '665.6K' },
+      description: "You know who I am. I've made more people cry..."
     },
     {
       id: '3',
       name: 'Atis, Brat Princess',
-      stats: { characters: 344, messages: '282.6M' },
-      description: '',
-      rank: 3,
-      points: '384.3K'
+      avatar: '/placeholder.svg',
+      stats: { characters: 344, messages: '282.6M', followers: '384.3K' },
+      description: ''
     }
   ];
 
@@ -350,22 +347,15 @@ const Search = () => {
                   {activeRankTab === 'Creators' ? (
                     // Creators list
                     mockTrendingCreators.map((creator) => (
-                      <div key={creator.id} className="bg-gradient-to-r from-purple-500/20 to-blue-500/20 rounded-xl p-4 space-y-2">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-3">
-                            <span className="text-lg font-bold text-white">{creator.rank}</span>
-                            <h3 className="text-sm font-semibold text-white">{creator.name}</h3>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <Flame className="h-4 w-4 text-green-400" />
-                            <span className="text-sm font-semibold text-green-400">{creator.points}</span>
-                          </div>
-                        </div>
-                        
-                        <div className="text-center">
-                          <Button variant="outline" size="sm" className="text-xs rounded-full">
-                            All Badges &gt;
-                          </Button>
+                      <div key={creator.id} className="bg-gradient-to-r from-purple-500/20 to-blue-500/20 rounded-xl p-4 space-y-3">
+                        <div className="flex items-center gap-3">
+                          <Avatar className="w-12 h-12">
+                            <AvatarImage src={creator.avatar} />
+                            <AvatarFallback className="bg-gradient-to-br from-purple-500 to-blue-500 text-white text-sm">
+                              {creator.name.charAt(0)}
+                            </AvatarFallback>
+                          </Avatar>
+                          <h3 className="text-sm font-semibold text-white">{creator.name}</h3>
                         </div>
 
                         <div className="flex justify-between text-center">
@@ -376,6 +366,10 @@ const Search = () => {
                           <div>
                             <div className="text-lg font-bold text-green-400">{creator.stats.messages}</div>
                             <div className="text-xs text-green-400">Messages</div>
+                          </div>
+                          <div>
+                            <div className="text-lg font-bold text-green-400">{creator.stats.followers}</div>
+                            <div className="text-xs text-green-400">Followers</div>
                           </div>
                         </div>
 
