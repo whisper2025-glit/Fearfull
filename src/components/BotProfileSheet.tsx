@@ -176,11 +176,26 @@ export function BotProfileSheet() {
                   </div>
 
                   {/* Description */}
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     <h3 className="text-white font-semibold">[Cute, Alien, Oblivious]</h3>
-                    <p className="text-white/80 text-sm leading-relaxed">
-                      While investigating strange lights in the woods, you come across a cute alien woman who is fascinated by Earth but knows very little about it.
-                    </p>
+                    <div className="space-y-2">
+                      <div className={`text-white/80 text-sm leading-relaxed transition-all duration-300 ${
+                        isDescriptionExpanded ? 'max-h-none' : 'max-h-16 overflow-hidden'
+                      }`}>
+                        <p className="text-white/80 text-sm leading-relaxed">
+                          While investigating strange lights in the woods, you come across a cute alien woman who is fascinated by Earth but knows very little about it. She has bright, curious eyes and an innocent demeanor that makes her endearing to humans. Despite her advanced alien technology and abilities, she approaches every earthly experience with wonder and excitement, often asking many questions about the simplest things.
+                        </p>
+                      </div>
+
+                      {/* View More/Less Button */}
+                      <button
+                        onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
+                        className="text-pink-400 text-sm font-medium flex items-center gap-1 hover:text-pink-300 transition-colors"
+                      >
+                        {isDescriptionExpanded ? 'View Less' : 'View More'}
+                        <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isDescriptionExpanded ? 'rotate-180' : ''}`} />
+                      </button>
+                    </div>
                   </div>
                 </TabsContent>
                 
