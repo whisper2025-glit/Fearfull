@@ -39,19 +39,10 @@ export function ChatSettingsModal({ open, onOpenChange }: ChatSettingsModalProps
           <div className="px-6 pb-6 space-y-6 flex-1 overflow-y-auto min-h-0 pr-1 max-h-full">
             {/* Model Settings */}
             <div>
-              <div className="flex items-center justify-between mb-4">
+              <div className="mb-4">
                 <h3 className="text-[#e74c8c] font-semibold" style={{ fontSize: '14px' }}>
                   Model Settings
                 </h3>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="flex items-center gap-2 bg-[#2d2e3e] border-[#3d3e4e] text-white hover:bg-[#34354a] rounded-lg h-8"
-                  style={{ fontSize: '12px' }}
-                >
-                  <FileText className="h-3 w-3" />
-                  View Guide
-                </Button>
               </div>
 
               <div className="space-y-2">
