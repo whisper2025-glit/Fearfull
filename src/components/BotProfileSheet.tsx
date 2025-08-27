@@ -67,7 +67,7 @@ export function BotProfileSheet() {
               <div className="absolute inset-0 bg-gradient-to-t from-[#111216] via-[#111216]/60 to-transparent z-10" />
 
               {/* Character info overlay at bottom */}
-              <div className="absolute inset-x-0 bottom-0 px-4 pb-6 space-y-3">
+              <div className="absolute inset-x-0 bottom-0 px-4 pb-6 space-y-3 z-20">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <Button variant="ghost" size="icon" className="h-8 w-8 text-white">
