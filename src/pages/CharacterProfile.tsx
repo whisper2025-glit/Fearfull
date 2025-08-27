@@ -340,9 +340,15 @@ export default function CharacterProfile() {
           <Button
             variant="ghost"
             size="icon"
-            className="h-10 w-10 text-white bg-black/20 backdrop-blur-sm"
+            className={`h-10 w-10 bg-black/20 backdrop-blur-sm transition-colors ${
+              isFavorited ? 'text-pink-400' : 'text-white'
+            } ${isFavoriteLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+            onClick={handleFavoriteClick}
+            disabled={isFavoriteLoading}
           >
-            <Heart className="h-5 w-5" />
+            <Heart className={`h-5 w-5 ${
+              isFavorited ? 'fill-pink-400' : ''
+            }`} />
           </Button>
         </div>
       </div>
