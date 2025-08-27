@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Share2, MessageCircle, Heart, ChevronLeft } from "lucide-react";
-import { supabase } from "@/lib/supabase";
+import { supabase, favoriteCharacter, checkIsFavorited } from "@/lib/supabase";
 import { toast } from "sonner";
 import { CommentsList } from "@/components/CommentsList";
 import { useComments } from "@/hooks/useComments";
