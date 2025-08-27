@@ -1122,3 +1122,72 @@ export const getFavoriteCharacters = async (userId: string) => {
     return [];
   }
 };
+
+// Chat Settings CRUD operations
+export interface ChatSettings {
+  id?: string;
+  user_id: string;
+  model_id: string;
+  temperature: number;
+  content_diversity: number;
+  max_tokens: number;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export const getChatSettings = async (userId: string, modelId: string): Promise<ChatSettings | null> => {
+  try {
+    console.log('🔍 Fetching chat settings for user and model:', { userId, modelId });
+
+    const { data: settings, error } = await supabase
+      .from('chat_settings')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('model_id', modelId)
+      .single();
+
+    if (error && error.code !== 'PGRST116') { // PGRST116 = no rows returned
+      console.error('❌ Error fetching chat settings:', error);
+      throw error;
+    }
+
+    console.log('✅ Chat settings fetched:', settings);
+    return settings || null;
+  } catch (error) {
+    console.error('❌ Final error in getChatSettings:', error);
+    return null;
+  }
+};
+
+export const saveChatSettings = async (settings: Omit<ChatSettings, 'id' | 'created_at' | 'updated_at'>): Promise<ChatSettings | null> => {
+  try {
+    console.log('💾 Saving chat settings:', settings);
+
+    const { data: savedSettings, error } = await supabase
+      .from('chat_settings')
+      .upsert(settings, {
+        onConflict: 'user_id,model_id'
+      })
+      .select()
+      .single();
+
+    if (error) {
+      console.error('❌ Error saving chat settings:', error);
+      throw error;
+    }
+
+    console.log('✅ Chat settings saved successfully:', savedSettings);
+    return savedSettings;
+  } catch (error) {
+    console.error('❌ Final error in saveChatSettings:', error);
+    throw error;
+  }
+};
+
+export const getDefaultChatSettings = (): Omit<ChatSettings, 'id' | 'user_id' | 'model_id' | 'created_at' | 'updated_at'> => {
+  return {
+    temperature: 0.70,
+    content_diversity: 0.05,
+    max_tokens: 195
+  };
+};
