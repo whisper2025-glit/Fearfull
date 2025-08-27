@@ -207,8 +207,6 @@ export default function CharacterProfile() {
         className="relative z-10 h-full overflow-y-auto"
         onScroll={handleScroll}
       >
-        <div className="h-[65vh]"></div>
-        
         {/* Character Info Section */}
         <div className="bg-[#111216] p-4 space-y-4">
           <div>
