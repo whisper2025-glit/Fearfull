@@ -16,7 +16,7 @@ import { PersonaModal } from "@/components/PersonaModal";
 import { SuggestModal } from "@/components/SuggestModal";
 import { ChatSettingsModal } from "@/components/ChatSettingsModal";
 import { openRouterAPI, ChatMessage } from "@/lib/openrouter";
-import { supabase, createOrUpdateUser, getDefaultPersona } from "@/lib/supabase";
+import { supabase, createOrUpdateUser, getDefaultPersona, getChatSettings, getDefaultChatSettings, ChatSettings } from "@/lib/supabase";
 import { toast } from "sonner";
 
 interface Message {
