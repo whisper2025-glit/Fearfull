@@ -317,6 +317,8 @@ export default function CharacterProfile() {
             </TabsContent>
           </Tabs>
         </div>
+        {/* Extra space to allow scrolling content to reach top navigation */}
+        <div className="h-[70vh]"></div>
       </div>
     </div>
   );
