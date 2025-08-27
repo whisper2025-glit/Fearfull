@@ -12,7 +12,6 @@ import Profile from "./pages/Profile";
 import AuthPage from "./pages/AuthPage";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
-import BotProfile from "./pages/BotProfile";
 
 const queryClient = new QueryClient();
 
@@ -48,11 +47,6 @@ const AppContent = () => {
         <Route path="/profile" element={
           <ProtectedRoute>
             <Profile />
-          </ProtectedRoute>
-        } />
-        <Route path="/bot-profile" element={
-          <ProtectedRoute>
-            <BotProfile />
           </ProtectedRoute>
         } />
         <Route path="*" element={<NotFound />} />
