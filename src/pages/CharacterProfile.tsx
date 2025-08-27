@@ -284,11 +284,21 @@ export default function CharacterProfile() {
         {/* Sticky Tabs */}
         <div className="px-4 py-3 bg-[#111216]">
           <div className="flex gap-6">
-            <button className="text-sm font-medium text-pink-400 border-b-2 border-pink-400 pb-2">
+            <button
+              onClick={() => setActiveTab('details')}
+              className={`text-sm font-medium pb-2 border-b-2 transition-colors ${
+                activeTab === 'details' ? 'text-pink-400 border-pink-400' : 'text-white/60 border-transparent'
+              }`}
+            >
               Details
             </button>
-            <button className="text-sm font-medium text-white/60 pb-2">
-              Comments (0)
+            <button
+              onClick={() => setActiveTab('comments')}
+              className={`text-sm font-medium pb-2 border-b-2 transition-colors ${
+                activeTab === 'comments' ? 'text-pink-400 border-pink-400' : 'text-white/60 border-transparent'
+              }`}
+            >
+              Comments ({commentCount})
             </button>
           </div>
         </div>
