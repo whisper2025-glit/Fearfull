@@ -9,6 +9,7 @@ import Chat from "./pages/Chat";
 import Chats from "./pages/Chats";
 import CreateCharacter from "./pages/CreateCharacter";
 import Profile from "./pages/Profile";
+import CharacterProfile from "./pages/CharacterProfile";
 import AuthPage from "./pages/AuthPage";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
