@@ -344,7 +344,7 @@ export default function CharacterProfile() {
           >
             <div className="w-full rounded-full p-[1px] bg-gradient-to-r from-pink-500 to-cyan-400">
               <Button
-                className="w-full rounded-full bg-black/40 hover:bg-black/60 text-white text-base py-3"
+                className="w-full rounded-full bg-black/40 hover:bg-black/60 text-white text-base py-2"
                 onClick={handleStartChat}
               >
                 Start Chat
