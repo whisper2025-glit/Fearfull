@@ -123,27 +123,23 @@ export function CommentsList({
 
   return (
     <div className="flex flex-col h-full">
-      {/* Comments Header */}
-      <div className="px-4 py-3 border-b border-white/10">
-        <h3 className="text-white font-medium">Comments</h3>
-      </div>
-
-      {/* Comments List */}
-      <div className="flex-1 overflow-y-auto px-4">
+      {/* Comments List - Scrollable */}
+      <div className="flex-1 overflow-y-auto" style={{ scrollBehavior: 'smooth' }}>
         {comments.length > 0 ? (
-          <div className="space-y-1">
-            {comments.map((comment) => (
-              <CommentItem
-                key={comment.id}
-                comment={comment}
-                onLike={onLikeComment}
-                onReply={onReplyToComment}
-                onViewReplies={(id) => console.log("View replies for:", id)}
-              />
+          <div className="px-4 py-4">
+            {comments.map((comment, index) => (
+              <div key={comment.id} className={index < comments.length - 1 ? "border-b border-white/5 pb-4 mb-4" : ""}>
+                <CommentItem
+                  comment={comment}
+                  onLike={onLikeComment}
+                  onReply={onReplyToComment}
+                  onViewReplies={(id) => console.log("View replies for:", id)}
+                />
+              </div>
             ))}
           </div>
         ) : (
-          <div className="flex-1 flex items-center justify-center py-12">
+          <div className="flex items-center justify-center h-full">
             <div className="text-center">
               <div className="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-2xl">💬</span>
@@ -155,8 +151,8 @@ export function CommentsList({
         )}
       </div>
 
-      {/* Comment Input Footer */}
-      <div className="border-t border-white/10 p-4 bg-[#111216]/60 backdrop-blur-sm">
+      {/* Comment Input Footer - Fixed at bottom */}
+      <div className="border-t border-white/10 p-4 bg-[#111216]/60 backdrop-blur-sm flex-shrink-0">
         <div className="flex items-center gap-3">
           {/* User Avatar */}
           <Avatar className="w-8 h-8 flex-shrink-0">
@@ -177,7 +173,7 @@ export function CommentsList({
               className="flex-1 bg-card/50 border-border resize-none min-h-[40px] max-h-[120px] text-sm text-white placeholder:text-white/50 pr-12"
               rows={1}
             />
-            
+
             {/* Send Button */}
             <Button
               onClick={handleSubmitComment}
