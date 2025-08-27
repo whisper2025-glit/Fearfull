@@ -50,6 +50,11 @@ const AppContent = () => {
             <Profile />
           </ProtectedRoute>
         } />
+        <Route path="/bot-profile" element={
+          <ProtectedRoute>
+            <BotProfile />
+          </ProtectedRoute>
+        } />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
