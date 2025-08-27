@@ -305,11 +305,14 @@ export default function CharacterProfile() {
             </div>
           </div>
 
-          {/* Tabs - Hidden initially, revealed on scroll */}
+          {/* Tabs - Hidden initially, revealed on scroll, hidden when sticky header is active */}
           <Tabs
             defaultValue="details"
             className="w-full transition-opacity duration-300"
-            style={{ opacity: tabsOpacity }}
+            style={{
+              opacity: shouldTabsBeSticky ? 0 : tabsOpacity,
+              display: shouldTabsBeSticky ? 'none' : 'block'
+            }}
           >
             <TabsList className="bg-transparent p-0 h-auto w-full justify-start">
               <TabsTrigger 
