@@ -311,6 +311,26 @@ export interface Database {
           created_at?: string;
         };
       };
+      favorited: {
+        Row: {
+          id: string;
+          user_id: string; // Clerk user ID
+          character_id: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          character_id: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          character_id?: string;
+          created_at?: string;
+        };
+      };
     };
   };
 };
@@ -942,4 +962,131 @@ export const subscribeToCommentLikes = (
     .subscribe();
 
   return subscription;
+};
+
+// Favorites CRUD operations
+export const favoriteCharacter = async (userId: string, characterId: string): Promise<boolean> => {
+  try {
+    console.log('❤️ Favoriting character:', { userId, characterId });
+
+    // Check if already favorited
+    const { data: existingFavorite, error: checkError } = await supabase
+      .from('favorited')
+      .select('id')
+      .eq('user_id', userId)
+      .eq('character_id', characterId)
+      .single();
+
+    if (checkError && checkError.code !== 'PGRST116') { // PGRST116 = no rows returned
+      console.error('❌ Error checking existing favorite:', checkError);
+      throw checkError;
+    }
+
+    if (existingFavorite) {
+      // Unfavorite: remove the favorite
+      const { error: deleteError } = await supabase
+        .from('favorited')
+        .delete()
+        .eq('user_id', userId)
+        .eq('character_id', characterId);
+
+      if (deleteError) {
+        console.error('❌ Error removing favorite:', deleteError);
+        throw deleteError;
+      }
+
+      console.log('✅ Character unfavorited successfully');
+      return false; // Now unfavorited
+    } else {
+      // Favorite: add the favorite
+      const { error: insertError } = await supabase
+        .from('favorited')
+        .insert({
+          user_id: userId,
+          character_id: characterId
+        });
+
+      if (insertError) {
+        console.error('❌ Error adding favorite:', insertError);
+        throw insertError;
+      }
+
+      console.log('✅ Character favorited successfully');
+      return true; // Now favorited
+    }
+  } catch (error) {
+    console.error('❌ Final error in favoriteCharacter:', error);
+    throw error;
+  }
+};
+
+export const checkIsFavorited = async (userId: string, characterIds: string[]): Promise<string[]> => {
+  try {
+    if (characterIds.length === 0) return [];
+
+    console.log('🔍 Checking favorited status for characters:', characterIds);
+
+    const { data: favorites, error } = await supabase
+      .from('favorited')
+      .select('character_id')
+      .eq('user_id', userId)
+      .in('character_id', characterIds);
+
+    if (error) {
+      console.error('❌ Error checking favorites:', error);
+      return [];
+    }
+
+    const favoritedIds = (favorites || []).map(fav => fav.character_id);
+    console.log('�� Favorited character IDs:', favoritedIds);
+    return favoritedIds;
+  } catch (error) {
+    console.error('❌ Final error in checkIsFavorited:', error);
+    return [];
+  }
+};
+
+export const getFavoriteCharacters = async (userId: string) => {
+  try {
+    console.log('📋 Fetching favorite characters for user:', userId);
+
+    const { data: favoriteCharacters, error } = await supabase
+      .from('favorited')
+      .select(`
+        created_at,
+        characters!favorited_character_id_fkey(
+          id,
+          name,
+          intro,
+          avatar_url,
+          tags,
+          owner_id,
+          visibility,
+          rating,
+          created_at,
+          users!characters_owner_id_fkey(
+            full_name
+          )
+        )
+      `)
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('❌ Error fetching favorite characters:', error);
+      throw error;
+    }
+
+    // Extract just the character data with favorite timestamp
+    const characters = (favoriteCharacters || []).map(fav => ({
+      ...fav.characters,
+      favorited_at: fav.created_at
+    })).filter(char => char.id); // Filter out any null characters
+
+    console.log('✅ Favorite characters fetched successfully:', characters.length);
+    return characters;
+  } catch (error) {
+    console.error('❌ Final error in getFavoriteCharacters:', error);
+    return [];
+  }
 };
