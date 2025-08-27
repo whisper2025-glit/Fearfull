@@ -190,8 +190,22 @@ export function BotProfileSheet() {
                 </TabsContent>
                 
                 <TabsContent value="comments" className="mt-4">
-                  <div className="text-center text-white/60 py-8">
-                    No comments yet
+                  <div className="bg-[#1a1a1a] rounded-lg border border-white/10 h-[500px]">
+                    <CommentsList
+                      onAddComment={async (content) => {
+                        console.log('Adding comment:', content);
+                        // TODO: Implement comment submission to Supabase
+                        toast.success('Comment added!');
+                      }}
+                      onLikeComment={(commentId) => {
+                        console.log('Liking comment:', commentId);
+                        // TODO: Implement comment liking
+                      }}
+                      onReplyToComment={(commentId) => {
+                        console.log('Replying to comment:', commentId);
+                        // TODO: Implement comment replies
+                      }}
+                    />
                   </div>
                 </TabsContent>
               </Tabs>
