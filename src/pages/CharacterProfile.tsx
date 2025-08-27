@@ -211,7 +211,7 @@ export default function CharacterProfile() {
 
       {/* Sticky Tabs Header - appears when tabs reach top */}
       <div
-        className={`absolute top-0 left-0 right-0 z-40 transition-all duration-300 ${
+        className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
           shouldTabsBeSticky ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4 pointer-events-none'
         }`}
         style={{
