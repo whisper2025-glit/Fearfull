@@ -2,7 +2,7 @@ import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Share2, MessageCircle, Heart, User, ChevronLeft } from "lucide-react";
+import { Share2, MessageCircle, Heart, User, ChevronLeft, ChevronDown } from "lucide-react";
 import { useState } from "react";
 import { CommentsList } from "./CommentsList";
 import { toast } from "sonner";
@@ -11,6 +11,7 @@ const HERO_IMAGE = "https://cdn.builder.io/api/v1/image/assets%2F420adf53974e411
 
 export function BotProfileSheet() {
   const [scrollY, setScrollY] = useState(0);
+  const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
 
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     setScrollY(e.currentTarget.scrollTop);
