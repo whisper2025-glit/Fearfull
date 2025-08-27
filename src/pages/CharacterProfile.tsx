@@ -105,26 +105,26 @@ export default function CharacterProfile() {
   const titleOpacity = Math.min(Math.max(scrollY - headerActivationPoint - 50, 0) / 100, 1);
 
   return (
-    <div className="bg-[#111216] text-white h-screen relative overflow-hidden">
+    <div className="fixed inset-0 bg-[#111216] text-white overflow-hidden">
       {/* Character Image Background - Fixed */}
-      <div className="fixed inset-0 z-0">
-        <img 
-          src={character.avatar_url || "/lovable-uploads/3eab3055-d06f-48a5-9790-123de7769f97.png"} 
-          alt="Character" 
-          className="w-full h-full object-cover" 
+      <div className="absolute inset-0 z-0">
+        <img
+          src={character.avatar_url || "/lovable-uploads/3eab3055-d06f-48a5-9790-123de7769f97.png"}
+          alt="Character"
+          className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[#111216] via-[#111216]/60 to-transparent" />
       </div>
 
       {/* Scrollable Header - appears on scroll */}
       <div
-        className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
+        className="absolute top-0 left-0 right-0 z-50 transition-all duration-300"
         style={{
           backgroundColor: `rgba(17, 18, 22, ${headerOpacity})`,
           backdropFilter: headerOpacity > 0.5 ? 'blur(10px)' : 'none',
         }}
       >
-        <div className="flex items-center justify-between p-4">
+        <div className="flex items-center justify-between px-4 py-3">
           <div className="flex items-center gap-3">
             <Button
               variant="ghost"
@@ -172,29 +172,29 @@ export default function CharacterProfile() {
 
       {/* Initial Top Navigation - visible when not scrolled */}
       <div
-        className="absolute top-4 left-4 right-4 flex items-center justify-between z-20 transition-opacity duration-300"
+        className="absolute top-3 left-4 right-4 flex items-center justify-between z-20 transition-opacity duration-300"
         style={{ opacity: 1 - headerOpacity }}
       >
-        <Button 
-          variant="ghost" 
-          size="icon" 
+        <Button
+          variant="ghost"
+          size="icon"
           className="h-10 w-10 text-white bg-black/20 backdrop-blur-sm"
           onClick={handleBack}
         >
           <ChevronLeft className="h-5 w-5" />
         </Button>
         <div className="flex items-center gap-2">
-          <Button 
-            variant="ghost" 
-            size="icon" 
+          <Button
+            variant="ghost"
+            size="icon"
             className="h-10 w-10 text-white bg-black/20 backdrop-blur-sm"
             onClick={handleShare}
           >
             <Share2 className="h-5 w-5" />
           </Button>
-          <Button 
-            variant="ghost" 
-            size="icon" 
+          <Button
+            variant="ghost"
+            size="icon"
             className="h-10 w-10 text-white bg-black/20 backdrop-blur-sm"
           >
             <Heart className="h-5 w-5" />
