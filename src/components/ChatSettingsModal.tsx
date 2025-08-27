@@ -29,14 +29,14 @@ export function ChatSettingsModal({ open, onOpenChange }: ChatSettingsModalProps
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg h-[80vh] bg-[#1a1b2e] border-[#2d2e3e] p-0 rounded-2xl w-[95vw] sm:w-auto sm:max-w-lg !gap-0 !grid-cols-1 !grid-rows-1 flex flex-col overflow-hidden">
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col h-full overflow-hidden">
           <DialogHeader className="px-6 py-4 flex-shrink-0">
             <DialogTitle className="text-lg font-bold text-white" style={{ fontSize: '18px' }}>
               Chat Setting
             </DialogTitle>
           </DialogHeader>
 
-          <div className="px-6 pb-6 space-y-6 flex-1 overflow-y-auto">
+          <div className="px-6 pb-6 space-y-6 flex-1 overflow-y-auto min-h-0 pr-1 max-h-full">
             {/* Model Settings */}
             <div>
               <div className="flex items-center justify-between mb-4">
