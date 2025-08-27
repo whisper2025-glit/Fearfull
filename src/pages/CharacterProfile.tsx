@@ -271,7 +271,7 @@ export default function CharacterProfile() {
         className="relative z-30 h-full overflow-y-auto overscroll-none"
         onScroll={handleScroll}
         style={{
-          paddingTop: shouldTabsBeSticky ? '120px' : '0px',
+          paddingTop: 0,
           marginTop: 0,
           scrollBehavior: 'smooth',
           WebkitOverflowScrolling: 'touch'
