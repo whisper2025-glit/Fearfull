@@ -257,9 +257,6 @@ export default function CharacterProfile() {
               Details
             </button>
             <button className="text-sm font-medium text-white/60 pb-2">
-              Gallery (2)
-            </button>
-            <button className="text-sm font-medium text-white/60 pb-2">
               Comments (0)
             </button>
           </div>
@@ -320,12 +317,6 @@ export default function CharacterProfile() {
                 className="text-white data-[state=active]:text-pink-400 data-[state=active]:bg-transparent bg-transparent border-b-2 border-transparent data-[state=active]:border-pink-400 rounded-none px-0 mr-6"
               >
                 Details
-              </TabsTrigger>
-              <TabsTrigger 
-                value="gallery" 
-                className="text-white/60 data-[state=active]:text-pink-400 data-[state=active]:bg-transparent bg-transparent border-b-2 border-transparent data-[state=active]:border-pink-400 rounded-none px-0 mr-6"
-              >
-                Gallery (2)
               </TabsTrigger>
               <TabsTrigger 
                 value="comments" 
