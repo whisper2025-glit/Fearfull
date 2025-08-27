@@ -11,7 +11,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ChevronLeft, MoreHorizontal, Star, Loader2 } from "lucide-react";
 import { CharacterCard } from "@/components/CharacterCard";
-import { supabase } from "@/lib/supabase";
+import { supabase, getFavoriteCharacters, checkIsFavorited } from "@/lib/supabase";
+import { useUser } from "@clerk/clerk-react";
 import { toast } from "sonner";
 
 interface CreatorUser {
@@ -29,12 +30,15 @@ interface CreatorUser {
 
 const CreatorProfile = () => {
   const navigate = useNavigate();
+  const { user } = useUser();
   const { userId } = useParams();
   const [activeTab, setActiveTab] = useState('bots');
   const [sortBy, setSortBy] = useState('newest');
   const [isLoading, setIsLoading] = useState(true);
   const [creatorUser, setCreatorUser] = useState<CreatorUser | null>(null);
   const [userCharacters, setUserCharacters] = useState<any[]>([]);
+  const [favoriteCharacters, setFavoriteCharacters] = useState<any[]>([]);
+  const [viewerFavoritedIds, setViewerFavoritedIds] = useState<string[]>([]);
 
   // Stats state
   const [stats, setStats] = useState({
@@ -84,11 +88,11 @@ const CreatorProfile = () => {
 
       // Calculate stats
       const publicBotsCount = (charactersData || []).length;
-      
+
       // Get total likes count on creator's characters
       const characterIds = (charactersData || []).map(char => char.id);
       let totalLikes = 0;
-      
+
       if (characterIds.length > 0) {
         const { data: likesData, error: likesError } = await supabase
           .from('comments')
@@ -100,6 +104,16 @@ const CreatorProfile = () => {
         }
       }
 
+      // Load creator's favorite characters
+      const favoriteChars = await getFavoriteCharacters(userId);
+      setFavoriteCharacters(favoriteChars);
+
+      // If current user is viewing, get their favorited status for creator's characters
+      if (user && characterIds.length > 0) {
+        const viewerFavorites = await checkIsFavorited(user.id, characterIds);
+        setViewerFavoritedIds(viewerFavorites);
+      }
+
       // Estimate followers based on engagement
       const followersCount = Math.floor(totalLikes / 10) + publicBotsCount * 5;
 
@@ -108,7 +122,7 @@ const CreatorProfile = () => {
         following: 0, // Not implemented yet
         likes: totalLikes,
         publicBots: publicBotsCount,
-        favorites: 0, // Not implemented yet
+        favorites: favoriteChars.length,
         posts: 0 // Not implemented yet
       });
 
@@ -131,13 +145,21 @@ const CreatorProfile = () => {
       case 'bots':
         return userCharacters;
       case 'favorites':
-        // TODO: Implement favorites functionality
-        return [];
+        return favoriteCharacters;
       case 'posts':
         // TODO: Implement posts functionality
         return [];
       default:
         return [];
+    }
+  };
+
+  // Handle favorite status changes by viewers
+  const handleFavoriteChange = async (characterId: string, isFavorited: boolean) => {
+    if (isFavorited) {
+      setViewerFavoritedIds(prev => [...prev, characterId]);
+    } else {
+      setViewerFavoritedIds(prev => prev.filter(id => id !== characterId));
     }
   };
 
@@ -343,9 +365,11 @@ const CreatorProfile = () => {
                     stats: {
                       messages: character.messages?.length || 0,
                       likes: 0 // Placeholder
-                    }
+                    },
+                    isFavorited: viewerFavoritedIds.includes(character.id)
                   }}
                   onClick={() => navigate(`/character/${character.id}`)}
+                  onFavoriteChange={handleFavoriteChange}
                 />
               ))}
             </div>
