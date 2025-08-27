@@ -56,14 +56,8 @@ export function BotProfileSheet() {
 
               <div className="absolute inset-0 bg-gradient-to-t from-[#111216] via-[#111216]/60 to-transparent z-10" />
 
-              {/* Character info overlay at bottom - Fixed position */}
-              <div
-                className="fixed inset-x-4 bottom-4 z-40 space-y-3"
-                style={{
-                  paddingBottom: 'env(safe-area-inset-bottom, 16px)',
-                  pointerEvents: 'auto'
-                }}
-              >
+              {/* Character info overlay at bottom */}
+              <div className="absolute inset-x-4 bottom-4 z-20 space-y-3">
                 <div className="space-y-2">
                   <h2 className="text-xl font-bold text-white truncate">Cata | Curious Innocent Alien</h2>
                   <div className="flex items-center justify-between">
