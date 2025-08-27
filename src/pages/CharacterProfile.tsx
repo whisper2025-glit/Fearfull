@@ -368,47 +368,69 @@ export default function CharacterProfile() {
 
           {/* Content Section - Always visible */}
           <div className={`space-y-4 ${shouldTabsBeSticky ? 'mt-0 pt-4' : 'mt-4'}`}>
-              {/* Tags */}
-              <div className="flex flex-wrap gap-2">
-                {['🎭', '📷', '🎵', 'AnyPOV', 'Fantasy', 'Furry', 'Monster', 'Mystery', 'Non-Human', 'OC', 'Sci-Fi'].map((tag, index) => (
-                  <Badge 
-                    key={tag} 
-                    variant="secondary" 
-                    className={`${index < 3 ? 'bg-pink-500/20 text-pink-300 border-pink-500/30' : 'bg-white/10 text-white/70 border-white/20'} text-xs px-2 py-1 rounded-full`}
-                  >
-                    {tag}
-                  </Badge>
-                ))}
-              </div>
+              {/* Introduction Section */}
+              <div className="space-y-4">
+                <h3 className="text-xl font-bold text-white">Introduction</h3>
 
-              {/* Audio */}
-              <div className="flex items-center gap-3 py-2">
-                <div className="w-8 h-8 bg-pink-500 rounded-full flex items-center justify-center">
-                  <div className="w-0 h-0 border-l-4 border-l-white border-y-2 border-y-transparent ml-1"></div>
+                {/* Tags */}
+                <div className="flex flex-wrap gap-2">
+                  {character.tags && character.tags.length > 0 ? (
+                    character.tags.map((tag, index) => (
+                      <Badge
+                        key={tag}
+                        variant="secondary"
+                        className={`${
+                          index === 0 || tag.toLowerCase() === 'unfiltered'
+                            ? 'bg-pink-500/20 text-pink-300 border-pink-500/30'
+                            : 'bg-white/10 text-white/70 border-white/20'
+                        } text-xs px-3 py-1 rounded-full`}
+                      >
+                        {tag}
+                      </Badge>
+                    ))
+                  ) : (
+                    // Default tags if none in database
+                    ['AnyPOV', 'Fantasy', 'OC'].map((tag, index) => (
+                      <Badge
+                        key={tag}
+                        variant="secondary"
+                        className="bg-white/10 text-white/70 border-white/20 text-xs px-3 py-1 rounded-full"
+                      >
+                        {tag}
+                      </Badge>
+                    ))
+                  )}
                 </div>
-                <div className="flex-1">
-                  <div className="text-sm font-medium text-white">Final Fantasy VII - Woozy Spec...</div>
-                  <div className="text-xs text-white/60 flex items-center gap-2">
-                    <span className="w-16 h-1 bg-gradient-to-r from-pink-500 to-transparent rounded"></span>
-                    <span>SOUNDCLOUD</span>
-                  </div>
-                </div>
-              </div>
 
-              {/* Description */}
-              <div className="space-y-2">
-                <h3 className="text-white font-semibold">[Cute, Alien, Oblivious]</h3>
-                <p className="text-white/80 text-sm leading-relaxed">
-                  {character.intro}
-                </p>
-                {character.scenario && (
-                  <div className="mt-4">
-                    <h4 className="text-white font-medium mb-2">Scenario:</h4>
-                    <p className="text-white/70 text-sm leading-relaxed">
-                      {character.scenario}
-                    </p>
+                {/* Character Traits */}
+                {(character.personality || character.appearance) && (
+                  <div className="text-white/90 text-sm font-medium">
+                    [{[character.personality, character.appearance].filter(Boolean).join(' | ')}]
                   </div>
                 )}
+
+                {/* Introduction Text */}
+                <div className="space-y-3">
+                  <p className="text-white/80 text-sm leading-relaxed">
+                    {character.intro}
+                  </p>
+
+                  {character.scenario && (
+                    <div className="mt-4">
+                      <p className="text-white/70 text-sm leading-relaxed">
+                        {character.scenario}
+                      </p>
+                    </div>
+                  )}
+
+                  {/* View More Button */}
+                  <button className="text-pink-400 text-sm font-medium flex items-center gap-1 mt-3 hover:text-pink-300 transition-colors">
+                    View More
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                </div>
               </div>
           </div>
 
