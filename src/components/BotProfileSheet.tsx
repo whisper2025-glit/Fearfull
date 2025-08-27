@@ -100,7 +100,7 @@ export function BotProfileSheet() {
             </div>
 
             {/* Content that slides over the image */}
-            <div className="relative z-10 bg-[#111216] min-h-screen">
+            <div className="relative z-30 bg-[#111216] min-h-screen">
               <div className="px-4 pt-6 pb-4 space-y-4">
                 {/* Tabs */}
                 <div className="flex items-center justify-between border-b border-white/10">
