@@ -398,6 +398,7 @@ export default function CharacterProfile() {
           {/* Content Section - Conditional based on activeTab */}
           <div className={`space-y-4 ${shouldTabsBeSticky ? 'mt-0 pt-4' : 'mt-4'}`}>
             {activeTab === 'details' && (
+              <>
               <div
                 className="bg-[#1a1a1a] rounded-lg p-4 space-y-4 border border-white/10 transition-all duration-300"
                 style={{
@@ -498,6 +499,59 @@ export default function CharacterProfile() {
                   </button>
                 </div>
               </div>
+
+              {/* Creation Info Block */}
+              <div className="bg-[#1a1a1a] rounded-lg p-4 space-y-4 border border-white/10 mt-4">
+                {/* Header */}
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-semibold text-white">Creation Info</h3>
+                  <button className="text-pink-400 text-sm font-medium hover:text-pink-300 transition-colors flex items-center gap-1">
+                    View Profile
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </button>
+                </div>
+
+                {/* Creator Profile */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-pink-500 rounded-full flex items-center justify-center">
+                      <span className="text-white font-bold text-lg">
+                        {character.users?.full_name?.charAt(0) || 'U'}
+                      </span>
+                    </div>
+                    <div>
+                      <h4 className="text-base font-semibold text-white">
+                        {character.users?.full_name || 'Unknown Creator'}
+                      </h4>
+                      {/* Creator Stats */}
+                      <div className="flex items-center gap-4 mt-1">
+                        <div className="flex items-center gap-1">
+                          <span className="text-sm font-medium text-white">324</span>
+                          <span className="text-xs text-white/60">Followers</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Heart className="h-3 w-3 text-pink-400" />
+                          <span className="text-sm font-medium text-white">1.2K</span>
+                          <span className="text-xs text-white/60">Likes</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <button className="bg-gray-600/50 text-white text-sm px-4 py-2 rounded-full hover:bg-gray-600/70 transition-colors">
+                    Following
+                  </button>
+                </div>
+
+                {/* Bio */}
+                <div className="text-sm text-white/80 leading-relaxed">
+                  <p>
+                    ----&gt; https://linktr.ee/BPAtis &lt;----- Formerly Burrito Princess. Hello nerds💖 One and only bot creator of ...
+                  </p>
+                </div>
+              </div>
+              </>
             )}
 
             {activeTab === 'comments' && (
