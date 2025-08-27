@@ -278,7 +278,13 @@ export default function CharacterProfile() {
         
         {/* Character Info Section */}
         <div className={`bg-[#111216] p-4 space-y-4 transition-all duration-300 ${shouldTabsBeSticky ? 'pt-[120px]' : ''}`}>
-          <div>
+          <div
+            className="transition-opacity duration-300"
+            style={{
+              opacity: shouldTabsBeSticky ? 0 : 1,
+              display: shouldTabsBeSticky ? 'none' : 'block'
+            }}
+          >
             <h1 className="text-2xl font-bold text-white">{character.name}</h1>
             <div className="flex items-center gap-4 text-sm text-white/80 mt-1">
               <span>@{character.users?.full_name || 'Unknown'}</span>
@@ -291,9 +297,15 @@ export default function CharacterProfile() {
           </div>
           
           {/* Start Chat Button */}
-          <div className="w-full">
+          <div
+            className="w-full transition-opacity duration-300"
+            style={{
+              opacity: shouldTabsBeSticky ? 0 : 1,
+              display: shouldTabsBeSticky ? 'none' : 'block'
+            }}
+          >
             <div className="w-full rounded-full p-[1px] bg-gradient-to-r from-pink-500 to-cyan-400">
-              <Button 
+              <Button
                 className="w-full rounded-full bg-black/40 hover:bg-black/60 text-white text-base py-3"
                 onClick={handleStartChat}
               >
