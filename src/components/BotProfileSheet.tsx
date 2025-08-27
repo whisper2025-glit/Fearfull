@@ -99,7 +99,7 @@ export function BotProfileSheet() {
             className="relative z-10 h-full overflow-y-auto"
             onScroll={handleScroll}
           >
-            <div className="h-[65vh]"></div>
+            <div className="h-[40vh]"></div>
             
             {/* Character Info Section */}
             <div className="bg-[#111216] p-4 space-y-4">
@@ -180,7 +180,7 @@ export function BotProfileSheet() {
                 </TabsContent>
 
                 <TabsContent value="comments" className="mt-4">
-                  <div className="bg-[#1a1a1a] rounded-lg border border-white/10 h-[500px]">
+                  <div className="bg-[#1a1a1a] rounded-lg border border-white/10 max-h-[300px]">
                     <CommentsList
                       onAddComment={async (content) => {
                         console.log('Adding comment:', content);
