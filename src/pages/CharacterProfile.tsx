@@ -153,6 +153,27 @@ export default function CharacterProfile() {
     }
   };
 
+  const handleFavoriteClick = async () => {
+    if (!user) {
+      toast.error('Please sign in to favorite characters');
+      return;
+    }
+
+    if (!characterId || isFavoriteLoading) return;
+
+    setIsFavoriteLoading(true);
+    try {
+      const newFavoriteStatus = await favoriteCharacter(user.id, characterId);
+      setIsFavorited(newFavoriteStatus);
+      toast.success(newFavoriteStatus ? 'Added to favorites' : 'Removed from favorites');
+    } catch (error) {
+      console.error('Error favoriting character:', error);
+      toast.error('Failed to update favorite status');
+    } finally {
+      setIsFavoriteLoading(false);
+    }
+  };
+
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     setScrollY(e.currentTarget.scrollTop);
   };
