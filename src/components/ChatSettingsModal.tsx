@@ -175,40 +175,6 @@ export function ChatSettingsModal({ open, onOpenChange }: ChatSettingsModalProps
                 General Settings
               </h3>
 
-              {/* Text Streaming */}
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <h4 className="text-white font-medium" style={{ fontSize: '14px' }}>
-                    Text Streaming
-                  </h4>
-                  <p className="text-gray-400" style={{ fontSize: '12px' }}>
-                    Determine whether the text appears at once or bit-by-bit.
-                  </p>
-                </div>
-                <Switch
-                  checked={textStreaming}
-                  onCheckedChange={setTextStreaming}
-                  className="data-[state=checked]:bg-[#e74c8c]"
-                />
-              </div>
-
-              {/* Scenario-based Experience */}
-              <div className="flex items-center justify-between mb-6">
-                <div>
-                  <h4 className="text-white font-medium" style={{ fontSize: '14px' }}>
-                    Scenario-based Experience
-                  </h4>
-                  <p className="text-gray-400" style={{ fontSize: '12px' }}>
-                    Bring the character's scenario and example conversations into context, allowing you to develop the story based on that.
-                  </p>
-                </div>
-                <Switch
-                  checked={scenarioBasedExperience}
-                  onCheckedChange={setScenarioBasedExperience}
-                  className="data-[state=checked]:bg-[#e74c8c]"
-                />
-              </div>
-
               {/* Max AI message length */}
               <div className="mb-4">
                 <div className="flex items-center gap-2 mb-2">
