@@ -322,8 +322,77 @@ export default function CharacterProfile() {
             </TabsContent>
           </Tabs>
         </div>
+
+        {/* Extended bottom content area */}
+        <div className="bg-[#111216] px-4 pb-8 space-y-6">
+          {/* Additional character stats */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-white">Character Stats</h3>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-white/5 rounded-lg p-3 text-center">
+                <div className="text-2xl font-bold text-white">59.6K</div>
+                <div className="text-xs text-white/60">Messages</div>
+              </div>
+              <div className="bg-white/5 rounded-lg p-3 text-center">
+                <div className="text-2xl font-bold text-white">1008</div>
+                <div className="text-xs text-white/60">Tokens</div>
+              </div>
+              <div className="bg-white/5 rounded-lg p-3 text-center">
+                <div className="text-2xl font-bold text-white">4.8</div>
+                <div className="text-xs text-white/60">Rating</div>
+              </div>
+              <div className="bg-white/5 rounded-lg p-3 text-center">
+                <div className="text-2xl font-bold text-white">892</div>
+                <div className="text-xs text-white/60">Likes</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Related characters */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-white">More by this Creator</h3>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="bg-white/5 rounded-lg p-3">
+                <div className="w-full aspect-square bg-gradient-to-br from-purple-600 to-pink-600 rounded-lg mb-2"></div>
+                <h4 className="text-sm font-medium text-white truncate">Character 1</h4>
+                <p className="text-xs text-white/60">Fantasy • Adventure</p>
+              </div>
+              <div className="bg-white/5 rounded-lg p-3">
+                <div className="w-full aspect-square bg-gradient-to-br from-blue-600 to-green-600 rounded-lg mb-2"></div>
+                <h4 className="text-sm font-medium text-white truncate">Character 2</h4>
+                <p className="text-xs text-white/60">Sci-Fi • Romance</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Creator info */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-white">About Creator</h3>
+            <div className="bg-white/5 rounded-lg p-4 space-y-3">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-500 rounded-full"></div>
+                <div>
+                  <h4 className="text-sm font-medium text-white">{character.users?.full_name || 'Unknown Creator'}</h4>
+                  <p className="text-xs text-white/60">Character Creator</p>
+                </div>
+              </div>
+              <p className="text-sm text-white/80">
+                Passionate about creating immersive character experiences and storytelling.
+                Specializes in fantasy and sci-fi characters with deep backgrounds.
+              </p>
+              <div className="flex gap-4 text-xs text-white/60">
+                <span>12 Characters</span>
+                <span>•</span>
+                <span>2.4K Followers</span>
+                <span>•</span>
+                <span>Joined 2023</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Extra space to allow scrolling content to reach top navigation */}
-        <div className="h-[70vh]"></div>
+        <div className="h-[100vh] bg-[#111216]"></div>
       </div>
     </div>
   );
