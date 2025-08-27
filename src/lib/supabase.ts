@@ -311,6 +311,26 @@ export interface Database {
           created_at?: string;
         };
       };
+      favorited: {
+        Row: {
+          id: string;
+          user_id: string; // Clerk user ID
+          character_id: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          character_id: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          character_id?: string;
+          created_at?: string;
+        };
+      };
     };
   };
 };
