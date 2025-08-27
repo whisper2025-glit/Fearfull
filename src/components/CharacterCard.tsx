@@ -1,10 +1,13 @@
-
 import { Heart, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { useUser } from "@clerk/clerk-react";
+import { favoriteCharacter } from "@/lib/supabase";
+import { toast } from "sonner";
+import { useState } from "react";
 
 interface Character {
-  id: number;
+  id: string;
   name: string;
   description: string;
   image: string;
@@ -13,14 +16,47 @@ interface Character {
     messages: number;
     likes: number;
   };
+  isFavorited?: boolean;
 }
 
 interface CharacterCardProps {
   character: Character;
   onClick: () => void;
+  onFavoriteChange?: (characterId: string, isFavorited: boolean) => void;
 }
 
-export function CharacterCard({ character, onClick }: CharacterCardProps) {
+export function CharacterCard({ character, onClick, onFavoriteChange }: CharacterCardProps) {
+  const { user } = useUser();
+  const [isFavorited, setIsFavorited] = useState(character.isFavorited || false);
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  const handleFavoriteClick = async (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent card click
+
+    if (!user) {
+      toast.error('Please sign in to favorite characters');
+      return;
+    }
+
+    if (isProcessing) return;
+
+    setIsProcessing(true);
+    try {
+      const newFavoriteStatus = await favoriteCharacter(user.id, character.id);
+      setIsFavorited(newFavoriteStatus);
+
+      if (onFavoriteChange) {
+        onFavoriteChange(character.id, newFavoriteStatus);
+      }
+
+      toast.success(newFavoriteStatus ? 'Added to favorites' : 'Removed from favorites');
+    } catch (error) {
+      console.error('Error favoriting character:', error);
+      toast.error('Failed to update favorite status');
+    } finally {
+      setIsProcessing(false);
+    }
+  };
   return (
     <div 
       className="character-card group cursor-pointer w-full"
@@ -37,9 +73,30 @@ export function CharacterCard({ character, onClick }: CharacterCardProps) {
         {/* Gradient Overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
         
+        {/* Favorite Button */}
+        <div className="absolute top-2 right-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            className={`h-8 w-8 p-0 rounded-full backdrop-blur-sm transition-all duration-200 ${
+              isFavorited
+                ? 'bg-pink-500/20 hover:bg-pink-500/30 text-pink-400'
+                : 'bg-black/20 hover:bg-black/40 text-white/60 hover:text-white'
+            } ${isProcessing ? 'opacity-50 cursor-not-allowed' : ''}`}
+            onClick={handleFavoriteClick}
+            disabled={isProcessing}
+          >
+            <Heart
+              className={`h-4 w-4 transition-all duration-200 ${
+                isFavorited ? 'fill-pink-400 text-pink-400' : ''
+              }`}
+            />
+          </Button>
+        </div>
+
         {/* Category Badge */}
         {character.category && (
-          <div className="absolute top-2 right-2">
+          <div className="absolute top-2 left-2">
             <span className="stats-badge bg-primary/20 text-primary border border-primary/30 text-[10px]">
               {character.category}
             </span>
