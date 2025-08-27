@@ -254,6 +254,43 @@ const Chat = () => {
     loadDefaultPersona();
   }, [user, currentPersona]);
 
+  // Load chat settings when user or selected model changes
+  useEffect(() => {
+    const loadChatSettings = async () => {
+      if (!user || !selectedModel) return;
+
+      try {
+        const settings = await getChatSettings(user.id, selectedModel.id);
+        if (settings) {
+          setCurrentChatSettings(settings);
+          console.log('✅ Chat settings loaded:', settings);
+        } else {
+          // Use default settings
+          const defaults = getDefaultChatSettings();
+          const defaultSettings: ChatSettings = {
+            user_id: user.id,
+            model_id: selectedModel.id,
+            ...defaults
+          };
+          setCurrentChatSettings(defaultSettings);
+          console.log('📋 Using default chat settings');
+        }
+      } catch (error) {
+        console.error('Error loading chat settings:', error);
+        // Use defaults on error
+        const defaults = getDefaultChatSettings();
+        const defaultSettings: ChatSettings = {
+          user_id: user.id,
+          model_id: selectedModel.id,
+          ...defaults
+        };
+        setCurrentChatSettings(defaultSettings);
+      }
+    };
+
+    loadChatSettings();
+  }, [user, selectedModel]);
+
   const handleSendMessage = async (messageContent?: string) => {
     const messageToSend = messageContent || message;
     if (!messageToSend.trim() || isLoading || !currentCharacter || !user) return;
