@@ -256,9 +256,64 @@ export interface Database {
           type?: 'intro' | 'scenario' | 'regular';
           created_at?: string;
         };
+      comments: {
+        Row: {
+          id: string;
+          character_id: string;
+          author_id: string | null; // Clerk user ID
+          parent_id: string | null; // For replies/threading
+          content: string;
+          likes_count: number;
+          reply_count: number;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          character_id: string;
+          author_id?: string | null;
+          parent_id?: string | null;
+          content: string;
+          likes_count?: number;
+          reply_count?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          character_id?: string;
+          author_id?: string | null;
+          parent_id?: string | null;
+          content?: string;
+          likes_count?: number;
+          reply_count?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      comment_likes: {
+        Row: {
+          id: string;
+          comment_id: string;
+          user_id: string; // Clerk user ID
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          comment_id: string;
+          user_id: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          comment_id?: string;
+          user_id?: string;
+          created_at?: string;
+        };
       };
     };
   };
+};
 }
 
 // Helper functions for common operations
