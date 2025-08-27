@@ -137,10 +137,14 @@ export default function CharacterProfile() {
 
       {/* Scrollable Header - appears on scroll */}
       <div
-        className={`absolute top-0 left-0 right-0 z-50 transition-all duration-300 ${shouldTabsBeSticky ? 'opacity-0 pointer-events-none' : ''}`}
+        className="absolute top-0 left-0 right-0 z-50 will-change-transform"
         style={{
-          backgroundColor: `rgba(17, 18, 22, ${headerOpacity})`,
-          backdropFilter: headerOpacity > 0.5 ? 'blur(10px)' : 'none',
+          backgroundColor: `rgba(17, 18, 22, ${headerOpacity * (1 - stickyProgress)})`,
+          backdropFilter: headerOpacity > 0.3 ? `blur(${Math.min(headerOpacity * 15, 15)}px)` : 'none',
+          opacity: 1 - stickyProgress,
+          transform: `translateY(${stickyProgress * -10}px)`,
+          pointerEvents: stickyProgress > 0.8 ? 'none' : 'auto',
+          transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
         }}
       >
         <div className="flex items-center justify-between px-4 py-3">
