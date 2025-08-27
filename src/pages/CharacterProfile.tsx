@@ -277,7 +277,7 @@ export default function CharacterProfile() {
         <div className="h-[65vh]" style={{ minHeight: '65vh' }}></div>
         
         {/* Character Info Section */}
-        <div className="bg-[#111216] p-4 space-y-4">
+        <div className={`bg-[#111216] p-4 space-y-4 transition-all duration-300 ${shouldTabsBeSticky ? 'pt-[120px]' : ''}`}>
           <div>
             <h1 className="text-2xl font-bold text-white">{character.name}</h1>
             <div className="flex items-center gap-4 text-sm text-white/80 mt-1">
@@ -329,7 +329,7 @@ export default function CharacterProfile() {
             <TabsContent value="details" className={`space-y-4 ${shouldTabsBeSticky ? 'mt-0 pt-4' : 'mt-4'}`}>
               {/* Tags */}
               <div className="flex flex-wrap gap-2">
-                {['🎭', '📷', '🎵', 'AnyPOV', 'Fantasy', 'Furry', 'Monster', 'Mystery', 'Non-Human', 'OC', 'Sci-Fi'].map((tag, index) => (
+                {['��', '📷', '🎵', 'AnyPOV', 'Fantasy', 'Furry', 'Monster', 'Mystery', 'Non-Human', 'OC', 'Sci-Fi'].map((tag, index) => (
                   <Badge 
                     key={tag} 
                     variant="secondary" 
