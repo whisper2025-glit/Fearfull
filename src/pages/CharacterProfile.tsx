@@ -302,31 +302,26 @@ export default function CharacterProfile() {
             </div>
           </div>
 
-          {/* Tabs - Hidden initially, revealed on scroll, hidden when sticky header is active */}
-          <Tabs
-            defaultValue="details"
+          {/* Tab Navigation - Hidden initially, revealed on scroll, hidden when sticky header is active */}
+          <div
             className="w-full transition-opacity duration-300"
             style={{
               opacity: shouldTabsBeSticky ? 0 : tabsOpacity,
               display: shouldTabsBeSticky ? 'none' : 'block'
             }}
           >
-            <TabsList className="bg-transparent p-0 h-auto w-full justify-start">
-              <TabsTrigger 
-                value="details" 
-                className="text-white data-[state=active]:text-pink-400 data-[state=active]:bg-transparent bg-transparent border-b-2 border-transparent data-[state=active]:border-pink-400 rounded-none px-0 mr-6"
-              >
+            <div className="flex gap-6 border-b border-white/10 pb-3">
+              <button className="text-sm font-medium text-pink-400 border-b-2 border-pink-400 pb-2">
                 Details
-              </TabsTrigger>
-              <TabsTrigger 
-                value="comments" 
-                className="text-white/60 data-[state=active]:text-pink-400 data-[state=active]:bg-transparent bg-transparent border-b-2 border-transparent data-[state=active]:border-pink-400 rounded-none px-0"
-              >
+              </button>
+              <button className="text-sm font-medium text-white/60 pb-2">
                 Comments (0)
-              </TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="details" className={`space-y-4 ${shouldTabsBeSticky ? 'mt-0 pt-4' : 'mt-4'}`}>
+              </button>
+            </div>
+          </div>
+
+          {/* Content Section - Always visible */}
+          <div className={`space-y-4 ${shouldTabsBeSticky ? 'mt-0 pt-4' : 'mt-4'}`}>
               {/* Tags */}
               <div className="flex flex-wrap gap-2">
                 {['🎭', '📷', '🎵', 'AnyPOV', 'Fantasy', 'Furry', 'Monster', 'Mystery', 'Non-Human', 'OC', 'Sci-Fi'].map((tag, index) => (
@@ -369,15 +364,14 @@ export default function CharacterProfile() {
                   </div>
                 )}
               </div>
-            </TabsContent>
-            
-            
-            <TabsContent value="comments" className={`${shouldTabsBeSticky ? 'mt-0' : 'mt-4'}`}>
-              <div className="text-center text-white/60 py-8">
-                No comments yet
-              </div>
-            </TabsContent>
-          </Tabs>
+          </div>
+
+          {/* Comments Section - Hidden by default, can be shown later */}
+          <div className="hidden">
+            <div className="text-center text-white/60 py-8">
+              No comments yet
+            </div>
+          </div>
         </div>
 
         {/* Extended bottom content area */}
