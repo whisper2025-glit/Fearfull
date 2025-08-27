@@ -191,6 +191,17 @@ const Search = () => {
     }
   }, [searchParams]);
 
+  // Update search results when switching tabs after a search has been performed
+  useEffect(() => {
+    if (hasSearched && searchQuery.trim()) {
+      if (activeTab === 'Characters') {
+        setSearchResults(mockSearchResults);
+      } else {
+        setSearchResults(mockUsers);
+      }
+    }
+  }, [activeTab, hasSearched, searchQuery]);
+
   const performSearch = async (query: string) => {
     if (!query.trim()) {
       setSearchResults([]);
