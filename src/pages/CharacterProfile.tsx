@@ -244,8 +244,12 @@ export default function CharacterProfile() {
             </div>
           </div>
 
-          {/* Tabs */}
-          <Tabs defaultValue="details" className="w-full">
+          {/* Tabs - Hidden initially, revealed on scroll */}
+          <Tabs
+            defaultValue="details"
+            className="w-full transition-opacity duration-300"
+            style={{ opacity: tabsOpacity }}
+          >
             <TabsList className="bg-transparent p-0 h-auto w-full justify-start">
               <TabsTrigger 
                 value="details" 
