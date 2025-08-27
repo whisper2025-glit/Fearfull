@@ -377,13 +377,13 @@ export default function CharacterProfile() {
               </div>
             </TabsContent>
             
-            <TabsContent value="gallery" className="mt-4">
+            <TabsContent value="gallery" className={`${shouldTabsBeSticky ? 'mt-0' : 'mt-4'}`}>
               <div className="text-center text-white/60 py-8">
                 Gallery content would go here
               </div>
             </TabsContent>
             
-            <TabsContent value="comments" className="mt-4">
+            <TabsContent value="comments" className={`${shouldTabsBeSticky ? 'mt-0' : 'mt-4'}`}>
               <div className="text-center text-white/60 py-8">
                 No comments yet
               </div>
