@@ -231,12 +231,14 @@ export default function CharacterProfile() {
 
       {/* Sticky Tabs Header - appears when tabs reach top */}
       <div
-        className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
-          shouldTabsBeSticky ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4 pointer-events-none'
-        }`}
+        className="fixed top-0 left-0 right-0 z-40 will-change-transform"
         style={{
-          backgroundColor: 'rgba(17, 18, 22, 0.95)',
-          backdropFilter: 'blur(10px)',
+          backgroundColor: `rgba(17, 18, 22, ${0.95 * stickyOpacity})`,
+          backdropFilter: stickyOpacity > 0.3 ? `blur(${Math.min(stickyOpacity * 15, 15)}px)` : 'none',
+          opacity: stickyOpacity,
+          transform: `translateY(${(1 - stickyOpacity) * -20}px)`,
+          pointerEvents: stickyOpacity > 0.3 ? 'auto' : 'none',
+          transition: 'transform 0.4s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.4s cubic-bezier(0.23, 1, 0.32, 1)'
         }}
       >
         <div className="flex items-center justify-between px-4 py-2 border-b border-white/10">
