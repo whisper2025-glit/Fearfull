@@ -98,7 +98,7 @@ const Index = () => {
                 <CharacterCard
                   key={character.id}
                   character={character}
-                  onClick={() => navigate(`/chat/${character.id}`)}
+                  onClick={() => navigate(`/character/${character.id}`)}
                 />
               ))}
             </div>

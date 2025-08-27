@@ -621,7 +621,7 @@ const Profile = () => {
                       likes: 0 // Placeholder
                     }
                   }}
-                  onClick={() => navigate(`/chat/${character.id}`)}
+                  onClick={() => navigate(`/character/${character.id}`)}
                 />
               ))}
             </div>
