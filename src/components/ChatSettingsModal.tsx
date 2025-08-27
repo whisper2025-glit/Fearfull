@@ -110,20 +110,10 @@ export function ChatSettingsModal({ open, onOpenChange }: ChatSettingsModalProps
 
             {/* Parameters */}
             <div>
-              <div className="flex items-center justify-between mb-4">
+              <div className="mb-4">
                 <h3 className="text-white font-medium" style={{ fontSize: '14px' }}>
                   Parameters
                 </h3>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleReset}
-                  className="flex items-center gap-1 text-[#e74c8c] hover:bg-[#2d2e3e] h-8"
-                  style={{ fontSize: '12px' }}
-                >
-                  <RotateCcw className="h-3 w-3" />
-                  Reset
-                </Button>
               </div>
 
               {/* Temperature */}
