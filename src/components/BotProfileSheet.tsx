@@ -17,7 +17,7 @@ export function BotProfileSheet() {
           Bot Profile
         </Button>
       </DrawerTrigger>
-      <DrawerContent className="bg-[#111216] text-white text-xs border-t border-white/10 h-[90%]">
+      <DrawerContent className="bg-[#111216] text-white text-xs h-screen border-0">
         <div className="relative h-full">
           {/* Header */}
           <div className="absolute top-0 left-0 w-full z-20 flex items-center justify-center p-4 bg-transparent">
