@@ -550,6 +550,18 @@ export default function CharacterProfile() {
                   <h4 className="text-base font-semibold text-white">
                     {character.users?.full_name || 'Unknown Creator'}
                   </h4>
+                  {/* Creator Stats */}
+                  <div className="flex items-center gap-4 mt-1">
+                    <div className="flex items-center gap-1">
+                      <span className="text-sm font-medium text-white">2.1K</span>
+                      <span className="text-xs text-white/60">Followers</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Heart className="h-3 w-3 text-pink-400" />
+                      <span className="text-sm font-medium text-white">15.2K</span>
+                      <span className="text-xs text-white/60">Likes</span>
+                    </div>
+                  </div>
                 </div>
               </div>
               <button className="bg-gray-600/50 text-white text-sm px-4 py-2 rounded-full hover:bg-gray-600/70 transition-colors">
