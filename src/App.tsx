@@ -62,6 +62,11 @@ const AppContent = () => {
             <CreatorProfile />
           </ProtectedRoute>
         } />
+        <Route path="/search" element={
+          <ProtectedRoute>
+            <Search />
+          </ProtectedRoute>
+        } />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
