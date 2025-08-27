@@ -10,18 +10,9 @@ interface ChatSettingsModalProps {
 }
 
 export function ChatSettingsModal({ open, onOpenChange }: ChatSettingsModalProps) {
-  const [language, setLanguage] = useState("english");
   const [temperature, setTemperature] = useState([0.0]);
   const [contentDiversity, setContentDiversity] = useState([0.05]);
-  const [textStreaming, setTextStreaming] = useState(false);
-  const [scenarioBasedExperience, setScenarioBasedExperience] = useState(true);
   const [maxMessageLength, setMaxMessageLength] = useState([225]);
-
-  const handleReset = () => {
-    setTemperature([0.0]);
-    setContentDiversity([0.05]);
-    setMaxMessageLength([225]);
-  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
