@@ -5,7 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Send } from "lucide-react";
 import { CommentItem } from "./CommentItem";
+import { CommentWithAuthor } from "@/lib/supabase";
 
+// Updated to match our database schema
 interface Comment {
   id: string;
   author: {
@@ -21,87 +23,49 @@ interface Comment {
 }
 
 interface CommentsListProps {
-  comments: Comment[];
+  comments: CommentWithAuthor[];
   onAddComment?: (content: string) => Promise<void>;
-  onLikeComment?: (commentId: string) => void;
+  onLikeComment?: (commentId: string) => Promise<void>;
   onReplyToComment?: (commentId: string) => void;
   isLoading?: boolean;
+  characterId?: string;
 }
 
-// Sample comments matching the screenshot
-const sampleComments: Comment[] = [
-  {
-    id: "1",
+// Helper function to transform CommentWithAuthor to our UI Comment interface
+const transformComment = (dbComment: CommentWithAuthor): Comment => {
+  return {
+    id: dbComment.id,
     author: {
-      name: "snoop91",
-      avatar: "/lovable-uploads/3eab3055-d06f-48a5-9790-123de7769f97.png"
+      name: dbComment.users?.full_name || dbComment.users?.username || 'Anonymous',
+      avatar: dbComment.users?.avatar_url || undefined
     },
-    content: "pls do part 2 of her mom",
-    timestamp: "08/10/2025",
-    likes: 4,
-    isLiked: false
-  },
-  {
-    id: "2",
-    author: {
-      name: "Dean|",
-      avatar: "/lovable-uploads/3eab3055-d06f-48a5-9790-123de7769f97.png"
-    },
-    content: "9/10 would chat again",
-    timestamp: "08/10/2025",
-    likes: 0,
-    isLiked: false
-  },
-  {
-    id: "3",
-    author: {
-      name: "Mr. Dinglenut",
-      avatar: "/lovable-uploads/3eab3055-d06f-48a5-9790-123de7769f97.png"
-    },
-    content: "My dihh is crying white tears❤️🍆",
-    timestamp: "08/10/2025",
-    likes: 3,
-    isLiked: false,
-    hasReplies: true,
-    replyCount: 1
-  },
-  {
-    id: "4",
-    author: {
-      name: "Andrea_q",
-      avatar: "/lovable-uploads/3eab3055-d06f-48a5-9790-123de7769f97.png"
-    },
-    content: "my gosh this is so good that i am so horny<3",
-    timestamp: "08/08/2025",
-    likes: 1,
-    isLiked: false
-  },
-  {
-    id: "5",
-    author: {
-      name: "R10cxi",
-      avatar: "/lovable-uploads/3eab3055-d06f-48a5-9790-123de7769f97.png"
-    },
-    content: "my dihh got snapped in half 🍆❤️",
-    timestamp: "08/07/2025",
-    likes: 4,
-    isLiked: false
-  }
-];
+    content: dbComment.content,
+    timestamp: new Date(dbComment.created_at).toLocaleDateString('en-US', {
+      month: '2-digit',
+      day: '2-digit',
+      year: 'numeric'
+    }),
+    likes: dbComment.likes_count,
+    isLiked: dbComment.is_liked || false,
+    hasReplies: dbComment.reply_count > 0,
+    replyCount: dbComment.reply_count
+  };
+};
 
-export function CommentsList({ 
-  comments = sampleComments, 
-  onAddComment, 
-  onLikeComment, 
+export function CommentsList({
+  comments = [],
+  onAddComment,
+  onLikeComment,
   onReplyToComment,
-  isLoading = false 
+  isLoading = false,
+  characterId
 }: CommentsListProps) {
   const { user } = useUser();
   const [newComment, setNewComment] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmitComment = async () => {
-    if (!newComment.trim() || isSubmitting) return;
+    if (!newComment.trim() || isSubmitting || !user) return;
 
     setIsSubmitting(true);
     try {
@@ -121,14 +85,24 @@ export function CommentsList({
     }
   };
 
+  // Transform database comments to UI format
+  const uiComments = comments.map(transformComment);
+
   return (
     <div className="flex flex-col h-full">
       {/* Comments List - Scrollable */}
       <div className="flex-1 overflow-y-auto" style={{ scrollBehavior: 'smooth' }}>
-        {comments.length > 0 ? (
+        {isLoading ? (
+          <div className="flex items-center justify-center h-full">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto mb-4"></div>
+              <p className="text-white/60">Loading comments...</p>
+            </div>
+          </div>
+        ) : uiComments.length > 0 ? (
           <div className="px-4 py-4">
-            {comments.map((comment, index) => (
-              <div key={comment.id} className={index < comments.length - 1 ? "border-b border-white/5 pb-4 mb-4" : ""}>
+            {uiComments.map((comment, index) => (
+              <div key={comment.id} className={index < uiComments.length - 1 ? "border-b border-white/5 pb-4 mb-4" : ""}>
                 <CommentItem
                   comment={comment}
                   onLike={onLikeComment}
@@ -168,8 +142,8 @@ export function CommentsList({
               value={newComment}
               onChange={(e) => setNewComment(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder="Leave your comment..."
-              disabled={isSubmitting}
+              placeholder={user ? "Leave your comment..." : "Sign in to comment"}
+              disabled={isSubmitting || !user}
               className="flex-1 bg-card/50 border-border resize-none min-h-[40px] max-h-[120px] text-sm text-white placeholder:text-white/50 pr-12"
               rows={1}
             />
@@ -177,7 +151,7 @@ export function CommentsList({
             {/* Send Button */}
             <Button
               onClick={handleSubmitComment}
-              disabled={!newComment.trim() || isSubmitting}
+              disabled={!newComment.trim() || isSubmitting || !user}
               size="icon"
               className="absolute right-2 top-2 h-8 w-8 bg-pink-500 hover:bg-pink-600 text-white disabled:opacity-50"
             >

@@ -256,9 +256,64 @@ export interface Database {
           type?: 'intro' | 'scenario' | 'regular';
           created_at?: string;
         };
+      comments: {
+        Row: {
+          id: string;
+          character_id: string;
+          author_id: string | null; // Clerk user ID
+          parent_id: string | null; // For replies/threading
+          content: string;
+          likes_count: number;
+          reply_count: number;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          character_id: string;
+          author_id?: string | null;
+          parent_id?: string | null;
+          content: string;
+          likes_count?: number;
+          reply_count?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          character_id?: string;
+          author_id?: string | null;
+          parent_id?: string | null;
+          content?: string;
+          likes_count?: number;
+          reply_count?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      comment_likes: {
+        Row: {
+          id: string;
+          comment_id: string;
+          user_id: string; // Clerk user ID
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          comment_id: string;
+          user_id: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          comment_id?: string;
+          user_id?: string;
+          created_at?: string;
+        };
       };
     };
   };
+};
 }
 
 // Helper functions for common operations
@@ -514,4 +569,377 @@ export const setDefaultPersona = async (personaId: string, userId: string) => {
     console.error('❌ Final error in setDefaultPersona:', error);
     throw error;
   }
+};
+
+// Comments CRUD operations
+export interface CommentWithAuthor {
+  id: string;
+  character_id: string;
+  author_id: string | null;
+  parent_id: string | null;
+  content: string;
+  likes_count: number;
+  reply_count: number;
+  created_at: string;
+  updated_at: string;
+  users?: {
+    id: string;
+    username?: string | null;
+    full_name: string | null;
+    avatar_url: string | null;
+  } | null;
+  is_liked?: boolean; // Added by client-side logic
+  replies?: CommentWithAuthor[]; // For nested comments
+}
+
+export const getCommentsForCharacter = async (characterId: string, userId?: string | null): Promise<CommentWithAuthor[]> => {
+  try {
+    console.log('🔍 Fetching comments for character:', characterId);
+
+    // First get all top-level comments (no parent_id)
+    const { data: comments, error } = await supabase
+      .from('comments')
+      .select(`
+        *,
+        users:author_id (
+          id,
+          username,
+          full_name,
+          avatar_url
+        )
+      `)
+      .eq('character_id', characterId)
+      .is('parent_id', null)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('❌ Error fetching comments:', error);
+      throw error;
+    }
+
+    // If user is provided, check which comments they've liked
+    let userLikes: string[] = [];
+    if (userId) {
+      const { data: likes, error: likesError } = await supabase
+        .from('comment_likes')
+        .select('comment_id')
+        .eq('user_id', userId);
+
+      if (!likesError && likes) {
+        userLikes = likes.map(like => like.comment_id);
+      }
+    }
+
+    // Add is_liked property to comments
+    const commentsWithLikes = comments?.map(comment => ({
+      ...comment,
+      is_liked: userLikes.includes(comment.id)
+    })) || [];
+
+    console.log('✅ Comments fetched successfully:', commentsWithLikes.length);
+    return commentsWithLikes;
+  } catch (error) {
+    console.error('❌ Final error in getCommentsForCharacter:', error);
+    return [];
+  }
+};
+
+export const addComment = async (
+  characterId: string,
+  content: string,
+  authorId: string,
+  parentId?: string | null
+): Promise<CommentWithAuthor | null> => {
+  try {
+    console.log('💬 Adding comment:', { characterId, content, authorId, parentId });
+
+    const { data: comment, error } = await supabase
+      .from('comments')
+      .insert({
+        character_id: characterId,
+        content: content.trim(),
+        author_id: authorId,
+        parent_id: parentId || null
+      })
+      .select(`
+        *,
+        users:author_id (
+          id,
+          username,
+          full_name,
+          avatar_url
+        )
+      `)
+      .single();
+
+    if (error) {
+      console.error('❌ Error adding comment:', error);
+      throw error;
+    }
+
+    console.log('✅ Comment added successfully:', comment);
+    return comment;
+  } catch (error) {
+    console.error('❌ Final error in addComment:', error);
+    throw error;
+  }
+};
+
+export const likeComment = async (commentId: string, userId: string): Promise<boolean> => {
+  try {
+    console.log('👍 Liking comment:', { commentId, userId });
+
+    // Check if user already liked this comment
+    const { data: existingLike, error: checkError } = await supabase
+      .from('comment_likes')
+      .select('id')
+      .eq('comment_id', commentId)
+      .eq('user_id', userId)
+      .single();
+
+    if (checkError && checkError.code !== 'PGRST116') { // PGRST116 = no rows returned
+      console.error('❌ Error checking existing like:', checkError);
+      throw checkError;
+    }
+
+    if (existingLike) {
+      // Unlike: remove the like
+      const { error: deleteError } = await supabase
+        .from('comment_likes')
+        .delete()
+        .eq('comment_id', commentId)
+        .eq('user_id', userId);
+
+      if (deleteError) {
+        console.error('❌ Error removing like:', deleteError);
+        throw deleteError;
+      }
+
+      console.log('✅ Comment unliked successfully');
+      return false; // Now unliked
+    } else {
+      // Like: add the like
+      const { error: insertError } = await supabase
+        .from('comment_likes')
+        .insert({
+          comment_id: commentId,
+          user_id: userId
+        });
+
+      if (insertError) {
+        console.error('❌ Error adding like:', insertError);
+        throw insertError;
+      }
+
+      console.log('✅ Comment liked successfully');
+      return true; // Now liked
+    }
+  } catch (error) {
+    console.error('❌ Final error in likeComment:', error);
+    throw error;
+  }
+};
+
+export const deleteComment = async (commentId: string, userId: string): Promise<boolean> => {
+  try {
+    console.log('🗑️ Deleting comment:', { commentId, userId });
+
+    const { error } = await supabase
+      .from('comments')
+      .delete()
+      .eq('id', commentId)
+      .eq('author_id', userId); // Security: only delete own comments
+
+    if (error) {
+      console.error('❌ Error deleting comment:', error);
+      throw error;
+    }
+
+    console.log('✅ Comment deleted successfully');
+    return true;
+  } catch (error) {
+    console.error('❌ Final error in deleteComment:', error);
+    throw error;
+  }
+};
+
+export const getRepliesForComment = async (commentId: string, userId?: string | null): Promise<CommentWithAuthor[]> => {
+  try {
+    console.log('🔍 Fetching replies for comment:', commentId);
+
+    const { data: replies, error } = await supabase
+      .from('comments')
+      .select(`
+        *,
+        users:author_id (
+          id,
+          username,
+          full_name,
+          avatar_url
+        )
+      `)
+      .eq('parent_id', commentId)
+      .order('created_at', { ascending: true }); // Replies in chronological order
+
+    if (error) {
+      console.error('❌ Error fetching replies:', error);
+      throw error;
+    }
+
+    // If user is provided, check which replies they've liked
+    let userLikes: string[] = [];
+    if (userId && replies && replies.length > 0) {
+      const replyIds = replies.map(reply => reply.id);
+      const { data: likes, error: likesError } = await supabase
+        .from('comment_likes')
+        .select('comment_id')
+        .eq('user_id', userId)
+        .in('comment_id', replyIds);
+
+      if (!likesError && likes) {
+        userLikes = likes.map(like => like.comment_id);
+      }
+    }
+
+    // Add is_liked property to replies
+    const repliesWithLikes = replies?.map(reply => ({
+      ...reply,
+      is_liked: userLikes.includes(reply.id)
+    })) || [];
+
+    console.log('✅ Replies fetched successfully:', repliesWithLikes.length);
+    return repliesWithLikes;
+  } catch (error) {
+    console.error('❌ Final error in getRepliesForComment:', error);
+    return [];
+  }
+};
+
+// Real-time subscription for comments
+export const subscribeToComments = (
+  characterId: string,
+  onCommentAdded: (comment: CommentWithAuthor) => void,
+  onCommentUpdated: (comment: CommentWithAuthor) => void,
+  onCommentDeleted: (commentId: string) => void
+) => {
+  console.log('🔄 Setting up real-time subscription for comments on character:', characterId);
+
+  const subscription = supabase
+    .channel(`comments:${characterId}`)
+    .on(
+      'postgres_changes',
+      {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'comments',
+        filter: `character_id=eq.${characterId}`
+      },
+      async (payload) => {
+        console.log('🆕 New comment received:', payload.new);
+
+        // Fetch the complete comment with author info
+        const { data: comment, error } = await supabase
+          .from('comments')
+          .select(`
+            *,
+            users:author_id (
+              id,
+              username,
+              full_name,
+              avatar_url
+            )
+          `)
+          .eq('id', payload.new.id)
+          .single();
+
+        if (!error && comment) {
+          onCommentAdded(comment);
+        }
+      }
+    )
+    .on(
+      'postgres_changes',
+      {
+        event: 'UPDATE',
+        schema: 'public',
+        table: 'comments',
+        filter: `character_id=eq.${characterId}`
+      },
+      async (payload) => {
+        console.log('📝 Comment updated:', payload.new);
+
+        // Fetch the complete updated comment with author info
+        const { data: comment, error } = await supabase
+          .from('comments')
+          .select(`
+            *,
+            users:author_id (
+              id,
+              username,
+              full_name,
+              avatar_url
+            )
+          `)
+          .eq('id', payload.new.id)
+          .single();
+
+        if (!error && comment) {
+          onCommentUpdated(comment);
+        }
+      }
+    )
+    .on(
+      'postgres_changes',
+      {
+        event: 'DELETE',
+        schema: 'public',
+        table: 'comments',
+        filter: `character_id=eq.${characterId}`
+      },
+      (payload) => {
+        console.log('🗑️ Comment deleted:', payload.old);
+        onCommentDeleted(payload.old.id);
+      }
+    )
+    .subscribe();
+
+  return subscription;
+};
+
+// Subscribe to comment likes changes
+export const subscribeToCommentLikes = (
+  commentIds: string[],
+  onLikesChanged: (commentId: string, newLikesCount: number) => void
+) => {
+  console.log('👍 Setting up real-time subscription for comment likes:', commentIds);
+
+  const subscription = supabase
+    .channel('comment_likes_changes')
+    .on(
+      'postgres_changes',
+      {
+        event: '*', // Listen to all events (INSERT, DELETE)
+        schema: 'public',
+        table: 'comment_likes'
+      },
+      async (payload) => {
+        const commentId = payload.new?.comment_id || payload.old?.comment_id;
+
+        if (commentId && commentIds.includes(commentId)) {
+          // Fetch updated likes count for the comment
+          const { data: comment, error } = await supabase
+            .from('comments')
+            .select('likes_count')
+            .eq('id', commentId)
+            .single();
+
+          if (!error && comment) {
+            onLikesChanged(commentId, comment.likes_count);
+          }
+        }
+      }
+    )
+    .subscribe();
+
+  return subscription;
 };

@@ -6,12 +6,34 @@ import { Share2, MessageCircle, Heart, User, ChevronLeft, ChevronDown } from "lu
 import { useState } from "react";
 import { CommentsList } from "./CommentsList";
 import { toast } from "sonner";
+import { useComments } from "@/hooks/useComments";
 
 const HERO_IMAGE = "https://cdn.builder.io/api/v1/image/assets%2F420adf53974e411387df983f01823d73%2F4635cc3157e045f592ade58eeea4af3b?format=webp&width=800";
 
-export function BotProfileSheet() {
+interface BotProfileSheetProps {
+  characterId?: string;
+  characterName?: string;
+  characterImage?: string;
+  trigger?: React.ReactNode;
+}
+
+export function BotProfileSheet({
+  characterId = '',
+  characterName = 'Cata | Curious Innocent Alien',
+  characterImage = HERO_IMAGE,
+  trigger
+}: BotProfileSheetProps) {
   const [scrollY, setScrollY] = useState(0);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
+
+  // Use the comments hook for real-time data
+  const {
+    comments,
+    isLoading: commentsLoading,
+    handleAddComment,
+    handleLikeComment,
+    handleReplyToComment
+  } = useComments(characterId);
 
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     setScrollY(e.currentTarget.scrollTop);
@@ -28,16 +50,18 @@ export function BotProfileSheet() {
   return (
     <Drawer>
       <DrawerTrigger asChild>
-        <Button variant="ghost">
-          <User className="mr-2 h-4 w-4" />
-          Bot Profile
-        </Button>
+        {trigger || (
+          <Button variant="ghost">
+            <User className="mr-2 h-4 w-4" />
+            Bot Profile
+          </Button>
+        )}
       </DrawerTrigger>
       <DrawerContent className="bg-[#111216] text-white h-screen border-0">
         <div className="relative h-full overflow-hidden">
           {/* Character Image Background - Fixed */}
           <div className="fixed inset-0 z-0">
-            <img src={HERO_IMAGE} alt="Character" className="w-full h-full object-cover" />
+            <img src={characterImage} alt="Character" className="w-full h-full object-cover" />
             <div className="absolute inset-0 bg-gradient-to-t from-[#111216] via-[#111216]/60 to-transparent" />
           </div>
 
@@ -65,7 +89,7 @@ export function BotProfileSheet() {
                   className="text-lg font-semibold text-white transition-opacity duration-300"
                   style={{ opacity: titleOpacity }}
                 >
-                  Cata | Curious Innocent Alien
+                  {characterName}
                 </h2>
               </div>
               <Button
@@ -104,12 +128,12 @@ export function BotProfileSheet() {
             {/* Character Info Section */}
             <div className="bg-[#111216] p-4 space-y-4">
               <div>
-                <h1 className="text-2xl font-bold text-white">Cata | Curious Innocent Alien</h1>
+                <h1 className="text-2xl font-bold text-white">{characterName}</h1>
                 <div className="flex items-center gap-4 text-sm text-white/80 mt-1">
-                  <span>@Venom Master</span>
+                  <span>@Creator</span>
                   <div className="flex items-center gap-1">
                     <MessageCircle className="h-4 w-4" />
-                    <span>59.6K</span>
+                    <span>{comments.length > 0 ? `${comments.length}` : '0'}</span>
                   </div>
                   <span>1008 tokens</span>
                 </div>
@@ -137,7 +161,7 @@ export function BotProfileSheet() {
                     value="comments"
                     className="text-white/60 data-[state=active]:text-pink-400 data-[state=active]:bg-transparent bg-transparent border-b-2 border-transparent data-[state=active]:border-pink-400 rounded-none px-0"
                   >
-                    Comments (0)
+                    Comments ({comments.length})
                   </TabsTrigger>
                 </TabsList>
                 
@@ -182,19 +206,12 @@ export function BotProfileSheet() {
                 <TabsContent value="comments" className="mt-4">
                   <div className="bg-[#1a1a1a] rounded-lg border border-white/10 max-h-[300px]">
                     <CommentsList
-                      onAddComment={async (content) => {
-                        console.log('Adding comment:', content);
-                        // TODO: Implement comment submission to Supabase
-                        toast.success('Comment added!');
-                      }}
-                      onLikeComment={(commentId) => {
-                        console.log('Liking comment:', commentId);
-                        // TODO: Implement comment liking
-                      }}
-                      onReplyToComment={(commentId) => {
-                        console.log('Replying to comment:', commentId);
-                        // TODO: Implement comment replies
-                      }}
+                      comments={comments}
+                      isLoading={commentsLoading}
+                      characterId={characterId}
+                      onAddComment={handleAddComment}
+                      onLikeComment={handleLikeComment}
+                      onReplyToComment={handleReplyToComment}
                     />
                   </div>
                 </TabsContent>
