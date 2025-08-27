@@ -33,19 +33,65 @@ export function BotProfileSheet() {
             <img src={HERO_IMAGE} alt="Character" className="w-full h-full object-cover" />
             <div className="absolute inset-0 bg-gradient-to-t from-[#111216] via-[#111216]/60 to-transparent" />
           </div>
-          
-          {/* Top Navigation */}
-          <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-20">
-            <Button variant="ghost" size="icon" className="h-10 w-10 text-white">
+
+          {/* Scrollable Header - appears on scroll */}
+          <div
+            className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
+            style={{
+              backgroundColor: `rgba(17, 18, 22, ${headerOpacity})`,
+              backdropFilter: headerOpacity > 0.5 ? 'blur(10px)' : 'none',
+            }}
+          >
+            <div className="flex items-center justify-between p-4">
+              <div className="flex items-center gap-3">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-10 w-10 text-white"
+                  style={{
+                    backgroundColor: headerOpacity > 0.3 ? 'rgba(255, 255, 255, 0.1)' : 'transparent'
+                  }}
+                >
+                  <ChevronLeft className="h-5 w-5" />
+                </Button>
+                <h2
+                  className="text-lg font-semibold text-white transition-opacity duration-300"
+                  style={{ opacity: titleOpacity }}
+                >
+                  Cata | Curious Innocent Alien
+                </h2>
+              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-10 w-10 text-white"
+                style={{
+                  backgroundColor: headerOpacity > 0.3 ? 'rgba(255, 255, 255, 0.1)' : 'transparent'
+                }}
+              >
+                <Share2 className="h-5 w-5" />
+              </Button>
+            </div>
+          </div>
+
+          {/* Initial Top Navigation - visible when not scrolled */}
+          <div
+            className="absolute top-4 left-4 right-4 flex items-center justify-between z-20 transition-opacity duration-300"
+            style={{ opacity: 1 - headerOpacity }}
+          >
+            <Button variant="ghost" size="icon" className="h-10 w-10 text-white bg-black/20 backdrop-blur-sm">
               <ChevronLeft className="h-5 w-5" />
             </Button>
-            <Button variant="ghost" size="icon" className="h-10 w-10 text-white">
+            <Button variant="ghost" size="icon" className="h-10 w-10 text-white bg-black/20 backdrop-blur-sm">
               <Share2 className="h-5 w-5" />
             </Button>
           </div>
 
-          {/* Scrollable Content that starts lower to show character info at bottom initially */}
-          <div className="relative z-10 h-full overflow-y-auto">
+          {/* Scrollable Content */}
+          <div
+            className="relative z-10 h-full overflow-y-auto"
+            onScroll={handleScroll}
+          >
             <div className="h-[65vh]"></div>
             
             {/* Character Info Section */}
