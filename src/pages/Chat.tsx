@@ -14,8 +14,9 @@ import {
 import { ModelsModal, Model } from "@/components/ModelsModal";
 import { PersonaModal } from "@/components/PersonaModal";
 import { SuggestModal } from "@/components/SuggestModal";
+import { ChatSettingsModal } from "@/components/ChatSettingsModal";
 import { openRouterAPI, ChatMessage } from "@/lib/openrouter";
-import { supabase, createOrUpdateUser, getDefaultPersona } from "@/lib/supabase";
+import { supabase, createOrUpdateUser, getDefaultPersona, getChatSettings, getDefaultChatSettings, ChatSettings } from "@/lib/supabase";
 import { toast } from "sonner";
 
 interface Message {
@@ -48,6 +49,7 @@ const Chat = () => {
   const [isModelsModalOpen, setIsModelsModalOpen] = useState(false);
   const [isPersonaModalOpen, setIsPersonaModalOpen] = useState(false);
   const [isSuggestModalOpen, setIsSuggestModalOpen] = useState(false);
+  const [isChatSettingsModalOpen, setIsChatSettingsModalOpen] = useState(false);
   const [currentPersona, setCurrentPersona] = useState<any>(null);
   const [sceneBackground, setSceneBackground] = useState<string>("");
   const [selectedModel, setSelectedModel] = useState<Model | null>({
@@ -72,6 +74,7 @@ const Chat = () => {
   const [currentCharacter, setCurrentCharacter] = useState<Character | null>(null);
   const [isLoadingCharacter, setIsLoadingCharacter] = useState(true);
   const [currentConversationId, setCurrentConversationId] = useState<string | null>(conversationId);
+  const [currentChatSettings, setCurrentChatSettings] = useState<ChatSettings | null>(null);
 
   const { user } = useUser();
 
@@ -251,6 +254,43 @@ const Chat = () => {
     loadDefaultPersona();
   }, [user, currentPersona]);
 
+  // Load chat settings when user or selected model changes
+  useEffect(() => {
+    const loadChatSettings = async () => {
+      if (!user || !selectedModel) return;
+
+      try {
+        const settings = await getChatSettings(user.id, selectedModel.id);
+        if (settings) {
+          setCurrentChatSettings(settings);
+          console.log('✅ Chat settings loaded:', settings);
+        } else {
+          // Use default settings
+          const defaults = getDefaultChatSettings();
+          const defaultSettings: ChatSettings = {
+            user_id: user.id,
+            model_id: selectedModel.id,
+            ...defaults
+          };
+          setCurrentChatSettings(defaultSettings);
+          console.log('📋 Using default chat settings');
+        }
+      } catch (error) {
+        console.error('Error loading chat settings:', error);
+        // Use defaults on error
+        const defaults = getDefaultChatSettings();
+        const defaultSettings: ChatSettings = {
+          user_id: user.id,
+          model_id: selectedModel.id,
+          ...defaults
+        };
+        setCurrentChatSettings(defaultSettings);
+      }
+    };
+
+    loadChatSettings();
+  }, [user, selectedModel]);
+
   const handleSendMessage = async (messageContent?: string) => {
     const messageToSend = messageContent || message;
     if (!messageToSend.trim() || isLoading || !currentCharacter || !user) return;
@@ -356,10 +396,18 @@ const Chat = () => {
         }))
       ];
 
-      // Get response from OpenRouter
+      // Get response from OpenRouter using current chat settings
+      const settingsToUse = currentChatSettings || {
+        temperature: 0.70,
+        content_diversity: 0.05,
+        max_tokens: 195
+      };
+
       const response = await openRouterAPI.createChatCompletion(modelToUse, chatMessages, {
-        temperature: 0.8,
-        max_tokens: 1000
+        temperature: settingsToUse.temperature,
+        max_tokens: settingsToUse.max_tokens,
+        // Note: content_diversity (top_p) may need different parameter name based on OpenRouter API
+        top_p: settingsToUse.content_diversity
       });
 
       const botResponseContent = response.choices[0]?.message?.content || "I apologize, but I couldn't generate a response.";
@@ -484,7 +532,7 @@ const Chat = () => {
                 <User className="mr-2 h-4 w-4" />
                 Bot Profile
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => console.log('Chat Settings clicked')}>
+              <DropdownMenuItem onClick={() => setIsChatSettingsModalOpen(true)}>
                 <Settings className="mr-2 h-4 w-4" />
                 Chat Settings
               </DropdownMenuItem>
@@ -685,6 +733,16 @@ const Chat = () => {
           })),
           personaName: currentPersona?.name,
           personaDescription: currentPersona?.description
+        }}
+      />
+
+      <ChatSettingsModal
+        open={isChatSettingsModalOpen}
+        onOpenChange={setIsChatSettingsModalOpen}
+        selectedModel={selectedModel}
+        onOpenModelsModal={() => {
+          setIsChatSettingsModalOpen(false);
+          setIsModelsModalOpen(true);
         }}
       />
     </div>
