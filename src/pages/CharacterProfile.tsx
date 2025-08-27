@@ -94,6 +94,12 @@ export default function CharacterProfile() {
         if (characterData.owner_id) {
           await loadUserStats(characterData.owner_id);
         }
+
+        // Check if current user has favorited this character
+        if (user && characterId) {
+          const favoritedIds = await checkIsFavorited(user.id, [characterId]);
+          setIsFavorited(favoritedIds.includes(characterId));
+        }
       } catch (error) {
         console.error('Error loading character:', error);
         toast.error('Failed to load character');
