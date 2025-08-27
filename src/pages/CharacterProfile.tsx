@@ -98,18 +98,30 @@ export default function CharacterProfile() {
     );
   }
 
-  // Calculate header opacity based on scroll
+  // Smooth easing function for better animations
+  const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
+  const easeInOutCubic = (t: number) => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+
+  // Calculate header opacity based on scroll with smooth easing
   const contentStart = window.innerHeight * 0.65;
   const headerActivationPoint = contentStart - 100;
-  const headerOpacity = Math.min(Math.max(scrollY - headerActivationPoint, 0) / 150, 1);
-  const titleOpacity = Math.min(Math.max(scrollY - headerActivationPoint - 50, 0) / 100, 1);
+  const rawHeaderProgress = Math.min(Math.max(scrollY - headerActivationPoint, 0) / 150, 1);
+  const headerOpacity = easeOutCubic(rawHeaderProgress);
+  const titleOpacity = easeOutCubic(Math.min(Math.max(scrollY - headerActivationPoint - 30, 0) / 80, 1));
 
-  // Calculate tabs visibility - only show after scrolling starts (hide initially)
-  const tabsOpacity = Math.min(Math.max(scrollY - 150, 0) / 200, 1);
+  // Calculate tabs visibility with smooth transitions
+  const rawTabsProgress = Math.min(Math.max(scrollY - 120, 0) / 180, 1);
+  const tabsOpacity = easeInOutCubic(rawTabsProgress);
 
-  // Calculate when tabs should become sticky header
-  const tabsStickyThreshold = 450; // Adjust this value based on when tabs should stick
+  // Calculate when tabs should become sticky header with smoother transition zone
+  const tabsStickyThreshold = 420;
+  const stickyTransitionZone = 60;
   const shouldTabsBeSticky = scrollY >= tabsStickyThreshold;
+  const stickyProgress = Math.min(Math.max(scrollY - tabsStickyThreshold, 0) / stickyTransitionZone, 1);
+  const stickyOpacity = easeInOutCubic(stickyProgress);
+
+  // Content hiding progress for smooth fade out
+  const contentHideProgress = easeInOutCubic(Math.min(Math.max(scrollY - (tabsStickyThreshold - 100), 0) / 120, 1));
 
   return (
     <div className="fixed inset-0 bg-[#111216] text-white overflow-hidden">
