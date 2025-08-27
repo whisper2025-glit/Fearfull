@@ -206,8 +206,9 @@ export default function CharacterProfile() {
       <div
         className="relative z-10 h-full overflow-y-auto"
         onScroll={handleScroll}
+        style={{ paddingTop: 0, marginTop: 0 }}
       >
-        <div className="h-[65vh]"></div>
+        <div className="h-[65vh]" style={{ minHeight: '65vh' }}></div>
         
         {/* Character Info Section */}
         <div className="bg-[#111216] p-4 space-y-4">
