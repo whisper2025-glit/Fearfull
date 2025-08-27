@@ -40,6 +40,7 @@ interface UserStats {
 export default function CharacterProfile() {
   const { characterId } = useParams();
   const navigate = useNavigate();
+  const { user } = useUser();
   const [character, setCharacter] = useState<Character | null>(null);
   const [userStats, setUserStats] = useState<UserStats>({ charactersCount: 0, followersCount: 0, likesCount: 0 });
   const [isLoading, setIsLoading] = useState(true);
