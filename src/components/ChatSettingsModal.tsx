@@ -102,7 +102,7 @@ export function ChatSettingsModal({ open, onOpenChange, selectedModel, onOpenMod
                 <Save className="h-3 w-3" />
                 {isSaving ? 'Saving...' : 'Save'}
               </Button>
-              <DialogTitle className="text-lg font-bold text-white" style={{ fontSize: '18px' }}>
+              <DialogTitle className="text-lg font-bold text-white flex-1 text-center" style={{ fontSize: '18px' }}>
                 Chat Setting
               </DialogTitle>
               <div className="w-20" /> {/* Spacer for centering */}
