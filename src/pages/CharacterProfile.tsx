@@ -44,6 +44,8 @@ export default function CharacterProfile() {
   const [character, setCharacter] = useState<Character | null>(null);
   const [userStats, setUserStats] = useState<UserStats>({ charactersCount: 0, followersCount: 0, likesCount: 0 });
   const [isLoading, setIsLoading] = useState(true);
+  const [isFavorited, setIsFavorited] = useState(false);
+  const [isFavoriteLoading, setIsFavoriteLoading] = useState(false);
   const [scrollY, setScrollY] = useState(0);
   const [isExpanded, setIsExpanded] = useState(false);
   const [activeTab, setActiveTab] = useState('details');
