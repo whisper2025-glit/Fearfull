@@ -19,11 +19,6 @@ export function BotProfileSheet() {
       </DrawerTrigger>
       <DrawerContent className="bg-[#111216] text-white text-xs h-screen border-0">
         <div className="relative h-full">
-          {/* Header */}
-          <div className="absolute top-0 left-0 w-full z-20 flex items-center justify-center p-4 bg-transparent">
-            <div className="w-12 h-1.5 bg-white/20 rounded-full"></div>
-          </div>
-
           {/* Scrollable Content */}
           <div className="overflow-y-auto h-full">
             {/* Hero Image */}
