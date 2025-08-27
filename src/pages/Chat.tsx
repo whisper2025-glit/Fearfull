@@ -480,7 +480,10 @@ const Chat = () => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48">
-              <BotProfileSheet />
+              <DropdownMenuItem onClick={() => navigate(`/character/${characterId}`)}>
+                <User className="mr-2 h-4 w-4" />
+                Bot Profile
+              </DropdownMenuItem>
               <DropdownMenuItem onClick={() => console.log('Chat Settings clicked')}>
                 <Settings className="mr-2 h-4 w-4" />
                 Chat Settings
