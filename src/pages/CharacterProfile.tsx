@@ -555,7 +555,7 @@ export default function CharacterProfile() {
             )}
 
             {activeTab === 'comments' && (
-              <div className="bg-[#1a1a1a] rounded-lg border border-white/10" style={{ height: 'calc(100vh - 200px)' }}>
+              <div className="w-full h-full -mx-2 -my-4" style={{ minHeight: 'calc(100vh - 120px)' }}>
                 <CommentsList
                   onAddComment={async (content) => {
                     console.log('Adding comment:', content);
