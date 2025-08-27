@@ -14,6 +14,7 @@ import {
 import { ModelsModal, Model } from "@/components/ModelsModal";
 import { PersonaModal } from "@/components/PersonaModal";
 import { SuggestModal } from "@/components/SuggestModal";
+import { ChatSettingsModal } from "@/components/ChatSettingsModal";
 import { openRouterAPI, ChatMessage } from "@/lib/openrouter";
 import { supabase, createOrUpdateUser, getDefaultPersona } from "@/lib/supabase";
 import { toast } from "sonner";
@@ -48,6 +49,7 @@ const Chat = () => {
   const [isModelsModalOpen, setIsModelsModalOpen] = useState(false);
   const [isPersonaModalOpen, setIsPersonaModalOpen] = useState(false);
   const [isSuggestModalOpen, setIsSuggestModalOpen] = useState(false);
+  const [isChatSettingsModalOpen, setIsChatSettingsModalOpen] = useState(false);
   const [currentPersona, setCurrentPersona] = useState<any>(null);
   const [sceneBackground, setSceneBackground] = useState<string>("");
   const [selectedModel, setSelectedModel] = useState<Model | null>({
@@ -484,7 +486,7 @@ const Chat = () => {
                 <User className="mr-2 h-4 w-4" />
                 Bot Profile
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => console.log('Chat Settings clicked')}>
+              <DropdownMenuItem onClick={() => setIsChatSettingsModalOpen(true)}>
                 <Settings className="mr-2 h-4 w-4" />
                 Chat Settings
               </DropdownMenuItem>
@@ -686,6 +688,11 @@ const Chat = () => {
           personaName: currentPersona?.name,
           personaDescription: currentPersona?.description
         }}
+      />
+
+      <ChatSettingsModal
+        open={isChatSettingsModalOpen}
+        onOpenChange={setIsChatSettingsModalOpen}
       />
     </div>
   );
