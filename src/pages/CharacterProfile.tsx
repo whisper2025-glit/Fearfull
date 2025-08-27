@@ -374,9 +374,9 @@ export default function CharacterProfile() {
 
           {/* Content Section - Always visible */}
           <div className={`space-y-4 ${shouldTabsBeSticky ? 'mt-0 pt-4' : 'mt-4'}`}>
-              {/* Introduction Section */}
-              <div className="space-y-4">
-                <h3 className="text-xl font-bold text-white">Introduction</h3>
+              {/* Introduction Block */}
+              <div className="bg-[#1a1a1a] rounded-lg p-4 space-y-4 border border-white/10">
+                <h3 className="text-lg font-semibold text-white">Introduction</h3>
 
                 {/* Tags */}
                 <div className="flex flex-wrap gap-2">
@@ -388,8 +388,8 @@ export default function CharacterProfile() {
                         className={`${
                           index === 0 || tag.toLowerCase() === 'unfiltered'
                             ? 'bg-pink-500/20 text-pink-300 border-pink-500/30'
-                            : 'bg-white/10 text-white/70 border-white/20'
-                        } text-xs px-3 py-1 rounded-full`}
+                            : 'bg-gray-600/50 text-gray-300 border-gray-500/30'
+                        } text-xs px-3 py-1 rounded-full border`}
                       >
                         {tag}
                       </Badge>
@@ -400,7 +400,7 @@ export default function CharacterProfile() {
                       <Badge
                         key={tag}
                         variant="secondary"
-                        className="bg-white/10 text-white/70 border-white/20 text-xs px-3 py-1 rounded-full"
+                        className="bg-gray-600/50 text-gray-300 border-gray-500/30 text-xs px-3 py-1 rounded-full border"
                       >
                         {tag}
                       </Badge>
@@ -426,7 +426,6 @@ export default function CharacterProfile() {
 
                     {character.scenario && isExpanded && (
                       <div className="mt-4">
-                        <h4 className="text-white font-medium mb-2">Scenario:</h4>
                         <p className="text-white/70 text-sm leading-relaxed">
                           {character.scenario}
                         </p>
