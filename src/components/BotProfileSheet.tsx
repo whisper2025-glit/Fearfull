@@ -4,6 +4,8 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Share2, MessageCircle, Heart, User, ChevronLeft } from "lucide-react";
 import { useState } from "react";
+import { CommentsList } from "./CommentsList";
+import { toast } from "sonner";
 
 const HERO_IMAGE = "https://cdn.builder.io/api/v1/image/assets%2F420adf53974e411387df983f01823d73%2F4635cc3157e045f592ade58eeea4af3b?format=webp&width=800";
 
