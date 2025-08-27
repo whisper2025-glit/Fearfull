@@ -487,28 +487,6 @@ export default function CharacterProfile() {
 
         {/* Extended bottom content area */}
         <div className="bg-[#111216] px-4 pb-8 space-y-6">
-          {/* Additional character stats */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-white">Character Stats</h3>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-white/5 rounded-lg p-3 text-center">
-                <div className="text-2xl font-bold text-white">59.6K</div>
-                <div className="text-xs text-white/60">Messages</div>
-              </div>
-              <div className="bg-white/5 rounded-lg p-3 text-center">
-                <div className="text-2xl font-bold text-white">1008</div>
-                <div className="text-xs text-white/60">Tokens</div>
-              </div>
-              <div className="bg-white/5 rounded-lg p-3 text-center">
-                <div className="text-2xl font-bold text-white">4.8</div>
-                <div className="text-xs text-white/60">Rating</div>
-              </div>
-              <div className="bg-white/5 rounded-lg p-3 text-center">
-                <div className="text-2xl font-bold text-white">892</div>
-                <div className="text-xs text-white/60">Likes</div>
-              </div>
-            </div>
-          </div>
 
           {/* Creation Info Block */}
           <div className="bg-[#1a1a1a] rounded-lg p-4 space-y-4 border border-white/10">
