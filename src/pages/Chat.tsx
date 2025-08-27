@@ -14,7 +14,7 @@ import {
 import { ModelsModal, Model } from "@/components/ModelsModal";
 import { PersonaModal } from "@/components/PersonaModal";
 import { SuggestModal } from "@/components/SuggestModal";
-import { openRouterAPI, ChatMessage } from "@/lib/openrouter";
+import { BotProfileSheet } from "@/components/BotProfileSheet";
 import { supabase, createOrUpdateUser, getDefaultPersona } from "@/lib/supabase";
 import { toast } from "sonner";
 
