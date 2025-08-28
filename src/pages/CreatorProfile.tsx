@@ -130,7 +130,7 @@ const CreatorProfile = () => {
         following: 0, // Not implemented yet
         likes: totalLikes,
         publicBots: publicBotsCount,
-        favorites: favoriteChars.length,
+        favorites: favoriteChars.length + favoriteAdvs.length,
         posts: 0 // Not implemented yet
       });
 
