@@ -1,5 +1,5 @@
 import { Cache } from '../utils/cache.js';
-import { DatabaseManager } from '../utils/database.js';
+import { SupabaseDatabaseManager } from '../utils/supabaseDatabase.js';
 import { AIAgentService } from './aiAgentService.js';
 
 export interface AdventureContext {
@@ -55,12 +55,12 @@ export interface AdventureState {
 
 export class AdventureContextService {
   private cache: Cache;
-  private db: DatabaseManager;
+  private db: SupabaseDatabaseManager;
   private aiAgent: AIAgentService;
 
   constructor() {
     this.cache = new Cache();
-    this.db = new DatabaseManager();
+    this.db = new SupabaseDatabaseManager();
     this.aiAgent = new AIAgentService();
   }
 
