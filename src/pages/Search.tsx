@@ -95,13 +95,27 @@ const Search = () => {
       if (creatorsError) {
         console.error('Error loading trending creators:', creatorsError);
       } else {
-        // Process creators data to calculate stats
-        const processedCreators = creators?.map(creator => ({
-          ...creator,
-          characters_count: creator.characters?.[0]?.count || 0,
-          messages_count: creator.messages?.reduce((sum, char) => sum + (char.messages?.[0]?.count || 0), 0) || 0,
-          followers_count: 0 // You can add followers functionality later
-        })) || [];
+        // For each creator, get their character and message counts separately
+        const processedCreators = await Promise.all((creators || []).map(async (creator) => {
+          // Get character count for this creator
+          const { count: charactersCount } = await supabase
+            .from('characters')
+            .select('*', { count: 'exact', head: true })
+            .eq('owner_id', creator.id);
+
+          // Get total messages for this creator's characters
+          const { count: messagesCount } = await supabase
+            .from('messages')
+            .select('*, characters!inner(*)', { count: 'exact', head: true })
+            .eq('characters.owner_id', creator.id);
+
+          return {
+            ...creator,
+            characters_count: charactersCount || 0,
+            messages_count: messagesCount || 0,
+            followers_count: 0 // You can add followers functionality later
+          };
+        }));
         setTrendingCreators(processedCreators);
       }
 
