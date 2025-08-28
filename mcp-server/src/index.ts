@@ -13,9 +13,12 @@ import { StoryDataService } from './services/storyDataService.js';
 import { CharacterService } from './services/characterService.js';
 import { LocationService } from './services/locationService.js';
 import { AdventureContextService } from './services/adventureContextService.js';
-import { 
+import { MangaDexDataFetcher } from './data-sources/mangaDexDataFetcher.js';
+import { AniListDataFetcher } from './data-sources/aniListDataFetcher.js';
+import { MangaHandlers } from './handlers/mangaHandlers.js';
+import {
   GET_STORY_INFO_TOOL,
-  GET_CHARACTER_DATA_TOOL, 
+  GET_CHARACTER_DATA_TOOL,
   GET_LOCATION_DATA_TOOL,
   GET_TIMELINE_EVENTS_TOOL,
   SET_ADVENTURE_CONTEXT_TOOL,
@@ -23,6 +26,13 @@ import {
   SEARCH_STORY_CONTENT_TOOL,
   VALIDATE_STORY_ELEMENT_TOOL
 } from './tools/index.js';
+import {
+  GET_MANGA_INFO_TOOL,
+  GET_MANGA_CHAPTERS_TOOL,
+  COMPARE_ADAPTATIONS_TOOL,
+  GET_POPULAR_CONTENT_TOOL,
+  VALIDATE_CANON_TOOL
+} from './tools/mangaTools.js';
 
 class AdventureStoryMCPServer {
   private server: Server;
@@ -30,6 +40,8 @@ class AdventureStoryMCPServer {
   private characterService: CharacterService;
   private locationService: LocationService;
   private contextService: AdventureContextService;
+  private mangaDexService: MangaDexDataFetcher;
+  private aniListService: AniListDataFetcher;
 
   constructor() {
     this.server = new Server(
@@ -49,6 +61,8 @@ class AdventureStoryMCPServer {
     this.characterService = new CharacterService();
     this.locationService = new LocationService();
     this.contextService = new AdventureContextService();
+    this.mangaDxService = new MangaDexDataFetcher();
+    this.aniListService = new AniListDataFetcher();
 
     this.setupToolHandlers();
   }
@@ -66,6 +80,11 @@ class AdventureStoryMCPServer {
           GET_ADVENTURE_STATE_TOOL,
           SEARCH_STORY_CONTENT_TOOL,
           VALIDATE_STORY_ELEMENT_TOOL,
+          GET_MANGA_INFO_TOOL,
+          GET_MANGA_CHAPTERS_TOOL,
+          COMPARE_ADAPTATIONS_TOOL,
+          GET_POPULAR_CONTENT_TOOL,
+          VALIDATE_CANON_TOOL,
         ],
       };
     });
@@ -99,6 +118,21 @@ class AdventureStoryMCPServer {
 
           case 'validate_story_element':
             return await this.handleValidateStoryElement(args);
+
+          case 'get_manga_info':
+            return await this.mangaHandlers.handleGetMangaInfo(args);
+
+          case 'get_manga_chapters':
+            return await this.mangaHandlers.handleGetMangaChapters(args);
+
+          case 'compare_adaptations':
+            return await this.mangaHandlers.handleCompareAdaptations(args);
+
+          case 'get_popular_content':
+            return await this.mangaHandlers.handleGetPopularContent(args);
+
+          case 'validate_canon':
+            return await this.mangaHandlers.handleValidateCanon(args);
 
           default:
             throw new McpError(
