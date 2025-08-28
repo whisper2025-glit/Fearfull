@@ -168,12 +168,31 @@ const Profile = () => {
     } else {
       setFavoritedCharacterIds(prev => prev.filter(id => id !== characterId));
       // If we're on favorites tab and character was unfavorited, reload favorites
-      if (activeTab === 'favorites') {
+      if (activeTab === 'favorites' && favoritesSubTab === 'characters') {
         const updatedFavorites = await getFavoriteCharacters(user.id);
         setFavoriteCharacters(updatedFavorites);
+        const favoriteAdvs = await getFavoriteAdventures(user.id);
         setStats(prev => ({
           ...prev,
-          favorites: updatedFavorites.length
+          favorites: updatedFavorites.length + favoriteAdvs.length
+        }));
+      }
+    }
+  };
+
+  const handleAdventureFavoriteChange = async (adventureId: string, isFavorited: boolean) => {
+    if (isFavorited) {
+      setFavoritedAdventureIds(prev => [...prev, adventureId]);
+    } else {
+      setFavoritedAdventureIds(prev => prev.filter(id => id !== adventureId));
+      // If we're on favorites tab and adventure was unfavorited, reload favorites
+      if (activeTab === 'favorites' && favoritesSubTab === 'adventures') {
+        const updatedAdventures = await getFavoriteAdventures(user.id);
+        setFavoriteAdventures(updatedAdventures);
+        const favoriteChars = await getFavoriteCharacters(user.id);
+        setStats(prev => ({
+          ...prev,
+          favorites: favoriteChars.length + updatedAdventures.length
         }));
       }
     }
