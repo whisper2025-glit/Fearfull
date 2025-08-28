@@ -112,6 +112,10 @@ const CreatorProfile = () => {
       const favoriteChars = await getFavoriteCharacters(userId);
       setFavoriteCharacters(favoriteChars);
 
+      // Load creator's favorite adventures
+      const favoriteAdvs = await getFavoriteAdventures(userId);
+      setFavoriteAdventures(favoriteAdvs);
+
       // If current user is viewing, get their favorited status for creator's characters
       if (user && characterIds.length > 0) {
         const viewerFavorites = await checkIsFavorited(user.id, characterIds);
