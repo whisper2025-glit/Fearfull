@@ -272,7 +272,7 @@ export class StoryDataService {
       const wiki = wikiData.value as any;
       baseInfo.description = wiki.description || baseInfo.description;
       baseInfo.plotSummary = wiki.plotSummary || baseInfo.plotSummary;
-      baseInfo.worldBuilding = { ...baseInfo.worldBuilding, ...wiki.worldBuilding };
+      baseInfo.worldBuilding = { ...baseInfo.worldBuilding, ...(wiki.worldBuilding || {}) };
       baseInfo.mainCharacters = wiki.mainCharacters || baseInfo.mainCharacters;
       baseInfo.arcs = wiki.arcs || baseInfo.arcs;
     }
@@ -282,7 +282,7 @@ export class StoryDataService {
       const anime = animeData.value as any;
       baseInfo.type = 'anime';
       baseInfo.description = anime.synopsis || baseInfo.description;
-      if (anime.characters) {
+      if (anime.characters && Array.isArray(anime.characters)) {
         baseInfo.mainCharacters = [...new Set([...baseInfo.mainCharacters, ...anime.characters])];
       }
     }

@@ -376,7 +376,9 @@ export class WikiDataFetcher {
     // Simple character extraction logic
     const characterPattern = /\[\[([^|\]]+)(?:\|[^]]+)?\]\]/g;
     const matches = content.match(characterPattern) || [];
-    return matches.slice(0, 10).map(match => match.replace(/\[\[|\]\]/g, '').split('|')[0]).filter(Boolean);
+    return matches.slice(0, 10)
+      .map(match => match.replace(/\[\[|\]\]/g, '').split('|')[0])
+      .filter((item): item is string => Boolean(item));
   }
 
   private extractAliases(content: string): string[] {
