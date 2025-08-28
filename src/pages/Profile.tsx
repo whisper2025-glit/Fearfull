@@ -685,6 +685,11 @@ const Profile = () => {
           )}
         </div>
       </div>
+
+      <CreateModal
+        open={isCreateModalOpen}
+        onOpenChange={setIsCreateModalOpen}
+      />
     </Layout>
   );
 };
