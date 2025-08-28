@@ -1,18 +1,18 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { AdventureContext } from '../services/adventureContextService.js';
+import { getSupabaseConfig, validateSupabaseConfig } from '../config/supabaseConfig.js';
 
 export class SupabaseDatabaseManager {
   private supabase: SupabaseClient;
 
   constructor() {
-    const supabaseUrl = process.env.VITE_SUPABASE_URL || 'https://jhrmlnfdnxjdlrlzokdd.supabase.co';
-    const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impocm1sbmZkbnhqZGxybHpva2RkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYxMzAzNDIsImV4cCI6MjA3MTcwNjM0Mn0.1Qu2IDtDNb93qtEd_EinPrRe8Z2HPuFmcyyARGbEFnM';
-    
-    if (!supabaseUrl || !supabaseKey) {
-      throw new Error('Supabase URL and API key are required');
+    const config = getSupabaseConfig();
+
+    if (!validateSupabaseConfig(config)) {
+      throw new Error('Invalid Supabase configuration. Please check your environment variables.');
     }
 
-    this.supabase = createClient(supabaseUrl, supabaseKey);
+    this.supabase = createClient(config.url, config.anonKey);
     this.initializeTables();
   }
 
