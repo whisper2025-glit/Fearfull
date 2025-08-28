@@ -418,7 +418,26 @@ Format your response as regular narrative text, then end with exactly two choice
       }
     } catch (error) {
       console.error('Error processing choice:', error);
-      toast.error('Failed to process your choice');
+
+      // More specific error handling
+      if (error instanceof Error) {
+        if (error.message.includes('API key')) {
+          toast.error('OpenRouter API key not configured properly');
+          console.error('API Key Error:', error.message);
+        } else if (error.message.includes('OpenRouter API Error')) {
+          toast.error(`AI Service Error: ${error.message}`);
+          console.error('OpenRouter API Error:', error.message);
+        } else if (error.message.includes('network') || error.message.includes('fetch')) {
+          toast.error('Network error - please check your connection');
+          console.error('Network Error:', error.message);
+        } else {
+          toast.error(`Failed to process your choice: ${error.message}`);
+          console.error('Unknown Error:', error.message);
+        }
+      } else {
+        toast.error('Failed to process your choice');
+        console.error('Unknown Error Type:', error);
+      }
     } finally {
       setIsLoading(false);
     }
