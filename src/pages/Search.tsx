@@ -78,44 +78,58 @@ const Search = () => {
 
   const loadTrendingData = async () => {
     try {
-      // Load trending creators
+      // Load trending creators (users with most characters)
       const { data: creators, error: creatorsError } = await supabase
-        .from('profiles')
-        .select('*')
-        .order('followers_count', { ascending: false })
+        .from('users')
+        .select(`
+          *,
+          characters!characters_owner_id_fkey(count),
+          messages:characters!characters_owner_id_fkey(messages(count))
+        `)
+        .order('created_at', { ascending: false })
         .limit(10);
 
       if (creatorsError) {
         console.error('Error loading trending creators:', creatorsError);
       } else {
-        setTrendingCreators(creators || []);
+        // Process creators data to calculate stats
+        const processedCreators = creators?.map(creator => ({
+          ...creator,
+          characters_count: creator.characters?.[0]?.count || 0,
+          messages_count: creator.messages?.reduce((sum, char) => sum + (char.messages?.[0]?.count || 0), 0) || 0,
+          followers_count: 0 // You can add followers functionality later
+        })) || [];
+        setTrendingCreators(processedCreators);
       }
 
-      // Load trending characters
+      // Load trending characters (by recent activity)
       const { data: characters, error: charactersError } = await supabase
         .from('characters')
-        .select('*')
-        .order('message_count', { ascending: false })
+        .select(`
+          *,
+          owner:users!characters_owner_id_fkey(username, avatar_url),
+          messages(count),
+          conversations(count)
+        `)
+        .eq('visibility', 'public')
+        .order('created_at', { ascending: false })
         .limit(10);
 
       if (charactersError) {
         console.error('Error loading trending characters:', charactersError);
       } else {
-        setTrendingCharacters(characters || []);
+        // Process characters data to add message counts
+        const processedCharacters = characters?.map(character => ({
+          ...character,
+          message_count: character.messages?.[0]?.count || 0,
+          conversation_count: character.conversations?.[0]?.count || 0,
+          creator_username: character.owner?.username || 'Unknown'
+        })) || [];
+        setTrendingCharacters(processedCharacters);
       }
 
-      // Load popular searches
-      const { data: searches, error: searchesError } = await supabase
-        .from('search_terms')
-        .select('term')
-        .order('search_count', { ascending: false })
-        .limit(10);
-
-      if (searchesError) {
-        console.error('Error loading popular searches:', searchesError);
-      } else {
-        setPopularSearches(searches?.map(s => s.term) || []);
-      }
+      // For now, set some default popular searches since we don't have a search_terms table
+      setPopularSearches(['Adventure', 'Romance', 'Fantasy', 'Sci-Fi', 'Comedy', 'Drama']);
     } catch (error) {
       console.error('Error loading trending data:', error);
     }
@@ -142,9 +156,15 @@ const Search = () => {
       // Search characters in Supabase
       const { data: characters, error } = await supabase
         .from('characters')
-        .select('*')
-        .ilike('name', `%${query}%`)
-        .order('message_count', { ascending: false })
+        .select(`
+          *,
+          owner:users!characters_owner_id_fkey(username, avatar_url),
+          messages(count),
+          conversations(count)
+        `)
+        .or(`name.ilike.%${query}%,intro.ilike.%${query}%,tags.cs.{${query}}`)
+        .eq('visibility', 'public')
+        .order('created_at', { ascending: false })
         .limit(20);
 
       if (error) {
@@ -152,7 +172,17 @@ const Search = () => {
         toast.error('Search failed. Please try again.');
         setSearchResults([]);
       } else {
-        setSearchResults(characters || []);
+        // Process search results to add calculated fields
+        const processedResults = characters?.map(character => ({
+          ...character,
+          message_count: character.messages?.[0]?.count || 0,
+          conversation_count: character.conversations?.[0]?.count || 0,
+          creator_username: character.owner?.username || 'Unknown',
+          description: character.intro, // Use intro as description
+          image_url: character.avatar_url,
+          likes_count: 0 // You can add likes functionality later
+        })) || [];
+        setSearchResults(processedResults);
       }
     } catch (error) {
       console.error('Search error:', error);
