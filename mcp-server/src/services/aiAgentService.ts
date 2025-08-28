@@ -190,7 +190,7 @@ Always respond in valid JSON format with the following structure:
       validation: `Focus on: canonical accuracy assessment, evidence evaluation, and alternative suggestions.`
     };
 
-    return `${basePrompt}\n\n${specificPrompts[dataType] || specificPrompts.story}`;
+    return `${basePrompt}\n\n${specificPrompts[dataType as keyof typeof specificPrompts] || specificPrompts.story}`;
   }
 
   private buildUserPrompt(request: AIAgentRequest): string {
