@@ -67,6 +67,7 @@ const AdventurePlay = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingAdventure, setIsLoadingAdventure] = useState(true);
   const [showSettings, setShowSettings] = useState(false);
+  const [conversationId, setConversationId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const [settings, setSettings] = useState<AdventureSettings>({
