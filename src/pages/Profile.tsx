@@ -675,7 +675,7 @@ const Profile = () => {
               </p>
               {activeTab === 'bots' && (
                 <Button
-                  onClick={() => navigate('/create')}
+                  onClick={() => setIsCreateModalOpen(true)}
                   className="bg-blue-600 hover:bg-blue-700 text-white px-6"
                 >
                   Create my Bots
