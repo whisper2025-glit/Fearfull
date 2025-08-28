@@ -9,6 +9,7 @@ import Chat from "./pages/Chat";
 import Chats from "./pages/Chats";
 import CreateCharacter from "./pages/CreateCharacter";
 import CreateAdventure from "./pages/CreateAdventure";
+import AdventurePlay from "./pages/AdventurePlay";
 import Profile from "./pages/Profile";
 import CharacterProfile from "./pages/CharacterProfile";
 import CreatorProfile from "./pages/CreatorProfile";
@@ -56,6 +57,11 @@ const AppContent = () => {
         <Route path="/create-adventure" element={
           <ProtectedRoute>
             <CreateAdventure />
+          </ProtectedRoute>
+        } />
+        <Route path="/adventure/:adventureId" element={
+          <ProtectedRoute>
+            <AdventurePlay />
           </ProtectedRoute>
         } />
         <Route path="/profile" element={
