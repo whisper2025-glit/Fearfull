@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
-import { useUser } from '@clerk/clerk-react';
-import { createOrUpdateUser, supabase } from '@/lib/supabase';
+import { useUser, useAuth } from '@clerk/clerk-react';
+import { createOrUpdateUser, supabase, setSupabaseAuth } from '@/lib/supabase';
 import { toast } from 'sonner';
 
 export const useUserSync = () => {
