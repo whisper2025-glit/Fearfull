@@ -4,8 +4,9 @@ import { AdventureCard } from "@/components/AdventureCard";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/lib/supabase";
+import { supabase, createSupabaseClientWithClerkAuth } from "@/lib/supabase";
 import { toast } from "sonner";
+import { useAuth } from '@clerk/clerk-react';
 
 interface Adventure {
   id: string;
@@ -30,6 +31,7 @@ interface CategoryData {
 
 const Adventures = () => {
   const navigate = useNavigate();
+  const { getToken } = useAuth();
   const [categories, setCategories] = useState<CategoryData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -53,9 +55,12 @@ const Adventures = () => {
     const loadAdventures = async () => {
       try {
         setIsLoading(true);
-        
+
+        // Create authenticated Supabase client
+        const authenticatedSupabase = createSupabaseClientWithClerkAuth(() => getToken({ template: 'supabase' }));
+
         // Load all public adventures
-        const { data: adventuresData, error } = await supabase
+        const { data: adventuresData, error } = await authenticatedSupabase
           .from('adventures')
           .select(`
             *,
