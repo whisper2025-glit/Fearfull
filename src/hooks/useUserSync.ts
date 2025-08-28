@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 
 export const useUserSync = () => {
   const { user, isLoaded } = useUser();
+  const { getToken } = useAuth();
 
   useEffect(() => {
     console.log('🔄 useUserSync useEffect triggered', {
@@ -20,7 +21,8 @@ export const useUserSync = () => {
       }
 
       if (!user) {
-        console.log('❌ No user signed in');
+        console.log('❌ No user signed in, clearing Supabase auth');
+        await setSupabaseAuth(null);
         return;
       }
 
@@ -33,7 +35,14 @@ export const useUserSync = () => {
           email: user.emailAddresses?.[0]?.emailAddress
         });
 
-        // Sync user with Supabase using the basic client (no JWT required)
+        // Get Clerk JWT token and set it for Supabase auth
+        const token = await getToken({ template: 'supabase' });
+        if (token) {
+          console.log('🔑 Setting Supabase auth with Clerk token');
+          await setSupabaseAuth(token);
+        }
+
+        // Sync user with Supabase using the basic client (no JWT required for user creation)
         const result = await createOrUpdateUser(user);
         console.log('✅ User synced with Supabase successfully:', result);
         toast.success(`Welcome, ${result.username || result.full_name || 'User'}!`);
@@ -45,7 +54,7 @@ export const useUserSync = () => {
     };
 
     syncUser();
-  }, [user, isLoaded]);
+  }, [user, isLoaded, getToken]);
 
   return { user, isLoaded };
 };
