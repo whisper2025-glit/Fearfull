@@ -160,8 +160,8 @@ const Search = () => {
     });
 
     try {
-      // Search characters in Supabase
-      const { data: characters, error } = await supabase
+      // Build the query with filters
+      let queryBuilder = supabase
         .from('characters')
         .select(`
           *,
@@ -169,10 +169,36 @@ const Search = () => {
           messages(count),
           conversations(count)
         `)
-        .or(`name.ilike.%${query}%,intro.ilike.%${query}%,tags.cs.{${query}}`)
-        .eq('visibility', 'public')
-        .order('created_at', { ascending: false })
-        .limit(20);
+        .eq('visibility', 'public');
+
+      // Apply search query
+      if (query.trim()) {
+        queryBuilder = queryBuilder.or(`name.ilike.%${query}%,intro.ilike.%${query}%,personality.ilike.%${query}%`);
+      }
+
+      // Apply gender filter
+      if (filterGender !== 'Gender All') {
+        queryBuilder = queryBuilder.eq('gender', filterGender.replace('Gender ', ''));
+      }
+
+      // Apply tag filters
+      if (selectedTags.length > 0) {
+        queryBuilder = queryBuilder.overlaps('tags', selectedTags);
+      }
+
+      // Apply sorting
+      switch (sortBy) {
+        case 'Latest':
+          queryBuilder = queryBuilder.order('created_at', { ascending: false });
+          break;
+        case 'Popular':
+          queryBuilder = queryBuilder.order('created_at', { ascending: false }); // Will be replaced with actual popularity metric
+          break;
+        default: // Recommend
+          queryBuilder = queryBuilder.order('created_at', { ascending: false });
+      }
+
+      const { data: characters, error } = await queryBuilder.limit(20);
 
       if (error) {
         console.error('Search error:', error);
