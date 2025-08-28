@@ -265,6 +265,18 @@ Format your response as regular narrative text, then end with exactly two choice
 
       setMessages(prev => [...prev, userMessage]);
 
+      // Save user message to database if logged in
+      if (conversationId) {
+        await addAdventureMessage(
+          adventureId,
+          conversationId,
+          choice,
+          false,
+          user.id,
+          'regular'
+        );
+      }
+
       // Prepare messages for AI
       const systemPrompt = buildSystemPrompt();
       const recentMessages = messages.slice(-5).map(msg => ({
