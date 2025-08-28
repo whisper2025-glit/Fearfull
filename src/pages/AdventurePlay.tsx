@@ -5,7 +5,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ArrowLeft, Settings, Send, Heart } from "lucide-react";
 import { useUser } from "@clerk/clerk-react";
-import { supabase, createOrUpdateUser } from "@/lib/supabase";
+import {
+  supabase,
+  createOrUpdateUser,
+  createAdventureConversation,
+  addAdventureMessage,
+  getAdventureMessages,
+  getUserAdventureConversations
+} from "@/lib/supabase";
 import { enhancedOpenRouterAPI } from "@/lib/openrouter-enhanced";
 import { openRouterAPI } from "@/lib/openrouter";
 import { toast } from "sonner";
@@ -60,6 +67,7 @@ const AdventurePlay = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingAdventure, setIsLoadingAdventure] = useState(true);
   const [showSettings, setShowSettings] = useState(false);
+  const [conversationId, setConversationId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const [settings, setSettings] = useState<AdventureSettings>({
@@ -91,20 +99,104 @@ const AdventurePlay = () => {
         }
 
         setAdventure(adventureData);
-        
-        // Initialize with introduction message
-        if (adventureData.introduction) {
-          const introMessage: StoryMessage = {
-            id: 'intro',
-            content: adventureData.introduction,
-            isUser: false,
-            choices: [
-              "Start the adventure",
-              "Learn more about the world"
-            ],
-            timestamp: new Date().toISOString()
-          };
-          setMessages([introMessage]);
+
+        // Check for existing conversation for this user and adventure
+        if (user) {
+          const existingConversations = await getUserAdventureConversations(user.id);
+          const existingConv = existingConversations.find(conv => conv.adventure_id === adventureId);
+
+          if (existingConv) {
+            // Load existing conversation
+            setConversationId(existingConv.id);
+            const savedMessages = await getAdventureMessages(existingConv.id);
+
+            if (savedMessages && savedMessages.length > 0) {
+              const convertedMessages: StoryMessage[] = savedMessages.map(msg => ({
+                id: msg.id,
+                content: msg.content,
+                isUser: !msg.is_bot,
+                choices: msg.choices || undefined,
+                timestamp: msg.created_at
+              }));
+              setMessages(convertedMessages);
+            } else {
+              // Initialize with introduction if no messages exist
+              if (adventureData.introduction) {
+                const introMessage: StoryMessage = {
+                  id: 'intro',
+                  content: adventureData.introduction,
+                  isUser: false,
+                  choices: [
+                    "Start the adventure",
+                    "Learn more about the world"
+                  ],
+                  timestamp: new Date().toISOString()
+                };
+                setMessages([introMessage]);
+
+                // Save intro message to database
+                await addAdventureMessage(
+                  adventureId,
+                  existingConv.id,
+                  adventureData.introduction,
+                  true,
+                  null,
+                  'intro',
+                  ["Start the adventure", "Learn more about the world"]
+                );
+              }
+            }
+          } else {
+            // Create new conversation
+            const newConversation = await createAdventureConversation(
+              user.id,
+              adventureId,
+              null,
+              adventureData.name
+            );
+            setConversationId(newConversation.id);
+
+            // Initialize with introduction message
+            if (adventureData.introduction) {
+              const introMessage: StoryMessage = {
+                id: 'intro',
+                content: adventureData.introduction,
+                isUser: false,
+                choices: [
+                  "Start the adventure",
+                  "Learn more about the world"
+                ],
+                timestamp: new Date().toISOString()
+              };
+              setMessages([introMessage]);
+
+              // Save intro message to database
+              await addAdventureMessage(
+                adventureId,
+                newConversation.id,
+                adventureData.introduction,
+                true,
+                null,
+                'intro',
+                ["Start the adventure", "Learn more about the world"]
+              );
+            }
+          }
+        } else {
+          // Guest mode - just show intro without saving
+          if (adventureData.introduction) {
+            const introMessage: StoryMessage = {
+              id: 'intro',
+              content: adventureData.introduction,
+              isUser: false,
+              choices: [
+                "Start the adventure",
+                "Learn more about the world"
+              ],
+              timestamp: new Date().toISOString()
+            };
+            setMessages([introMessage]);
+          }
         }
       } catch (error) {
         console.error('Error loading adventure:', error);
@@ -173,6 +265,18 @@ Format your response as regular narrative text, then end with exactly two choice
 
       setMessages(prev => [...prev, userMessage]);
 
+      // Save user message to database if logged in
+      if (conversationId) {
+        await addAdventureMessage(
+          adventureId,
+          conversationId,
+          choice,
+          false,
+          user.id,
+          'regular'
+        );
+      }
+
       // Prepare messages for AI
       const systemPrompt = buildSystemPrompt();
       const recentMessages = messages.slice(-5).map(msg => ({
@@ -205,21 +309,18 @@ Format your response as regular narrative text, then end with exactly two choice
         }
       };
 
-      // Use enhanced OpenRouter for roleplay
-      const enhancedMessages = [
-        ...messages.slice(-5).map(msg => ({
-          role: msg.isUser ? 'user' : 'assistant',
-          content: msg.content,
-          metadata: {
-            character: adventure.name,
-            timestamp: msg.timestamp
-          }
-        }))
-      ];
+      // Use specific model for adventure play
+      const adventureModel = {
+        id: 'tngtech/deepseek-r1t2-chimera:free',
+        name: 'tngtech/deepseek-r1t2-chimera:free',
+        provider: 'OpenRouter',
+        maxTokens: 8192,
+        description: 'Adventure AI Model'
+      };
 
-      const aiResponse = await enhancedOpenRouterAPI.createRoleplayResponse(
-        enhancedMessages as any,
-        roleplayContext,
+      const aiResponse = await openRouterAPI.createChatCompletion(
+        adventureModel,
+        chatMessages as any,
         {
           temperature: 0.85,
           max_tokens: settings.lengthMode === 'extended' ? 600 : 300,
@@ -228,8 +329,8 @@ Format your response as regular narrative text, then end with exactly two choice
         }
       );
 
-      if (aiResponse) {
-        const aiContent = aiResponse;
+      if (aiResponse && aiResponse.choices && aiResponse.choices[0]) {
+        const aiContent = aiResponse.choices[0].message.content;
         
         // Enhanced choice generation using AI
         let extractedChoices: string[] = [];
@@ -248,11 +349,39 @@ Format your response as regular narrative text, then end with exactly two choice
             mainContent = aiContent.replace(/(?:What happens next\?.*?Choose your path)[\s\S]*$/i, '').trim();
           } else {
             // Generate choices using AI if not found in response
-            extractedChoices = await enhancedOpenRouterAPI.generateAdventureChoices(
-              aiContent,
-              roleplayContext,
-              2
-            );
+            try {
+              const choicePrompt = `Based on this story situation: "${aiContent}"
+
+              Generate exactly 2 interesting and meaningful choices for the player to continue the adventure. Each choice should be:
+              - Action-oriented
+              - Different from each other
+              - Lead to interesting story development
+
+              Format as:
+              1. [First choice]
+              2. [Second choice]`;
+
+              const choiceResponse = await openRouterAPI.createChatCompletion(
+                adventureModel,
+                [{ role: 'user', content: choicePrompt }] as any,
+                {
+                  temperature: 0.7,
+                  max_tokens: 100
+                }
+              );
+
+              if (choiceResponse && choiceResponse.choices && choiceResponse.choices[0]) {
+                const choicesText = choiceResponse.choices[0].message.content;
+                const choiceMatches = choicesText.match(/\d+\.\s*(.+)/g);
+                if (choiceMatches && choiceMatches.length >= 2) {
+                  extractedChoices = choiceMatches.slice(0, 2).map(match =>
+                    match.replace(/^\d+\.\s*/, '').trim()
+                  );
+                }
+              }
+            } catch (error) {
+              console.warn('Choice generation failed:', error);
+            }
           }
         } catch (error) {
           console.warn('Choice generation failed, using defaults:', error);
@@ -273,6 +402,19 @@ Format your response as regular narrative text, then end with exactly two choice
         };
 
         setMessages(prev => [...prev, aiMessage]);
+
+        // Save AI message to database if logged in
+        if (conversationId) {
+          await addAdventureMessage(
+            adventureId,
+            conversationId,
+            mainContent,
+            true,
+            null,
+            extractedChoices.length > 0 ? 'choice' : 'regular',
+            extractedChoices
+          );
+        }
       }
     } catch (error) {
       console.error('Error processing choice:', error);

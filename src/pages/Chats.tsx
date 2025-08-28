@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "@clerk/clerk-react";
-import { MessageCircle, Clock, User } from "lucide-react";
+import { MessageCircle, Clock, User, MapPin } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { supabase } from "@/lib/supabase";
+import { supabase, getUserAdventureConversations } from "@/lib/supabase";
 import { toast } from "sonner";
 
 interface CharacterHistory {
@@ -19,6 +19,17 @@ interface CharacterHistory {
   totalMessages: number;
   lastMessage: string;
   isVip?: boolean;
+}
+
+interface AdventureHistory {
+  id: string;
+  name: string;
+  adventure_image_url: string;
+  author: string;
+  lastChatDate: string;
+  totalMessages: number;
+  lastMessage: string;
+  conversationId: string;
 }
 
 const formatDate = (dateString: string): string => {
@@ -42,14 +53,16 @@ const Chats = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("recent");
   const [characterHistory, setCharacterHistory] = useState<CharacterHistory[]>([]);
+  const [adventureHistory, setAdventureHistory] = useState<AdventureHistory[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const loadCharacterHistory = async () => {
+    const loadChatHistory = async () => {
       if (!user) return;
 
       setIsLoading(true);
       try {
+        // Load character chat history
         // Get characters the user has chatted with by querying messages
         const { data: messageData, error } = await supabase
           .from('messages')
@@ -115,19 +128,39 @@ const Chats = () => {
         );
 
         setCharacterHistory(historyArray);
+
+        // Load adventure chat history
+        const adventureConversations = await getUserAdventureConversations(user.id);
+
+        const adventureHistoryArray: AdventureHistory[] = adventureConversations.map((conv: any) => ({
+          id: conv.adventure_id,
+          name: conv.adventures?.name || 'Unknown Adventure',
+          adventure_image_url: conv.adventures?.adventure_image_url || '/placeholder.svg',
+          author: conv.adventures?.users?.full_name || 'Unknown',
+          lastChatDate: conv.last_message_at,
+          totalMessages: conv.message_count || 0,
+          lastMessage: 'Adventure in progress...',
+          conversationId: conv.id
+        }));
+
+        setAdventureHistory(adventureHistoryArray);
       } catch (error) {
-        console.error('Error loading character history:', error);
+        console.error('Error loading chat history:', error);
         toast.error('Failed to load chat history');
       } finally {
         setIsLoading(false);
       }
     };
 
-    loadCharacterHistory();
+    loadChatHistory();
   }, [user]);
 
   const startNewChat = (characterId: string) => {
     navigate(`/chat/${characterId}`);
+  };
+
+  const startAdventureChat = (adventureId: string) => {
+    navigate(`/adventure/${adventureId}`);
   };
 
   if (!user) {
@@ -149,16 +182,13 @@ const Chats = () => {
               value="recent"
               className="bg-transparent text-white border-b-2 border-transparent data-[state=active]:border-purple-500 data-[state=active]:bg-transparent rounded-none py-3"
             >
-              <span className="text-sm">Recent Chats</span>
+              <span className="text-sm">Characters</span>
             </TabsTrigger>
             <TabsTrigger
               value="favorites"
-              className="bg-transparent text-white border-b-2 border-transparent data-[state=active]:border-purple-500 data-[state=active]:bg-transparent rounded-none py-3 relative"
+              className="bg-transparent text-white border-b-2 border-transparent data-[state=active]:border-purple-500 data-[state=active]:bg-transparent rounded-none py-3"
             >
-              <span className="text-sm">Favorites</span>
-              <Badge className="ml-2 bg-yellow-500 text-black px-2 py-0.5 text-xs font-bold">
-                SOON
-              </Badge>
+              <span className="text-sm">Adventures</span>
             </TabsTrigger>
           </TabsList>
         </Tabs>
@@ -190,7 +220,7 @@ const Chats = () => {
               ) : characterHistory.length === 0 ? (
                 <div className="text-center py-12">
                   <MessageCircle className="h-16 w-16 text-gray-500 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-300 mb-2">No chat history yet</h3>
+                  <h3 className="text-lg font-medium text-gray-300 mb-2">No character chats yet</h3>
                   <p className="text-gray-500 mb-6">
                     Start chatting with characters to see them here
                   </p>
@@ -261,16 +291,94 @@ const Chats = () => {
             </div>
           </TabsContent>
 
-          {/* Favorites */}
+          {/* Adventures */}
           <TabsContent value="favorites" className="pt-28">
-            <div className="p-8 text-center">
-              <h3 className="text-lg font-medium text-gray-300 mb-2">Favorites Coming Soon</h3>
-              <p className="text-gray-500 mb-4">
-                Soon you'll be able to mark your favorite characters for quick access
-              </p>
-              <Badge className="bg-yellow-500 text-black px-4 py-2">
-                Feature in Development
-              </Badge>
+            <div className="px-4 pb-4 space-y-2">
+              {isLoading ? (
+                <div className="space-y-4">
+                  {[...Array(3)].map((_, i) => (
+                    <Card key={i} className="bg-gray-800 border-gray-700 animate-pulse">
+                      <CardContent className="p-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-12 h-12 bg-gray-600 rounded-full"></div>
+                          <div className="flex-1 space-y-2">
+                            <div className="h-4 bg-gray-600 rounded w-1/3"></div>
+                            <div className="h-3 bg-gray-600 rounded w-1/2"></div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              ) : adventureHistory.length === 0 ? (
+                <div className="text-center py-12">
+                  <MapPin className="h-16 w-16 text-gray-500 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-300 mb-2">No adventure history yet</h3>
+                  <p className="text-gray-500 mb-6">
+                    Start playing adventures to see them here
+                  </p>
+                  <button
+                    onClick={() => navigate('/adventures')}
+                    className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg transition-colors"
+                  >
+                    Explore Adventures
+                  </button>
+                </div>
+              ) : (
+                adventureHistory.map((adventure) => (
+                  <Card
+                    key={adventure.conversationId}
+                    className="bg-gray-800 border-gray-700 hover:bg-gray-750 transition-colors cursor-pointer"
+                    onClick={() => startAdventureChat(adventure.id)}
+                  >
+                    <CardContent className="p-2">
+                      <div className="flex items-center gap-2">
+                        {/* Adventure Image */}
+                        <Avatar className="w-10 h-10 flex-shrink-0">
+                          <AvatarImage src={adventure.adventure_image_url} alt={adventure.name} />
+                          <AvatarFallback className="bg-gradient-to-br from-purple-600 to-blue-600 text-white text-sm">
+                            🏰
+                          </AvatarFallback>
+                        </Avatar>
+
+                        {/* Adventure Info */}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2">
+                            <h3 className="font-semibold text-white truncate text-sm">
+                              {adventure.name}
+                            </h3>
+                            <Badge className="bg-blue-500 text-white text-xs px-2 py-0.5">
+                              Adventure
+                            </Badge>
+                          </div>
+
+                          <div className="flex items-center gap-1 text-gray-400 text-xs">
+                            <User className="h-3 w-3" />
+                            <span>by {adventure.author}</span>
+                          </div>
+
+                          <p className="text-gray-300 text-xs truncate">
+                            {adventure.lastMessage}
+                          </p>
+
+                          <div className="flex items-center justify-between text-xs text-gray-500">
+                            <div className="flex items-center gap-2">
+                              <div className="flex items-center gap-1">
+                                <MessageCircle className="h-3 w-3" />
+                                <span>{adventure.totalMessages} messages</span>
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <Clock className="h-3 w-3" />
+                                <span>{formatDate(adventure.lastChatDate)}</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))
+              )}
             </div>
           </TabsContent>
         </Tabs>

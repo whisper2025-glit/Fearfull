@@ -11,7 +11,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ChevronLeft, MoreHorizontal, Star, Loader2 } from "lucide-react";
 import { CharacterCard } from "@/components/CharacterCard";
-import { supabase, getFavoriteCharacters, checkIsFavorited } from "@/lib/supabase";
+import { AdventureCard } from "@/components/AdventureCard";
+import { supabase, getFavoriteCharacters, checkIsFavorited, getFavoriteAdventures, checkAdventureIsFavorited } from "@/lib/supabase";
 import { useUser } from "@clerk/clerk-react";
 import { toast } from "sonner";
 
@@ -38,7 +39,10 @@ const CreatorProfile = () => {
   const [creatorUser, setCreatorUser] = useState<CreatorUser | null>(null);
   const [userCharacters, setUserCharacters] = useState<any[]>([]);
   const [favoriteCharacters, setFavoriteCharacters] = useState<any[]>([]);
+  const [favoriteAdventures, setFavoriteAdventures] = useState<any[]>([]);
   const [viewerFavoritedIds, setViewerFavoritedIds] = useState<string[]>([]);
+  const [viewerFavoritedAdventureIds, setViewerFavoritedAdventureIds] = useState<string[]>([]);
+  const [favoritesSubTab, setFavoritesSubTab] = useState('characters'); // 'characters' or 'adventures'
 
   // Stats state
   const [stats, setStats] = useState({
@@ -108,6 +112,10 @@ const CreatorProfile = () => {
       const favoriteChars = await getFavoriteCharacters(userId);
       setFavoriteCharacters(favoriteChars);
 
+      // Load creator's favorite adventures
+      const favoriteAdvs = await getFavoriteAdventures(userId);
+      setFavoriteAdventures(favoriteAdvs);
+
       // If current user is viewing, get their favorited status for creator's characters
       if (user && characterIds.length > 0) {
         const viewerFavorites = await checkIsFavorited(user.id, characterIds);
@@ -122,7 +130,7 @@ const CreatorProfile = () => {
         following: 0, // Not implemented yet
         likes: totalLikes,
         publicBots: publicBotsCount,
-        favorites: favoriteChars.length,
+        favorites: favoriteChars.length + favoriteAdvs.length,
         posts: 0 // Not implemented yet
       });
 
@@ -139,19 +147,26 @@ const CreatorProfile = () => {
     loadCreatorData();
   }, [userId]);
 
-  // Filter characters based on active tab
+  // Filter characters/adventures based on active tab and sub-tab
   const getCharactersForTab = () => {
     switch (activeTab) {
       case 'bots':
         return userCharacters;
       case 'favorites':
-        return favoriteCharacters;
+        return favoritesSubTab === 'characters' ? favoriteCharacters : [];
       case 'posts':
         // TODO: Implement posts functionality
         return [];
       default:
         return [];
     }
+  };
+
+  const getAdventuresForTab = () => {
+    if (activeTab === 'favorites' && favoritesSubTab === 'adventures') {
+      return favoriteAdventures;
+    }
+    return [];
   };
 
   // Handle favorite status changes by viewers
@@ -164,6 +179,15 @@ const CreatorProfile = () => {
   };
 
   const displayCharacters = getCharactersForTab();
+  const displayAdventures = getAdventuresForTab();
+
+  const handleAdventureFavoriteChange = async (adventureId: string, isFavorited: boolean) => {
+    if (isFavorited) {
+      setViewerFavoritedAdventureIds(prev => [...prev, adventureId]);
+    } else {
+      setViewerFavoritedAdventureIds(prev => prev.filter(id => id !== adventureId));
+    }
+  };
 
   const tabs = [
     { id: 'bots', label: 'Public Bots', count: stats.publicBots },
@@ -350,8 +374,54 @@ const CreatorProfile = () => {
             </DropdownMenu>
           </div>
 
+          {/* Favorites Sub-tabs */}
+          {activeTab === 'favorites' && (
+            <div className="flex gap-4 mb-4">
+              <button
+                onClick={() => setFavoritesSubTab('characters')}
+                className={`text-sm font-medium pb-1 px-3 py-1 rounded-full transition-colors ${
+                  favoritesSubTab === 'characters'
+                    ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                Characters ({favoriteCharacters.length})
+              </button>
+              <button
+                onClick={() => setFavoritesSubTab('adventures')}
+                className={`text-sm font-medium pb-1 px-3 py-1 rounded-full transition-colors ${
+                  favoritesSubTab === 'adventures'
+                    ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                Adventures ({favoriteAdventures.length})
+              </button>
+            </div>
+          )}
+
           {/* Content Area */}
-          {displayCharacters.length > 0 ? (
+          {(activeTab === 'favorites' && favoritesSubTab === 'adventures') ? (
+            displayAdventures.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {displayAdventures.map((adventure) => (
+                  <AdventureCard
+                    key={adventure.id}
+                    adventure={adventure}
+                    isFavorited={viewerFavoritedAdventureIds.includes(adventure.id)}
+                    onFavorite={handleAdventureFavoriteChange}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-16 space-y-4">
+                <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center">
+                  <div className="text-2xl">🏰</div>
+                </div>
+                <p className="text-muted-foreground text-sm">No favorite adventures yet.</p>
+              </div>
+            )
+          ) : displayCharacters.length > 0 ? (
             <div className="grid grid-cols-2 gap-4">
               {displayCharacters.map((character) => (
                 <CharacterCard
@@ -380,7 +450,8 @@ const CreatorProfile = () => {
               </div>
               <p className="text-muted-foreground text-sm">
                 {activeTab === 'bots' ? 'No public bots yet.' :
-                 activeTab === 'favorites' ? 'No favorites yet.' :
+                 activeTab === 'favorites' && favoritesSubTab === 'characters' ? 'No favorite characters yet.' :
+                 activeTab === 'favorites' && favoritesSubTab === 'adventures' ? 'No favorite adventures yet.' :
                  'No posts yet.'}
               </p>
             </div>

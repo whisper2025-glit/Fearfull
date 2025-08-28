@@ -16,9 +16,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { ChevronLeft, Settings, Gift, MoreHorizontal, X, Camera, Star, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { CharacterCard } from "@/components/CharacterCard";
+import { AdventureCard } from "@/components/AdventureCard";
 import SettingsSheet from "@/components/SettingsSheet";
 import { CreateModal } from "@/components/CreateModal";
-import { supabase, uploadImage, getFavoriteCharacters, checkIsFavorited } from "@/lib/supabase";
+import { supabase, uploadImage, getFavoriteCharacters, checkIsFavorited, getFavoriteAdventures, checkAdventureIsFavorited } from "@/lib/supabase";
 import { toast } from "sonner";
 
 const Profile = () => {
@@ -32,6 +33,9 @@ const Profile = () => {
   const [userCharacters, setUserCharacters] = useState<any[]>([]);
   const [favoriteCharacters, setFavoriteCharacters] = useState<any[]>([]);
   const [favoritedCharacterIds, setFavoritedCharacterIds] = useState<string[]>([]);
+  const [favoriteAdventures, setFavoriteAdventures] = useState<any[]>([]);
+  const [favoritedAdventureIds, setFavoritedAdventureIds] = useState<string[]>([]);
+  const [favoritesSubTab, setFavoritesSubTab] = useState('characters'); // 'characters' or 'adventures'
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   // User profile state with Supabase data
@@ -107,9 +111,14 @@ const Profile = () => {
       // Load user's favorite characters
       const favoriteChars = await getFavoriteCharacters(user.id);
       setFavoriteCharacters(favoriteChars);
+
+      // Load user's favorite adventures
+      const favoriteAdvs = await getFavoriteAdventures(user.id);
+      setFavoriteAdventures(favoriteAdvs);
+
       setStats(prev => ({
         ...prev,
-        favorites: favoriteChars.length
+        favorites: favoriteChars.length + favoriteAdvs.length
       }));
 
       // Get favorited status for all characters
@@ -131,19 +140,26 @@ const Profile = () => {
     loadUserData();
   }, [user]);
 
-  // Filter characters based on active tab
+  // Filter characters/adventures based on active tab and sub-tab
   const getCharactersForTab = () => {
     switch (activeTab) {
       case 'bots':
         return userCharacters.filter(char => char.visibility === 'public');
       case 'favorites':
-        return favoriteCharacters;
+        return favoritesSubTab === 'characters' ? favoriteCharacters : [];
       case 'posts':
         // TODO: Implement posts functionality
         return [];
       default:
         return [];
     }
+  };
+
+  const getAdventuresForTab = () => {
+    if (activeTab === 'favorites' && favoritesSubTab === 'adventures') {
+      return favoriteAdventures;
+    }
+    return [];
   };
 
   // Handle favorite status changes
@@ -153,18 +169,38 @@ const Profile = () => {
     } else {
       setFavoritedCharacterIds(prev => prev.filter(id => id !== characterId));
       // If we're on favorites tab and character was unfavorited, reload favorites
-      if (activeTab === 'favorites') {
+      if (activeTab === 'favorites' && favoritesSubTab === 'characters') {
         const updatedFavorites = await getFavoriteCharacters(user.id);
         setFavoriteCharacters(updatedFavorites);
+        const favoriteAdvs = await getFavoriteAdventures(user.id);
         setStats(prev => ({
           ...prev,
-          favorites: updatedFavorites.length
+          favorites: updatedFavorites.length + favoriteAdvs.length
+        }));
+      }
+    }
+  };
+
+  const handleAdventureFavoriteChange = async (adventureId: string, isFavorited: boolean) => {
+    if (isFavorited) {
+      setFavoritedAdventureIds(prev => [...prev, adventureId]);
+    } else {
+      setFavoritedAdventureIds(prev => prev.filter(id => id !== adventureId));
+      // If we're on favorites tab and adventure was unfavorited, reload favorites
+      if (activeTab === 'favorites' && favoritesSubTab === 'adventures') {
+        const updatedAdventures = await getFavoriteAdventures(user.id);
+        setFavoriteAdventures(updatedAdventures);
+        const favoriteChars = await getFavoriteCharacters(user.id);
+        setStats(prev => ({
+          ...prev,
+          favorites: favoriteChars.length + updatedAdventures.length
         }));
       }
     }
   };
 
   const displayCharacters = getCharactersForTab();
+  const displayAdventures = getAdventuresForTab();
 
   const tabs = [
     { id: 'bots', label: 'Public Bots', count: stats.publicBots },
@@ -633,6 +669,32 @@ const Profile = () => {
             </DropdownMenu>
           </div>
 
+          {/* Favorites Sub-tabs */}
+          {activeTab === 'favorites' && (
+            <div className="flex gap-4 mb-4">
+              <button
+                onClick={() => setFavoritesSubTab('characters')}
+                className={`text-sm font-medium pb-1 px-3 py-1 rounded-full transition-colors ${
+                  favoritesSubTab === 'characters'
+                    ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                Characters ({favoriteCharacters.length})
+              </button>
+              <button
+                onClick={() => setFavoritesSubTab('adventures')}
+                className={`text-sm font-medium pb-1 px-3 py-1 rounded-full transition-colors ${
+                  favoritesSubTab === 'adventures'
+                    ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                Adventures ({favoriteAdventures.length})
+              </button>
+            </div>
+          )}
+
           {/* Content Area */}
           {isLoading ? (
             <div className="flex items-center justify-center py-16">
@@ -641,6 +703,26 @@ const Profile = () => {
                 <p className="text-muted-foreground">Loading...</p>
               </div>
             </div>
+          ) : (activeTab === 'favorites' && favoritesSubTab === 'adventures') ? (
+            displayAdventures.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {displayAdventures.map((adventure) => (
+                  <AdventureCard
+                    key={adventure.id}
+                    adventure={adventure}
+                    isFavorited={favoritedAdventureIds.includes(adventure.id)}
+                    onFavorite={handleAdventureFavoriteChange}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-16 space-y-4">
+                <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center">
+                  <div className="text-2xl">🏰</div>
+                </div>
+                <p className="text-muted-foreground text-sm">No favorite adventures yet.</p>
+              </div>
+            )
           ) : displayCharacters.length > 0 ? (
             <div className="grid grid-cols-2 gap-4">
               {displayCharacters.map((character) => (
@@ -670,7 +752,8 @@ const Profile = () => {
               </div>
               <p className="text-muted-foreground text-sm">
                 {activeTab === 'bots' ? 'No bot yet, try to create one.' :
-                 activeTab === 'favorites' ? 'No favorites yet.' :
+                 activeTab === 'favorites' && favoritesSubTab === 'characters' ? 'No favorite characters yet.' :
+                 activeTab === 'favorites' && favoritesSubTab === 'adventures' ? 'No favorite adventures yet.' :
                  'No posts yet.'}
               </p>
               {activeTab === 'bots' && (
