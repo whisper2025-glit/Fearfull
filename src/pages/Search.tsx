@@ -530,28 +530,28 @@ const Search = () => {
                         <div key={character.id} className="bg-card rounded-xl overflow-hidden">
                           <div className="relative aspect-[4/5]">
                             <img
-                              src={character.image}
+                              src={character.image_url || '/placeholder.svg'}
                               alt={character.name}
                               className="w-full h-full object-cover"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-                            
+
                             {/* Stats overlay */}
                             <div className="absolute bottom-2 left-2 right-2">
                               <div className="flex justify-between items-end mb-2">
                                 <div className="flex items-center gap-1 text-white text-xs">
                                   <MessageCircle className="h-3 w-3" />
-                                  {character.stats.messages}
+                                  {character.message_count || 0}
                                 </div>
-                                {character.stats.likes > 0 && (
+                                {character.likes_count && character.likes_count > 0 && (
                                   <div className="flex items-center gap-1 text-white text-xs">
-                                    ❤️ {character.stats.likes}
+                                    ❤️ {character.likes_count}
                                   </div>
                                 )}
                               </div>
                             </div>
                           </div>
-                          
+
                           <div className="p-3">
                             <h3 className="text-sm font-semibold text-white mb-1">{character.name}</h3>
                             {character.description && (
@@ -559,9 +559,9 @@ const Search = () => {
                                 {character.description}
                               </p>
                             )}
-                            
+
                             {/* Tags */}
-                            {character.tags && character.tags.length > 0 && (
+                            {character.tags && Array.isArray(character.tags) && character.tags.length > 0 && (
                               <div className="flex flex-wrap gap-1 mb-2">
                                 {character.tags.map((tag: string, index: number) => (
                                   <Badge
@@ -576,9 +576,9 @@ const Search = () => {
                             )}
 
                             {/* Creator info */}
-                            {character.creator && (
+                            {character.creator_username && (
                               <div className="flex items-center justify-between">
-                                <span className="text-xs text-muted-foreground">{character.creator}</span>
+                                <span className="text-xs text-muted-foreground">{character.creator_username}</span>
                                 {character.rating && (
                                   <div className="flex items-center gap-1">
                                     <span className="text-xs">⭐</span>
