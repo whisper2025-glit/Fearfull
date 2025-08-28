@@ -11,7 +11,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ChevronLeft, MoreHorizontal, Star, Loader2 } from "lucide-react";
 import { CharacterCard } from "@/components/CharacterCard";
-import { supabase, getFavoriteCharacters, checkIsFavorited } from "@/lib/supabase";
+import { AdventureCard } from "@/components/AdventureCard";
+import { supabase, getFavoriteCharacters, checkIsFavorited, getFavoriteAdventures, checkAdventureIsFavorited } from "@/lib/supabase";
 import { useUser } from "@clerk/clerk-react";
 import { toast } from "sonner";
 
