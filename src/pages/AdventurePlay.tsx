@@ -318,6 +318,9 @@ Format your response as regular narrative text, then end with exactly two choice
         description: 'Adventure AI Model'
       };
 
+      console.log('🤖 Making OpenRouter API call with model:', adventureModel.id);
+      console.log('📝 Chat messages length:', chatMessages.length);
+
       const aiResponse = await openRouterAPI.createChatCompletion(
         adventureModel,
         chatMessages as any,
@@ -328,6 +331,8 @@ Format your response as regular narrative text, then end with exactly two choice
           presence_penalty: 0.6
         }
       );
+
+      console.log('✅ OpenRouter API response received:', aiResponse);
 
       if (aiResponse && aiResponse.choices && aiResponse.choices[0]) {
         const aiContent = aiResponse.choices[0].message.content;
