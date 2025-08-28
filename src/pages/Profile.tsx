@@ -752,7 +752,8 @@ const Profile = () => {
               </div>
               <p className="text-muted-foreground text-sm">
                 {activeTab === 'bots' ? 'No bot yet, try to create one.' :
-                 activeTab === 'favorites' ? 'No favorites yet.' :
+                 activeTab === 'favorites' && favoritesSubTab === 'characters' ? 'No favorite characters yet.' :
+                 activeTab === 'favorites' && favoritesSubTab === 'adventures' ? 'No favorite adventures yet.' :
                  'No posts yet.'}
               </p>
               {activeTab === 'bots' && (
