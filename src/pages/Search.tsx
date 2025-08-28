@@ -37,12 +37,12 @@ const Search = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
-  const [activeTab, setActiveTab] = useState<'Characters' | 'User'>('Characters');
+  const [activeTab, setActiveTab] = useState<'Characters'>('Characters');
   const [activeRankTab, setActiveRankTab] = useState<'Creators' | 'Characters'>('Creators');
   const [isSearching, setIsSearching] = useState(false);
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [hasSearched, setHasSearched] = useState(false);
-  const [recentSearches, setRecentSearches] = useState<string[]>(['Submissive']);
+  const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState('Recommend');
   const [filterTags, setFilterTags] = useState('All Tags');
   const [filterGender, setFilterGender] = useState('Gender All');
@@ -58,130 +58,10 @@ const Search = () => {
     'Dark', 'Wholesome', 'Mature', 'Teen', 'Adult'
   ];
 
-  const popularSearches = [
-    'Submissive', 'Masochism', 'Vore', 'Bondage', 'Futa', 'Bisexual', 
-    'Trans', 'Femboy', 'Gay', 'Lesbian'
-  ];
+  const [trendingCreators, setTrendingCreators] = useState<any[]>([]);
+  const [trendingCharacters, setTrendingCharacters] = useState<any[]>([]);
+  const [popularSearches, setPopularSearches] = useState<string[]>([]);
 
-  const mockTrendingCreators = [
-    {
-      id: '1',
-      name: 'Just a Random Guy',
-      avatar: '/placeholder.svg',
-      stats: { characters: 150, messages: '71.3M', followers: '780.6K' },
-      description: 'Welcome to my page your new guilty pleasure 🥰...'
-    },
-    {
-      id: '2',
-      name: 'The Burrito Queen 女...',
-      avatar: '/placeholder.svg',
-      stats: { characters: '1.4K', messages: '551.3M', followers: '665.6K' },
-      description: "You know who I am. I've made more people cry..."
-    },
-    {
-      id: '3',
-      name: 'Atis, Brat Princess',
-      avatar: '/placeholder.svg',
-      stats: { characters: 344, messages: '282.6M', followers: '384.3K' },
-      description: ''
-    }
-  ];
-
-  const mockTrendingCharacters = [
-    {
-      id: '1',
-      name: "Friends Mom Saw Yo...",
-      description: "Your friend's mother saw your huge cock.",
-      image: '/placeholder.svg',
-      category: 'NSFW',
-      stats: { messages: '4.9M', likes: 0 },
-      rank: 1
-    },
-    {
-      id: '2',
-      name: "Mary • Your Best Fri...",
-      description: "<p style=\"font-size: 24px; font-style: italic; text-alig...",
-      image: '/placeholder.svg', 
-      category: 'NSFW',
-      stats: { messages: '4.2M', likes: 0 },
-      rank: 2
-    },
-    {
-      id: '3',
-      name: "Zilu - Your Unsatisfi...", 
-      description: "<b>[R-NTR | Incest | Bitch Taming | Cock Worship]...",
-      image: '/placeholder.svg',
-      category: 'NSFW', 
-      stats: { messages: '3.9M', likes: 0 },
-      rank: 3
-    },
-    {
-      id: '4',
-      name: "Oria - Your Desperat...",
-      description: "<b>[Dark Secrets | Slow-",
-      image: '/placeholder.svg',
-      category: 'NSFW',
-      stats: { messages: '3.8M', likes: 0 },
-      rank: 4
-    }
-  ];
-
-  const mockSearchResults = [
-    {
-      id: '1',
-      name: 'submissive',
-      description: 'a teacher who wants sex',
-      image: '/placeholder.svg',
-      category: 'Unfiltered',
-      stats: { messages: '407.5K', likes: 34 },
-      tags: ['Unfiltered', 'OC', 'Femdom', 'Dominant'],
-      creator: 'User#421736...',
-      rating: '1.2K'
-    },
-    {
-      id: '2', 
-      name: 'Submissive Mom',
-      description: '[Vanilla, milf, incest, pregnant] You became...',
-      image: '/placeholder.svg',
-      category: 'NSFW',
-      stats: { messages: '6.1M', likes: 214 },
-      tags: ['💾', '📚', 'BDSM', 'Caring', 'Dominant'],
-      creator: 'Vanilla NTR Phú ...',
-      rating: '-1'
-    },
-    {
-      id: '3',
-      name: 'Submissive Wife', 
-      description: '',
-      image: '/placeholder.svg',
-      category: 'NSFW',
-      stats: { messages: '546.1K', likes: 22 },
-      tags: [],
-      creator: '',
-      rating: ''
-    },
-    {
-      id: '4',
-      name: 'Submissive Top',
-      description: '',
-      image: '/placeholder.svg', 
-      category: 'NSFW',
-      stats: { messages: '25.3K', likes: 0 },
-      tags: [],
-      creator: '',
-      rating: ''
-    }
-  ];
-
-  const mockUsers = [
-    { id: '1', username: 'hi', characters: 0, memories: 0, avatar: '' },
-    { id: '2', username: 'hi', characters: 0, memories: 0, avatar: '/placeholder.svg' },
-    { id: '3', username: 'HI', characters: 0, memories: 0, avatar: '' },
-    { id: '4', username: 'Hi', characters: 0, memories: 0, avatar: '/placeholder.svg' },
-    { id: '5', username: 'Hi.', characters: 0, memories: 0, avatar: '' },
-    { id: '6', username: 'hi_', characters: 1, memories: 0, avatar: '/placeholder.svg' },
-    { id: '7', username: 'Hi_', characters: 0, memories: 0, avatar: '' }
-  ];
 
   useEffect(() => {
     const query = searchParams.get('q');
@@ -191,16 +71,98 @@ const Search = () => {
     }
   }, [searchParams]);
 
-  // Update search results when switching tabs after a search has been performed
+  // Load trending data on component mount
+  useEffect(() => {
+    loadTrendingData();
+  }, []);
+
+  // Re-run search when filters change
   useEffect(() => {
     if (hasSearched && searchQuery.trim()) {
-      if (activeTab === 'Characters') {
-        setSearchResults(mockSearchResults);
-      } else {
-        setSearchResults(mockUsers);
-      }
+      performSearch(searchQuery);
     }
-  }, [activeTab, hasSearched, searchQuery]);
+  }, [sortBy, filterGender, selectedTags]);
+
+  const loadTrendingData = async () => {
+    try {
+      // Load trending creators (users with most characters)
+      const { data: creators, error: creatorsError } = await supabase
+        .from('users')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(10);
+
+      if (creatorsError) {
+        console.error('Error loading trending creators:', creatorsError);
+      } else {
+        // For each creator, get their character and message counts separately
+        const processedCreators = await Promise.all((creators || []).map(async (creator) => {
+          // Get character count for this creator
+          const { count: charactersCount } = await supabase
+            .from('characters')
+            .select('*', { count: 'exact', head: true })
+            .eq('owner_id', creator.id);
+
+          // Get total messages for this creator's characters
+          const { count: messagesCount } = await supabase
+            .from('messages')
+            .select('*, characters!inner(*)', { count: 'exact', head: true })
+            .eq('characters.owner_id', creator.id);
+
+          return {
+            ...creator,
+            characters_count: charactersCount || 0,
+            messages_count: messagesCount || 0,
+            followers_count: 0 // You can add followers functionality later
+          };
+        }));
+        setTrendingCreators(processedCreators);
+      }
+
+      // Load trending characters (by recent activity)
+      const { data: characters, error: charactersError } = await supabase
+        .from('characters')
+        .select(`
+          *,
+          owner:users!characters_owner_id_fkey(username, avatar_url)
+        `)
+        .eq('visibility', 'public')
+        .order('created_at', { ascending: false })
+        .limit(10);
+
+      if (charactersError) {
+        console.error('Error loading trending characters:', charactersError);
+      } else {
+        // For each character, get message count separately
+        const processedCharacters = await Promise.all((characters || []).map(async (character) => {
+          // Get message count for this character
+          const { count: messageCount } = await supabase
+            .from('messages')
+            .select('*', { count: 'exact', head: true })
+            .eq('character_id', character.id);
+
+          // Get conversation count for this character
+          const { count: conversationCount } = await supabase
+            .from('conversations')
+            .select('*', { count: 'exact', head: true })
+            .eq('character_id', character.id);
+
+          return {
+            ...character,
+            message_count: messageCount || 0,
+            conversation_count: conversationCount || 0,
+            creator_username: character.owner?.username || 'Unknown'
+          };
+        }));
+        setTrendingCharacters(processedCharacters);
+      }
+
+      // For now, set some default popular searches since we don't have a search_terms table
+      setPopularSearches(['Adventure', 'Romance', 'Fantasy', 'Sci-Fi', 'Comedy', 'Drama']);
+    } catch (error) {
+      console.error('Error loading trending data:', error);
+    }
+  };
 
   const performSearch = async (query: string) => {
     if (!query.trim()) {
@@ -219,16 +181,76 @@ const Search = () => {
       return [query, ...filtered].slice(0, 5);
     });
 
-    // For demo purposes, use mock data
-    // In a real app, you'd query your database here
-    setTimeout(() => {
-      if (activeTab === 'Characters') {
-        setSearchResults(mockSearchResults);
-      } else {
-        setSearchResults(mockUsers);
+    try {
+      // Build the query with filters
+      let queryBuilder = supabase
+        .from('characters')
+        .select(`
+          *,
+          owner:users!characters_owner_id_fkey(username, avatar_url)
+        `)
+        .eq('visibility', 'public');
+
+      // Apply search query
+      if (query.trim()) {
+        queryBuilder = queryBuilder.or(`name.ilike.%${query}%,intro.ilike.%${query}%,personality.ilike.%${query}%`);
       }
+
+      // Apply gender filter
+      if (filterGender !== 'Gender All') {
+        queryBuilder = queryBuilder.eq('gender', filterGender.replace('Gender ', ''));
+      }
+
+      // Apply tag filters
+      if (selectedTags.length > 0) {
+        queryBuilder = queryBuilder.overlaps('tags', selectedTags);
+      }
+
+      // Apply sorting
+      switch (sortBy) {
+        case 'Latest':
+          queryBuilder = queryBuilder.order('created_at', { ascending: false });
+          break;
+        case 'Popular':
+          queryBuilder = queryBuilder.order('created_at', { ascending: false }); // Will be replaced with actual popularity metric
+          break;
+        default: // Recommend
+          queryBuilder = queryBuilder.order('created_at', { ascending: false });
+      }
+
+      const { data: characters, error } = await queryBuilder.limit(20);
+
+      if (error) {
+        console.error('Search error:', error);
+        toast.error('Search failed. Please try again.');
+        setSearchResults([]);
+      } else {
+        // Process search results to add calculated fields
+        const processedResults = await Promise.all((characters || []).map(async (character) => {
+          // Get message count for this character
+          const { count: messageCount } = await supabase
+            .from('messages')
+            .select('*', { count: 'exact', head: true })
+            .eq('character_id', character.id);
+
+          return {
+            ...character,
+            message_count: messageCount || 0,
+            conversation_count: 0, // Skip for performance in search
+            creator_username: character.owner?.username || 'Unknown',
+            description: character.intro, // Use intro as description
+            likes_count: 0 // You can add likes functionality later
+          };
+        }));
+        setSearchResults(processedResults);
+      }
+    } catch (error) {
+      console.error('Search error:', error);
+      toast.error('Search failed. Please try again.');
+      setSearchResults([]);
+    } finally {
       setIsSearching(false);
-    }, 500);
+    }
   };
 
   const handleSearch = (e: React.FormEvent) => {
@@ -259,6 +281,14 @@ const Search = () => {
     setSearchQuery(term);
     setSearchParams({ q: term });
     performSearch(term);
+  };
+
+  const handleCreatorClick = (userId: string) => {
+    navigate(`/creator/${userId}`);
+  };
+
+  const handleCharacterClick = (characterId: string) => {
+    navigate(`/character/${characterId}`);
   };
 
   const isSearchActive = hasSearched && searchQuery.trim().length > 0;
@@ -343,132 +373,137 @@ const Search = () => {
               )}
 
               {/* Popular Search */}
-              <div className="space-y-3">
-                <h2 className="text-sm font-semibold text-primary">Popular Search</h2>
-                <div className="flex flex-wrap gap-2">
-                  {popularSearches.map((search, index) => (
-                    <Badge
-                      key={index}
-                      variant="secondary"
-                      className="cursor-pointer bg-muted text-muted-foreground text-xs hover:bg-muted/80"
-                      onClick={() => handlePopularSearchClick(search)}
-                    >
-                      {search}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-
-              {/* Trending Rank */}
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-sm font-semibold text-primary">Trending Rank</h2>
-                  <div className="flex bg-muted rounded-full p-1">
-                    <Button
-                      variant={activeRankTab === 'Creators' ? 'default' : 'ghost'}
-                      size="sm"
-                      onClick={() => setActiveRankTab('Creators')}
-                      className="text-xs rounded-full px-6 h-8"
-                    >
-                      Creators
-                    </Button>
-                    <Button
-                      variant={activeRankTab === 'Characters' ? 'default' : 'ghost'}
-                      size="sm"
-                      onClick={() => setActiveRankTab('Characters')}
-                      className="text-xs rounded-full px-6 h-8"
-                    >
-                      Characters
-                    </Button>
+              {popularSearches.length > 0 && (
+                <div className="space-y-3">
+                  <h2 className="text-sm font-semibold text-primary">Popular Search</h2>
+                  <div className="flex flex-wrap gap-2">
+                    {popularSearches.map((search, index) => (
+                      <Badge
+                        key={index}
+                        variant="secondary"
+                        className="cursor-pointer bg-muted text-muted-foreground text-xs hover:bg-muted/80"
+                        onClick={() => handlePopularSearchClick(search)}
+                      >
+                        {search}
+                      </Badge>
+                    ))}
                   </div>
                 </div>
+              )}
 
+              {/* Trending Rank */}
+              {(trendingCreators.length > 0 || trendingCharacters.length > 0) && (
                 <div className="space-y-3">
-                  {activeRankTab === 'Creators' ? (
-                    // Creators list
-                    mockTrendingCreators.map((creator) => (
-                      <div key={creator.id} className="bg-gradient-to-r from-purple-500/20 to-blue-500/20 rounded-xl p-4 space-y-3">
-                        <div className="flex items-center gap-3">
-                          <Avatar className="w-12 h-12">
-                            <AvatarImage src={creator.avatar} />
-                            <AvatarFallback className="bg-gradient-to-br from-purple-500 to-blue-500 text-white text-sm">
-                              {creator.name.charAt(0)}
-                            </AvatarFallback>
-                          </Avatar>
-                          <h3 className="text-sm font-semibold text-white">{creator.name}</h3>
-                        </div>
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-sm font-semibold text-primary">Trending Rank</h2>
+                    <div className="flex bg-muted rounded-full p-1">
+                      <Button
+                        variant={activeRankTab === 'Creators' ? 'default' : 'ghost'}
+                        size="sm"
+                        onClick={() => setActiveRankTab('Creators')}
+                        className="text-xs rounded-full px-6 h-8"
+                        disabled={trendingCreators.length === 0}
+                      >
+                        Creators
+                      </Button>
+                      <Button
+                        variant={activeRankTab === 'Characters' ? 'default' : 'ghost'}
+                        size="sm"
+                        onClick={() => setActiveRankTab('Characters')}
+                        className="text-xs rounded-full px-6 h-8"
+                        disabled={trendingCharacters.length === 0}
+                      >
+                        Characters
+                      </Button>
+                    </div>
+                  </div>
 
-                        <div className="flex justify-between text-center">
-                          <div>
-                            <div className="text-lg font-bold text-green-400">{creator.stats.characters}</div>
-                            <div className="text-xs text-green-400">Characters</div>
-                          </div>
-                          <div>
-                            <div className="text-lg font-bold text-green-400">{creator.stats.messages}</div>
-                            <div className="text-xs text-green-400">Messages</div>
-                          </div>
-                          <div>
-                            <div className="text-lg font-bold text-green-400">{creator.stats.followers}</div>
-                            <div className="text-xs text-green-400">Followers</div>
-                          </div>
-                        </div>
+                  <div className="space-y-3">
+                    {activeRankTab === 'Creators' ? (
+                      trendingCreators.length > 0 ? (
+                        // Creators list
+                        trendingCreators.map((creator) => (
+                          <div
+                            key={creator.id}
+                            className="bg-gradient-to-r from-purple-500/20 to-blue-500/20 rounded-xl p-4 space-y-3 cursor-pointer hover:from-purple-500/30 hover:to-blue-500/30 transition-all duration-200"
+                            onClick={() => handleCreatorClick(creator.id)}
+                          >
+                            <div className="flex items-center gap-3">
+                              <Avatar className="w-12 h-12">
+                                <AvatarImage src={creator.avatar_url} />
+                                <AvatarFallback className="bg-gradient-to-br from-purple-500 to-blue-500 text-white text-sm">
+                                  {creator.username?.charAt(0) || creator.email?.charAt(0) || 'U'}
+                                </AvatarFallback>
+                              </Avatar>
+                              <h3 className="text-sm font-semibold text-white">{creator.username || creator.full_name || 'Unknown User'}</h3>
+                            </div>
 
-                        {creator.description && (
-                          <p className="text-xs text-gray-300">{creator.description}</p>
-                        )}
-                      </div>
-                    ))
-                  ) : (
-                    // Characters list
-                    mockTrendingCharacters.map((character) => (
-                      <div key={character.id} className="bg-gradient-to-r from-pink-500/20 to-purple-500/20 rounded-xl p-3 flex items-center gap-3">
-                        <span className="text-lg font-bold text-white min-w-[20px]">{character.rank}</span>
-                        <img 
-                          src={character.image} 
-                          alt={character.name}
-                          className="w-12 h-12 rounded-lg object-cover"
-                        />
-                        <div className="flex-1 min-w-0">
-                          <h3 className="text-sm font-semibold text-white truncate">{character.name}</h3>
-                          <p className="text-xs text-gray-300 line-clamp-1">{character.description}</p>
+                            <div className="flex justify-between text-center">
+                              <div>
+                                <div className="text-lg font-bold text-green-400">{creator.characters_count || 0}</div>
+                                <div className="text-xs text-green-400">Characters</div>
+                              </div>
+                              <div>
+                                <div className="text-lg font-bold text-green-400">{creator.messages_count || 0}</div>
+                                <div className="text-xs text-green-400">Messages</div>
+                              </div>
+                              <div>
+                                <div className="text-lg font-bold text-green-400">{creator.followers_count || 0}</div>
+                                <div className="text-xs text-green-400">Followers</div>
+                              </div>
+                            </div>
+
+                            {creator.bio && (
+                              <p className="text-xs text-gray-300">{creator.bio}</p>
+                            )}
+                          </div>
+                        ))
+                      ) : (
+                        <div className="text-center py-8 text-muted-foreground">
+                          <p className="text-sm">No trending creators found</p>
                         </div>
-                        <div className="flex items-center gap-1 text-green-400">
-                          <MessageCircle className="h-3 w-3" />
-                          <span className="text-xs font-semibold">{character.stats.messages}</span>
+                      )
+                    ) : (
+                      trendingCharacters.length > 0 ? (
+                        // Characters list
+                        trendingCharacters.map((character, index) => (
+                          <div
+                            key={character.id}
+                            className="bg-gradient-to-r from-pink-500/20 to-purple-500/20 rounded-xl p-3 flex items-center gap-3 cursor-pointer hover:from-pink-500/30 hover:to-purple-500/30 transition-all duration-200"
+                            onClick={() => handleCharacterClick(character.id)}
+                          >
+                            <span className="text-lg font-bold text-white min-w-[20px]">{index + 1}</span>
+                            <img
+                              src={character.avatar_url || '/placeholder.svg'}
+                              alt={character.name}
+                              className="w-12 h-12 rounded-lg object-cover"
+                            />
+                            <div className="flex-1 min-w-0">
+                              <h3 className="text-sm font-semibold text-white truncate">{character.name}</h3>
+                              <p className="text-xs text-gray-300 line-clamp-1">{character.description}</p>
+                            </div>
+                            <div className="flex items-center gap-1 text-green-400">
+                              <MessageCircle className="h-3 w-3" />
+                              <span className="text-xs font-semibold">{character.message_count || 0}</span>
+                            </div>
+                          </div>
+                        ))
+                      ) : (
+                        <div className="text-center py-8 text-muted-foreground">
+                          <p className="text-sm">No trending characters found</p>
                         </div>
-                      </div>
-                    ))
-                  )}
+                      )
+                    )}
+                  </div>
                 </div>
-              </div>
+              )}
             </>
           ) : (
             <>
               {/* Search Results */}
               <div className="space-y-4">
-                {/* Filter Tabs */}
-                <div className="flex bg-muted rounded-full p-1">
-                  <Button
-                    variant={activeTab === 'Characters' ? 'default' : 'ghost'}
-                    size="sm"
-                    onClick={() => setActiveTab('Characters')}
-                    className="text-xs rounded-full px-6 h-8"
-                  >
-                    Characters
-                  </Button>
-                  <Button
-                    variant={activeTab === 'User' ? 'default' : 'ghost'}
-                    size="sm"
-                    onClick={() => setActiveTab('User')}
-                    className="text-xs rounded-full px-6 h-8"
-                  >
-                    User
-                  </Button>
-                </div>
 
-                {activeTab === 'Characters' && (
-                  <>
-                    {/* Filter Controls */}
+                {/* Filter Controls */}
                     <div className="flex items-center gap-2 flex-wrap">
                       {/* Sort Dropdown */}
                       <DropdownMenu>
@@ -590,33 +625,43 @@ const Search = () => {
 
 
                     {/* Character Results Grid */}
-                    <div className="grid grid-cols-2 gap-4">
-                      {searchResults.map((character) => (
-                        <div key={character.id} className="bg-card rounded-xl overflow-hidden">
+                    {isSearching ? (
+                      <div className="text-center py-8">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+                        <p className="mt-4 text-muted-foreground">Searching...</p>
+                      </div>
+                    ) : searchResults.length > 0 ? (
+                      <div className="grid grid-cols-2 gap-4">
+                        {searchResults.map((character) => (
+                        <div
+                          key={character.id}
+                          className="bg-card rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-transform duration-200"
+                          onClick={() => handleCharacterClick(character.id)}
+                        >
                           <div className="relative aspect-[4/5]">
                             <img
-                              src={character.image}
+                              src={character.avatar_url || '/placeholder.svg'}
                               alt={character.name}
                               className="w-full h-full object-cover"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-                            
+
                             {/* Stats overlay */}
                             <div className="absolute bottom-2 left-2 right-2">
                               <div className="flex justify-between items-end mb-2">
                                 <div className="flex items-center gap-1 text-white text-xs">
                                   <MessageCircle className="h-3 w-3" />
-                                  {character.stats.messages}
+                                  {character.message_count || 0}
                                 </div>
-                                {character.stats.likes > 0 && (
+                                {character.likes_count && character.likes_count > 0 && (
                                   <div className="flex items-center gap-1 text-white text-xs">
-                                    ❤️ {character.stats.likes}
+                                    ❤️ {character.likes_count}
                                   </div>
                                 )}
                               </div>
                             </div>
                           </div>
-                          
+
                           <div className="p-3">
                             <h3 className="text-sm font-semibold text-white mb-1">{character.name}</h3>
                             {character.description && (
@@ -624,9 +669,9 @@ const Search = () => {
                                 {character.description}
                               </p>
                             )}
-                            
+
                             {/* Tags */}
-                            {character.tags && character.tags.length > 0 && (
+                            {character.tags && Array.isArray(character.tags) && character.tags.length > 0 && (
                               <div className="flex flex-wrap gap-1 mb-2">
                                 {character.tags.map((tag: string, index: number) => (
                                   <Badge
@@ -641,9 +686,9 @@ const Search = () => {
                             )}
 
                             {/* Creator info */}
-                            {character.creator && (
+                            {character.creator_username && (
                               <div className="flex items-center justify-between">
-                                <span className="text-xs text-muted-foreground">{character.creator}</span>
+                                <span className="text-xs text-muted-foreground">{character.creator_username}</span>
                                 {character.rating && (
                                   <div className="flex items-center gap-1">
                                     <span className="text-xs">⭐</span>
@@ -654,42 +699,15 @@ const Search = () => {
                             )}
                           </div>
                         </div>
-                      ))}
-                    </div>
-                  </>
-                )}
-
-                {activeTab === 'User' && (
-                  <div className="space-y-3">
-                    {searchResults.map((user: any) => (
-                      <div key={user.id} className="bg-card rounded-xl p-4 flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <Avatar className="w-12 h-12">
-                            <AvatarImage src={user.avatar} />
-                            <AvatarFallback className="bg-gradient-to-br from-blue-400 to-purple-500 text-white text-sm">
-                              {user.username.charAt(0).toUpperCase()}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div>
-                            <h3 className="text-sm font-semibold text-white">{user.username}</h3>
-                            <p className="text-xs text-green-400">
-                              {user.characters} Characters  {user.memories} Memories
-                            </p>
-                            {user.username === 'Hi.' && (
-                              <p className="text-xs text-muted-foreground">Rah</p>
-                            )}
-                          </div>
-                        </div>
-                        <Button
-                          size="sm"
-                          className="bg-pink-500 hover:bg-pink-600 text-white rounded-full text-xs px-6 h-8"
-                        >
-                          Follow
-                        </Button>
+                        ))}
                       </div>
-                    ))}
-                  </div>
-                )}
+                    ) : (
+                      <div className="text-center py-8 text-muted-foreground">
+                        <SearchIcon className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                        <p className="text-sm">No characters found for "{searchQuery}"</p>
+                        <p className="text-xs mt-2">Try different keywords or browse trending characters above.</p>
+                      </div>
+                    )}
               </div>
             </>
           )}
