@@ -402,6 +402,19 @@ Format your response as regular narrative text, then end with exactly two choice
         };
 
         setMessages(prev => [...prev, aiMessage]);
+
+        // Save AI message to database if logged in
+        if (conversationId) {
+          await addAdventureMessage(
+            adventureId,
+            conversationId,
+            mainContent,
+            true,
+            null,
+            extractedChoices.length > 0 ? 'choice' : 'regular',
+            extractedChoices
+          );
+        }
       }
     } catch (error) {
       console.error('Error processing choice:', error);
