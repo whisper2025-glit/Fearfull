@@ -374,8 +374,54 @@ const CreatorProfile = () => {
             </DropdownMenu>
           </div>
 
+          {/* Favorites Sub-tabs */}
+          {activeTab === 'favorites' && (
+            <div className="flex gap-4 mb-4">
+              <button
+                onClick={() => setFavoritesSubTab('characters')}
+                className={`text-sm font-medium pb-1 px-3 py-1 rounded-full transition-colors ${
+                  favoritesSubTab === 'characters'
+                    ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                Characters ({favoriteCharacters.length})
+              </button>
+              <button
+                onClick={() => setFavoritesSubTab('adventures')}
+                className={`text-sm font-medium pb-1 px-3 py-1 rounded-full transition-colors ${
+                  favoritesSubTab === 'adventures'
+                    ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                Adventures ({favoriteAdventures.length})
+              </button>
+            </div>
+          )}
+
           {/* Content Area */}
-          {displayCharacters.length > 0 ? (
+          {(activeTab === 'favorites' && favoritesSubTab === 'adventures') ? (
+            displayAdventures.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {displayAdventures.map((adventure) => (
+                  <AdventureCard
+                    key={adventure.id}
+                    adventure={adventure}
+                    isFavorited={viewerFavoritedAdventureIds.includes(adventure.id)}
+                    onFavorite={handleAdventureFavoriteChange}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-16 space-y-4">
+                <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center">
+                  <div className="text-2xl">🏰</div>
+                </div>
+                <p className="text-muted-foreground text-sm">No favorite adventures yet.</p>
+              </div>
+            )
+          ) : displayCharacters.length > 0 ? (
             <div className="grid grid-cols-2 gap-4">
               {displayCharacters.map((character) => (
                 <CharacterCard
