@@ -159,6 +159,10 @@ const Chats = () => {
     navigate(`/chat/${characterId}`);
   };
 
+  const startAdventureChat = (adventureId: string) => {
+    navigate(`/adventure/${adventureId}`);
+  };
+
   if (!user) {
     return (
       <Layout>
