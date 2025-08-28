@@ -182,16 +182,13 @@ const Chats = () => {
               value="recent"
               className="bg-transparent text-white border-b-2 border-transparent data-[state=active]:border-purple-500 data-[state=active]:bg-transparent rounded-none py-3"
             >
-              <span className="text-sm">Recent Chats</span>
+              <span className="text-sm">Characters</span>
             </TabsTrigger>
             <TabsTrigger
               value="favorites"
-              className="bg-transparent text-white border-b-2 border-transparent data-[state=active]:border-purple-500 data-[state=active]:bg-transparent rounded-none py-3 relative"
+              className="bg-transparent text-white border-b-2 border-transparent data-[state=active]:border-purple-500 data-[state=active]:bg-transparent rounded-none py-3"
             >
-              <span className="text-sm">Favorites</span>
-              <Badge className="ml-2 bg-yellow-500 text-black px-2 py-0.5 text-xs font-bold">
-                SOON
-              </Badge>
+              <span className="text-sm">Adventures</span>
             </TabsTrigger>
           </TabsList>
         </Tabs>
