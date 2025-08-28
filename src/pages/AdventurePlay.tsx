@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { ArrowLeft, Settings, Send, Heart } from "lucide-react";
 import { useUser } from "@clerk/clerk-react";
 import { supabase, createOrUpdateUser } from "@/lib/supabase";
+import { enhancedOpenRouterAPI } from "@/lib/openrouter-enhanced";
 import { openRouterAPI } from "@/lib/openrouter";
 import { toast } from "sonner";
 import { AdventureSettingsModal } from "@/components/AdventureSettingsModal";
@@ -185,36 +186,80 @@ Format your response as regular narrative text, then end with exactly two choice
         { role: 'user', content: choice }
       ];
 
-      // Get AI response
-      const response = await openRouterAPI.createChatCompletion(
-        'mistral-main', // You can make this configurable
-        chatMessages as any,
+      // Build roleplay context
+      const roleplayContext = {
+        adventure_id: adventureId || 'unknown',
+        character_name: adventure.name,
+        source_story: adventure.name,
+        current_location: 'Adventure World',
+        active_characters: [adventure.name],
+        story_state: {
+          recent_choices: messages.slice(-3).map(msg => msg.content),
+          current_scene: choice
+        },
+        canonical_info: {
+          plot: adventure.plot,
+          introduction: adventure.introduction,
+          story_summary: adventure.story_summary,
+          plot_essentials: adventure.plot_essentials
+        }
+      };
+
+      // Use enhanced OpenRouter for roleplay
+      const enhancedMessages = [
+        ...messages.slice(-5).map(msg => ({
+          role: msg.isUser ? 'user' : 'assistant',
+          content: msg.content,
+          metadata: {
+            character: adventure.name,
+            timestamp: msg.timestamp
+          }
+        }))
+      ];
+
+      const aiResponse = await enhancedOpenRouterAPI.createRoleplayResponse(
+        enhancedMessages as any,
+        roleplayContext,
         {
-          temperature: 0.8,
-          max_tokens: settings.lengthMode === 'extended' ? 400 : 200
+          temperature: 0.85,
+          max_tokens: settings.lengthMode === 'extended' ? 600 : 300,
+          frequency_penalty: 0.3,
+          presence_penalty: 0.6
         }
       );
 
-      if (response.choices?.[0]?.message?.content) {
-        const aiContent = response.choices[0].message.content;
+      if (aiResponse) {
+        const aiContent = aiResponse;
         
-        // Extract choices from the response (simple pattern matching)
-        const choicePattern = /(?:What happens next\?.*?Choose your path|Choose your path)[\s\S]*?(\d+\..*?)(?:\n|$)[\s\S]*?(\d+\..*?)(?:\n|$)/i;
-        const choiceMatch = aiContent.match(choicePattern);
-        
+        // Enhanced choice generation using AI
         let extractedChoices: string[] = [];
         let mainContent = aiContent;
 
-        if (choiceMatch) {
-          extractedChoices = [
-            choiceMatch[1].replace(/^\d+\.\s*/, '').trim(),
-            choiceMatch[2].replace(/^\d+\.\s*/, '').trim()
-          ];
-          // Remove the choices section from main content
-          mainContent = aiContent.replace(/(?:What happens next\?.*?Choose your path)[\s\S]*$/i, '').trim();
+        try {
+          // Try to extract choices from response or generate new ones
+          const choicePattern = /(?:What happens next\?.*?Choose your path|Choose your path)[\s\S]*?(\d+\..*?)(?:\n|$)[\s\S]*?(\d+\..*?)(?:\n|$)/i;
+          const choiceMatch = aiContent.match(choicePattern);
+
+          if (choiceMatch) {
+            extractedChoices = [
+              choiceMatch[1].replace(/^\d+\.\s*/, '').trim(),
+              choiceMatch[2].replace(/^\d+\.\s*/, '').trim()
+            ];
+            mainContent = aiContent.replace(/(?:What happens next\?.*?Choose your path)[\s\S]*$/i, '').trim();
+          } else {
+            // Generate choices using AI if not found in response
+            extractedChoices = await enhancedOpenRouterAPI.generateAdventureChoices(
+              aiContent,
+              roleplayContext,
+              2
+            );
+          }
+        } catch (error) {
+          console.warn('Choice generation failed, using defaults:', error);
+          extractedChoices = ["Continue forward", "Look around carefully"];
         }
 
-        // If no choices were extracted, provide default ones
+        // Fallback choices if generation failed
         if (extractedChoices.length === 0) {
           extractedChoices = ["Continue forward", "Look around carefully"];
         }
