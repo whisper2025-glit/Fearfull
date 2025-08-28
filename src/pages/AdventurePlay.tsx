@@ -309,6 +309,18 @@ Format your response as regular narrative text, then end with exactly two choice
         }
       };
 
+      // Check API key first
+      const apiKey = import.meta.env.VITE_OPENROUTER_API_KEY;
+      console.log('🔑 OpenRouter API Key configured:', !!apiKey, apiKey ? `${apiKey.substring(0, 10)}...` : 'MISSING');
+
+      if (!apiKey) {
+        throw new Error('OpenRouter API key is not configured. Please add VITE_OPENROUTER_API_KEY to your environment variables.');
+      }
+
+      if (!apiKey.startsWith('sk-or-v1-')) {
+        throw new Error('Invalid OpenRouter API key format. Key should start with "sk-or-v1-"');
+      }
+
       // Use specific model for adventure play
       const adventureModel = {
         id: 'tngtech/deepseek-r1t2-chimera:free',
