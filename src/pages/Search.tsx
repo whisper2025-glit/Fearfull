@@ -173,15 +173,6 @@ const Search = () => {
     }
   ];
 
-  const mockUsers = [
-    { id: '1', username: 'hi', characters: 0, memories: 0, avatar: '' },
-    { id: '2', username: 'hi', characters: 0, memories: 0, avatar: '/placeholder.svg' },
-    { id: '3', username: 'HI', characters: 0, memories: 0, avatar: '' },
-    { id: '4', username: 'Hi', characters: 0, memories: 0, avatar: '/placeholder.svg' },
-    { id: '5', username: 'Hi.', characters: 0, memories: 0, avatar: '' },
-    { id: '6', username: 'hi_', characters: 1, memories: 0, avatar: '/placeholder.svg' },
-    { id: '7', username: 'Hi_', characters: 0, memories: 0, avatar: '' }
-  ];
 
   useEffect(() => {
     const query = searchParams.get('q');
@@ -194,11 +185,7 @@ const Search = () => {
   // Update search results when switching tabs after a search has been performed
   useEffect(() => {
     if (hasSearched && searchQuery.trim()) {
-      if (activeTab === 'Characters') {
-        setSearchResults(mockSearchResults);
-      } else {
-        setSearchResults(mockUsers);
-      }
+      setSearchResults(mockSearchResults);
     }
   }, [activeTab, hasSearched, searchQuery]);
 
@@ -222,11 +209,7 @@ const Search = () => {
     // For demo purposes, use mock data
     // In a real app, you'd query your database here
     setTimeout(() => {
-      if (activeTab === 'Characters') {
-        setSearchResults(mockSearchResults);
-      } else {
-        setSearchResults(mockUsers);
-      }
+      setSearchResults(mockSearchResults);
       setIsSearching(false);
     }, 500);
   };
@@ -446,29 +429,8 @@ const Search = () => {
             <>
               {/* Search Results */}
               <div className="space-y-4">
-                {/* Filter Tabs */}
-                <div className="flex bg-muted rounded-full p-1">
-                  <Button
-                    variant={activeTab === 'Characters' ? 'default' : 'ghost'}
-                    size="sm"
-                    onClick={() => setActiveTab('Characters')}
-                    className="text-xs rounded-full px-6 h-8"
-                  >
-                    Characters
-                  </Button>
-                  <Button
-                    variant={activeTab === 'User' ? 'default' : 'ghost'}
-                    size="sm"
-                    onClick={() => setActiveTab('User')}
-                    className="text-xs rounded-full px-6 h-8"
-                  >
-                    User
-                  </Button>
-                </div>
 
-                {activeTab === 'Characters' && (
-                  <>
-                    {/* Filter Controls */}
+                {/* Filter Controls */}
                     <div className="flex items-center gap-2 flex-wrap">
                       {/* Sort Dropdown */}
                       <DropdownMenu>
@@ -656,40 +618,6 @@ const Search = () => {
                         </div>
                       ))}
                     </div>
-                  </>
-                )}
-
-                {activeTab === 'User' && (
-                  <div className="space-y-3">
-                    {searchResults.map((user: any) => (
-                      <div key={user.id} className="bg-card rounded-xl p-4 flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <Avatar className="w-12 h-12">
-                            <AvatarImage src={user.avatar} />
-                            <AvatarFallback className="bg-gradient-to-br from-blue-400 to-purple-500 text-white text-sm">
-                              {user.username.charAt(0).toUpperCase()}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div>
-                            <h3 className="text-sm font-semibold text-white">{user.username}</h3>
-                            <p className="text-xs text-green-400">
-                              {user.characters} Characters  {user.memories} Memories
-                            </p>
-                            {user.username === 'Hi.' && (
-                              <p className="text-xs text-muted-foreground">Rah</p>
-                            )}
-                          </div>
-                        </div>
-                        <Button
-                          size="sm"
-                          className="bg-pink-500 hover:bg-pink-600 text-white rounded-full text-xs px-6 h-8"
-                        >
-                          Follow
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-                )}
               </div>
             </>
           )}
