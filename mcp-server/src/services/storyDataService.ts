@@ -121,17 +121,25 @@ export class StoryDataService {
       let filteredEvents = events;
       
       if (episodeRange) {
-        const [start, end] = episodeRange.split('-').map(num => parseInt(num.trim()));
-        filteredEvents = events.filter(event => 
-          event.episode && event.episode >= start && event.episode <= end
-        );
+        const rangeParts = episodeRange.split('-').map(num => parseInt(num.trim()));
+        const start = rangeParts[0];
+        const end = rangeParts[1];
+        if (start !== undefined && end !== undefined) {
+          filteredEvents = events.filter(event =>
+            event.episode && event.episode >= start && event.episode <= end
+          );
+        }
       }
-      
+
       if (chapterRange) {
-        const [start, end] = chapterRange.split('-').map(num => parseInt(num.trim()));
-        filteredEvents = events.filter(event => 
-          event.chapter && event.chapter >= start && event.chapter <= end
-        );
+        const rangeParts = chapterRange.split('-').map(num => parseInt(num.trim()));
+        const start = rangeParts[0];
+        const end = rangeParts[1];
+        if (start !== undefined && end !== undefined) {
+          filteredEvents = events.filter(event =>
+            event.chapter && event.chapter >= start && event.chapter <= end
+          );
+        }
       }
 
       this.cache.set(cacheKey, filteredEvents);
@@ -261,7 +269,7 @@ export class StoryDataService {
 
     // Merge wiki data
     if (wikiData.status === 'fulfilled' && wikiData.value) {
-      const wiki = wikiData.value;
+      const wiki = wikiData.value as any;
       baseInfo.description = wiki.description || baseInfo.description;
       baseInfo.plotSummary = wiki.plotSummary || baseInfo.plotSummary;
       baseInfo.worldBuilding = { ...baseInfo.worldBuilding, ...wiki.worldBuilding };
@@ -271,7 +279,7 @@ export class StoryDataService {
 
     // Merge anime data
     if (animeData.status === 'fulfilled' && animeData.value) {
-      const anime = animeData.value;
+      const anime = animeData.value as any;
       baseInfo.type = 'anime';
       baseInfo.description = anime.synopsis || baseInfo.description;
       if (anime.characters) {

@@ -94,12 +94,17 @@ export class CharacterService {
   }
 
   async getCharacterRelationships(
-    characterName: string, 
-    sourceName: string, 
+    characterName: string,
+    sourceName: string,
     arcContext?: string
   ): Promise<{ [key: string]: string[] }> {
     const characterData = await this.getCharacterData(characterName, sourceName, arcContext);
-    return characterData.relationships;
+    return {
+      allies: characterData.relationships.allies,
+      enemies: characterData.relationships.enemies,
+      family: characterData.relationships.family,
+      students: characterData.relationships.students || []
+    };
   }
 
   async getCharacterAbilities(
@@ -234,7 +239,8 @@ export class CharacterService {
     if (arcContext) {
       baseData.currentStatus.arc = arcContext;
       // Here you could add logic to modify character abilities/status based on the arc
-      baseData = this.applyArcContext(baseData, arcContext);
+      const modifiedData = this.applyArcContext(baseData, arcContext);
+      Object.assign(baseData, modifiedData);
     }
 
     return baseData;

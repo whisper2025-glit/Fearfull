@@ -270,7 +270,8 @@ export class LocationService {
     // Apply time period specific modifications
     if (timePeriod) {
       baseData.currentStatus.timePeriod = timePeriod;
-      baseData = this.applyTimePeriodContext(baseData, timePeriod);
+      const modifiedData = this.applyTimePeriodContext(baseData, timePeriod);
+      Object.assign(baseData, modifiedData);
     }
 
     return baseData;

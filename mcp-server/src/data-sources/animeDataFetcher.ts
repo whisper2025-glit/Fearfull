@@ -246,7 +246,7 @@ export class AnimeDataFetcher {
         rating: anime.rating,
         synopsis: anime.synopsis || '',
         characters: [], // Will be filled separately
-        images: anime.images ? Object.values(anime.images).flat() : [],
+        images: anime.images ? (Object.values(anime.images).flat() as string[]) : [],
         genres: anime.genres?.map((genre: any) => genre.name) || [],
         themes: anime.themes?.map((theme: any) => theme.name) || [],
         studios: anime.studios?.map((studio: any) => studio.name) || [],

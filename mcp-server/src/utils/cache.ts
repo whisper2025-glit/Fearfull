@@ -25,7 +25,11 @@ export class Cache {
   }
 
   set<T>(key: string, value: T, ttl?: number): boolean {
-    return this.cache.set(key, value, ttl);
+    if (ttl !== undefined) {
+      return this.cache.set(key, value, ttl);
+    } else {
+      return this.cache.set(key, value);
+    }
   }
 
   delete(key: string): number {

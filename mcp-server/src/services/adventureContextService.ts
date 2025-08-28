@@ -93,7 +93,13 @@ export class AdventureContextService {
       }
 
       // Get recent events
-      const recent_events = await this.db.getRecentEvents(adventureId, 10);
+      const recent_events = await this.db.getRecentEvents(adventureId, 10) as Array<{
+        type: 'choice' | 'event' | 'dialogue' | 'system';
+        content: string;
+        characters: string[];
+        location?: string;
+        timestamp: string;
+      }>;
 
       // Build AI context
       const ai_context = await this.buildAIContext(context);

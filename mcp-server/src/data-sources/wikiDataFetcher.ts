@@ -249,6 +249,9 @@ export class WikiDataFetcher {
       }
 
       const pageId = Object.keys(pages)[0];
+      if (!pageId) {
+        throw new Error(`No page ID found for ${pageName}`);
+      }
       const page = pages[pageId];
 
       if (pageId === '-1') {
@@ -268,7 +271,8 @@ export class WikiDataFetcher {
         timeout: 10000,
       });
 
-      const fullContent = contentResponse.data.query?.pages?.[pageId]?.revisions?.[0]?.slots?.main?.['*'] || '';
+      const contentPage = contentResponse.data.query?.pages?.[pageId];
+      const fullContent = contentPage?.revisions?.[0]?.slots?.main?.['*'] || '';
 
       return {
         title: page.title,
@@ -372,7 +376,7 @@ export class WikiDataFetcher {
     // Simple character extraction logic
     const characterPattern = /\[\[([^|\]]+)(?:\|[^]]+)?\]\]/g;
     const matches = content.match(characterPattern) || [];
-    return matches.slice(0, 10).map(match => match.replace(/\[\[|\]\]/g, '').split('|')[0]);
+    return matches.slice(0, 10).map(match => match.replace(/\[\[|\]\]/g, '').split('|')[0]).filter(Boolean);
   }
 
   private extractAliases(content: string): string[] {
