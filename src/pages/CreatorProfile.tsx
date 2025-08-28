@@ -39,7 +39,10 @@ const CreatorProfile = () => {
   const [creatorUser, setCreatorUser] = useState<CreatorUser | null>(null);
   const [userCharacters, setUserCharacters] = useState<any[]>([]);
   const [favoriteCharacters, setFavoriteCharacters] = useState<any[]>([]);
+  const [favoriteAdventures, setFavoriteAdventures] = useState<any[]>([]);
   const [viewerFavoritedIds, setViewerFavoritedIds] = useState<string[]>([]);
+  const [viewerFavoritedAdventureIds, setViewerFavoritedAdventureIds] = useState<string[]>([]);
+  const [favoritesSubTab, setFavoritesSubTab] = useState('characters'); // 'characters' or 'adventures'
 
   // Stats state
   const [stats, setStats] = useState({
