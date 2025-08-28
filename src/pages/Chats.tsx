@@ -21,6 +21,17 @@ interface CharacterHistory {
   isVip?: boolean;
 }
 
+interface AdventureHistory {
+  id: string;
+  name: string;
+  adventure_image_url: string;
+  author: string;
+  lastChatDate: string;
+  totalMessages: number;
+  lastMessage: string;
+  conversationId: string;
+}
+
 const formatDate = (dateString: string): string => {
   const date = new Date(dateString);
   const now = new Date();
