@@ -354,19 +354,27 @@ Format your response as regular narrative text, then end with exactly two choice
 
       console.log('🤖 Making OpenRouter API call with model:', adventureModel.id);
       console.log('📝 Chat messages length:', chatMessages.length);
+      console.log('👤 User state before API call:', { isSignedIn: !!user, userId: user?.id });
 
-      const aiResponse = await openRouterAPI.createChatCompletion(
-        adventureModel,
-        chatMessages as any,
-        {
-          temperature: 0.85,
-          max_tokens: settings.lengthMode === 'extended' ? 600 : 300,
-          frequency_penalty: 0.3,
-          presence_penalty: 0.6
-        }
-      );
+      let aiResponse;
+      try {
+        aiResponse = await openRouterAPI.createChatCompletion(
+          adventureModel,
+          chatMessages as any,
+          {
+            temperature: 0.85,
+            max_tokens: settings.lengthMode === 'extended' ? 600 : 300,
+            frequency_penalty: 0.3,
+            presence_penalty: 0.6
+          }
+        );
+        console.log('✅ OpenRouter API response received:', aiResponse);
+      } catch (apiError) {
+        console.error('❌ OpenRouter API call failed:', apiError);
+        throw apiError; // Re-throw to be caught by outer catch block
+      }
 
-      console.log('✅ OpenRouter API response received:', aiResponse);
+      console.log('👤 User state after API call:', { isSignedIn: !!user, userId: user?.id });
 
       if (aiResponse && aiResponse.choices && aiResponse.choices[0]) {
         const aiContent = aiResponse.choices[0].message.content;
