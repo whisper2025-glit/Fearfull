@@ -17,6 +17,7 @@ interface Adventure {
   rating: 'all-ages' | 'teens' | 'adults';
   visibility: 'public' | 'private';
   created_at: string;
+  owner_id?: string;
   users?: {
     full_name: string;
   };
