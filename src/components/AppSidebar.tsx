@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useUser, useClerk, SignInButton, SignUpButton } from "@clerk/clerk-react";
+import { CreateModal } from "@/components/CreateModal";
 import {
   Sidebar,
   SidebarContent,
