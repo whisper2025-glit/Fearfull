@@ -245,11 +245,39 @@ Format your response as regular narrative text, then end with exactly two choice
             mainContent = aiContent.replace(/(?:What happens next\?.*?Choose your path)[\s\S]*$/i, '').trim();
           } else {
             // Generate choices using AI if not found in response
-            extractedChoices = await enhancedOpenRouterAPI.generateAdventureChoices(
-              aiContent,
-              roleplayContext,
-              2
-            );
+            try {
+              const choicePrompt = `Based on this story situation: "${aiContent}"
+
+              Generate exactly 2 interesting and meaningful choices for the player to continue the adventure. Each choice should be:
+              - Action-oriented
+              - Different from each other
+              - Lead to interesting story development
+
+              Format as:
+              1. [First choice]
+              2. [Second choice]`;
+
+              const choiceResponse = await openRouterAPI.createChatCompletion(
+                adventureModel,
+                [{ role: 'user', content: choicePrompt }] as any,
+                {
+                  temperature: 0.7,
+                  max_tokens: 100
+                }
+              );
+
+              if (choiceResponse && choiceResponse.choices && choiceResponse.choices[0]) {
+                const choicesText = choiceResponse.choices[0].message.content;
+                const choiceMatches = choicesText.match(/\d+\.\s*(.+)/g);
+                if (choiceMatches && choiceMatches.length >= 2) {
+                  extractedChoices = choiceMatches.slice(0, 2).map(match =>
+                    match.replace(/^\d+\.\s*/, '').trim()
+                  );
+                }
+              }
+            } catch (error) {
+              console.warn('Choice generation failed:', error);
+            }
           }
         } catch (error) {
           console.warn('Choice generation failed, using defaults:', error);
