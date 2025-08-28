@@ -450,7 +450,8 @@ const CreatorProfile = () => {
               </div>
               <p className="text-muted-foreground text-sm">
                 {activeTab === 'bots' ? 'No public bots yet.' :
-                 activeTab === 'favorites' ? 'No favorites yet.' :
+                 activeTab === 'favorites' && favoritesSubTab === 'characters' ? 'No favorite characters yet.' :
+                 activeTab === 'favorites' && favoritesSubTab === 'adventures' ? 'No favorite adventures yet.' :
                  'No posts yet.'}
               </p>
             </div>
