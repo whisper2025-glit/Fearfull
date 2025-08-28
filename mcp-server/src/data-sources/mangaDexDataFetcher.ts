@@ -186,7 +186,10 @@ export class MangaDexDataFetcher {
 
       // Get the best match
       const manga = searchResults[0];
-      
+      if (!manga) {
+        return null;
+      }
+
       // Get authors and artists
       const authors = await this.getMangaAuthors(manga);
       const coverArt = this.getMangaCoverArt(manga);
@@ -232,6 +235,10 @@ export class MangaDexDataFetcher {
       }
 
       const manga = searchResults[0];
+      if (!manga) {
+        return [];
+      }
+
       const chapters = await this.getMangaChapters(manga.id);
       
       return chapters.map(chapter => ({

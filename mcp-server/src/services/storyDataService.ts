@@ -192,8 +192,8 @@ export class StoryDataService {
       if (wikiResults.status === 'fulfilled') results.push(...wikiResults.value);
       if (animeResults.status === 'fulfilled') results.push(...animeResults.value);
       if (aniListResults.status === 'fulfilled') {
-        const aniListFormattedResults = aniListResults.value.map(item => ({
-          type: item.type.toLowerCase(),
+        const aniListFormattedResults = aniListResults.value.map((item: any) => ({
+          type: item.type.toLowerCase() as 'character' | 'location' | 'ability' | 'organization' | 'item' | 'event',
           name: item.title.romaji || item.title.english || 'Unknown',
           description: item.description || '',
           source: 'anilist',
