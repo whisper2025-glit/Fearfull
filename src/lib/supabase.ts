@@ -923,7 +923,7 @@ export const likeComment = async (commentId: string, userId: string): Promise<bo
       .single();
 
     if (checkError && checkError.code !== 'PGRST116') { // PGRST116 = no rows returned
-      console.error('�� Error checking existing like:', checkError);
+      console.error('❌ Error checking existing like:', checkError);
       throw checkError;
     }
 
@@ -1420,6 +1420,229 @@ export const getFavoriteAdventures = async (userId: string) => {
   } catch (error) {
     console.error('❌ Final error in getFavoriteAdventures:', error);
     return [];
+  }
+};
+
+// Adventure Conversation and Message CRUD operations
+export const createAdventureConversation = async (
+  userId: string,
+  adventureId: string,
+  personaId?: string | null,
+  title?: string | null
+) => {
+  try {
+    console.log('🎭 Creating adventure conversation:', { userId, adventureId, personaId, title });
+
+    const { data: conversation, error } = await supabase
+      .from('adventure_conversations')
+      .insert({
+        user_id: userId,
+        adventure_id: adventureId,
+        persona_id: personaId,
+        title: title
+      })
+      .select()
+      .single();
+
+    if (error) {
+      console.error('❌ Error creating adventure conversation:', error);
+      throw error;
+    }
+
+    console.log('✅ Adventure conversation created successfully:', conversation);
+    return conversation;
+  } catch (error) {
+    console.error('❌ Final error in createAdventureConversation:', error);
+    throw error;
+  }
+};
+
+export const getAdventureConversation = async (conversationId: string) => {
+  try {
+    console.log('🔍 Fetching adventure conversation:', conversationId);
+
+    const { data: conversation, error } = await supabase
+      .from('adventure_conversations')
+      .select(`
+        *,
+        adventures!adventure_conversations_adventure_id_fkey(
+          id,
+          name,
+          adventure_image_url,
+          users!adventures_owner_id_fkey(
+            full_name
+          )
+        )
+      `)
+      .eq('id', conversationId)
+      .single();
+
+    if (error) {
+      console.error('❌ Error fetching adventure conversation:', error);
+      throw error;
+    }
+
+    console.log('✅ Adventure conversation fetched successfully:', conversation);
+    return conversation;
+  } catch (error) {
+    console.error('❌ Final error in getAdventureConversation:', error);
+    throw error;
+  }
+};
+
+export const getUserAdventureConversations = async (userId: string) => {
+  try {
+    console.log('📋 Fetching user adventure conversations:', userId);
+
+    const { data: conversations, error } = await supabase
+      .from('adventure_conversations')
+      .select(`
+        *,
+        adventures!adventure_conversations_adventure_id_fkey(
+          id,
+          name,
+          adventure_image_url,
+          users!adventures_owner_id_fkey(
+            full_name
+          )
+        )
+      `)
+      .eq('user_id', userId)
+      .eq('is_archived', false)
+      .order('last_message_at', { ascending: false });
+
+    if (error) {
+      console.error('❌ Error fetching user adventure conversations:', error);
+      throw error;
+    }
+
+    console.log('✅ User adventure conversations fetched successfully:', conversations?.length || 0);
+    return conversations || [];
+  } catch (error) {
+    console.error('❌ Final error in getUserAdventureConversations:', error);
+    return [];
+  }
+};
+
+export const addAdventureMessage = async (
+  adventureId: string,
+  conversationId: string | null,
+  content: string,
+  isBot: boolean,
+  authorId?: string | null,
+  type: 'intro' | 'scenario' | 'regular' | 'choice' = 'regular',
+  choices: any[] = [],
+  metadata: any = {}
+) => {
+  try {
+    console.log('💬 Adding adventure message:', {
+      adventureId,
+      conversationId,
+      isBot,
+      type,
+      hasChoices: choices.length > 0
+    });
+
+    const { data: message, error } = await supabase
+      .from('adventure_messages')
+      .insert({
+        adventure_id: adventureId,
+        conversation_id: conversationId,
+        author_id: authorId,
+        content,
+        is_bot: isBot,
+        type,
+        choices,
+        metadata
+      })
+      .select()
+      .single();
+
+    if (error) {
+      console.error('❌ Error adding adventure message:', error);
+      throw error;
+    }
+
+    console.log('✅ Adventure message added successfully:', message);
+    return message;
+  } catch (error) {
+    console.error('❌ Final error in addAdventureMessage:', error);
+    throw error;
+  }
+};
+
+export const getAdventureMessages = async (conversationId: string) => {
+  try {
+    console.log('🔍 Fetching adventure messages for conversation:', conversationId);
+
+    const { data: messages, error } = await supabase
+      .from('adventure_messages')
+      .select('*')
+      .eq('conversation_id', conversationId)
+      .order('created_at', { ascending: true });
+
+    if (error) {
+      console.error('❌ Error fetching adventure messages:', error);
+      throw error;
+    }
+
+    console.log('✅ Adventure messages fetched successfully:', messages?.length || 0);
+    return messages || [];
+  } catch (error) {
+    console.error('❌ Final error in getAdventureMessages:', error);
+    return [];
+  }
+};
+
+export const deleteAdventureConversation = async (conversationId: string, userId: string) => {
+  try {
+    console.log('🗑️ Deleting adventure conversation:', conversationId);
+
+    const { error } = await supabase
+      .from('adventure_conversations')
+      .delete()
+      .eq('id', conversationId)
+      .eq('user_id', userId); // Security: only delete own conversations
+
+    if (error) {
+      console.error('❌ Error deleting adventure conversation:', error);
+      throw error;
+    }
+
+    console.log('✅ Adventure conversation deleted successfully');
+    return true;
+  } catch (error) {
+    console.error('❌ Final error in deleteAdventureConversation:', error);
+    throw error;
+  }
+};
+
+export const updateAdventureConversationTitle = async (
+  conversationId: string,
+  userId: string,
+  title: string
+) => {
+  try {
+    console.log('📝 Updating adventure conversation title:', { conversationId, title });
+
+    const { data: conversation, error } = await supabase
+      .from('adventure_conversations')
+      .update({ title })
+      .eq('id', conversationId)
+      .eq('user_id', userId) // Security: only update own conversations
+      .select()
+      .single();
+
+    if (error) {
+      console.error('❌ Error updating adventure conversation title:', error);
+      throw error;
+    }
+
+    console.log('✅ Adventure conversation title updated successfully:', conversation);
+    return conversation;
+  } catch (error) {
+    console.error('❌ Final error in updateAdventureConversationTitle:', error);
+    throw error;
   }
 };
 
