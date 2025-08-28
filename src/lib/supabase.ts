@@ -434,6 +434,26 @@ export interface Database {
           updated_at?: string;
         };
       };
+      favorited_adventures: {
+        Row: {
+          id: string;
+          user_id: string; // Clerk user ID
+          adventure_id: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          adventure_id: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          adventure_id?: string;
+          created_at?: string;
+        };
+      };
     };
   };
 };
