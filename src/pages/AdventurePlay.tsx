@@ -84,16 +84,26 @@ const AdventurePlay = () => {
 
       try {
         setIsLoadingAdventure(true);
-        
+        console.log('🏔️ Loading adventure with ID:', adventureId);
+
         const { data: adventureData, error } = await supabase
           .from('adventures')
           .select('*')
           .eq('id', adventureId)
           .single();
 
+        console.log('📊 Adventure query result:', { adventureData, error });
+
         if (error) {
-          console.error('Error loading adventure:', error);
-          toast.error('Failed to load adventure');
+          console.error('❌ Error loading adventure:', error);
+          toast.error(`Failed to load adventure: ${error.message}`);
+          navigate('/');
+          return;
+        }
+
+        if (!adventureData) {
+          console.error('❌ No adventure data returned');
+          toast.error('Adventure not found');
           navigate('/');
           return;
         }
