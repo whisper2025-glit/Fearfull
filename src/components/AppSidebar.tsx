@@ -84,7 +84,7 @@ export function AppSidebar() {
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton
                     className={`nav-item ${isActive(item.url) ? 'active' : ''}`}
-                    onClick={() => navigate(item.url)}
+                    onClick={() => item.isCreateModal ? setIsCreateModalOpen(true) : navigate(item.url)}
                   >
                     <item.icon className="h-5 w-5 flex-shrink-0" />
                     {!collapsed && (
