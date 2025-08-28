@@ -363,6 +363,77 @@ export interface Database {
           created_at?: string;
         };
       };
+      adventures: {
+        Row: {
+          id: string;
+          owner_id: string; // References users.id (Clerk user ID)
+          name: string;
+          plot: string;
+          introduction: string | null;
+          adventure_image_url: string | null;
+          background_image_url: string | null;
+          adventure_type: 'mcp' | 'custom';
+          source_story: string | null; // For MCP server type
+          mcp_settings: string | null; // For MCP server type
+          custom_settings: string | null; // For custom type
+          ai_instructions: string | null; // For custom type
+          story_summary: string | null; // For custom type
+          plot_essentials: string | null; // For custom type
+          story_cards: any | null; // JSONB array of story card objects
+          category: string | null;
+          rating: 'all-ages' | 'teens' | 'adults';
+          persona: string | null;
+          visibility: 'public' | 'private';
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          owner_id: string;
+          name: string;
+          plot: string;
+          introduction?: string | null;
+          adventure_image_url?: string | null;
+          background_image_url?: string | null;
+          adventure_type?: 'mcp' | 'custom';
+          source_story?: string | null;
+          mcp_settings?: string | null;
+          custom_settings?: string | null;
+          ai_instructions?: string | null;
+          story_summary?: string | null;
+          plot_essentials?: string | null;
+          story_cards?: any | null;
+          category?: string | null;
+          rating?: 'all-ages' | 'teens' | 'adults';
+          persona?: string | null;
+          visibility?: 'public' | 'private';
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          owner_id?: string;
+          name?: string;
+          plot?: string;
+          introduction?: string | null;
+          adventure_image_url?: string | null;
+          background_image_url?: string | null;
+          adventure_type?: 'mcp' | 'custom';
+          source_story?: string | null;
+          mcp_settings?: string | null;
+          custom_settings?: string | null;
+          ai_instructions?: string | null;
+          story_summary?: string | null;
+          plot_essentials?: string | null;
+          story_cards?: any | null;
+          category?: string | null;
+          rating?: 'all-ages' | 'teens' | 'adults';
+          persona?: string | null;
+          visibility?: 'public' | 'private';
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
     };
   };
 };

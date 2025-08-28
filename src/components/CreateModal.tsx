@@ -24,9 +24,7 @@ export function CreateModal({ open, onOpenChange }: CreateModalProps) {
 
   const handleCreateAdventure = () => {
     onOpenChange(false);
-    // TODO: Navigate to adventure creation page when implemented
-    // navigate('/create-adventure');
-    console.log('Adventure creation will be implemented');
+    navigate('/create-adventure');
   };
 
   return (
