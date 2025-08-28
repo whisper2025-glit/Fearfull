@@ -32,6 +32,7 @@ const Profile = () => {
   const [userCharacters, setUserCharacters] = useState<any[]>([]);
   const [favoriteCharacters, setFavoriteCharacters] = useState<any[]>([]);
   const [favoritedCharacterIds, setFavoritedCharacterIds] = useState<string[]>([]);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   // User profile state with Supabase data
   const [userProfile, setUserProfile] = useState({
