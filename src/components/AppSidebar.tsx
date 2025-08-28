@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useUser, useClerk, SignInButton, SignUpButton } from "@clerk/clerk-react";
+import { CreateModal } from "@/components/CreateModal";
 import {
   Sidebar,
   SidebarContent,
@@ -32,7 +33,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const menuItems = [
-  { title: "Create a bot", url: "/create", icon: Plus },
+  { title: "Create a bot", url: "/create", icon: Plus, isCreateModal: true },
   { title: "Home", url: "/", icon: Home },
   { title: "Novel", url: "/novel", icon: BookOpen, badge: "beta" },
   { title: "Chats", url: "/chats", icon: MessageCircle },
@@ -48,6 +49,7 @@ export function AppSidebar() {
   const navigate = useNavigate();
   const currentPath = location.pathname;
   const collapsed = state === "collapsed";
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   // Clerk authentication hooks
   const { isSignedIn, user } = useUser();
@@ -82,7 +84,7 @@ export function AppSidebar() {
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton
                     className={`nav-item ${isActive(item.url) ? 'active' : ''}`}
-                    onClick={() => navigate(item.url)}
+                    onClick={() => item.isCreateModal ? setIsCreateModalOpen(true) : navigate(item.url)}
                   >
                     <item.icon className="h-5 w-5 flex-shrink-0" />
                     {!collapsed && (
@@ -173,6 +175,11 @@ export function AppSidebar() {
           )}
         </div>
       </SidebarContent>
+
+      <CreateModal
+        open={isCreateModalOpen}
+        onOpenChange={setIsCreateModalOpen}
+      />
     </Sidebar>
   );
 }

@@ -17,6 +17,7 @@ import { ChevronLeft, Settings, Gift, MoreHorizontal, X, Camera, Star, Loader2 }
 import { useNavigate } from "react-router-dom";
 import { CharacterCard } from "@/components/CharacterCard";
 import SettingsSheet from "@/components/SettingsSheet";
+import { CreateModal } from "@/components/CreateModal";
 import { supabase, uploadImage, getFavoriteCharacters, checkIsFavorited } from "@/lib/supabase";
 import { toast } from "sonner";
 
@@ -31,6 +32,7 @@ const Profile = () => {
   const [userCharacters, setUserCharacters] = useState<any[]>([]);
   const [favoriteCharacters, setFavoriteCharacters] = useState<any[]>([]);
   const [favoritedCharacterIds, setFavoritedCharacterIds] = useState<string[]>([]);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   // User profile state with Supabase data
   const [userProfile, setUserProfile] = useState({
@@ -673,7 +675,7 @@ const Profile = () => {
               </p>
               {activeTab === 'bots' && (
                 <Button
-                  onClick={() => navigate('/create')}
+                  onClick={() => setIsCreateModalOpen(true)}
                   className="bg-blue-600 hover:bg-blue-700 text-white px-6"
                 >
                   Create my Bots
@@ -683,6 +685,11 @@ const Profile = () => {
           )}
         </div>
       </div>
+
+      <CreateModal
+        open={isCreateModalOpen}
+        onOpenChange={setIsCreateModalOpen}
+      />
     </Layout>
   );
 };
