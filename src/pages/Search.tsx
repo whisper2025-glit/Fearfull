@@ -42,7 +42,7 @@ const Search = () => {
   const [isSearching, setIsSearching] = useState(false);
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [hasSearched, setHasSearched] = useState(false);
-  const [recentSearches, setRecentSearches] = useState<string[]>(['Submissive']);
+  const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState('Recommend');
   const [filterTags, setFilterTags] = useState('All Tags');
   const [filterGender, setFilterGender] = useState('Gender All');
@@ -58,120 +58,9 @@ const Search = () => {
     'Dark', 'Wholesome', 'Mature', 'Teen', 'Adult'
   ];
 
-  const popularSearches = [
-    'Submissive', 'Masochism', 'Vore', 'Bondage', 'Futa', 'Bisexual', 
-    'Trans', 'Femboy', 'Gay', 'Lesbian'
-  ];
-
-  const mockTrendingCreators = [
-    {
-      id: '1',
-      name: 'Just a Random Guy',
-      avatar: '/placeholder.svg',
-      stats: { characters: 150, messages: '71.3M', followers: '780.6K' },
-      description: 'Welcome to my page your new guilty pleasure 🥰...'
-    },
-    {
-      id: '2',
-      name: 'The Burrito Queen 女...',
-      avatar: '/placeholder.svg',
-      stats: { characters: '1.4K', messages: '551.3M', followers: '665.6K' },
-      description: "You know who I am. I've made more people cry..."
-    },
-    {
-      id: '3',
-      name: 'Atis, Brat Princess',
-      avatar: '/placeholder.svg',
-      stats: { characters: 344, messages: '282.6M', followers: '384.3K' },
-      description: ''
-    }
-  ];
-
-  const mockTrendingCharacters = [
-    {
-      id: '1',
-      name: "Friends Mom Saw Yo...",
-      description: "Your friend's mother saw your huge cock.",
-      image: '/placeholder.svg',
-      category: 'NSFW',
-      stats: { messages: '4.9M', likes: 0 },
-      rank: 1
-    },
-    {
-      id: '2',
-      name: "Mary • Your Best Fri...",
-      description: "<p style=\"font-size: 24px; font-style: italic; text-alig...",
-      image: '/placeholder.svg', 
-      category: 'NSFW',
-      stats: { messages: '4.2M', likes: 0 },
-      rank: 2
-    },
-    {
-      id: '3',
-      name: "Zilu - Your Unsatisfi...", 
-      description: "<b>[R-NTR | Incest | Bitch Taming | Cock Worship]...",
-      image: '/placeholder.svg',
-      category: 'NSFW', 
-      stats: { messages: '3.9M', likes: 0 },
-      rank: 3
-    },
-    {
-      id: '4',
-      name: "Oria - Your Desperat...",
-      description: "<b>[Dark Secrets | Slow-",
-      image: '/placeholder.svg',
-      category: 'NSFW',
-      stats: { messages: '3.8M', likes: 0 },
-      rank: 4
-    }
-  ];
-
-  const mockSearchResults = [
-    {
-      id: '1',
-      name: 'submissive',
-      description: 'a teacher who wants sex',
-      image: '/placeholder.svg',
-      category: 'Unfiltered',
-      stats: { messages: '407.5K', likes: 34 },
-      tags: ['Unfiltered', 'OC', 'Femdom', 'Dominant'],
-      creator: 'User#421736...',
-      rating: '1.2K'
-    },
-    {
-      id: '2', 
-      name: 'Submissive Mom',
-      description: '[Vanilla, milf, incest, pregnant] You became...',
-      image: '/placeholder.svg',
-      category: 'NSFW',
-      stats: { messages: '6.1M', likes: 214 },
-      tags: ['💾', '📚', 'BDSM', 'Caring', 'Dominant'],
-      creator: 'Vanilla NTR Phú ...',
-      rating: '-1'
-    },
-    {
-      id: '3',
-      name: 'Submissive Wife', 
-      description: '',
-      image: '/placeholder.svg',
-      category: 'NSFW',
-      stats: { messages: '546.1K', likes: 22 },
-      tags: [],
-      creator: '',
-      rating: ''
-    },
-    {
-      id: '4',
-      name: 'Submissive Top',
-      description: '',
-      image: '/placeholder.svg', 
-      category: 'NSFW',
-      stats: { messages: '25.3K', likes: 0 },
-      tags: [],
-      creator: '',
-      rating: ''
-    }
-  ];
+  const [trendingCreators, setTrendingCreators] = useState<any[]>([]);
+  const [trendingCharacters, setTrendingCharacters] = useState<any[]>([]);
+  const [popularSearches, setPopularSearches] = useState<string[]>([]);
 
 
   useEffect(() => {
@@ -182,12 +71,55 @@ const Search = () => {
     }
   }, [searchParams]);
 
-  // Update search results when switching tabs after a search has been performed
+  // Load trending data on component mount
   useEffect(() => {
-    if (hasSearched && searchQuery.trim()) {
-      setSearchResults(mockSearchResults);
+    loadTrendingData();
+  }, []);
+
+  const loadTrendingData = async () => {
+    try {
+      // Load trending creators
+      const { data: creators, error: creatorsError } = await supabase
+        .from('profiles')
+        .select('*')
+        .order('followers_count', { ascending: false })
+        .limit(10);
+
+      if (creatorsError) {
+        console.error('Error loading trending creators:', creatorsError);
+      } else {
+        setTrendingCreators(creators || []);
+      }
+
+      // Load trending characters
+      const { data: characters, error: charactersError } = await supabase
+        .from('characters')
+        .select('*')
+        .order('message_count', { ascending: false })
+        .limit(10);
+
+      if (charactersError) {
+        console.error('Error loading trending characters:', charactersError);
+      } else {
+        setTrendingCharacters(characters || []);
+      }
+
+      // Load popular searches
+      const { data: searches, error: searchesError } = await supabase
+        .from('search_terms')
+        .select('term')
+        .order('search_count', { ascending: false })
+        .limit(10);
+
+      if (searchesError) {
+        console.error('Error loading popular searches:', searchesError);
+      } else {
+        setPopularSearches(searches?.map(s => s.term) || []);
+      }
+    } catch (error) {
+      console.error('Error loading trending data:', error);
     }
-  }, [activeTab, hasSearched, searchQuery]);
+  };
 
   const performSearch = async (query: string) => {
     if (!query.trim()) {
@@ -206,12 +138,29 @@ const Search = () => {
       return [query, ...filtered].slice(0, 5);
     });
 
-    // For demo purposes, use mock data
-    // In a real app, you'd query your database here
-    setTimeout(() => {
-      setSearchResults(mockSearchResults);
+    try {
+      // Search characters in Supabase
+      const { data: characters, error } = await supabase
+        .from('characters')
+        .select('*')
+        .ilike('name', `%${query}%`)
+        .order('message_count', { ascending: false })
+        .limit(20);
+
+      if (error) {
+        console.error('Search error:', error);
+        toast.error('Search failed. Please try again.');
+        setSearchResults([]);
+      } else {
+        setSearchResults(characters || []);
+      }
+    } catch (error) {
+      console.error('Search error:', error);
+      toast.error('Search failed. Please try again.');
+      setSearchResults([]);
+    } finally {
       setIsSearching(false);
-    }, 500);
+    }
   };
 
   const handleSearch = (e: React.FormEvent) => {
