@@ -33,7 +33,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const menuItems = [
-  { title: "Create a bot", url: "/create", icon: Plus },
+  { title: "Create a bot", url: "/create", icon: Plus, isCreateModal: true },
   { title: "Home", url: "/", icon: Home },
   { title: "Novel", url: "/novel", icon: BookOpen, badge: "beta" },
   { title: "Chats", url: "/chats", icon: MessageCircle },
@@ -49,6 +49,7 @@ export function AppSidebar() {
   const navigate = useNavigate();
   const currentPath = location.pathname;
   const collapsed = state === "collapsed";
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   // Clerk authentication hooks
   const { isSignedIn, user } = useUser();
