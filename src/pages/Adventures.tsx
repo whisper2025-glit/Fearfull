@@ -172,33 +172,22 @@ const Adventures = () => {
                       {category.adventures.length} adventure{category.adventures.length !== 1 ? 's' : ''}
                     </p>
                   </div>
-                  
-                  {/* Navigation Buttons */}
-                  <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() => scrollCategory(category.name, 'left')}
-                      className="h-8 w-8"
-                    >
-                      <ChevronLeft className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() => scrollCategory(category.name, 'right')}
-                      className="h-8 w-8"
-                    >
-                      <ChevronRight className="h-4 w-4" />
-                    </Button>
-                  </div>
+
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => navigate(`/adventures?category=${category.name}`)}
+                    className="text-primary hover:text-primary/80"
+                  >
+                    View All
+                  </Button>
                 </div>
 
                 {/* Horizontal Scrollable Adventure Cards */}
-                <div className="relative">
+                <div className="relative group">
                   <div
                     id={`category-${category.name}`}
-                    className="flex gap-4 overflow-x-auto scrollbar-hide pb-2"
+                    className="flex gap-4 overflow-x-auto scrollbar-hide pb-2 scroll-smooth"
                     style={{
                       scrollSnapType: 'x mandatory',
                       scrollbarWidth: 'none',
@@ -208,19 +197,45 @@ const Adventures = () => {
                     {category.adventures.map((adventure) => (
                       <div
                         key={adventure.id}
-                        className="flex-none w-80"
+                        className="flex-none w-80 transition-transform duration-200 hover:scale-[1.02]"
                         style={{ scrollSnapAlign: 'start' }}
                       >
                         <AdventureCard adventure={adventure} />
                       </div>
                     ))}
-                    
+
+                    {/* Add more cards to simulate infinite scrolling effect */}
+                    {category.adventures.length > 3 && category.adventures.slice(0, 3).map((adventure) => (
+                      <div
+                        key={`duplicate-${adventure.id}`}
+                        className="flex-none w-80 transition-transform duration-200 hover:scale-[1.02]"
+                        style={{ scrollSnapAlign: 'start' }}
+                      >
+                        <AdventureCard adventure={adventure} />
+                      </div>
+                    ))}
+
                     {/* Add spacing at the end for better scroll experience */}
-                    <div className="flex-none w-4" />
+                    <div className="flex-none w-8" />
                   </div>
 
-                  {/* Fade effect on the right side */}
-                  <div className="absolute top-0 right-0 w-8 h-full bg-gradient-to-l from-background to-transparent pointer-events-none" />
+                  {/* Gradient overlays for smooth edges */}
+                  <div className="absolute top-0 left-0 w-8 h-full bg-gradient-to-r from-background to-transparent pointer-events-none z-10" />
+                  <div className="absolute top-0 right-0 w-8 h-full bg-gradient-to-l from-background to-transparent pointer-events-none z-10" />
+
+                  {/* Navigation arrows - visible on hover */}
+                  <button
+                    onClick={() => scrollCategory(category.name, 'left')}
+                    className="absolute left-2 top-1/2 -translate-y-1/2 z-20 bg-background/80 backdrop-blur-sm border border-border rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-background/90"
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                  </button>
+                  <button
+                    onClick={() => scrollCategory(category.name, 'right')}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 z-20 bg-background/80 backdrop-blur-sm border border-border rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-background/90"
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </button>
                 </div>
               </div>
             ))
