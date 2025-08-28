@@ -275,104 +275,122 @@ const Search = () => {
               )}
 
               {/* Popular Search */}
-              <div className="space-y-3">
-                <h2 className="text-sm font-semibold text-primary">Popular Search</h2>
-                <div className="flex flex-wrap gap-2">
-                  {popularSearches.map((search, index) => (
-                    <Badge
-                      key={index}
-                      variant="secondary"
-                      className="cursor-pointer bg-muted text-muted-foreground text-xs hover:bg-muted/80"
-                      onClick={() => handlePopularSearchClick(search)}
-                    >
-                      {search}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-
-              {/* Trending Rank */}
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-sm font-semibold text-primary">Trending Rank</h2>
-                  <div className="flex bg-muted rounded-full p-1">
-                    <Button
-                      variant={activeRankTab === 'Creators' ? 'default' : 'ghost'}
-                      size="sm"
-                      onClick={() => setActiveRankTab('Creators')}
-                      className="text-xs rounded-full px-6 h-8"
-                    >
-                      Creators
-                    </Button>
-                    <Button
-                      variant={activeRankTab === 'Characters' ? 'default' : 'ghost'}
-                      size="sm"
-                      onClick={() => setActiveRankTab('Characters')}
-                      className="text-xs rounded-full px-6 h-8"
-                    >
-                      Characters
-                    </Button>
+              {popularSearches.length > 0 && (
+                <div className="space-y-3">
+                  <h2 className="text-sm font-semibold text-primary">Popular Search</h2>
+                  <div className="flex flex-wrap gap-2">
+                    {popularSearches.map((search, index) => (
+                      <Badge
+                        key={index}
+                        variant="secondary"
+                        className="cursor-pointer bg-muted text-muted-foreground text-xs hover:bg-muted/80"
+                        onClick={() => handlePopularSearchClick(search)}
+                      >
+                        {search}
+                      </Badge>
+                    ))}
                   </div>
                 </div>
+              )}
 
+              {/* Trending Rank */}
+              {(trendingCreators.length > 0 || trendingCharacters.length > 0) && (
                 <div className="space-y-3">
-                  {activeRankTab === 'Creators' ? (
-                    // Creators list
-                    mockTrendingCreators.map((creator) => (
-                      <div key={creator.id} className="bg-gradient-to-r from-purple-500/20 to-blue-500/20 rounded-xl p-4 space-y-3">
-                        <div className="flex items-center gap-3">
-                          <Avatar className="w-12 h-12">
-                            <AvatarImage src={creator.avatar} />
-                            <AvatarFallback className="bg-gradient-to-br from-purple-500 to-blue-500 text-white text-sm">
-                              {creator.name.charAt(0)}
-                            </AvatarFallback>
-                          </Avatar>
-                          <h3 className="text-sm font-semibold text-white">{creator.name}</h3>
-                        </div>
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-sm font-semibold text-primary">Trending Rank</h2>
+                    <div className="flex bg-muted rounded-full p-1">
+                      <Button
+                        variant={activeRankTab === 'Creators' ? 'default' : 'ghost'}
+                        size="sm"
+                        onClick={() => setActiveRankTab('Creators')}
+                        className="text-xs rounded-full px-6 h-8"
+                        disabled={trendingCreators.length === 0}
+                      >
+                        Creators
+                      </Button>
+                      <Button
+                        variant={activeRankTab === 'Characters' ? 'default' : 'ghost'}
+                        size="sm"
+                        onClick={() => setActiveRankTab('Characters')}
+                        className="text-xs rounded-full px-6 h-8"
+                        disabled={trendingCharacters.length === 0}
+                      >
+                        Characters
+                      </Button>
+                    </div>
+                  </div>
 
-                        <div className="flex justify-between text-center">
-                          <div>
-                            <div className="text-lg font-bold text-green-400">{creator.stats.characters}</div>
-                            <div className="text-xs text-green-400">Characters</div>
-                          </div>
-                          <div>
-                            <div className="text-lg font-bold text-green-400">{creator.stats.messages}</div>
-                            <div className="text-xs text-green-400">Messages</div>
-                          </div>
-                          <div>
-                            <div className="text-lg font-bold text-green-400">{creator.stats.followers}</div>
-                            <div className="text-xs text-green-400">Followers</div>
-                          </div>
-                        </div>
+                  <div className="space-y-3">
+                    {activeRankTab === 'Creators' ? (
+                      trendingCreators.length > 0 ? (
+                        // Creators list
+                        trendingCreators.map((creator) => (
+                          <div key={creator.id} className="bg-gradient-to-r from-purple-500/20 to-blue-500/20 rounded-xl p-4 space-y-3">
+                            <div className="flex items-center gap-3">
+                              <Avatar className="w-12 h-12">
+                                <AvatarImage src={creator.avatar_url} />
+                                <AvatarFallback className="bg-gradient-to-br from-purple-500 to-blue-500 text-white text-sm">
+                                  {creator.username?.charAt(0) || creator.email?.charAt(0) || 'U'}
+                                </AvatarFallback>
+                              </Avatar>
+                              <h3 className="text-sm font-semibold text-white">{creator.username || creator.email}</h3>
+                            </div>
 
-                        {creator.description && (
-                          <p className="text-xs text-gray-300">{creator.description}</p>
-                        )}
-                      </div>
-                    ))
-                  ) : (
-                    // Characters list
-                    mockTrendingCharacters.map((character) => (
-                      <div key={character.id} className="bg-gradient-to-r from-pink-500/20 to-purple-500/20 rounded-xl p-3 flex items-center gap-3">
-                        <span className="text-lg font-bold text-white min-w-[20px]">{character.rank}</span>
-                        <img 
-                          src={character.image} 
-                          alt={character.name}
-                          className="w-12 h-12 rounded-lg object-cover"
-                        />
-                        <div className="flex-1 min-w-0">
-                          <h3 className="text-sm font-semibold text-white truncate">{character.name}</h3>
-                          <p className="text-xs text-gray-300 line-clamp-1">{character.description}</p>
+                            <div className="flex justify-between text-center">
+                              <div>
+                                <div className="text-lg font-bold text-green-400">{creator.characters_count || 0}</div>
+                                <div className="text-xs text-green-400">Characters</div>
+                              </div>
+                              <div>
+                                <div className="text-lg font-bold text-green-400">{creator.messages_count || 0}</div>
+                                <div className="text-xs text-green-400">Messages</div>
+                              </div>
+                              <div>
+                                <div className="text-lg font-bold text-green-400">{creator.followers_count || 0}</div>
+                                <div className="text-xs text-green-400">Followers</div>
+                              </div>
+                            </div>
+
+                            {creator.bio && (
+                              <p className="text-xs text-gray-300">{creator.bio}</p>
+                            )}
+                          </div>
+                        ))
+                      ) : (
+                        <div className="text-center py-8 text-muted-foreground">
+                          <p className="text-sm">No trending creators found</p>
                         </div>
-                        <div className="flex items-center gap-1 text-green-400">
-                          <MessageCircle className="h-3 w-3" />
-                          <span className="text-xs font-semibold">{character.stats.messages}</span>
+                      )
+                    ) : (
+                      trendingCharacters.length > 0 ? (
+                        // Characters list
+                        trendingCharacters.map((character, index) => (
+                          <div key={character.id} className="bg-gradient-to-r from-pink-500/20 to-purple-500/20 rounded-xl p-3 flex items-center gap-3">
+                            <span className="text-lg font-bold text-white min-w-[20px]">{index + 1}</span>
+                            <img
+                              src={character.image_url || '/placeholder.svg'}
+                              alt={character.name}
+                              className="w-12 h-12 rounded-lg object-cover"
+                            />
+                            <div className="flex-1 min-w-0">
+                              <h3 className="text-sm font-semibold text-white truncate">{character.name}</h3>
+                              <p className="text-xs text-gray-300 line-clamp-1">{character.description}</p>
+                            </div>
+                            <div className="flex items-center gap-1 text-green-400">
+                              <MessageCircle className="h-3 w-3" />
+                              <span className="text-xs font-semibold">{character.message_count || 0}</span>
+                            </div>
+                          </div>
+                        ))
+                      ) : (
+                        <div className="text-center py-8 text-muted-foreground">
+                          <p className="text-sm">No trending characters found</p>
                         </div>
-                      </div>
-                    ))
-                  )}
+                      )
+                    )}
+                  </div>
                 </div>
-              </div>
+              )}
             </>
           ) : (
             <>
@@ -501,8 +519,14 @@ const Search = () => {
 
 
                     {/* Character Results Grid */}
-                    <div className="grid grid-cols-2 gap-4">
-                      {searchResults.map((character) => (
+                    {isSearching ? (
+                      <div className="text-center py-8">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+                        <p className="mt-4 text-muted-foreground">Searching...</p>
+                      </div>
+                    ) : searchResults.length > 0 ? (
+                      <div className="grid grid-cols-2 gap-4">
+                        {searchResults.map((character) => (
                         <div key={character.id} className="bg-card rounded-xl overflow-hidden">
                           <div className="relative aspect-[4/5]">
                             <img
@@ -565,8 +589,15 @@ const Search = () => {
                             )}
                           </div>
                         </div>
-                      ))}
-                    </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-8 text-muted-foreground">
+                        <SearchIcon className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                        <p className="text-sm">No characters found for "{searchQuery}"</p>
+                        <p className="text-xs mt-2">Try different keywords or browse trending characters above.</p>
+                      </div>
+                    )}
               </div>
             </>
           )}
