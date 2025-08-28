@@ -225,8 +225,8 @@ Format your response as regular narrative text, then end with exactly two choice
         }
       );
 
-      if (aiResponse) {
-        const aiContent = aiResponse;
+      if (aiResponse && aiResponse.choices && aiResponse.choices[0]) {
+        const aiContent = aiResponse.choices[0].message.content;
         
         // Enhanced choice generation using AI
         let extractedChoices: string[] = [];
