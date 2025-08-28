@@ -2,6 +2,7 @@ import { Cache } from '../utils/cache.js';
 import { WikiDataFetcher } from '../data-sources/wikiDataFetcher.js';
 import { AnimeDataFetcher } from '../data-sources/animeDataFetcher.js';
 import { AniListDataFetcher } from '../data-sources/aniListDataFetcher.js';
+import { AIAgentService } from './aiAgentService.js';
 
 export interface CharacterData {
   name: string;
@@ -55,12 +56,14 @@ export class CharacterService {
   private wikiDataFetcher: WikiDataFetcher;
   private animeDataFetcher: AnimeDataFetcher;
   private aniListDataFetcher: AniListDataFetcher;
+  private aiAgent: AIAgentService;
 
   constructor() {
     this.cache = new Cache();
     this.wikiDataFetcher = new WikiDataFetcher();
     this.animeDataFetcher = new AnimeDataFetcher();
     this.aniListDataFetcher = new AniListDataFetcher();
+    this.aiAgent = new AIAgentService();
   }
 
   async getCharacterData(
@@ -85,11 +88,37 @@ export class CharacterService {
       ]);
 
       // Combine and process the data
-      const characterData = this.combineCharacterData(characterName, sourceName, {
+      const combinedData = this.combineCharacterData(characterName, sourceName, {
         wiki: wikiData,
         anime: animeData,
         aniList: aniListData
       }, arcContext);
+
+      // AI-enhanced character analysis
+      const allSourceData = [
+        wikiData.status === 'fulfilled' && wikiData.value ? { source: 'wiki', ...wikiData.value, confidence: 0.8 } : null,
+        animeData.status === 'fulfilled' && animeData.value ? { source: 'anime', ...animeData.value, confidence: 0.7 } : null,
+        aniListData.status === 'fulfilled' && aniListData.value ? { source: 'anilist', ...aniListData.value, confidence: 0.9 } : null
+      ].filter(Boolean);
+
+      let aiAnalysis = null;
+      try {
+        if (allSourceData.length > 0) {
+          aiAnalysis = await this.aiAgent.analyzeCharacterData(characterName, sourceName, allSourceData);
+        }
+      } catch (error) {
+        console.warn('AI character analysis failed:', error);
+      }
+
+      const characterData = {
+        ...combinedData,
+        ai_enhanced: aiAnalysis ? {
+          character_profile: aiAnalysis.character_profile,
+          ai_confidence: aiAnalysis.ai_confidence,
+          ai_reasoning: aiAnalysis.ai_reasoning,
+          canonical_accuracy: aiAnalysis.canonical_accuracy
+        } : null
+      };
       
       // Cache the result
       this.cache.set(cacheKey, characterData);
