@@ -205,21 +205,18 @@ Format your response as regular narrative text, then end with exactly two choice
         }
       };
 
-      // Use enhanced OpenRouter for roleplay
-      const enhancedMessages = [
-        ...messages.slice(-5).map(msg => ({
-          role: msg.isUser ? 'user' : 'assistant',
-          content: msg.content,
-          metadata: {
-            character: adventure.name,
-            timestamp: msg.timestamp
-          }
-        }))
-      ];
+      // Use specific model for adventure play
+      const adventureModel = {
+        id: 'tngtech/deepseek-r1t2-chimera:free',
+        name: 'tngtech/deepseek-r1t2-chimera:free',
+        provider: 'OpenRouter',
+        maxTokens: 8192,
+        description: 'Adventure AI Model'
+      };
 
-      const aiResponse = await enhancedOpenRouterAPI.createRoleplayResponse(
-        enhancedMessages as any,
-        roleplayContext,
+      const aiResponse = await openRouterAPI.createChatCompletion(
+        adventureModel,
+        chatMessages as any,
         {
           temperature: 0.85,
           max_tokens: settings.lengthMode === 'extended' ? 600 : 300,
