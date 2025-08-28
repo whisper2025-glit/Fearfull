@@ -175,6 +175,11 @@ export function AppSidebar() {
           )}
         </div>
       </SidebarContent>
+
+      <CreateModal
+        open={isCreateModalOpen}
+        onOpenChange={setIsCreateModalOpen}
+      />
     </Sidebar>
   );
 }
