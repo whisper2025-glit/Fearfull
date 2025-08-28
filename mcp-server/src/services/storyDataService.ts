@@ -359,8 +359,8 @@ export class StoryDataService {
     }
 
     // Merge MangaDex data
-    if (allData.mangaDx.status === 'fulfilled' && allData.mangaDx.value) {
-      const mangaDx = allData.mangaDx.value as any;
+    if (allData.mangaDex.status === 'fulfilled' && allData.mangaDex.value) {
+      const mangaDx = allData.mangaDex.value as any;
       if (mangaDx) {
         baseInfo.type = 'manga';
         baseInfo.description = mangaDx.description || baseInfo.description;
