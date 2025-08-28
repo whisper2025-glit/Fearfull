@@ -4,6 +4,7 @@ import { WikiDataFetcher } from '../data-sources/wikiDataFetcher.js';
 import { AnimeDataFetcher } from '../data-sources/animeDataFetcher.js';
 import { AniListDataFetcher } from '../data-sources/aniListDataFetcher.js';
 import { MangaDexDataFetcher } from '../data-sources/mangaDexDataFetcher.js';
+import { AIAgentService } from './aiAgentService.js';
 
 export interface StoryInfo {
   name: string;
@@ -65,6 +66,7 @@ export class StoryDataService {
   private animeDataFetcher: AnimeDataFetcher;
   private aniListDataFetcher: AniListDataFetcher;
   private mangaDexDataFetcher: MangaDexDataFetcher;
+  private aiAgent: AIAgentService;
 
   constructor() {
     this.cache = new Cache();
@@ -72,6 +74,7 @@ export class StoryDataService {
     this.animeDataFetcher = new AnimeDataFetcher();
     this.aniListDataFetcher = new AniListDataFetcher();
     this.mangaDexDataFetcher = new MangaDexDataFetcher();
+    this.aiAgent = new AIAgentService();
   }
 
   async getStoryInfo(sourceName: string, setting?: string, arc?: string): Promise<StoryInfo> {

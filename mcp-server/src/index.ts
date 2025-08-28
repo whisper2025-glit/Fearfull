@@ -33,6 +33,13 @@ import {
   GET_POPULAR_CONTENT_TOOL,
   VALIDATE_CANON_TOOL
 } from './tools/mangaTools.js';
+import {
+  AI_ANALYZE_STORY_TOOL,
+  AI_VALIDATE_CANON_TOOL,
+  AI_ENHANCE_SEARCH_TOOL,
+  AI_GENERATE_ROLEPLAY_CONTEXT_TOOL,
+  AI_ANALYZE_CHARACTER_TOOL
+} from './tools/aiAgentTools.js';
 
 class AdventureStoryMCPServer {
   private server: Server;
@@ -87,6 +94,11 @@ class AdventureStoryMCPServer {
           COMPARE_ADAPTATIONS_TOOL,
           GET_POPULAR_CONTENT_TOOL,
           VALIDATE_CANON_TOOL,
+          AI_ANALYZE_STORY_TOOL,
+          AI_VALIDATE_CANON_TOOL,
+          AI_ENHANCE_SEARCH_TOOL,
+          AI_GENERATE_ROLEPLAY_CONTEXT_TOOL,
+          AI_ANALYZE_CHARACTER_TOOL,
         ],
       };
     });
