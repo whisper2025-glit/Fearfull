@@ -37,7 +37,7 @@ const Search = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
-  const [activeTab, setActiveTab] = useState<'Characters' | 'User'>('Characters');
+  const [activeTab, setActiveTab] = useState<'Characters'>('Characters');
   const [activeRankTab, setActiveRankTab] = useState<'Creators' | 'Characters'>('Creators');
   const [isSearching, setIsSearching] = useState(false);
   const [searchResults, setSearchResults] = useState<any[]>([]);
