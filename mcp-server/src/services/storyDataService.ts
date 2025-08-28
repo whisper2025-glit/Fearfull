@@ -285,7 +285,7 @@ export class StoryDataService {
       anime: PromiseSettledResult<any>;
       aniListAnime: PromiseSettledResult<any>;
       aniListManga: PromiseSettledResult<any>;
-      mangaDx: PromiseSettledResult<any>;
+      mangaDex: PromiseSettledResult<any>;
     },
     setting?: string,
     arc?: string
