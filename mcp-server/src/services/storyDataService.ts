@@ -2,6 +2,8 @@ import axios from 'axios';
 import { Cache } from '../utils/cache.js';
 import { WikiDataFetcher } from '../data-sources/wikiDataFetcher.js';
 import { AnimeDataFetcher } from '../data-sources/animeDataFetcher.js';
+import { AniListDataFetcher } from '../data-sources/aniListDataFetcher.js';
+import { MangaDexDataFetcher } from '../data-sources/mangaDexDataFetcher.js';
 
 export interface StoryInfo {
   name: string;
@@ -61,11 +63,15 @@ export class StoryDataService {
   private cache: Cache;
   private wikiDataFetcher: WikiDataFetcher;
   private animeDataFetcher: AnimeDataFetcher;
+  private aniListDataFetcher: AniListDataFetcher;
+  private mangaDexDataFetcher: MangaDexDataFetcher;
 
   constructor() {
     this.cache = new Cache();
     this.wikiDataFetcher = new WikiDataFetcher();
     this.animeDataFetcher = new AnimeDataFetcher();
+    this.aniListDataFetcher = new AniListDataFetcher();
+    this.mangaDexDataFetcher = new MangaDexDataFetcher();
   }
 
   async getStoryInfo(sourceName: string, setting?: string, arc?: string): Promise<StoryInfo> {
@@ -79,13 +85,22 @@ export class StoryDataService {
 
     try {
       // Try to get data from multiple sources
-      const [wikiData, animeData] = await Promise.allSettled([
+      const [wikiData, animeData, aniListAnimeData, aniListMangaData, mangaDexData] = await Promise.allSettled([
         this.wikiDataFetcher.getStoryInfo(sourceName),
-        this.animeDataFetcher.getAnimeInfo(sourceName)
+        this.animeDataFetcher.getAnimeInfo(sourceName),
+        this.aniListDataFetcher.getAnimeInfo(sourceName),
+        this.aniListDataFetcher.getMangaInfo(sourceName),
+        this.mangaDexDataFetcher.getMangaInfo(sourceName)
       ]);
 
       // Combine data from different sources
-      const storyInfo = this.combineStoryData(sourceName, wikiData, animeData, setting, arc);
+      const storyInfo = this.combineStoryData(sourceName, {
+        wiki: wikiData,
+        anime: animeData,
+        aniListAnime: aniListAnimeData,
+        aniListManga: aniListMangaData,
+        mangaDex: mangaDexData
+      }, setting, arc);
       
       // Cache the result
       this.cache.set(cacheKey, storyInfo);
@@ -165,13 +180,33 @@ export class StoryDataService {
     try {
       const results: SearchResult[] = [];
       
-      // Search in wiki data
-      const wikiResults = await this.wikiDataFetcher.searchContent(sourceName, query, contentType);
-      results.push(...wikiResults);
+      // Search in all data sources
+      const [wikiResults, animeResults, aniListResults, mangaDexResults] = await Promise.allSettled([
+        this.wikiDataFetcher.searchContent(sourceName, query, contentType),
+        this.animeDataFetcher.searchContent(sourceName, query, contentType),
+        this.aniListDataFetcher.searchMedia(query, contentType === 'anime' ? 'ANIME' : contentType === 'manga' ? 'MANGA' : undefined),
+        this.mangaDexDataFetcher.searchContent(sourceName, query, contentType)
+      ]);
 
-      // Search in anime database
-      const animeResults = await this.animeDataFetcher.searchContent(sourceName, query, contentType);
-      results.push(...animeResults);
+      // Combine results from all sources
+      if (wikiResults.status === 'fulfilled') results.push(...wikiResults.value);
+      if (animeResults.status === 'fulfilled') results.push(...animeResults.value);
+      if (aniListResults.status === 'fulfilled') {
+        const aniListFormattedResults = aniListResults.value.map(item => ({
+          type: item.type.toLowerCase(),
+          name: item.title.romaji || item.title.english || 'Unknown',
+          description: item.description || '',
+          source: 'anilist',
+          relevanceScore: 0.8,
+          additionalInfo: {
+            anilist_id: item.id,
+            genres: item.genres,
+            averageScore: item.averageScore
+          }
+        }));
+        results.push(...aniListFormattedResults);
+      }
+      if (mangaDexResults.status === 'fulfilled') results.push(...mangaDexResults.value);
 
       // Sort by relevance score
       const sortedResults = results.sort((a, b) => b.relevanceScore - a.relevanceScore);
@@ -245,8 +280,13 @@ export class StoryDataService {
 
   private combineStoryData(
     sourceName: string,
-    wikiData: PromiseSettledResult<any>,
-    animeData: PromiseSettledResult<any>,
+    allData: {
+      wiki: PromiseSettledResult<any>;
+      anime: PromiseSettledResult<any>;
+      aniListAnime: PromiseSettledResult<any>;
+      aniListManga: PromiseSettledResult<any>;
+      mangaDx: PromiseSettledResult<any>;
+    },
     setting?: string,
     arc?: string
   ): StoryInfo {
@@ -268,8 +308,8 @@ export class StoryDataService {
     };
 
     // Merge wiki data
-    if (wikiData.status === 'fulfilled' && wikiData.value) {
-      const wiki = wikiData.value as any;
+    if (allData.wiki.status === 'fulfilled' && allData.wiki.value) {
+      const wiki = allData.wiki.value as any;
       if (wiki) {
         baseInfo.description = wiki.description || baseInfo.description;
         baseInfo.plotSummary = wiki.plotSummary || baseInfo.plotSummary;
@@ -279,14 +319,53 @@ export class StoryDataService {
       }
     }
 
-    // Merge anime data
-    if (animeData.status === 'fulfilled' && animeData.value) {
-      const anime = animeData.value as any;
+    // Merge Jikan anime data
+    if (allData.anime.status === 'fulfilled' && allData.anime.value) {
+      const anime = allData.anime.value as any;
       if (anime) {
         baseInfo.type = 'anime';
         baseInfo.description = anime.synopsis || baseInfo.description;
         if (anime.characters && Array.isArray(anime.characters)) {
           baseInfo.mainCharacters = [...new Set([...baseInfo.mainCharacters, ...anime.characters])];
+        }
+      }
+    }
+
+    // Merge AniList anime data
+    if (allData.aniListAnime.status === 'fulfilled' && allData.aniListAnime.value) {
+      const aniAnime = allData.aniListAnime.value as any;
+      if (aniAnime) {
+        baseInfo.type = 'anime';
+        baseInfo.description = aniAnime.description || baseInfo.description;
+        if (aniAnime.characters && Array.isArray(aniAnime.characters)) {
+          baseInfo.mainCharacters = [...new Set([...baseInfo.mainCharacters, ...aniAnime.characters])];
+        }
+        if (aniAnime.genres) {
+          baseInfo.worldBuilding.powerSystem = aniAnime.genres.join(', ');
+        }
+      }
+    }
+
+    // Merge AniList manga data
+    if (allData.aniListManga.status === 'fulfilled' && allData.aniListManga.value) {
+      const aniManga = allData.aniListManga.value as any;
+      if (aniManga) {
+        baseInfo.type = 'manga';
+        baseInfo.description = aniManga.description || baseInfo.description;
+        if (aniManga.characters && Array.isArray(aniManga.characters)) {
+          baseInfo.mainCharacters = [...new Set([...baseInfo.mainCharacters, ...aniManga.characters])];
+        }
+      }
+    }
+
+    // Merge MangaDex data
+    if (allData.mangaDx.status === 'fulfilled' && allData.mangaDx.value) {
+      const mangaDx = allData.mangaDx.value as any;
+      if (mangaDx) {
+        baseInfo.type = 'manga';
+        baseInfo.description = mangaDx.description || baseInfo.description;
+        if (mangaDx.authors) {
+          baseInfo.worldBuilding.mainOrganizations = [...baseInfo.worldBuilding.mainOrganizations, ...mangaDx.authors];
         }
       }
     }

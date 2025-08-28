@@ -1,6 +1,7 @@
 import { Cache } from '../utils/cache.js';
 import { WikiDataFetcher } from '../data-sources/wikiDataFetcher.js';
 import { AnimeDataFetcher } from '../data-sources/animeDataFetcher.js';
+import { AniListDataFetcher } from '../data-sources/aniListDataFetcher.js';
 
 export interface CharacterData {
   name: string;
@@ -53,11 +54,13 @@ export class CharacterService {
   private cache: Cache;
   private wikiDataFetcher: WikiDataFetcher;
   private animeDataFetcher: AnimeDataFetcher;
+  private aniListDataFetcher: AniListDataFetcher;
 
   constructor() {
     this.cache = new Cache();
     this.wikiDataFetcher = new WikiDataFetcher();
     this.animeDataFetcher = new AnimeDataFetcher();
+    this.aniListDataFetcher = new AniListDataFetcher();
   }
 
   async getCharacterData(
@@ -75,13 +78,18 @@ export class CharacterService {
 
     try {
       // Fetch data from multiple sources
-      const [wikiData, animeData] = await Promise.allSettled([
+      const [wikiData, animeData, aniListData] = await Promise.allSettled([
         this.wikiDataFetcher.getCharacterInfo(sourceName, characterName),
-        this.animeDataFetcher.getCharacterInfo(sourceName, characterName)
+        this.animeDataFetcher.getCharacterInfo(sourceName, characterName),
+        this.aniListDataFetcher.getCharacterInfo(sourceName, characterName)
       ]);
 
       // Combine and process the data
-      const characterData = this.combineCharacterData(characterName, sourceName, wikiData, animeData, arcContext);
+      const characterData = this.combineCharacterData(characterName, sourceName, {
+        wiki: wikiData,
+        anime: animeData,
+        aniList: aniListData
+      }, arcContext);
       
       // Cache the result
       this.cache.set(cacheKey, characterData);
@@ -173,8 +181,11 @@ export class CharacterService {
   private combineCharacterData(
     characterName: string,
     sourceName: string,
-    wikiData: PromiseSettledResult<any>,
-    animeData: PromiseSettledResult<any>,
+    allData: {
+      wiki: PromiseSettledResult<any>;
+      anime: PromiseSettledResult<any>;
+      aniList: PromiseSettledResult<any>;
+    },
     arcContext?: string
   ): CharacterData {
     const baseData: CharacterData = {
@@ -213,8 +224,8 @@ export class CharacterService {
     };
 
     // Merge wiki data
-    if (wikiData.status === 'fulfilled' && wikiData.value) {
-      const wiki = wikiData.value;
+    if (allData.wiki.status === 'fulfilled' && allData.wiki.value) {
+      const wiki = allData.wiki.value;
       baseData.aliases = wiki.aliases || baseData.aliases;
       baseData.appearance = { ...baseData.appearance, ...wiki.appearance };
       baseData.personality = { ...baseData.personality, ...wiki.personality };
@@ -227,11 +238,29 @@ export class CharacterService {
     }
 
     // Merge anime data
-    if (animeData.status === 'fulfilled' && animeData.value) {
-      const anime = animeData.value;
+    if (allData.anime.status === 'fulfilled' && allData.anime.value) {
+      const anime = allData.anime.value;
       baseData.appearance.description = anime.description || baseData.appearance.description;
       if (anime.images) {
         baseData.images = [...(baseData.images || []), ...anime.images];
+      }
+    }
+
+    // Merge AniList data
+    if (allData.aniList.status === 'fulfilled' && allData.aniList.value) {
+      const aniList = allData.aniList.value;
+      baseData.appearance.description = aniList.description || baseData.appearance.description;
+      if (aniList.name_native) {
+        baseData.aliases = [...baseData.aliases, aniList.name_native];
+      }
+      if (aniList.images) {
+        baseData.images = [...(baseData.images || []), ...aniList.images];
+      }
+      if (aniList.gender) {
+        baseData.appearance.species = aniList.gender;
+      }
+      if (aniList.age) {
+        baseData.appearance.age = aniList.age.toString();
       }
     }
 
