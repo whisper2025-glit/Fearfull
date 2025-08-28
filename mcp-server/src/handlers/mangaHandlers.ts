@@ -64,7 +64,8 @@ export class MangaHandlers {
         ],
       };
     } catch (error) {
-      throw new Error(`Failed to get manga info: ${error.message}`);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      throw new Error(`Failed to get manga info: ${errorMessage}`);
     }
   }
 
@@ -85,9 +86,9 @@ export class MangaHandlers {
         if (chapter_range === 'latest') {
           filteredChapters = chapters.slice(-10); // Last 10 chapters
         } else if (chapter_range.includes('-')) {
-          const [start, end] = chapter_range.split('-').map(num => parseInt(num.trim()));
+          const [start, end] = chapter_range.split('-').map((num: string) => parseInt(num.trim()));
           if (!isNaN(start) && !isNaN(end)) {
-            filteredChapters = chapters.filter(ch => {
+            filteredChapters = chapters.filter((ch: any) => {
               const chapterNum = parseFloat(ch.chapter || '0');
               return chapterNum >= start && chapterNum <= end;
             });
@@ -97,7 +98,7 @@ export class MangaHandlers {
 
       // Filter by language
       if (translated_language !== 'all') {
-        filteredChapters = filteredChapters.filter(ch => 
+        filteredChapters = filteredChapters.filter((ch: any) =>
           ch.translatedLanguage === translated_language
         );
       }
@@ -116,7 +117,8 @@ export class MangaHandlers {
         ],
       };
     } catch (error) {
-      throw new Error(`Failed to get manga chapters: ${error.message}`);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      throw new Error(`Failed to get manga chapters: ${errorMessage}`);
     }
   }
 
@@ -142,8 +144,18 @@ export class MangaHandlers {
       };
 
       if (comparison.has_anime && comparison.has_manga) {
-        const anime = animeInfo.value;
-        const manga = mangaInfo.value;
+        const anime = animeInfo.status === 'fulfilled' ? animeInfo.value : null;
+        const manga = mangaInfo.status === 'fulfilled' ? mangaInfo.value : null;
+
+        if (!anime || !manga) {
+          comparison.comparison.error = 'Failed to retrieve adaptation data';
+          return {
+            content: [{
+              type: 'text',
+              text: JSON.stringify(comparison, null, 2),
+            }],
+          };
+        }
 
         if (focus_area === 'all' || focus_area === 'characters') {
           comparison.comparison.characters = {
@@ -190,7 +202,8 @@ export class MangaHandlers {
         ],
       };
     } catch (error) {
-      throw new Error(`Failed to compare adaptations: ${error.message}`);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      throw new Error(`Failed to compare adaptations: ${errorMessage}`);
     }
   }
 
@@ -229,7 +242,8 @@ export class MangaHandlers {
         ],
       };
     } catch (error) {
-      throw new Error(`Failed to get popular content: ${error.message}`);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      throw new Error(`Failed to get popular content: ${errorMessage}`);
     }
   }
 
@@ -283,7 +297,8 @@ export class MangaHandlers {
         ],
       };
     } catch (error) {
-      throw new Error(`Failed to validate canon: ${error.message}`);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      throw new Error(`Failed to validate canon: ${errorMessage}`);
     }
   }
 
