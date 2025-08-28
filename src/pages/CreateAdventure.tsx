@@ -172,7 +172,7 @@ const CreateAdventure = () => {
       }
 
       toast.success('Adventure created successfully!');
-      navigate('/');
+      navigate(`/adventure/${adventureData.id}`);
     } catch (error) {
       console.error('Error creating adventure:', error);
       toast.error('Failed to create adventure');
