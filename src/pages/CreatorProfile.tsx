@@ -179,6 +179,15 @@ const CreatorProfile = () => {
   };
 
   const displayCharacters = getCharactersForTab();
+  const displayAdventures = getAdventuresForTab();
+
+  const handleAdventureFavoriteChange = async (adventureId: string, isFavorited: boolean) => {
+    if (isFavorited) {
+      setViewerFavoritedAdventureIds(prev => [...prev, adventureId]);
+    } else {
+      setViewerFavoritedAdventureIds(prev => prev.filter(id => id !== adventureId));
+    }
+  };
 
   const tabs = [
     { id: 'bots', label: 'Public Bots', count: stats.publicBots },
