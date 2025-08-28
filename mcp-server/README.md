@@ -1,6 +1,6 @@
 # Adventure Story MCP Server
 
-A Model Context Protocol (MCP) server that provides canonical story information from various sources (anime, manga, novels, etc.) for the Adventure Roleplay system.
+A Model Context Protocol (MCP) server that provides canonical story information from multiple APIs including **AniList**, **Jikan (MyAnimeList)**, and **MangaDex** for the Adventure Roleplay system.
 
 ## Features
 
@@ -14,10 +14,11 @@ A Model Context Protocol (MCP) server that provides canonical story information 
 ## Tools Available
 
 ### Story Information
-- `get_story_info` - Get comprehensive story/world information
+- `get_story_info` - Get comprehensive story/world information from all APIs
 - `get_timeline_events` - Retrieve chronological story events
-- `search_story_content` - Search for specific content within stories
+- `search_story_content` - Search across AniList, Jikan, and MangaDx databases
 - `validate_story_element` - Validate story elements against canonical sources
+- `validate_canon` - Cross-reference canonical accuracy across adaptations
 
 ### Character Management
 - `get_character_data` - Get detailed character information
@@ -31,6 +32,12 @@ A Model Context Protocol (MCP) server that provides canonical story information 
 - `set_adventure_context` - Set up adventure state and context
 - `get_adventure_state` - Retrieve current adventure information
 - Track player choices, character relationships, and plot progression
+
+### Manga-Specific Features
+- `get_manga_info` - Detailed manga information from MangaDx and AniList
+- `get_manga_chapters` - Chapter lists and reading information
+- `compare_adaptations` - Compare anime vs manga differences
+- `get_popular_content` - Trending anime and manga content
 
 ## Installation
 
@@ -84,25 +91,46 @@ The server communicates via stdio and follows the MCP specification. Add it to y
 }
 ```
 
-## Supported Sources
+## Supported Sources & APIs
 
-The server can fetch information from various story sources:
+The server integrates with multiple APIs for comprehensive coverage:
 
-- **Anime**: One Piece, Naruto, Dragon Ball, Attack on Titan, etc.
-- **Manga**: Any series with available wiki information
-- **Novels**: Light novels and web novels with community wikis
-- **Games**: Video game stories with comprehensive wikis
+### **AniList API**
+- Comprehensive anime and manga database
+- Character information with detailed profiles
+- Trending and popular content discovery
+- High-quality metadata and descriptions
 
-### Data Sources
+### **Jikan API (MyAnimeList)**
+- Extensive anime database with episode information
+- Character details and voice actor information
+- User ratings and popularity metrics
+- Seasonal anime tracking
 
-1. **Fandom Wikis**: Primary source for detailed story information
-2. **MyAnimeList API**: Additional anime/manga data via Jikan API
-3. **Local Database**: Cached data and adventure contexts
-4. **Wikipedia**: Fallback for general information
+### **MangaDx API**
+- Large manga collection with chapter information
+- Multiple language support
+- Author and artist details
+- Publication and reading status
+
+### **Fandom Wikis**
+- Detailed story information and world-building
+- Character relationships and development
+- Timeline events and plot progression
+- Location and organization details
+
+### Multi-API Data Aggregation
+
+1. **AniList API**: Primary source for anime/manga metadata and character info
+2. **Jikan API**: Secondary anime data with user statistics and seasonal trends
+3. **MangaDx API**: Manga-specific data with chapter information and reading status
+4. **Fandom Wikis**: Detailed story information and world-building
+5. **Local Database**: Cached data and adventure contexts
+6. **Smart Aggregation**: Combines data from all sources for comprehensive results
 
 ## Example Usage
 
-### Getting Story Information
+### Getting Comprehensive Story Information
 ```typescript
 // Tool call: get_story_info
 {
@@ -111,10 +139,21 @@ The server can fetch information from various story sources:
   "arc": "Wano Country"
 }
 
-// Response: Detailed world-building, plot, characters, etc.
+// Response: Combined data from AniList, Jikan, MangaDx, and Wikis
+{
+  "name": "One Piece",
+  "type": "anime",
+  "description": "Aggregated from multiple sources",
+  "mainCharacters": ["Luffy", "Zoro", "Nami", ...],
+  "sources": {
+    "anilist": { /* AniList data */ },
+    "jikan": { /* Jikan data */ },
+    "mangadx": { /* MangaDx data */ }
+  }
+}
 ```
 
-### Character Data
+### Enhanced Character Data
 ```typescript
 // Tool call: get_character_data
 {
@@ -123,22 +162,49 @@ The server can fetch information from various story sources:
   "arc_context": "Post-Timeskip"
 }
 
-// Response: Abilities, relationships, development, etc.
+// Response: Multi-source character information
+{
+  "name": "Monkey D. Luffy",
+  "aliases": ["Straw Hat Luffy", "ルフィ"],
+  "abilities": {
+    "powers": ["Gomu Gomu no Mi", "Haki"],
+    "specialAbilities": ["Gear Fourth", "Conqueror's Haki"]
+  },
+  "images": ["anilist_image_url", "jikan_image_url"],
+  "sources": {
+    "anilist": { /* Character data from AniList */ },
+    "jikan": { /* Character data from Jikan */ }
+  }
+}
 ```
 
-### Adventure Context Management
+### Manga-Specific Features
 ```typescript
-// Tool call: set_adventure_context
+// Tool call: get_manga_info
 {
-  "adventure_id": "my-onepiece-adventure",
-  "source_name": "One Piece",
-  "current_arc": "Wano Arc",
-  "active_characters": ["Luffy", "Zoro", "Sanji"],
-  "story_state": {
-    "current_location": "Onigashima",
-    "major_events": ["Raid on Onigashima"],
-    "character_relationships": {},
-    "plot_points": []
+  "manga_name": "One Piece",
+  "include_chapters": true,
+  "language": "en"
+}
+
+// Tool call: compare_adaptations
+{
+  "source_name": "Attack on Titan",
+  "focus_area": "differences"
+}
+
+// Response: Detailed comparison between anime and manga
+{
+  "has_anime": true,
+  "has_manga": true,
+  "comparison": {
+    "differences": {
+      "genre_differences": { /* Differences in tags/genres */ },
+      "format_differences": {
+        "anime_format": "TV",
+        "manga_format": "Manga"
+      }
+    }
   }
 }
 ```
@@ -147,10 +213,20 @@ The server can fetch information from various story sources:
 
 ### Environment Variables
 
+**API Configuration:**
+- `ANILIST_API_URL`: AniList GraphQL endpoint (default: https://graphql.anilist.co)
 - `JIKAN_API_BASE_URL`: Jikan API endpoint (default: https://api.jikan.moe/v4)
+- `MANGADEX_API_URL`: MangaDx API endpoint (default: https://api.mangadx.org)
+
+**Rate Limiting:**
+- `ANILIST_RATE_LIMIT_DELAY`: AniList request delay (default: 1000ms)
+- `JIKAN_RATE_LIMIT_DELAY`: Jikan request delay (default: 1000ms)
+- `MANGADEX_RATE_LIMIT_DELAY`: MangaDx request delay (default: 200ms)
+
+**Caching:**
 - `CACHE_TTL_SECONDS`: Cache time-to-live (default: 3600)
 - `DATABASE_PATH`: SQLite database path (default: ./data/stories.db)
-- `API_RATE_LIMIT_PER_MINUTE`: Rate limiting (default: 60)
+- `API_RATE_LIMIT_PER_MINUTE`: Overall rate limiting (default: 60)
 
 ### Adding New Sources
 
@@ -222,4 +298,4 @@ For questions or issues:
 
 ---
 
-This MCP server provides canonical story information to enhance your adventure roleplay experiences with accurate, authentic content from your favorite stories!
+This enhanced MCP server provides comprehensive, multi-source canonical information from **AniList**, **Jikan**, and **MangaDx** APIs to deliver the most accurate and complete story data for your adventure roleplay experiences!
