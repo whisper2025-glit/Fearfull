@@ -35,7 +35,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 const menuItems = [
   { title: "Create a bot", url: "/create", icon: Plus, isCreateModal: true },
   { title: "Home", url: "/", icon: Home },
-  { title: "Novel", url: "/novel", icon: BookOpen, badge: "beta" },
+  { title: "Adventures", url: "/adventures", icon: BookOpen, badge: "beta" },
   { title: "Chats", url: "/chats", icon: MessageCircle },
   { title: "Search", url: "/search", icon: Search },
   { title: "Joybook", url: "/joybook", icon: BookOpen },

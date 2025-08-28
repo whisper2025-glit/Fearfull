@@ -10,6 +10,7 @@ import Chats from "./pages/Chats";
 import CreateCharacter from "./pages/CreateCharacter";
 import CreateAdventure from "./pages/CreateAdventure";
 import AdventurePlay from "./pages/AdventurePlay";
+import Adventures from "./pages/Adventures";
 import Profile from "./pages/Profile";
 import CharacterProfile from "./pages/CharacterProfile";
 import CreatorProfile from "./pages/CreatorProfile";
@@ -62,6 +63,11 @@ const AppContent = () => {
         <Route path="/adventure/:adventureId" element={
           <ProtectedRoute>
             <AdventurePlay />
+          </ProtectedRoute>
+        } />
+        <Route path="/adventures" element={
+          <ProtectedRoute>
+            <Adventures />
           </ProtectedRoute>
         } />
         <Route path="/profile" element={
