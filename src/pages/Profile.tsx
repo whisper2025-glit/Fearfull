@@ -139,19 +139,26 @@ const Profile = () => {
     loadUserData();
   }, [user]);
 
-  // Filter characters based on active tab
+  // Filter characters/adventures based on active tab and sub-tab
   const getCharactersForTab = () => {
     switch (activeTab) {
       case 'bots':
         return userCharacters.filter(char => char.visibility === 'public');
       case 'favorites':
-        return favoriteCharacters;
+        return favoritesSubTab === 'characters' ? favoriteCharacters : [];
       case 'posts':
         // TODO: Implement posts functionality
         return [];
       default:
         return [];
     }
+  };
+
+  const getAdventuresForTab = () => {
+    if (activeTab === 'favorites' && favoritesSubTab === 'adventures') {
+      return favoriteAdventures;
+    }
+    return [];
   };
 
   // Handle favorite status changes
