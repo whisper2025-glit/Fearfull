@@ -431,7 +431,7 @@ const Search = () => {
                           <div key={character.id} className="bg-gradient-to-r from-pink-500/20 to-purple-500/20 rounded-xl p-3 flex items-center gap-3">
                             <span className="text-lg font-bold text-white min-w-[20px]">{index + 1}</span>
                             <img
-                              src={character.image_url || '/placeholder.svg'}
+                              src={character.avatar_url || '/placeholder.svg'}
                               alt={character.name}
                               className="w-12 h-12 rounded-lg object-cover"
                             />
@@ -593,7 +593,7 @@ const Search = () => {
                         <div key={character.id} className="bg-card rounded-xl overflow-hidden">
                           <div className="relative aspect-[4/5]">
                             <img
-                              src={character.image_url || '/placeholder.svg'}
+                              src={character.avatar_url || '/placeholder.svg'}
                               alt={character.name}
                               className="w-full h-full object-cover"
                             />
