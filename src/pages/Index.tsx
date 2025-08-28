@@ -27,11 +27,7 @@ const Index = () => {
         // Load characters
         const { data: charactersData, error: charactersError } = await supabase
           .from('characters')
-          .select(`
-            *,
-            users!characters_owner_id_fkey(full_name),
-            messages(id)
-          `)
+          .select('*')
           .eq('visibility', 'public')
           .order('created_at', { ascending: false });
 
