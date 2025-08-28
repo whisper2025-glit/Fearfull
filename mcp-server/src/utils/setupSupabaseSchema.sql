@@ -118,11 +118,35 @@ SELECT
 FROM pg_tables 
 WHERE tablename IN ('adventure_contexts', 'adventure_events', 'story_cache');
 
--- Show table structure
-\d adventure_contexts;
-\d adventure_events;
-\d story_cache;
+-- Show table columns (replacing \d commands with standard SQL)
+SELECT 
+    column_name,
+    data_type,
+    is_nullable,
+    column_default
+FROM information_schema.columns 
+WHERE table_name = 'adventure_contexts'
+ORDER BY ordinal_position;
 
+SELECT 
+    column_name,
+    data_type,
+    is_nullable,
+    column_default
+FROM information_schema.columns 
+WHERE table_name = 'adventure_events'
+ORDER BY ordinal_position;
+
+SELECT 
+    column_name,
+    data_type,
+    is_nullable,
+    column_default
+FROM information_schema.columns 
+WHERE table_name = 'story_cache'
+ORDER BY ordinal_position;
+
+-- Add comments for documentation
 COMMENT ON TABLE adventure_contexts IS 'Stores adventure context and state for MCP server';
 COMMENT ON TABLE adventure_events IS 'Stores timeline of events for each adventure';
 COMMENT ON TABLE story_cache IS 'Caches API responses to reduce external API calls';
