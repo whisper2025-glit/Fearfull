@@ -128,15 +128,31 @@ const Chats = () => {
         );
 
         setCharacterHistory(historyArray);
+
+        // Load adventure chat history
+        const adventureConversations = await getUserAdventureConversations(user.id);
+
+        const adventureHistoryArray: AdventureHistory[] = adventureConversations.map((conv: any) => ({
+          id: conv.adventure_id,
+          name: conv.adventures?.name || 'Unknown Adventure',
+          adventure_image_url: conv.adventures?.adventure_image_url || '/placeholder.svg',
+          author: conv.adventures?.users?.full_name || 'Unknown',
+          lastChatDate: conv.last_message_at,
+          totalMessages: conv.message_count || 0,
+          lastMessage: 'Adventure in progress...',
+          conversationId: conv.id
+        }));
+
+        setAdventureHistory(adventureHistoryArray);
       } catch (error) {
-        console.error('Error loading character history:', error);
+        console.error('Error loading chat history:', error);
         toast.error('Failed to load chat history');
       } finally {
         setIsLoading(false);
       }
     };
 
-    loadCharacterHistory();
+    loadChatHistory();
   }, [user]);
 
   const startNewChat = (characterId: string) => {
