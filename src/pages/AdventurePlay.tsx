@@ -99,20 +99,104 @@ const AdventurePlay = () => {
         }
 
         setAdventure(adventureData);
-        
-        // Initialize with introduction message
-        if (adventureData.introduction) {
-          const introMessage: StoryMessage = {
-            id: 'intro',
-            content: adventureData.introduction,
-            isUser: false,
-            choices: [
-              "Start the adventure",
-              "Learn more about the world"
-            ],
-            timestamp: new Date().toISOString()
-          };
-          setMessages([introMessage]);
+
+        // Check for existing conversation for this user and adventure
+        if (user) {
+          const existingConversations = await getUserAdventureConversations(user.id);
+          const existingConv = existingConversations.find(conv => conv.adventure_id === adventureId);
+
+          if (existingConv) {
+            // Load existing conversation
+            setConversationId(existingConv.id);
+            const savedMessages = await getAdventureMessages(existingConv.id);
+
+            if (savedMessages && savedMessages.length > 0) {
+              const convertedMessages: StoryMessage[] = savedMessages.map(msg => ({
+                id: msg.id,
+                content: msg.content,
+                isUser: !msg.is_bot,
+                choices: msg.choices || undefined,
+                timestamp: msg.created_at
+              }));
+              setMessages(convertedMessages);
+            } else {
+              // Initialize with introduction if no messages exist
+              if (adventureData.introduction) {
+                const introMessage: StoryMessage = {
+                  id: 'intro',
+                  content: adventureData.introduction,
+                  isUser: false,
+                  choices: [
+                    "Start the adventure",
+                    "Learn more about the world"
+                  ],
+                  timestamp: new Date().toISOString()
+                };
+                setMessages([introMessage]);
+
+                // Save intro message to database
+                await addAdventureMessage(
+                  adventureId,
+                  existingConv.id,
+                  adventureData.introduction,
+                  true,
+                  null,
+                  'intro',
+                  ["Start the adventure", "Learn more about the world"]
+                );
+              }
+            }
+          } else {
+            // Create new conversation
+            const newConversation = await createAdventureConversation(
+              user.id,
+              adventureId,
+              null,
+              adventureData.name
+            );
+            setConversationId(newConversation.id);
+
+            // Initialize with introduction message
+            if (adventureData.introduction) {
+              const introMessage: StoryMessage = {
+                id: 'intro',
+                content: adventureData.introduction,
+                isUser: false,
+                choices: [
+                  "Start the adventure",
+                  "Learn more about the world"
+                ],
+                timestamp: new Date().toISOString()
+              };
+              setMessages([introMessage]);
+
+              // Save intro message to database
+              await addAdventureMessage(
+                adventureId,
+                newConversation.id,
+                adventureData.introduction,
+                true,
+                null,
+                'intro',
+                ["Start the adventure", "Learn more about the world"]
+              );
+            }
+          }
+        } else {
+          // Guest mode - just show intro without saving
+          if (adventureData.introduction) {
+            const introMessage: StoryMessage = {
+              id: 'intro',
+              content: adventureData.introduction,
+              isUser: false,
+              choices: [
+                "Start the adventure",
+                "Learn more about the world"
+              ],
+              timestamp: new Date().toISOString()
+            };
+            setMessages([introMessage]);
+          }
         }
       } catch (error) {
         console.error('Error loading adventure:', error);
