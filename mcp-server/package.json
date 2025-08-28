@@ -7,7 +7,11 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsx src/index.ts",
-    "start": "node dist/index.js"
+    "start": "node dist/index.js",
+    "setup:supabase": "echo 'Please run the SQL script in src/utils/setupSupabaseSchema.sql in your Supabase dashboard'",
+    "test:connection": "tsx -e \"import {SupabaseDatabaseManager} from './src/utils/supabaseDatabase.js'; const db = new SupabaseDatabaseManager(); db.testConnection().then(result => console.log('Connection test:', result ? 'SUCCESS' : 'FAILED')).catch(console.error);\"",
+    "clean": "rm -rf dist",
+    "rebuild": "npm run clean && npm run build"
   },
   "keywords": [
     "mcp",
@@ -24,13 +28,12 @@
   "license": "MIT",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^0.5.0",
-    "@supabase/supabase-js": "^2.56.0",
     "axios": "^1.6.0",
     "cheerio": "^1.0.0-rc.12",
     "dotenv": "^16.3.1",
-    "fuse.js": "^7.0.0",
     "node-cache": "^5.1.2",
-    "sqlite3": "^5.1.6"
+    "sqlite3": "^5.1.6",
+    "fuse.js": "^7.0.0"
   },
   "devDependencies": {
     "@types/node": "^20.10.0",
