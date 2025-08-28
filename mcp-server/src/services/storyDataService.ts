@@ -209,7 +209,7 @@ export class StoryDataService {
 
       let validation: ValidationResult;
 
-      if (exactMatches.length > 0) {
+      if (exactMatches.length > 0 && exactMatches[0]) {
         validation = {
           isValid: true,
           elementName,
