@@ -133,13 +133,27 @@ const Search = () => {
       if (charactersError) {
         console.error('Error loading trending characters:', charactersError);
       } else {
-        // Process characters data to add message counts
-        const processedCharacters = characters?.map(character => ({
-          ...character,
-          message_count: character.messages?.[0]?.count || 0,
-          conversation_count: character.conversations?.[0]?.count || 0,
-          creator_username: character.owner?.username || 'Unknown'
-        })) || [];
+        // For each character, get message count separately
+        const processedCharacters = await Promise.all((characters || []).map(async (character) => {
+          // Get message count for this character
+          const { count: messageCount } = await supabase
+            .from('messages')
+            .select('*', { count: 'exact', head: true })
+            .eq('character_id', character.id);
+
+          // Get conversation count for this character
+          const { count: conversationCount } = await supabase
+            .from('conversations')
+            .select('*', { count: 'exact', head: true })
+            .eq('character_id', character.id);
+
+          return {
+            ...character,
+            message_count: messageCount || 0,
+            conversation_count: conversationCount || 0,
+            creator_username: character.owner?.username || 'Unknown'
+          };
+        }));
         setTrendingCharacters(processedCharacters);
       }
 
