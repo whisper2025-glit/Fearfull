@@ -55,20 +55,33 @@ const Adventures = () => {
         setIsLoading(true);
 
         // Load all public adventures using basic client
+        console.log('🔍 Loading adventures...');
+
         const { data: adventuresData, error } = await supabase
           .from('adventures')
           .select(`
             *,
-            users!adventures_owner_id_fkey(full_name)
+            users(full_name)
           `)
           .eq('visibility', 'public')
           .order('created_at', { ascending: false });
 
+        console.log('📊 Adventures query result:', { adventuresData, error });
+
         if (error) {
-          console.error('Error loading adventures:', error);
-          toast.error('Failed to load adventures');
+          console.error('❌ Error loading adventures:', error);
+          console.error('Error details:', error.message, error.details, error.hint);
+          toast.error(`Failed to load adventures: ${error.message}`);
           return;
         }
+
+        if (!adventuresData) {
+          console.log('⚠️ No adventures data returned');
+          toast.error('No adventures found');
+          return;
+        }
+
+        console.log('✅ Adventures loaded successfully:', adventuresData.length, 'adventures');
 
         // Group adventures by category
         const categorizedAdventures: CategoryData[] = adventureCategories.map(category => ({
