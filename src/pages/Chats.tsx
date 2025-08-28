@@ -53,6 +53,7 @@ const Chats = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("recent");
   const [characterHistory, setCharacterHistory] = useState<CharacterHistory[]>([]);
+  const [adventureHistory, setAdventureHistory] = useState<AdventureHistory[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
