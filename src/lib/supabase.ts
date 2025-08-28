@@ -1214,6 +1214,133 @@ export const getFavoriteCharacters = async (userId: string) => {
   }
 };
 
+// Adventure Favorites CRUD operations
+export const favoriteAdventure = async (userId: string, adventureId: string): Promise<boolean> => {
+  try {
+    console.log('❤️ Favoriting adventure:', { userId, adventureId });
+
+    // Check if already favorited
+    const { data: existingFavorite, error: checkError } = await supabase
+      .from('favorited_adventures')
+      .select('id')
+      .eq('user_id', userId)
+      .eq('adventure_id', adventureId)
+      .single();
+
+    if (checkError && checkError.code !== 'PGRST116') { // PGRST116 = no rows returned
+      console.error('❌ Error checking existing adventure favorite:', checkError);
+      throw checkError;
+    }
+
+    if (existingFavorite) {
+      // Unfavorite: remove the favorite
+      const { error: deleteError } = await supabase
+        .from('favorited_adventures')
+        .delete()
+        .eq('user_id', userId)
+        .eq('adventure_id', adventureId);
+
+      if (deleteError) {
+        console.error('❌ Error removing adventure favorite:', deleteError);
+        throw deleteError;
+      }
+
+      console.log('✅ Adventure unfavorited successfully');
+      return false; // Now unfavorited
+    } else {
+      // Favorite: add the favorite
+      const { error: insertError } = await supabase
+        .from('favorited_adventures')
+        .insert({
+          user_id: userId,
+          adventure_id: adventureId
+        });
+
+      if (insertError) {
+        console.error('❌ Error adding adventure favorite:', insertError);
+        throw insertError;
+      }
+
+      console.log('✅ Adventure favorited successfully');
+      return true; // Now favorited
+    }
+  } catch (error) {
+    console.error('❌ Final error in favoriteAdventure:', error);
+    throw error;
+  }
+};
+
+export const checkAdventureIsFavorited = async (userId: string, adventureIds: string[]): Promise<string[]> => {
+  try {
+    if (adventureIds.length === 0) return [];
+
+    console.log('🔍 Checking favorited status for adventures:', adventureIds);
+
+    const { data: favorites, error } = await supabase
+      .from('favorited_adventures')
+      .select('adventure_id')
+      .eq('user_id', userId)
+      .in('adventure_id', adventureIds);
+
+    if (error) {
+      console.error('❌ Error checking adventure favorites:', error);
+      return [];
+    }
+
+    const favoritedIds = (favorites || []).map(fav => fav.adventure_id);
+    console.log('💜 Favorited adventure IDs:', favoritedIds);
+    return favoritedIds;
+  } catch (error) {
+    console.error('❌ Final error in checkAdventureIsFavorited:', error);
+    return [];
+  }
+};
+
+export const getFavoriteAdventures = async (userId: string) => {
+  try {
+    console.log('📋 Fetching favorite adventures for user:', userId);
+
+    const { data: favoriteAdventures, error } = await supabase
+      .from('favorited_adventures')
+      .select(`
+        created_at,
+        adventures!favorited_adventures_adventure_id_fkey(
+          id,
+          name,
+          plot,
+          adventure_image_url,
+          category,
+          rating,
+          owner_id,
+          visibility,
+          created_at,
+          users!adventures_owner_id_fkey(
+            full_name
+          )
+        )
+      `)
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('❌ Error fetching favorite adventures:', error);
+      throw error;
+    }
+
+    // Extract just the adventure data with favorite timestamp
+    const adventures = (favoriteAdventures || []).map(fav => ({
+      ...fav.adventures,
+      favorited_at: fav.created_at
+    })).filter(adv => adv.id); // Filter out any null adventures
+
+    console.log('✅ Favorite adventures fetched successfully:', adventures.length);
+    return adventures;
+  } catch (error) {
+    console.error('❌ Final error in getFavoriteAdventures:', error);
+    return [];
+  }
+};
+
 // Chat Settings CRUD operations
 export interface ChatSettings {
   id?: string;
