@@ -5,7 +5,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ArrowLeft, Settings, Send, Heart } from "lucide-react";
 import { useUser } from "@clerk/clerk-react";
-import { supabase, createOrUpdateUser } from "@/lib/supabase";
+import {
+  supabase,
+  createOrUpdateUser,
+  createAdventureConversation,
+  addAdventureMessage,
+  getAdventureMessages,
+  getUserAdventureConversations
+} from "@/lib/supabase";
 import { enhancedOpenRouterAPI } from "@/lib/openrouter-enhanced";
 import { openRouterAPI } from "@/lib/openrouter";
 import { toast } from "sonner";
