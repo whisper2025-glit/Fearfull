@@ -84,16 +84,26 @@ const AdventurePlay = () => {
 
       try {
         setIsLoadingAdventure(true);
-        
+        console.log('🏔️ Loading adventure with ID:', adventureId);
+
         const { data: adventureData, error } = await supabase
           .from('adventures')
           .select('*')
           .eq('id', adventureId)
           .single();
 
+        console.log('📊 Adventure query result:', { adventureData, error });
+
         if (error) {
-          console.error('Error loading adventure:', error);
-          toast.error('Failed to load adventure');
+          console.error('❌ Error loading adventure:', error);
+          toast.error(`Failed to load adventure: ${error.message}`);
+          navigate('/');
+          return;
+        }
+
+        if (!adventureData) {
+          console.error('❌ No adventure data returned');
+          toast.error('Adventure not found');
           navigate('/');
           return;
         }
@@ -247,7 +257,19 @@ Format your response as regular narrative text, then end with exactly two choice
   };
 
   const handleChoice = async (choice: string) => {
-    if (!adventure || !user) return;
+    console.log('🎮 handleChoice called with:', { choice, hasAdventure: !!adventure, hasUser: !!user, userId: user?.id });
+
+    if (!adventure) {
+      console.error('❌ No adventure data available');
+      toast.error('Adventure not loaded properly');
+      return;
+    }
+
+    if (!user) {
+      console.error('❌ No user authenticated');
+      toast.error('Please sign in to continue');
+      return;
+    }
 
     setIsLoading(true);
     
@@ -309,6 +331,18 @@ Format your response as regular narrative text, then end with exactly two choice
         }
       };
 
+      // Check API key first
+      const apiKey = import.meta.env.VITE_OPENROUTER_API_KEY;
+      console.log('🔑 OpenRouter API Key configured:', !!apiKey, apiKey ? `${apiKey.substring(0, 10)}...` : 'MISSING');
+
+      if (!apiKey) {
+        throw new Error('OpenRouter API key is not configured. Please add VITE_OPENROUTER_API_KEY to your environment variables.');
+      }
+
+      if (!apiKey.startsWith('sk-or-v1-')) {
+        throw new Error('Invalid OpenRouter API key format. Key should start with "sk-or-v1-"');
+      }
+
       // Use specific model for adventure play
       const adventureModel = {
         id: 'tngtech/deepseek-r1t2-chimera:free',
@@ -318,16 +352,29 @@ Format your response as regular narrative text, then end with exactly two choice
         description: 'Adventure AI Model'
       };
 
-      const aiResponse = await openRouterAPI.createChatCompletion(
-        adventureModel,
-        chatMessages as any,
-        {
-          temperature: 0.85,
-          max_tokens: settings.lengthMode === 'extended' ? 600 : 300,
-          frequency_penalty: 0.3,
-          presence_penalty: 0.6
-        }
-      );
+      console.log('🤖 Making OpenRouter API call with model:', adventureModel.id);
+      console.log('📝 Chat messages length:', chatMessages.length);
+      console.log('👤 User state before API call:', { isSignedIn: !!user, userId: user?.id });
+
+      let aiResponse;
+      try {
+        aiResponse = await openRouterAPI.createChatCompletion(
+          adventureModel,
+          chatMessages as any,
+          {
+            temperature: 0.85,
+            max_tokens: settings.lengthMode === 'extended' ? 600 : 300,
+            frequency_penalty: 0.3,
+            presence_penalty: 0.6
+          }
+        );
+        console.log('✅ OpenRouter API response received:', aiResponse);
+      } catch (apiError) {
+        console.error('❌ OpenRouter API call failed:', apiError);
+        throw apiError; // Re-throw to be caught by outer catch block
+      }
+
+      console.log('👤 User state after API call:', { isSignedIn: !!user, userId: user?.id });
 
       if (aiResponse && aiResponse.choices && aiResponse.choices[0]) {
         const aiContent = aiResponse.choices[0].message.content;
@@ -418,7 +465,26 @@ Format your response as regular narrative text, then end with exactly two choice
       }
     } catch (error) {
       console.error('Error processing choice:', error);
-      toast.error('Failed to process your choice');
+
+      // More specific error handling
+      if (error instanceof Error) {
+        if (error.message.includes('API key')) {
+          toast.error('OpenRouter API key not configured properly');
+          console.error('API Key Error:', error.message);
+        } else if (error.message.includes('OpenRouter API Error')) {
+          toast.error(`AI Service Error: ${error.message}`);
+          console.error('OpenRouter API Error:', error.message);
+        } else if (error.message.includes('network') || error.message.includes('fetch')) {
+          toast.error('Network error - please check your connection');
+          console.error('Network Error:', error.message);
+        } else {
+          toast.error(`Failed to process your choice: ${error.message}`);
+          console.error('Unknown Error:', error.message);
+        }
+      } else {
+        toast.error('Failed to process your choice');
+        console.error('Unknown Error Type:', error);
+      }
     } finally {
       setIsLoading(false);
     }

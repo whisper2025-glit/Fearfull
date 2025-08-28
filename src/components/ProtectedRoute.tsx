@@ -8,10 +8,19 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute = ({ children, redirectTo = "/auth" }: ProtectedRouteProps) => {
-  const { isSignedIn, isLoaded } = useUser();
+  const { isSignedIn, isLoaded, user } = useUser();
+
+  console.log('🛡️ ProtectedRoute check:', {
+    isLoaded,
+    isSignedIn,
+    hasUser: !!user,
+    userId: user?.id,
+    path: window.location.pathname
+  });
 
   // Show loading while Clerk is determining authentication state
   if (!isLoaded) {
+    console.log('⏳ Clerk not loaded yet, showing loading screen');
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -24,8 +33,11 @@ const ProtectedRoute = ({ children, redirectTo = "/auth" }: ProtectedRouteProps)
 
   // Redirect to auth page if not signed in
   if (!isSignedIn) {
+    console.log(`❌ User not signed in, redirecting to ${redirectTo}`);
     return <Navigate to={redirectTo} replace />;
   }
+
+  console.log('✅ User authenticated, rendering protected content');
 
   // Render the protected content
   return <>{children}</>;
