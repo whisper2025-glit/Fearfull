@@ -369,10 +369,13 @@ export class AniListDataFetcher {
 
       // Get the best match (first result is usually most relevant due to popularity sort)
       const anime = searchResults[0];
-      
+      if (!anime) {
+        return null;
+      }
+
       // Get detailed information if we only have basic data
       const detailedAnime = await this.getMediaById(anime.id);
-      
+
       return {
         anilist_id: anime.id,
         title: anime.title.romaji,
@@ -412,8 +415,12 @@ export class AniListDataFetcher {
       }
 
       const manga = searchResults[0];
+      if (!manga) {
+        return null;
+      }
+
       const detailedManga = await this.getMediaById(manga.id);
-      
+
       return {
         anilist_id: manga.id,
         title: manga.title.romaji,
