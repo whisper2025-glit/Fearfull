@@ -454,6 +454,88 @@ export interface Database {
           created_at?: string;
         };
       };
+      adventure_conversations: {
+        Row: {
+          id: string;
+          user_id: string; // Clerk user ID
+          adventure_id: string;
+          persona_id: string | null;
+          title: string | null;
+          started_at: string;
+          last_message_at: string;
+          message_count: number;
+          is_archived: boolean;
+          metadata: any; // JSONB
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          adventure_id: string;
+          persona_id?: string | null;
+          title?: string | null;
+          started_at?: string;
+          last_message_at?: string;
+          message_count?: number;
+          is_archived?: boolean;
+          metadata?: any;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          adventure_id?: string;
+          persona_id?: string | null;
+          title?: string | null;
+          started_at?: string;
+          last_message_at?: string;
+          message_count?: number;
+          is_archived?: boolean;
+          metadata?: any;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      adventure_messages: {
+        Row: {
+          id: string;
+          adventure_id: string;
+          conversation_id: string | null;
+          author_id: string | null; // Clerk user ID for user messages, null for AI
+          content: string;
+          is_bot: boolean;
+          type: 'intro' | 'scenario' | 'regular' | 'choice';
+          choices: any[]; // JSONB array
+          metadata: any; // JSONB
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          adventure_id: string;
+          conversation_id?: string | null;
+          author_id?: string | null;
+          content: string;
+          is_bot?: boolean;
+          type?: 'intro' | 'scenario' | 'regular' | 'choice';
+          choices?: any[];
+          metadata?: any;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          adventure_id?: string;
+          conversation_id?: string | null;
+          author_id?: string | null;
+          content?: string;
+          is_bot?: boolean;
+          type?: 'intro' | 'scenario' | 'regular' | 'choice';
+          choices?: any[];
+          metadata?: any;
+          created_at?: string;
+        };
+      };
     };
   };
 };
@@ -841,7 +923,7 @@ export const likeComment = async (commentId: string, userId: string): Promise<bo
       .single();
 
     if (checkError && checkError.code !== 'PGRST116') { // PGRST116 = no rows returned
-      console.error('❌ Error checking existing like:', checkError);
+      console.error('�� Error checking existing like:', checkError);
       throw checkError;
     }
 
