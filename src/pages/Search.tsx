@@ -283,6 +283,14 @@ const Search = () => {
     performSearch(term);
   };
 
+  const handleCreatorClick = (userId: string) => {
+    navigate(`/creator/${userId}`);
+  };
+
+  const handleCharacterClick = (characterId: string) => {
+    navigate(`/character/${characterId}`);
+  };
+
   const isSearchActive = hasSearched && searchQuery.trim().length > 0;
 
   return (
@@ -415,7 +423,11 @@ const Search = () => {
                       trendingCreators.length > 0 ? (
                         // Creators list
                         trendingCreators.map((creator) => (
-                          <div key={creator.id} className="bg-gradient-to-r from-purple-500/20 to-blue-500/20 rounded-xl p-4 space-y-3">
+                          <div
+                            key={creator.id}
+                            className="bg-gradient-to-r from-purple-500/20 to-blue-500/20 rounded-xl p-4 space-y-3 cursor-pointer hover:from-purple-500/30 hover:to-blue-500/30 transition-all duration-200"
+                            onClick={() => handleCreatorClick(creator.id)}
+                          >
                             <div className="flex items-center gap-3">
                               <Avatar className="w-12 h-12">
                                 <AvatarImage src={creator.avatar_url} />
@@ -455,7 +467,11 @@ const Search = () => {
                       trendingCharacters.length > 0 ? (
                         // Characters list
                         trendingCharacters.map((character, index) => (
-                          <div key={character.id} className="bg-gradient-to-r from-pink-500/20 to-purple-500/20 rounded-xl p-3 flex items-center gap-3">
+                          <div
+                            key={character.id}
+                            className="bg-gradient-to-r from-pink-500/20 to-purple-500/20 rounded-xl p-3 flex items-center gap-3 cursor-pointer hover:from-pink-500/30 hover:to-purple-500/30 transition-all duration-200"
+                            onClick={() => handleCharacterClick(character.id)}
+                          >
                             <span className="text-lg font-bold text-white min-w-[20px]">{index + 1}</span>
                             <img
                               src={character.avatar_url || '/placeholder.svg'}
@@ -617,7 +633,11 @@ const Search = () => {
                     ) : searchResults.length > 0 ? (
                       <div className="grid grid-cols-2 gap-4">
                         {searchResults.map((character) => (
-                        <div key={character.id} className="bg-card rounded-xl overflow-hidden">
+                        <div
+                          key={character.id}
+                          className="bg-card rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-transform duration-200"
+                          onClick={() => handleCharacterClick(character.id)}
+                        >
                           <div className="relative aspect-[4/5]">
                             <img
                               src={character.avatar_url || '/placeholder.svg'}
