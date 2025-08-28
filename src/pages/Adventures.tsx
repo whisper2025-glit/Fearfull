@@ -59,10 +59,7 @@ const Adventures = () => {
 
         const { data: adventuresData, error } = await supabase
           .from('adventures')
-          .select(`
-            *,
-            users(full_name)
-          `)
+          .select('*')
           .eq('visibility', 'public')
           .order('created_at', { ascending: false });
 
