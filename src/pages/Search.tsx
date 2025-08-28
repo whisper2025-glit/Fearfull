@@ -226,15 +226,22 @@ const Search = () => {
         setSearchResults([]);
       } else {
         // Process search results to add calculated fields
-        const processedResults = characters?.map(character => ({
-          ...character,
-          message_count: character.messages?.[0]?.count || 0,
-          conversation_count: character.conversations?.[0]?.count || 0,
-          creator_username: character.owner?.username || 'Unknown',
-          description: character.intro, // Use intro as description
-          image_url: character.avatar_url,
-          likes_count: 0 // You can add likes functionality later
-        })) || [];
+        const processedResults = await Promise.all((characters || []).map(async (character) => {
+          // Get message count for this character
+          const { count: messageCount } = await supabase
+            .from('messages')
+            .select('*', { count: 'exact', head: true })
+            .eq('character_id', character.id);
+
+          return {
+            ...character,
+            message_count: messageCount || 0,
+            conversation_count: 0, // Skip for performance in search
+            creator_username: character.owner?.username || 'Unknown',
+            description: character.intro, // Use intro as description
+            likes_count: 0 // You can add likes functionality later
+          };
+        }));
         setSearchResults(processedResults);
       }
     } catch (error) {
