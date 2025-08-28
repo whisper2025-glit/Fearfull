@@ -200,6 +200,7 @@ const Profile = () => {
   };
 
   const displayCharacters = getCharactersForTab();
+  const displayAdventures = getAdventuresForTab();
 
   const tabs = [
     { id: 'bots', label: 'Public Bots', count: stats.publicBots },
