@@ -110,9 +110,14 @@ const Profile = () => {
       // Load user's favorite characters
       const favoriteChars = await getFavoriteCharacters(user.id);
       setFavoriteCharacters(favoriteChars);
+
+      // Load user's favorite adventures
+      const favoriteAdvs = await getFavoriteAdventures(user.id);
+      setFavoriteAdventures(favoriteAdvs);
+
       setStats(prev => ({
         ...prev,
-        favorites: favoriteChars.length
+        favorites: favoriteChars.length + favoriteAdvs.length
       }));
 
       // Get favorited status for all characters
