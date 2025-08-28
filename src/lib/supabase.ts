@@ -503,7 +503,7 @@ export interface Database {
           id: string;
           adventure_id: string;
           conversation_id: string | null;
-          author_id: string | null; // Clerk user ID for user messages, null for AI
+          user_id: string | null; // Clerk user ID for user messages, null for AI
           content: string;
           is_bot: boolean;
           type: 'intro' | 'scenario' | 'regular' | 'choice';
@@ -515,7 +515,7 @@ export interface Database {
           id?: string;
           adventure_id: string;
           conversation_id?: string | null;
-          author_id?: string | null;
+          user_id?: string | null;
           content: string;
           is_bot?: boolean;
           type?: 'intro' | 'scenario' | 'regular' | 'choice';
@@ -527,7 +527,7 @@ export interface Database {
           id?: string;
           adventure_id?: string;
           conversation_id?: string | null;
-          author_id?: string | null;
+          user_id?: string | null;
           content?: string;
           is_bot?: boolean;
           type?: 'intro' | 'scenario' | 'regular' | 'choice';
@@ -1529,7 +1529,7 @@ export const addAdventureMessage = async (
   conversationId: string | null,
   content: string,
   isBot: boolean,
-  authorId?: string | null,
+  userId?: string | null,
   type: 'intro' | 'scenario' | 'regular' | 'choice' = 'regular',
   choices: any[] = [],
   metadata: any = {}
@@ -1548,7 +1548,7 @@ export const addAdventureMessage = async (
       .insert({
         adventure_id: adventureId,
         conversation_id: conversationId,
-        author_id: authorId,
+        user_id: userId,
         content,
         is_bot: isBot,
         type,
