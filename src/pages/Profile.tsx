@@ -17,6 +17,7 @@ import { ChevronLeft, Settings, Gift, MoreHorizontal, X, Camera, Star, Loader2 }
 import { useNavigate } from "react-router-dom";
 import { CharacterCard } from "@/components/CharacterCard";
 import SettingsSheet from "@/components/SettingsSheet";
+import { CreateModal } from "@/components/CreateModal";
 import { supabase, uploadImage, getFavoriteCharacters, checkIsFavorited } from "@/lib/supabase";
 import { toast } from "sonner";
 
