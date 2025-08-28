@@ -88,11 +88,7 @@ const Search = () => {
       // Load trending creators (users with most characters)
       const { data: creators, error: creatorsError } = await supabase
         .from('users')
-        .select(`
-          *,
-          characters!characters_owner_id_fkey(count),
-          messages:characters!characters_owner_id_fkey(messages(count))
-        `)
+        .select('*')
         .order('created_at', { ascending: false })
         .limit(10);
 
