@@ -76,6 +76,13 @@ const Search = () => {
     loadTrendingData();
   }, []);
 
+  // Re-run search when filters change
+  useEffect(() => {
+    if (hasSearched && searchQuery.trim()) {
+      performSearch(searchQuery);
+    }
+  }, [sortBy, filterGender, selectedTags]);
+
   const loadTrendingData = async () => {
     try {
       // Load trending creators (users with most characters)
