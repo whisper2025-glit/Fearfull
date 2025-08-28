@@ -1434,12 +1434,12 @@ export const createAdventureConversation = async (
     console.log('🎭 Creating adventure conversation:', { userId, adventureId, personaId, title });
 
     const { data: conversation, error } = await supabase
-      .from('adventure_conversations')
+      .from('conversations')
       .insert({
         user_id: userId,
         adventure_id: adventureId,
-        persona_id: personaId,
-        title: title
+        persona_id: personaId ?? null,
+        title: title ?? null
       })
       .select()
       .single();
@@ -1462,18 +1462,8 @@ export const getAdventureConversation = async (conversationId: string) => {
     console.log('🔍 Fetching adventure conversation:', conversationId);
 
     const { data: conversation, error } = await supabase
-      .from('adventure_conversations')
-      .select(`
-        *,
-        adventures!adventure_conversations_adventure_id_fkey(
-          id,
-          name,
-          adventure_image_url,
-          users!adventures_owner_id_fkey(
-            full_name
-          )
-        )
-      `)
+      .from('conversations')
+      .select('*')
       .eq('id', conversationId)
       .single();
 
@@ -1495,20 +1485,11 @@ export const getUserAdventureConversations = async (userId: string) => {
     console.log('📋 Fetching user adventure conversations:', userId);
 
     const { data: conversations, error } = await supabase
-      .from('adventure_conversations')
-      .select(`
-        *,
-        adventures!adventure_conversations_adventure_id_fkey(
-          id,
-          name,
-          adventure_image_url,
-          users!adventures_owner_id_fkey(
-            full_name
-          )
-        )
-      `)
+      .from('conversations')
+      .select('*')
       .eq('user_id', userId)
       .eq('is_archived', false)
+      .not('adventure_id', 'is', null)
       .order('last_message_at', { ascending: false });
 
     if (error) {
@@ -1530,31 +1511,28 @@ export const addAdventureMessage = async (
   content: string,
   isBot: boolean,
   userId?: string | null,
-  type: 'intro' | 'scenario' | 'regular' | 'choice' = 'regular',
-  choices: any[] = [],
-  metadata: any = {}
+  type: 'intro' | 'scenario' | 'regular' | 'choice' = 'regular'
 ) => {
   try {
     console.log('💬 Adding adventure message:', {
       adventureId,
       conversationId,
       isBot,
-      type,
-      hasChoices: choices.length > 0
+      type
     });
 
+    const payload: any = {
+      adventure_id: adventureId,
+      conversation_id: conversationId,
+      content,
+      is_bot: isBot,
+      type
+    };
+    if (!isBot && userId) payload.author_id = userId;
+
     const { data: message, error } = await supabase
-      .from('adventure_messages')
-      .insert({
-        adventure_id: adventureId,
-        conversation_id: conversationId,
-        user_id: userId,
-        content,
-        is_bot: isBot,
-        type,
-        choices,
-        metadata
-      })
+      .from('messages')
+      .insert(payload)
       .select()
       .single();
 
@@ -1576,7 +1554,7 @@ export const getAdventureMessages = async (conversationId: string) => {
     console.log('🔍 Fetching adventure messages for conversation:', conversationId);
 
     const { data: messages, error } = await supabase
-      .from('adventure_messages')
+      .from('messages')
       .select('*')
       .eq('conversation_id', conversationId)
       .order('created_at', { ascending: true });
@@ -1599,7 +1577,7 @@ export const deleteAdventureConversation = async (conversationId: string, userId
     console.log('🗑️ Deleting adventure conversation:', conversationId);
 
     const { error } = await supabase
-      .from('adventure_conversations')
+      .from('conversations')
       .delete()
       .eq('id', conversationId)
       .eq('user_id', userId); // Security: only delete own conversations
@@ -1626,7 +1604,7 @@ export const updateAdventureConversationTitle = async (
     console.log('📝 Updating adventure conversation title:', { conversationId, title });
 
     const { data: conversation, error } = await supabase
-      .from('adventure_conversations')
+      .from('conversations')
       .update({ title })
       .eq('id', conversationId)
       .eq('user_id', userId) // Security: only update own conversations
