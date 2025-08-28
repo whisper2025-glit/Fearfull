@@ -247,7 +247,19 @@ Format your response as regular narrative text, then end with exactly two choice
   };
 
   const handleChoice = async (choice: string) => {
-    if (!adventure || !user) return;
+    console.log('🎮 handleChoice called with:', { choice, hasAdventure: !!adventure, hasUser: !!user, userId: user?.id });
+
+    if (!adventure) {
+      console.error('❌ No adventure data available');
+      toast.error('Adventure not loaded properly');
+      return;
+    }
+
+    if (!user) {
+      console.error('❌ No user authenticated');
+      toast.error('Please sign in to continue');
+      return;
+    }
 
     setIsLoading(true);
     
