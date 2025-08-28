@@ -57,11 +57,12 @@ const Chats = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const loadCharacterHistory = async () => {
+    const loadChatHistory = async () => {
       if (!user) return;
 
       setIsLoading(true);
       try {
+        // Load character chat history
         // Get characters the user has chatted with by querying messages
         const { data: messageData, error } = await supabase
           .from('messages')
