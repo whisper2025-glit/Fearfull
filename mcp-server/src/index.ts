@@ -42,6 +42,7 @@ class AdventureStoryMCPServer {
   private contextService: AdventureContextService;
   private mangaDexService: MangaDexDataFetcher;
   private aniListService: AniListDataFetcher;
+  private mangaHandlers: MangaHandlers;
 
   constructor() {
     this.server = new Server(
@@ -61,8 +62,9 @@ class AdventureStoryMCPServer {
     this.characterService = new CharacterService();
     this.locationService = new LocationService();
     this.contextService = new AdventureContextService();
-    this.mangaDxService = new MangaDexDataFetcher();
+    this.mangaDexService = new MangaDexDataFetcher();
     this.aniListService = new AniListDataFetcher();
+    this.mangaHandlers = new MangaHandlers(this.mangaDexService, this.aniListService, this.storyService);
 
     this.setupToolHandlers();
   }
