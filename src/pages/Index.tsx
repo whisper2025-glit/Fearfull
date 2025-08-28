@@ -57,10 +57,7 @@ const Index = () => {
         // Load adventures
         const { data: adventuresData, error: adventuresError } = await supabase
           .from('adventures')
-          .select(`
-            *,
-            users!adventures_owner_id_fkey(full_name)
-          `)
+          .select('*')
           .eq('visibility', 'public')
           .order('created_at', { ascending: false });
 
