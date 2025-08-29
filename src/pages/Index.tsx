@@ -17,6 +17,7 @@ const Index = () => {
   const [sortBy, setSortBy] = useState<SortOption>('Recent Hits');
   const [gender, setGender] = useState<string>('Gender All');
   const [characters, setCharacters] = useState<any[]>([]);
+  const [favoriteIds, setFavoriteIds] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   // Load public characters from Supabase
