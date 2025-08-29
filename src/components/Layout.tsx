@@ -36,6 +36,15 @@ export function Layout({ children, headerBottom, mainOverflow = 'auto', headerPo
                 </div>
 
                 <div className="flex items-center gap-3">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="text-muted-foreground hover:text-foreground"
+                    onClick={() => navigate('/search')}
+                  >
+                    <Search className="h-4 w-4" />
+                  </Button>
+
                   <button
                     onClick={() => navigate('/profile')}
                     className="rounded-full focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background"
@@ -48,15 +57,6 @@ export function Layout({ children, headerBottom, mainOverflow = 'auto', headerPo
                       </AvatarFallback>
                     </Avatar>
                   </button>
-
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="text-muted-foreground hover:text-foreground"
-                    onClick={() => navigate('/search')}
-                  >
-                    <Search className="h-4 w-4" />
-                  </Button>
                 </div>
               </div>
               {headerBottom ? (
