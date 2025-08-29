@@ -86,7 +86,7 @@ const Index = () => {
     } finally {
       if (pageToLoad === 0) setIsLoading(false); else setIsLoadingMore(false);
     }
-  }, [PAGE_SIZE, isLoadingMore]);
+  }, [PAGE_SIZE, isLoadingMore, isSignedIn, user]);
 
   useEffect(() => {
     // Initial load
