@@ -143,7 +143,7 @@ const CreateAdventure = () => {
       const { data: adventureData, error } = await supabase
         .from('adventures')
         .insert({
-          owner_id: user.id,
+          user_id: user.id,
           name: formData.name,
           plot: formData.plot,
           introduction: formData.introduction,
