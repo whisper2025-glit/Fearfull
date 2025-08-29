@@ -45,27 +45,30 @@ export function HomeFilters({ activeTag, onTagChange, sortBy, onSortChange }: Ho
       <div className="relative">
         <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide px-1">
           {/* Sticky cube sort button */}
-          <div className="sticky left-0 z-20 -ml-1 pr-2 bg-background">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="secondary"
-                  className="h-8 rounded-lg px-3 text-[12px] font-medium bg-secondary/80 border-0 ring-0 focus-visible:ring-0 focus:outline-none shadow-none"
-                  aria-label="Sort"
-                  title={sortBy}
-                >
-                  <span className="mr-1">{sortBy}</span>
-                  <ChevronDown className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="w-40">
-                {["Hot","New","Top Chats","Top Rated"].map((o) => (
-                  <DropdownMenuItem key={o} onClick={() => onSortChange(o as SortOption)} className="text-[12px]">
-                    {o}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
+          <div className="sticky left-0 z-20 -ml-4 pr-3">
+            <div className="relative">
+              <div className="pointer-events-none absolute inset-y-0 -left-4 w-4 bg-background"></div>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="secondary"
+                    className="h-8 rounded-lg px-3 text-[12px] font-medium bg-secondary/80 border-0 ring-0 focus-visible:ring-0 focus:outline-none shadow-none"
+                    aria-label="Sort"
+                    title={sortBy}
+                  >
+                    <span className="mr-1">{sortBy}</span>
+                    <ChevronDown className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start" className="w-40">
+                  {["Hot","New","Top Chats","Top Rated"].map((o) => (
+                    <DropdownMenuItem key={o} onClick={() => onSortChange(o as SortOption)} className="text-[12px]">
+                      {o}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           </div>
 
           {/* Tag chips (will slide under the sticky cube) */}
