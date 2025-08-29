@@ -57,13 +57,26 @@ const Index = () => {
         tags: Array.isArray(char.tags) ? char.tags : [],
         created_at: char.created_at,
         gender: char.gender || null,
-        stats: {
-          messages: Array.isArray(char.messages) ? char.messages.length : 0,
-          likes: Math.floor(Math.random() * 1000)
-        }
+        stats: { messages: 0, likes: 0 },
       }));
 
-      setCharacters(prev => pageToLoad === 0 ? transformed : [...prev, ...transformed]);
+      const ids = transformed.map((c: any) => c.id);
+      const [msgCounts, favCounts, favoritedIds] = await Promise.all([
+        getMessageCountsForCharacters(ids),
+        getFavoriteCountsForCharacters(ids),
+        (isSignedIn && user) ? checkIsFavorited(user.id, ids) : Promise.resolve([] as string[])
+      ]);
+
+      const withStats = transformed.map((c: any) => ({
+        ...c,
+        stats: {
+          messages: msgCounts[c.id] ?? 0,
+          likes: favCounts[c.id] ?? 0
+        },
+        isFavorited: favoritedIds.includes(c.id)
+      }));
+
+      setCharacters(prev => pageToLoad === 0 ? withStats : [...prev, ...withStats]);
       setHasMore((charactersData || []).length === PAGE_SIZE);
       setPage(pageToLoad);
     } catch (error) {
