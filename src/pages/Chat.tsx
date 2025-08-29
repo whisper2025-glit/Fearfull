@@ -651,7 +651,9 @@ const Chat = () => {
               variant="outline"
               size="sm"
               className="flex items-center gap-2 text-xs whitespace-nowrap flex-shrink-0"
-              onClick={() => setIsPersonaModalOpen(true)}
+              onClick={() => {
+                toast.info('Persona coming soon');
+              }}
             >
               <Users className="h-3 w-3" />
               {currentPersona ? currentPersona.name : 'Persona'}
