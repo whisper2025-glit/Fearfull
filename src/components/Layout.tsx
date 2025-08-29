@@ -4,6 +4,8 @@ import { AppSidebar } from "@/components/AppSidebar";
 import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { useUser } from "@clerk/clerk-react";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 interface LayoutProps {
   children: ReactNode;
