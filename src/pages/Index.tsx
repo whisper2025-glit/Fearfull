@@ -160,7 +160,7 @@ const Index = () => {
         />
       }
     >
-      <div className="p-4 space-y-6">
+      <div className="p-4 space-y-6 pb-24">
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
             <div className="flex flex-col items-center gap-4">
