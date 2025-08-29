@@ -129,6 +129,23 @@ const Index = () => {
     }
   }, [characters, activeTag, sortBy, gender, favoriteIds, isSignedIn]);
 
+  // Observer to trigger loading more
+  useEffect(() => {
+    if (!hasMore) return;
+    const node = loadMoreRef.current;
+    if (!node) return;
+
+    const observer = new IntersectionObserver((entries) => {
+      const first = entries[0];
+      if (first.isIntersecting && !isLoadingMore) {
+        fetchPage(page + 1);
+      }
+    }, { root: null, rootMargin: '200px', threshold: 0 });
+
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [fetchPage, page, hasMore, isLoadingMore]);
+
   return (
     <Layout
       headerBorder={false}
