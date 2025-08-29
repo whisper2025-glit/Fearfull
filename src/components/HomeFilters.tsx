@@ -45,14 +45,14 @@ export function HomeFilters({ activeTag, onTagChange, sortBy, onSortChange }: Ho
       <div className="relative">
         <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide px-1">
           {/* Sticky cube sort button */}
-          <div className="sticky left-0 z-20 -ml-4 pr-3">
+          <div className="sticky left-0 z-20 -ml-6 pr-4">
             <div className="relative">
-              <div className="pointer-events-none absolute inset-y-0 -left-4 w-4 bg-background"></div>
+              <div className="pointer-events-none absolute inset-y-0 -left-6 w-6 bg-background"></div>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="secondary"
-                    className="h-8 rounded-lg px-3 text-[12px] font-medium bg-secondary/80 border-0 ring-0 focus-visible:ring-0 focus:outline-none shadow-none"
+                    className="h-8 rounded-lg px-3 text-[12px] font-medium bg-secondary border-0 ring-0 focus-visible:ring-0 focus:outline-none shadow-none"
                     aria-label="Sort"
                     title={sortBy}
                   >
