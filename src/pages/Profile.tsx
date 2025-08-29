@@ -114,10 +114,26 @@ const Profile = () => {
         favorites: favoriteChars.length
       }));
 
-      // Get favorited status for all characters
-      const allCharacterIds = (charactersData || []).map(char => char.id);
+      // Build stats map for both own and favorite characters
+      const allCharacterIds = [
+        ...(charactersData || []).map((c) => c.id),
+        ...favoriteChars.map((c: any) => c.id)
+      ].filter(Boolean);
+
       if (allCharacterIds.length > 0) {
-        const favoritedIds = await checkIsFavorited(user.id, allCharacterIds);
+        const [msgCounts, favCounts, favoritedIds] = await Promise.all([
+          getMessageCountsForCharacters(allCharacterIds),
+          getFavoriteCountsForCharacters(allCharacterIds),
+          checkIsFavorited(user.id, allCharacterIds)
+        ]);
+        const map: Record<string, { messages: number; likes: number }> = {};
+        allCharacterIds.forEach((id) => {
+          map[id] = {
+            messages: msgCounts[id] ?? 0,
+            likes: favCounts[id] ?? 0
+          };
+        });
+        setCharacterStatsMap(map);
         setFavoritedCharacterIds(favoritedIds);
       }
 
