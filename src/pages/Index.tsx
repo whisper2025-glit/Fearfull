@@ -159,15 +159,23 @@ const Index = () => {
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-4">
-            {visibleCharacters.map((character) => (
-              <CharacterCard
-                key={character.id}
-                character={character}
-                onClick={() => navigate(`/character/${character.id}`)}
-              />
-            ))}
-          </div>
+          <>
+            <div className="grid grid-cols-2 gap-4">
+              {visibleCharacters.map((character) => (
+                <CharacterCard
+                  key={character.id}
+                  character={character}
+                  onClick={() => navigate(`/character/${character.id}`)}
+                />
+              ))}
+            </div>
+            <div ref={loadMoreRef} className="h-8" />
+            {isLoadingMore && (
+              <div className="flex items-center justify-center py-6">
+                <Loader2 className="h-6 w-6 animate-spin" />
+              </div>
+            )}
+          </>
         )}
       </div>
     </Layout>
