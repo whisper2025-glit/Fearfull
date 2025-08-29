@@ -1,11 +1,4 @@
-import { useMemo } from "react";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import clsx from "clsx";
@@ -15,8 +8,8 @@ export type SortOption = "Hot" | "New" | "Top Chats" | "Top Rated";
 interface HomeFiltersProps {
   activeTag: string;
   onTagChange: (tag: string) => void;
-  sortBy: SortOption;
-  onSortChange: (sort: SortOption) => void;
+  sortBy?: SortOption;
+  onSortChange?: (sort: SortOption) => void;
 }
 
 const ALL_TAGS = [
@@ -36,32 +29,11 @@ const ALL_TAGS = [
   "Ai-Roleplay",
 ];
 
-export function HomeFilters({ activeTag, onTagChange, sortBy, onSortChange }: HomeFiltersProps) {
-  const visibleTags = useMemo(() => ALL_TAGS, []);
-
+export function HomeFilters({ activeTag, onTagChange }: HomeFiltersProps) {
   return (
     <div className="w-full space-y-3">
-      {/* Row: sort + quick tags + all-tags popover */}
       <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide">
-        {/* Sort dropdown */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="secondary" className="h-8 rounded-full px-3 text-[12px] font-medium">
-              {sortBy}
-              <ChevronDown className="ml-1 h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className="w-40">
-            {["Hot","New","Top Chats","Top Rated"].map((o) => (
-              <DropdownMenuItem key={o} onClick={() => onSortChange(o as SortOption)} className="text-[12px]">
-                {o}
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
-
-        {/* Tag chips */}
-        {visibleTags.map((t) => (
+        {ALL_TAGS.map((t) => (
           <button
             key={t}
             onClick={() => onTagChange(t)}
@@ -74,7 +46,6 @@ export function HomeFilters({ activeTag, onTagChange, sortBy, onSortChange }: Ho
           </button>
         ))}
 
-        {/* All tags popover (mirror the grid style from screenshots) */}
         <Popover>
           <PopoverTrigger asChild>
             <Button variant="secondary" className="ml-1 h-8 rounded-full px-2 text-[12px]">
