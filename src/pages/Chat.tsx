@@ -617,7 +617,7 @@ const Chat = () => {
                 </Card>
               ) : (
                 <Card className={`p-3 ${msg.isBot ? 'bg-card/20 backdrop-blur-sm' : 'bg-primary/20 ml-8 backdrop-blur-sm'}`}>
-                  <div className="flex items-start gap-3">
+                  <div className={`flex items-start gap-3 ${msg.isBot ? '' : 'justify-end'}`}>
                     {msg.isBot && (
                       <img
                         src={currentCharacter.avatar}
@@ -625,9 +625,16 @@ const Chat = () => {
                         className="w-8 h-8 rounded-full object-cover flex-shrink-0"
                       />
                     )}
-                    <div className="flex-1">
+                    <div className={msg.isBot ? "flex-1" : "max-w-[80%]"}>
                       <p className="text-foreground whitespace-pre-wrap chat-text">{msg.content}</p>
                     </div>
+                    {!msg.isBot && (
+                      <img
+                        src={user?.imageUrl || '/placeholder.svg'}
+                        alt={user?.fullName || user?.username || 'You'}
+                        className="w-8 h-8 rounded-full object-cover flex-shrink-0"
+                      />
+                    )}
                   </div>
                 </Card>
               )}
@@ -651,7 +658,9 @@ const Chat = () => {
               variant="outline"
               size="sm"
               className="flex items-center gap-2 text-xs whitespace-nowrap flex-shrink-0"
-              onClick={() => setIsPersonaModalOpen(true)}
+              onClick={() => {
+                toast.info('Persona coming soon');
+              }}
             >
               <Users className="h-3 w-3" />
               {currentPersona ? currentPersona.name : 'Persona'}

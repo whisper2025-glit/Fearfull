@@ -25,7 +25,6 @@ const CreateCharacter = () => {
     personality: '',
     scenario: '',
     greeting: '',
-    publicDefinition: 'no',
     visibility: 'public',
     rating: 'filtered',
     tags: '',
@@ -52,7 +51,7 @@ const CreateCharacter = () => {
   };
 
   return (
-    <Layout>
+    <Layout headerPosition="fixed">
       <div className="min-h-screen bg-background">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-border">
@@ -67,17 +66,8 @@ const CreateCharacter = () => {
             </Button>
             <div className="flex items-center gap-2">
               <h1 className="text-primary font-medium text-sm">New Character...</h1>
-              <span className="bg-yellow-500/20 text-yellow-500 px-2 py-1 rounded-full text-xs font-medium border border-yellow-500/30">
-                Draft
-              </span>
             </div>
           </div>
-          <Button variant="ghost" className="text-muted-foreground text-xs flex items-center gap-1 hover:bg-secondary/50">
-            <div className="bg-muted rounded p-1">
-              <Info className="h-4 w-4" />
-            </div>
-            <span>View Guide</span>
-          </Button>
         </div>
 
         {/* Tab Navigation */}
@@ -265,7 +255,7 @@ const CreateCharacter = () => {
                 </Label>
                 <p className="text-muted-foreground text-xs leading-relaxed">
                   Brief Description of your character, for display. This won't influence memory or prompts. You can enter 
-                  plain text or html text here. <a href="#" className="text-blue-400 underline">View the guide book.</a>
+                  plain text or html text here.
                 </p>
                 <Textarea
                   placeholder="e.g. I can talk to you the whole night if you want"
@@ -273,12 +263,7 @@ const CreateCharacter = () => {
                   onChange={(e) => handleInputChange('intro', e.target.value)}
                   className="min-h-[80px] text-sm bg-secondary/50 border-border rounded-lg resize-none placeholder:text-muted-foreground/70"
                 />
-                <div className="flex justify-between items-center">
-                  <p className="text-muted-foreground text-xs">{getCharacterCount(formData.intro)} characters</p>
-                  <Button variant="ghost" size="sm" className="text-sm text-muted-foreground hover:bg-secondary/50 rounded-lg px-3 py-1">
-                    ⭐ AI Summarize
-                  </Button>
-                </div>
+                <p className="text-muted-foreground text-xs">{getCharacterCount(formData.intro)} characters</p>
               </div>
 
               {/* Visibility */}
@@ -375,27 +360,6 @@ const CreateCharacter = () => {
               <div className="space-y-6">
                 <h3 className="text-primary text-sm font-medium">Character Definition</h3>
                 
-                {/* Public Definition */}
-                <div className="space-y-4">
-                  <Label className="text-primary text-sm font-medium flex items-center gap-2">
-                    Public definition <span className="text-primary">*</span>
-                    <Info className="h-4 w-4 text-muted-foreground" />
-                  </Label>
-                  <RadioGroup 
-                    value={formData.publicDefinition} 
-                    onValueChange={(value) => handleInputChange('publicDefinition', value)}
-                    className="space-y-3"
-                  >
-                    <div className="flex items-center space-x-3">
-                      <RadioGroupItem value="yes" id="yes" className="border-primary" />
-                      <Label htmlFor="yes" className="text-xs font-medium">Yes</Label>
-                    </div>
-                    <div className="flex items-center space-x-3">
-                      <RadioGroupItem value="no" id="no" className="border-primary text-primary" />
-                      <Label htmlFor="no" className="text-xs font-medium">No</Label>
-                    </div>
-                  </RadioGroup>
-                </div>
 
                 {/* Greeting */}
                 <div className="space-y-4">
@@ -405,7 +369,7 @@ const CreateCharacter = () => {
                   </Label>
                   <p className="text-muted-foreground text-xs leading-relaxed">
                     The first message your character sends. This will only be included in short-term memory. 
-                    <a href="#" className="text-blue-400 underline"> View the guide book.</a>
+                    
                   </p>
                   <Textarea
                     placeholder="e.g. Hello {{user}}, how are you today?"
@@ -413,12 +377,7 @@ const CreateCharacter = () => {
                     onChange={(e) => handleInputChange('greeting', e.target.value)}
                     className="min-h-[80px] text-sm bg-secondary/50 border-border rounded-lg resize-none placeholder:text-muted-foreground/70"
                   />
-                  <div className="flex justify-between items-center">
-                    <p className="text-muted-foreground text-xs">{getCharacterCount(formData.greeting)} Chars</p>
-                    <Button variant="ghost" size="sm" className="text-xs text-muted-foreground hover:bg-secondary/50 rounded-lg px-3 py-1">
-                      ⭐ AI Summarize
-                    </Button>
-                  </div>
+                  <p className="text-muted-foreground text-xs">{getCharacterCount(formData.greeting)} Chars</p>
                 </div>
               </div>
 
@@ -429,7 +388,7 @@ const CreateCharacter = () => {
                 </Label>
                 <p className="text-muted-foreground text-xs leading-relaxed">
                   The detailed description of your character. This will be included in long-term memory. 
-                  <a href="#" className="text-blue-400 underline"> View the guide book.</a>
+                  
                 </p>
                 <Textarea
                   placeholder="The Long Description allows you to have the Character describe themselves (traits, history, mannerisms, etc) and the kinds of things they want to talk about."
@@ -437,12 +396,7 @@ const CreateCharacter = () => {
                   onChange={(e) => handleInputChange('personality', e.target.value)}
                   className="min-h-[100px] text-sm bg-secondary/50 border-border rounded-lg resize-none placeholder:text-muted-foreground/70"
                 />
-                <div className="flex justify-between items-center">
-                  <p className="text-muted-foreground text-xs">{getCharacterCount(formData.personality)} Chars</p>
-                  <Button variant="ghost" size="sm" className="text-xs text-muted-foreground hover:bg-secondary/50 rounded-lg px-3 py-1">
-                    ⭐ AI Summarize
-                  </Button>
-                </div>
+                <p className="text-muted-foreground text-xs">{getCharacterCount(formData.personality)} Chars</p>
               </div>
 
               {/* Appearance */}
@@ -452,7 +406,7 @@ const CreateCharacter = () => {
                 </Label>
                 <p className="text-muted-foreground text-xs leading-relaxed">
                   Describe {'{char}'}'s appearance here. This content will be saved in the long-term context. 
-                  <a href="#" className="text-blue-400 underline"> View the guide book.</a>
+                  
                 </p>
                 <Textarea
                   placeholder="e.g.{{char}} has long, wavy brown hair, bright green eyes, and a warm smile. {{char}}'s skin is fair with a natural glow, and {{char}}'s features are delicate, with a slender frame and a graceful, confident posture."
@@ -460,12 +414,7 @@ const CreateCharacter = () => {
                   onChange={(e) => handleInputChange('appearance', e.target.value)}
                   className="min-h-[100px] text-sm bg-secondary/50 border-border rounded-lg resize-none placeholder:text-muted-foreground/70"
                 />
-                <div className="flex justify-between items-center">
-                  <p className="text-muted-foreground text-xs">{getCharacterCount(formData.appearance)} Chars</p>
-                  <Button variant="ghost" size="sm" className="text-xs text-muted-foreground hover:bg-secondary/50 rounded-lg px-3 py-1">
-                    ⭐ AI Summarize
-                  </Button>
-                </div>
+                <p className="text-muted-foreground text-xs">{getCharacterCount(formData.appearance)} Chars</p>
               </div>
 
               {/* Scenario */}
@@ -475,7 +424,7 @@ const CreateCharacter = () => {
                 </Label>
                 <p className="text-muted-foreground text-xs leading-relaxed">
                   If the switch is turned on in the chat settings, this content will be included as long-term memory. 
-                  <a href="#" className="text-blue-400 underline"> View the guide book.</a>
+                  
                 </p>
                 <Textarea
                   placeholder="Describe the environment the Character is in."

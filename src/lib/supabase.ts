@@ -647,20 +647,35 @@ export interface PersonaData {
 
 export const createPersona = async (userId: string, personaData: Omit<PersonaData, 'id'>) => {
   try {
+    const insertPayload = {
+      user_id: userId,
+      name: personaData.name,
+      gender: personaData.gender,
+      description: personaData.description || null,
+      is_default: personaData.applyToNewChats
+    };
+
+    // Try regular insert with select
     const { data, error } = await supabase
       .from('personas')
-      .insert({
-        user_id: userId,
-        name: personaData.name,
-        gender: personaData.gender,
-        description: personaData.description || null,
-        is_default: personaData.applyToNewChats
-      })
+      .insert(insertPayload)
       .select()
       .single();
 
     if (error) {
       console.error('❌ Error creating persona:', error);
+      // Fallback for RLS/permission issues when selecting after insert
+      if (error.code === 'PGRST301' || error.message?.toLowerCase().includes('permission') || error.message?.toLowerCase().includes('rls')) {
+        const { error: retryError } = await supabase
+          .from('personas')
+          .insert(insertPayload);
+        if (!retryError) {
+          console.log('✅ Persona inserted without select (fallback).');
+          return insertPayload as any;
+        }
+        console.error('❌ Persona insert fallback failed:', retryError);
+        throw retryError;
+      }
       throw error;
     }
 
@@ -685,12 +700,26 @@ export const updatePersona = async (personaId: string, userId: string, personaDa
       .from('personas')
       .update(updateData)
       .eq('id', personaId)
-      .eq('user_id', userId) // ✅ Security: Only update if user owns the persona
+      .eq('user_id', userId)
       .select()
       .single();
 
     if (error) {
       console.error('❌ Error updating persona:', error);
+      // Fallback when select after update is blocked by RLS/permissions
+      if (error.code === 'PGRST301' || error.message?.toLowerCase().includes('permission') || error.message?.toLowerCase().includes('rls')) {
+        const { error: retryError } = await supabase
+          .from('personas')
+          .update(updateData)
+          .eq('id', personaId)
+          .eq('user_id', userId);
+        if (!retryError) {
+          console.log('✅ Persona updated without select (fallback).');
+          return { id: personaId, user_id: userId, ...updateData } as any;
+        }
+        console.error('❌ Persona update fallback failed:', retryError);
+        throw retryError;
+      }
       throw error;
     }
 
