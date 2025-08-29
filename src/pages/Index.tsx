@@ -127,7 +127,7 @@ const Index = () => {
       default:
         return [...list].sort((a, b) => ((b.stats.likes + b.stats.messages * 2) - (a.stats.likes + a.stats.messages * 2)));
     }
-  }, [characters, activeTag, sortBy, gender]);
+  }, [characters, activeTag, sortBy, gender, favoriteIds, isSignedIn]);
 
   return (
     <Layout
