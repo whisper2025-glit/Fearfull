@@ -11,9 +11,11 @@ interface LayoutProps {
   mainOverflow?: 'auto' | 'hidden';
   headerPosition?: 'sticky' | 'fixed';
   hideHeader?: boolean;
+  headerBorder?: boolean;
+  headerBottomBorder?: boolean;
 }
 
-export function Layout({ children, headerBottom, mainOverflow = 'auto', headerPosition = 'sticky', hideHeader = false }: LayoutProps) {
+export function Layout({ children, headerBottom, mainOverflow = 'auto', headerPosition = 'sticky', hideHeader = false, headerBorder = true, headerBottomBorder = true }: LayoutProps) {
   const navigate = useNavigate();
 
   return (
@@ -24,7 +26,7 @@ export function Layout({ children, headerBottom, mainOverflow = 'auto', headerPo
         <div className="flex-1 flex flex-col min-w-0">
           {/* Header */}
           {!hideHeader && (
-            <header className={(headerPosition === 'fixed' ? 'fixed top-0 left-0 right-0 ' : 'sticky top-0 ') + 'z-40 bg-background/95 backdrop-blur-sm border-b border-border'}>
+            <header className={(headerPosition === 'fixed' ? 'fixed top-0 left-0 right-0 ' : 'sticky top-0 ') + 'z-40 bg-background/95 backdrop-blur-sm ' + (headerBorder ? 'border-b border-border' : '')}>
               <div className="h-14 flex items-center justify-between px-4">
                 <div className="flex items-center gap-3">
                   <SidebarTrigger className="text-foreground hover:text-primary" />
@@ -42,7 +44,7 @@ export function Layout({ children, headerBottom, mainOverflow = 'auto', headerPo
                 </div>
               </div>
               {headerBottom ? (
-                <div className="h-12 flex items-center px-4 border-t border-border">
+                <div className={"h-12 flex items-center px-4 " + (headerBottomBorder ? 'border-t border-border' : '')}>
                   {headerBottom}
                 </div>
               ) : null}
