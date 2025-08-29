@@ -7,7 +7,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { User, Compass } from "lucide-react";
+import { User } from "lucide-react";
 
 interface CreateModalProps {
   open: boolean;
@@ -22,10 +22,6 @@ export function CreateModal({ open, onOpenChange }: CreateModalProps) {
     navigate('/create');
   };
 
-  const handleCreateAdventure = () => {
-    onOpenChange(false);
-    navigate('/create-adventure');
-  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -54,22 +50,6 @@ export function CreateModal({ open, onOpenChange }: CreateModalProps) {
             </div>
           </Button>
 
-          {/* Create Adventure Play Option */}
-          <Button
-            onClick={handleCreateAdventure}
-            variant="ghost"
-            className="w-full h-auto p-4 flex items-center justify-between hover:bg-accent/50 border border-border rounded-lg"
-          >
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center">
-                <Compass className="w-5 h-5 text-white" />
-              </div>
-              <div className="text-left">
-                <h3 className="font-medium">Create Adventure Play</h3>
-                <p className="text-sm text-muted-foreground">Set up an adventure scenario</p>
-              </div>
-            </div>
-          </Button>
         </div>
       </DialogContent>
     </Dialog>
