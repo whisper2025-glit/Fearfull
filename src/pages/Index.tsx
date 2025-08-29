@@ -110,44 +110,45 @@ const Index = () => {
   }, [characters, activeTag, sortBy, gender]);
 
   return (
-    <Layout headerBorder={false}>
-      <div className="flex-1 overflow-auto">
-        <div className="p-4 space-y-6">
-          <HomeFilters
-            activeTag={activeTag}
-            onTagChange={setActiveTag}
-            sortBy={sortBy}
-            onSortChange={setSortBy}
-            gender={gender}
-            onGenderChange={setGender}
-          />
-
-          {isLoading ? (
-            <div className="flex items-center justify-center py-12">
-              <div className="flex flex-col items-center gap-4">
-                <Loader2 className="h-8 w-8 animate-spin" />
-                <p className="text-muted-foreground">Loading characters...</p>
-              </div>
+    <Layout
+      headerBorder={false}
+      headerBottom={
+        <HomeFilters
+          activeTag={activeTag}
+          onTagChange={setActiveTag}
+          sortBy={sortBy}
+          onSortChange={setSortBy}
+          gender={gender}
+          onGenderChange={setGender}
+        />
+      }
+    >
+      <div className="p-4 space-y-6">
+        {isLoading ? (
+          <div className="flex items-center justify-center py-12">
+            <div className="flex flex-col items-center gap-4">
+              <Loader2 className="h-8 w-8 animate-spin" />
+              <p className="text-muted-foreground">Loading characters...</p>
             </div>
-          ) : visibleCharacters.length === 0 ? (
-            <div className="flex items-center justify-center py-12">
-              <div className="text-center">
-                <p className="text-muted-foreground mb-4">No characters found for this filter</p>
-                <Button onClick={() => navigate('/create')}>Create Your First Character</Button>
-              </div>
+          </div>
+        ) : visibleCharacters.length === 0 ? (
+          <div className="flex items-center justify-center py-12">
+            <div className="text-center">
+              <p className="text-muted-foreground mb-4">No characters found for this filter</p>
+              <Button onClick={() => navigate('/create')}>Create Your First Character</Button>
             </div>
-          ) : (
-            <div className="grid grid-cols-2 gap-4">
-              {visibleCharacters.map((character) => (
-                <CharacterCard
-                  key={character.id}
-                  character={character}
-                  onClick={() => navigate(`/character/${character.id}`)}
-                />
-              ))}
-            </div>
-          )}
-        </div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 gap-4">
+            {visibleCharacters.map((character) => (
+              <CharacterCard
+                key={character.id}
+                character={character}
+                onClick={() => navigate(`/character/${character.id}`)}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </Layout>
   );
