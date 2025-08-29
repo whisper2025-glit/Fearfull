@@ -13,13 +13,12 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { ChevronLeft, Settings, Gift, MoreHorizontal, X, Camera, Star, Loader2 } from "lucide-react";
+import { ChevronLeft, Settings, Gift, MoreHorizontal, X, Camera, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { CharacterCard } from "@/components/CharacterCard";
-import { AdventureCard } from "@/components/AdventureCard";
 import SettingsSheet from "@/components/SettingsSheet";
 import { CreateModal } from "@/components/CreateModal";
-import { supabase, uploadImage, getFavoriteCharacters, checkIsFavorited, getFavoriteAdventures, checkAdventureIsFavorited } from "@/lib/supabase";
+import { supabase, uploadImage, getFavoriteCharacters, checkIsFavorited } from "@/lib/supabase";
 import { toast } from "sonner";
 
 const Profile = () => {
@@ -33,9 +32,6 @@ const Profile = () => {
   const [userCharacters, setUserCharacters] = useState<any[]>([]);
   const [favoriteCharacters, setFavoriteCharacters] = useState<any[]>([]);
   const [favoritedCharacterIds, setFavoritedCharacterIds] = useState<string[]>([]);
-  const [favoriteAdventures, setFavoriteAdventures] = useState<any[]>([]);
-  const [favoritedAdventureIds, setFavoritedAdventureIds] = useState<string[]>([]);
-  const [favoritesSubTab, setFavoritesSubTab] = useState('characters'); // 'characters' or 'adventures'
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   // User profile state with Supabase data
@@ -112,13 +108,9 @@ const Profile = () => {
       const favoriteChars = await getFavoriteCharacters(user.id);
       setFavoriteCharacters(favoriteChars);
 
-      // Load user's favorite adventures
-      const favoriteAdvs = await getFavoriteAdventures(user.id);
-      setFavoriteAdventures(favoriteAdvs);
-
       setStats(prev => ({
         ...prev,
-        favorites: favoriteChars.length + favoriteAdvs.length
+        favorites: favoriteChars.length
       }));
 
       // Get favorited status for all characters
@@ -140,26 +132,18 @@ const Profile = () => {
     loadUserData();
   }, [user]);
 
-  // Filter characters/adventures based on active tab and sub-tab
+  // Filter characters based on active tab
   const getCharactersForTab = () => {
     switch (activeTab) {
       case 'bots':
         return userCharacters.filter(char => char.visibility === 'public');
       case 'favorites':
-        return favoritesSubTab === 'characters' ? favoriteCharacters : [];
+        return favoriteCharacters;
       case 'posts':
-        // TODO: Implement posts functionality
         return [];
       default:
         return [];
     }
-  };
-
-  const getAdventuresForTab = () => {
-    if (activeTab === 'favorites' && favoritesSubTab === 'adventures') {
-      return favoriteAdventures;
-    }
-    return [];
   };
 
   // Handle favorite status changes
@@ -168,39 +152,18 @@ const Profile = () => {
       setFavoritedCharacterIds(prev => [...prev, characterId]);
     } else {
       setFavoritedCharacterIds(prev => prev.filter(id => id !== characterId));
-      // If we're on favorites tab and character was unfavorited, reload favorites
-      if (activeTab === 'favorites' && favoritesSubTab === 'characters') {
-        const updatedFavorites = await getFavoriteCharacters(user.id);
+      if (activeTab === 'favorites') {
+        const updatedFavorites = await getFavoriteCharacters(user!.id);
         setFavoriteCharacters(updatedFavorites);
-        const favoriteAdvs = await getFavoriteAdventures(user.id);
         setStats(prev => ({
           ...prev,
-          favorites: updatedFavorites.length + favoriteAdvs.length
-        }));
-      }
-    }
-  };
-
-  const handleAdventureFavoriteChange = async (adventureId: string, isFavorited: boolean) => {
-    if (isFavorited) {
-      setFavoritedAdventureIds(prev => [...prev, adventureId]);
-    } else {
-      setFavoritedAdventureIds(prev => prev.filter(id => id !== adventureId));
-      // If we're on favorites tab and adventure was unfavorited, reload favorites
-      if (activeTab === 'favorites' && favoritesSubTab === 'adventures') {
-        const updatedAdventures = await getFavoriteAdventures(user.id);
-        setFavoriteAdventures(updatedAdventures);
-        const favoriteChars = await getFavoriteCharacters(user.id);
-        setStats(prev => ({
-          ...prev,
-          favorites: favoriteChars.length + updatedAdventures.length
+          favorites: updatedFavorites.length
         }));
       }
     }
   };
 
   const displayCharacters = getCharactersForTab();
-  const displayAdventures = getAdventuresForTab();
 
   const tabs = [
     { id: 'bots', label: 'Public Bots', count: stats.publicBots },
@@ -219,30 +182,14 @@ const Profile = () => {
     const file = event.target.files?.[0];
     if (file && user) {
       try {
-        console.log('🖼️ Starting banner upload:', {
-          fileName: file.name,
-          fileSize: file.size,
-          fileType: file.type
-        });
-
-        // Get file extension from the uploaded file
         const fileExtension = file.name.split('.').pop() || 'jpg';
         const bannerPath = `${user.id}/banners/${Date.now()}.${fileExtension}`;
-        console.log('📁 Upload path:', bannerPath);
-
         const { publicUrl } = await uploadImage('profiles', bannerPath, file);
-        console.log('✅ Banner uploaded successfully, URL:', publicUrl);
-
         setUserProfile(prev => ({ ...prev, banner: publicUrl }));
         toast.success('Banner uploaded successfully');
       } catch (error) {
-        console.error('�� Error uploading banner:', error);
-        console.error('Error details:', {
-          message: error instanceof Error ? error.message : 'Unknown error',
-          stack: error instanceof Error ? error.stack : undefined,
-          error
-        });
-        toast.error(`Failed to upload banner: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        console.error('Error uploading banner:', error);
+        toast.error('Failed to upload banner');
       }
     }
   };
@@ -251,15 +198,10 @@ const Profile = () => {
     const file = event.target.files?.[0];
     if (file && user) {
       try {
-        // Upload to Supabase storage
         const fileExtension = file.name.split('.').pop() || 'jpg';
         const avatarPath = `${user.id}/avatars/${Date.now()}.${fileExtension}`;
         const { publicUrl } = await uploadImage('profiles', avatarPath, file);
-
-        // Update Clerk profile image
         await user.setProfileImage({ file });
-
-        // Update local state
         setUserProfile(prev => ({ ...prev, avatar: publicUrl }));
         toast.success('Avatar updated successfully');
       } catch (error) {
@@ -272,7 +214,6 @@ const Profile = () => {
   const handleSaveProfile = async () => {
     if (!user) return;
 
-    // Validate name length
     if (userProfile.name.length < 2) {
       toast.error('Name must be at least 2 characters long');
       return;
@@ -280,17 +221,12 @@ const Profile = () => {
 
     setIsSaving(true);
     try {
-      // Note: We store the full display name in Supabase, not in Clerk's firstName
-      // to avoid validation issues with Clerk's firstName field restrictions
-
-      // First get existing user data to preserve username
       const { data: existingUser } = await supabase
         .from('users')
         .select('username')
         .eq('id', user.id)
         .single();
 
-      // Generate username if none exists
       const generateUsername = (displayName: string, userId: string): string => {
         let username = displayName.toLowerCase()
           .replace(/[^a-z0-9]/g, '')
@@ -306,7 +242,6 @@ const Profile = () => {
                       user.username ||
                       generateUsername(userProfile.name, user.id);
 
-      // Update Supabase user
       const { error } = await supabase
         .from('users')
         .upsert({
@@ -325,89 +260,19 @@ const Profile = () => {
 
       if (error) {
         console.error('❌ Error updating profile:', error);
-        console.error('🔍 Current userProfile state:', userProfile);
-        console.error('📊 Error details:', {
-          message: error.message,
-          details: error.details,
-          hint: error.hint,
-          code: error.code
-        });
-
-        // Provide more specific error messages
-        if (error.message?.includes('authentication') || error.message?.includes('unauthorized')) {
-          toast.error('Authentication error. Please try logging out and back in.');
-        } else {
-          toast.error('Failed to save profile: ' + (error.message || 'Unknown error'));
-        }
+        toast.error('Failed to save profile: ' + (error.message || 'Unknown error'));
       } else {
         toast.success('Profile updated successfully');
         setEditModalOpen(false);
-
-        // Reload user data to reflect changes
         await loadUserData();
       }
     } catch (error) {
       console.error('Error updating profile:', error);
-      console.error('Error details:', error);
-
-      if (error instanceof Error) {
-        if (error.message?.includes('authentication') || error.message?.includes('unauthorized')) {
-          toast.error('Authentication error. Please try logging out and back in.');
-        } else {
-          toast.error('Failed to save profile: ' + error.message);
-        }
-      } else {
-        toast.error('Failed to save profile: Unknown error');
-      }
+      toast.error('Failed to save profile');
     } finally {
       setIsSaving(false);
     }
   };
-
-  const FavoriteCharacterCard = ({ character }: { character: any }) => (
-    <div className="character-card group cursor-pointer w-full bg-card rounded-2xl overflow-hidden">
-      {/* Image Container */}
-      <div className="relative aspect-[4/5] overflow-hidden">
-        <img
-          src={character.image}
-          alt={character.name}
-          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-        />
-
-        {/* Star/Bookmark Icon */}
-        <div className="absolute top-3 right-3">
-          <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-            <Star className="h-4 w-4 text-white fill-white" />
-          </div>
-        </div>
-
-        {/* Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent" />
-
-        {/* Content */}
-        <div className="absolute bottom-0 left-0 right-0 p-4">
-          <h3 className="text-lg font-bold text-white mb-1">
-            {character.name}
-          </h3>
-          <p className="text-sm text-gray-300 mb-3 line-clamp-2">
-            {character.description}
-          </p>
-
-          {/* Tags */}
-          <div className="flex flex-wrap gap-2">
-            {character.tags.map((tag: string, index: number) => (
-              <span
-                key={index}
-                className="px-2 py-1 bg-gray-700/80 text-white text-xs rounded-full"
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
 
   // Show loading if user data is not yet available
   if (!user) {
@@ -669,32 +534,6 @@ const Profile = () => {
             </DropdownMenu>
           </div>
 
-          {/* Favorites Sub-tabs */}
-          {activeTab === 'favorites' && (
-            <div className="flex gap-4 mb-4">
-              <button
-                onClick={() => setFavoritesSubTab('characters')}
-                className={`text-sm font-medium pb-1 px-3 py-1 rounded-full transition-colors ${
-                  favoritesSubTab === 'characters'
-                    ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400'
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                Characters ({favoriteCharacters.length})
-              </button>
-              <button
-                onClick={() => setFavoritesSubTab('adventures')}
-                className={`text-sm font-medium pb-1 px-3 py-1 rounded-full transition-colors ${
-                  favoritesSubTab === 'adventures'
-                    ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400'
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                Adventures ({favoriteAdventures.length})
-              </button>
-            </div>
-          )}
-
           {/* Content Area */}
           {isLoading ? (
             <div className="flex items-center justify-center py-16">
@@ -703,26 +542,6 @@ const Profile = () => {
                 <p className="text-muted-foreground">Loading...</p>
               </div>
             </div>
-          ) : (activeTab === 'favorites' && favoritesSubTab === 'adventures') ? (
-            displayAdventures.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {displayAdventures.map((adventure) => (
-                  <AdventureCard
-                    key={adventure.id}
-                    adventure={adventure}
-                    isFavorited={favoritedAdventureIds.includes(adventure.id)}
-                    onFavorite={handleAdventureFavoriteChange}
-                  />
-                ))}
-              </div>
-            ) : (
-              <div className="flex flex-col items-center justify-center py-16 space-y-4">
-                <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center">
-                  <div className="text-2xl">🏰</div>
-                </div>
-                <p className="text-muted-foreground text-sm">No favorite adventures yet.</p>
-              </div>
-            )
           ) : displayCharacters.length > 0 ? (
             <div className="grid grid-cols-2 gap-4">
               {displayCharacters.map((character) => (
@@ -736,7 +555,7 @@ const Profile = () => {
                     category: character.tags?.[0] || 'General',
                     stats: {
                       messages: character.messages?.length || 0,
-                      likes: 0 // Placeholder
+                      likes: 0
                     },
                     isFavorited: favoritedCharacterIds.includes(character.id)
                   }}
@@ -752,8 +571,7 @@ const Profile = () => {
               </div>
               <p className="text-muted-foreground text-sm">
                 {activeTab === 'bots' ? 'No bot yet, try to create one.' :
-                 activeTab === 'favorites' && favoritesSubTab === 'characters' ? 'No favorite characters yet.' :
-                 activeTab === 'favorites' && favoritesSubTab === 'adventures' ? 'No favorite adventures yet.' :
+                 activeTab === 'favorites' ? 'No favorite characters yet.' :
                  'No posts yet.'}
               </p>
               {activeTab === 'bots' && (
