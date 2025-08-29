@@ -96,6 +96,8 @@ const Index = () => {
             onTagChange={setActiveTag}
             sortBy={sortBy}
             onSortChange={setSortBy}
+            gender={gender}
+            onGenderChange={setGender}
           />
 
           {isLoading ? (
