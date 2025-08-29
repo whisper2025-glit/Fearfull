@@ -19,6 +19,7 @@ interface LayoutProps {
 
 export function Layout({ children, headerBottom, mainOverflow = 'auto', headerPosition = 'sticky', hideHeader = false, headerBorder = true, headerBottomBorder = true }: LayoutProps) {
   const navigate = useNavigate();
+  const { user } = useUser();
 
   return (
     <SidebarProvider>
@@ -34,7 +35,20 @@ export function Layout({ children, headerBottom, mainOverflow = 'auto', headerPo
                   <SidebarTrigger className="text-foreground hover:text-primary" />
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => navigate('/profile')}
+                    className="rounded-full focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background"
+                    aria-label="Open profile"
+                  >
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage src={user?.imageUrl || ''} alt={user?.fullName || 'User'} />
+                      <AvatarFallback className="text-xs">
+                        {(user?.firstName?.[0] || user?.username?.[0] || 'U').toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                  </button>
+
                   <Button
                     variant="ghost"
                     size="icon"
