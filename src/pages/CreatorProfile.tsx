@@ -375,8 +375,8 @@ const CreatorProfile = () => {
                     image: character.avatar_url || '/lovable-uploads/3eab3055-d06f-48a5-9790-123de7769f97.png',
                     category: character.tags?.[0] || 'General',
                     stats: {
-                      messages: character.messages?.length || 0,
-                      likes: 0
+                      messages: characterStatsMap[character.id]?.messages ?? 0,
+                      likes: characterStatsMap[character.id]?.likes ?? 0
                     },
                     isFavorited: viewerFavoritedIds.includes(character.id)
                   }}
