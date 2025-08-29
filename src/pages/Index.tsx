@@ -43,6 +43,7 @@ const Index = () => {
             category: char.tags?.[0] || 'General',
             tags: Array.isArray(char.tags) ? char.tags : [],
             created_at: char.created_at,
+            gender: char.gender || null,
             stats: {
               messages: Array.isArray(char.messages) ? char.messages.length : 0,
               likes: Math.floor(Math.random() * 1000)
