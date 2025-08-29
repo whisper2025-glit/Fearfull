@@ -62,21 +62,30 @@ const Index = () => {
 
   const visibleCharacters = useMemo(() => {
     let list = characters;
+
+    if (gender !== 'Gender All') {
+      const g = gender.replace('Gender ', '');
+      list = list.filter((c) => (c.gender || c.tags?.includes(g)) ? c.gender === g : true);
+    }
+
     if (activeTag && activeTag !== 'For You') {
       list = list.filter((c) => (c.tags || []).includes(activeTag) || c.category === activeTag);
     }
+
     switch (sortBy) {
       case 'New':
         return [...list].sort((a, b) => (b.created_at?.localeCompare?.(a.created_at) ?? 0));
-      case 'Top Chats':
+      case 'Trending':
         return [...list].sort((a, b) => (b.stats.messages - a.stats.messages));
-      case 'Top Rated':
+      case 'Popular':
+      case 'Daily Ranking':
+      case 'Editor Choice':
         return [...list].sort((a, b) => (b.stats.likes - a.stats.likes));
-      case 'Hot':
+      case 'Recent Hits':
       default:
-        return [...list].sort((a, b) => (b.stats.likes - a.stats.likes) || (b.stats.messages - a.stats.messages));
+        return [...list].sort((a, b) => ((b.stats.likes + b.stats.messages * 2) - (a.stats.likes + a.stats.messages * 2)));
     }
-  }, [characters, activeTag, sortBy]);
+  }, [characters, activeTag, sortBy, gender]);
 
   return (
     <Layout headerBorder={false}>
