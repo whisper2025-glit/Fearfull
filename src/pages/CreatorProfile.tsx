@@ -39,6 +39,7 @@ const CreatorProfile = () => {
   const [userCharacters, setUserCharacters] = useState<any[]>([]);
   const [favoriteCharacters, setFavoriteCharacters] = useState<any[]>([]);
   const [viewerFavoritedIds, setViewerFavoritedIds] = useState<string[]>([]);
+  const [characterStatsMap, setCharacterStatsMap] = useState<Record<string, { messages: number; likes: number }>>({});
 
   // Stats state
   const [stats, setStats] = useState({
