@@ -25,7 +25,6 @@ const CreateCharacter = () => {
     personality: '',
     scenario: '',
     greeting: '',
-    publicDefinition: 'no',
     visibility: 'public',
     rating: 'filtered',
     tags: '',
@@ -264,12 +263,7 @@ const CreateCharacter = () => {
                   onChange={(e) => handleInputChange('intro', e.target.value)}
                   className="min-h-[80px] text-sm bg-secondary/50 border-border rounded-lg resize-none placeholder:text-muted-foreground/70"
                 />
-                <div className="flex justify-between items-center">
-                  <p className="text-muted-foreground text-xs">{getCharacterCount(formData.intro)} characters</p>
-                  <Button variant="ghost" size="sm" className="text-sm text-muted-foreground hover:bg-secondary/50 rounded-lg px-3 py-1">
-                    ⭐ AI Summarize
-                  </Button>
-                </div>
+                <p className="text-muted-foreground text-xs">{getCharacterCount(formData.intro)} characters</p>
               </div>
 
               {/* Visibility */}
@@ -366,27 +360,6 @@ const CreateCharacter = () => {
               <div className="space-y-6">
                 <h3 className="text-primary text-sm font-medium">Character Definition</h3>
                 
-                {/* Public Definition */}
-                <div className="space-y-4">
-                  <Label className="text-primary text-sm font-medium flex items-center gap-2">
-                    Public definition <span className="text-primary">*</span>
-                    <Info className="h-4 w-4 text-muted-foreground" />
-                  </Label>
-                  <RadioGroup 
-                    value={formData.publicDefinition} 
-                    onValueChange={(value) => handleInputChange('publicDefinition', value)}
-                    className="space-y-3"
-                  >
-                    <div className="flex items-center space-x-3">
-                      <RadioGroupItem value="yes" id="yes" className="border-primary" />
-                      <Label htmlFor="yes" className="text-xs font-medium">Yes</Label>
-                    </div>
-                    <div className="flex items-center space-x-3">
-                      <RadioGroupItem value="no" id="no" className="border-primary text-primary" />
-                      <Label htmlFor="no" className="text-xs font-medium">No</Label>
-                    </div>
-                  </RadioGroup>
-                </div>
 
                 {/* Greeting */}
                 <div className="space-y-4">
@@ -404,12 +377,7 @@ const CreateCharacter = () => {
                     onChange={(e) => handleInputChange('greeting', e.target.value)}
                     className="min-h-[80px] text-sm bg-secondary/50 border-border rounded-lg resize-none placeholder:text-muted-foreground/70"
                   />
-                  <div className="flex justify-between items-center">
-                    <p className="text-muted-foreground text-xs">{getCharacterCount(formData.greeting)} Chars</p>
-                    <Button variant="ghost" size="sm" className="text-xs text-muted-foreground hover:bg-secondary/50 rounded-lg px-3 py-1">
-                      ⭐ AI Summarize
-                    </Button>
-                  </div>
+                  <p className="text-muted-foreground text-xs">{getCharacterCount(formData.greeting)} Chars</p>
                 </div>
               </div>
 
@@ -428,12 +396,7 @@ const CreateCharacter = () => {
                   onChange={(e) => handleInputChange('personality', e.target.value)}
                   className="min-h-[100px] text-sm bg-secondary/50 border-border rounded-lg resize-none placeholder:text-muted-foreground/70"
                 />
-                <div className="flex justify-between items-center">
-                  <p className="text-muted-foreground text-xs">{getCharacterCount(formData.personality)} Chars</p>
-                  <Button variant="ghost" size="sm" className="text-xs text-muted-foreground hover:bg-secondary/50 rounded-lg px-3 py-1">
-                    ⭐ AI Summarize
-                  </Button>
-                </div>
+                <p className="text-muted-foreground text-xs">{getCharacterCount(formData.personality)} Chars</p>
               </div>
 
               {/* Appearance */}
@@ -451,12 +414,7 @@ const CreateCharacter = () => {
                   onChange={(e) => handleInputChange('appearance', e.target.value)}
                   className="min-h-[100px] text-sm bg-secondary/50 border-border rounded-lg resize-none placeholder:text-muted-foreground/70"
                 />
-                <div className="flex justify-between items-center">
-                  <p className="text-muted-foreground text-xs">{getCharacterCount(formData.appearance)} Chars</p>
-                  <Button variant="ghost" size="sm" className="text-xs text-muted-foreground hover:bg-secondary/50 rounded-lg px-3 py-1">
-                    ⭐ AI Summarize
-                  </Button>
-                </div>
+                <p className="text-muted-foreground text-xs">{getCharacterCount(formData.appearance)} Chars</p>
               </div>
 
               {/* Scenario */}
