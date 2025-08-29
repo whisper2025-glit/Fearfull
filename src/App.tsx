@@ -12,6 +12,7 @@ import Profile from "./pages/Profile";
 import CharacterProfile from "./pages/CharacterProfile";
 import CreatorProfile from "./pages/CreatorProfile";
 import Search from "./pages/Search";
+import Bonus from "./pages/Bonus";
 import AuthPage from "./pages/AuthPage";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -65,6 +66,11 @@ const AppContent = () => {
         <Route path="/search" element={
           <ProtectedRoute>
             <Search />
+          </ProtectedRoute>
+        } />
+        <Route path="/bonus" element={
+          <ProtectedRoute>
+            <Bonus />
           </ProtectedRoute>
         } />
         <Route path="*" element={<NotFound />} />
