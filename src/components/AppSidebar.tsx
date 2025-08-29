@@ -96,66 +96,63 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        {/* Bottom Authentication Section */}
-        <div className="mt-auto space-y-3">
-          {isSignedIn ? (
-            <>
-
-              {/* User Profile */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    className="flex items-center gap-3 p-2 rounded-xl bg-sidebar-accent hover:bg-sidebar-accent/80 w-full justify-start h-auto"
-                  >
-                    <Avatar className="w-8 h-8 flex-shrink-0">
-                      <AvatarImage src={user?.imageUrl} />
-                      <AvatarFallback className="bg-gradient-to-br from-blue-400 to-purple-500 text-white text-sm">
-                        {user?.firstName?.charAt(0) || user?.emailAddresses[0]?.emailAddress?.charAt(0) || "U"}
-                      </AvatarFallback>
-                    </Avatar>
-                    {!collapsed && (
-                      <div className="flex-1 text-left">
-                        <p className="text-sm font-medium">
-                          {user?.firstName || user?.emailAddresses[0]?.emailAddress || "User"}
-                        </p>
-                        <p className="text-xs text-muted-foreground">Free Plan</p>
-                      </div>
-                    )}
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent side="top" align="start" className="bg-background border-border mb-2">
-                  <DropdownMenuItem onClick={() => navigate('/profile')} className="cursor-pointer">
-                    Profile
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="cursor-pointer">
-                    Task
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="cursor-pointer">
-                    User guide
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="cursor-pointer">
-                    Join Discord
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer text-red-600">
-                    Log out
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </>
-          ) : (
-            /* Log in / Sign up Button for unauthenticated users */
-            <SignInButton mode="modal" fallbackRedirectUrl="/" signUpFallbackRedirectUrl="/">
-              <Button
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-full h-12"
-                size="default"
-              >
-                {!collapsed ? "Log in / Sign up" : "Login"}
-              </Button>
-            </SignInButton>
-          )}
-        </div>
       </SidebarContent>
+
+      <SidebarFooter className="p-4">
+        {isSignedIn ? (
+          <>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className="flex items-center gap-3 p-2 rounded-xl bg-sidebar-accent hover:bg-sidebar-accent/80 w-full justify-start h-auto"
+                >
+                  <Avatar className="w-8 h-8 flex-shrink-0">
+                    <AvatarImage src={user?.imageUrl} />
+                    <AvatarFallback className="bg-gradient-to-br from-blue-400 to-purple-500 text-white text-sm">
+                      {user?.firstName?.charAt(0) || user?.emailAddresses[0]?.emailAddress?.charAt(0) || "U"}
+                    </AvatarFallback>
+                  </Avatar>
+                  {!collapsed && (
+                    <div className="flex-1 text-left">
+                      <p className="text-sm font-medium">
+                        {user?.firstName || user?.emailAddresses[0]?.emailAddress || "User"}
+                      </p>
+                      <p className="text-xs text-muted-foreground">Free Plan</p>
+                    </div>
+                  )}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent side="top" align="start" className="bg-background border-border mb-2">
+                <DropdownMenuItem onClick={() => navigate('/profile')} className="cursor-pointer">
+                  Profile
+                </DropdownMenuItem>
+                <DropdownMenuItem className="cursor-pointer">
+                  Task
+                </DropdownMenuItem>
+                <DropdownMenuItem className="cursor-pointer">
+                  User guide
+                </DropdownMenuItem>
+                <DropdownMenuItem className="cursor-pointer">
+                  Join Discord
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer text-red-600">
+                  Log out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </>
+        ) : (
+          <SignInButton mode="modal" fallbackRedirectUrl="/" signUpFallbackRedirectUrl="/">
+            <Button
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-full h-12"
+              size="default"
+            >
+              {!collapsed ? "Log in / Sign up" : "Login"}
+            </Button>
+          </SignInButton>
+        )}
+      </SidebarFooter>
 
       <CreateModal
         open={isCreateModalOpen}
