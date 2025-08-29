@@ -73,32 +73,6 @@ export function HomeFilters({ activeTag, onTagChange, sortBy, onSortChange, gend
           </DropdownMenuContent>
         </DropdownMenu>
 
-        {/* All Tags popover */}
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button variant="secondary" className="h-8 rounded-full px-3 text-[12px] font-medium border border-primary/60">
-              All Tags
-              <ChevronDown className="ml-1 h-4 w-4" />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent align="start" className="w-[320px]">
-            <div className="grid grid-cols-2 gap-2">
-              {TAGS.map((t) => (
-                <button
-                  key={t}
-                  onClick={() => onTagChange(t)}
-                  className={clsx(
-                    "h-8 rounded-full border border-border/60 bg-secondary/70 px-3 text-[12px] font-medium text-left truncate",
-                    activeTag === t ? "bg-primary text-primary-foreground border-primary/60" : "hover:bg-secondary"
-                  )}
-                >
-                  {t}
-                </button>
-              ))}
-            </div>
-          </PopoverContent>
-        </Popover>
-
         {/* Gender dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -131,6 +105,31 @@ export function HomeFilters({ activeTag, onTagChange, sortBy, onSortChange, gend
             {t}
           </button>
         ))}
+        {/* All Tags popover placed at end of tags row */}
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant="secondary" className="h-8 rounded-full px-3 text-[12px] font-medium border border-primary/60">
+              All Tags
+              <ChevronDown className="ml-1 h-4 w-4" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent align="start" className="w-[320px]">
+            <div className="grid grid-cols-2 gap-2">
+              {TAGS.map((t) => (
+                <button
+                  key={t}
+                  onClick={() => onTagChange(t)}
+                  className={clsx(
+                    "h-8 rounded-full border border-border/60 bg-secondary/70 px-3 text-[12px] font-medium text-left truncate",
+                    activeTag === t ? "bg-primary text-primary-foreground border-primary/60" : "hover:bg-secondary"
+                  )}
+                >
+                  {t}
+                </button>
+              ))}
+            </div>
+          </PopoverContent>
+        </Popover>
       </div>
     </div>
   );
