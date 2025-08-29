@@ -61,16 +61,36 @@ const Index = () => {
     loadContent();
   }, []);
 
+  useEffect(() => {
+    const loadFavorites = async () => {
+      if (!isSignedIn || !user) return;
+      const favs = await getFavoriteCharacters(user.id);
+      const ids = (favs || []).map((c: any) => c.id).filter(Boolean);
+      setFavoriteIds(ids);
+    };
+    if (sortBy === 'Following') {
+      loadFavorites();
+    }
+  }, [sortBy, isSignedIn, user]);
+
   const visibleCharacters = useMemo(() => {
     let list = characters;
 
     if (gender !== 'Gender All') {
       const g = gender.replace('Gender ', '');
-      list = list.filter((c) => (c.gender || c.tags?.includes(g)) ? c.gender === g : true);
+      list = list.filter((c) => (c.gender ? c.gender === g : true));
     }
 
     if (activeTag && activeTag !== 'For You') {
       list = list.filter((c) => (c.tags || []).includes(activeTag) || c.category === activeTag);
+    }
+
+    if (sortBy === 'Following') {
+      if (favoriteIds.length > 0) {
+        list = list.filter((c) => favoriteIds.includes(c.id));
+      } else if (isSignedIn) {
+        list = [];
+      }
     }
 
     switch (sortBy) {
