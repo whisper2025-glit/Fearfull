@@ -51,7 +51,7 @@ const CreateCharacter = () => {
   };
 
   return (
-    <Layout hideHeader>
+    <Layout headerPosition="fixed">
       <div className="min-h-screen bg-background">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-border">
