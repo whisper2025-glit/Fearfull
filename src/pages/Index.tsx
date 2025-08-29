@@ -19,6 +19,11 @@ const Index = () => {
   const [characters, setCharacters] = useState<any[]>([]);
   const [favoriteIds, setFavoriteIds] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [page, setPage] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
+  const PAGE_SIZE = 24;
 
   // Load public characters from Supabase
   useEffect(() => {
