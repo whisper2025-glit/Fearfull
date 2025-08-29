@@ -25,47 +25,62 @@ const Index = () => {
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
   const PAGE_SIZE = 24;
 
-  // Load public characters from Supabase
-  useEffect(() => {
-    const loadContent = async () => {
-      setIsLoading(true);
-      try {
-        const { data: charactersData, error: charactersError } = await supabase
-          .from('characters')
-          .select('*')
-          .eq('visibility', 'public')
-          .order('created_at', { ascending: false });
+  // Paginated fetch
+  const fetchPage = useCallback(async (pageToLoad: number) => {
+    if (isLoadingMore) return;
+    if (pageToLoad === 0) setIsLoading(true); else setIsLoadingMore(true);
 
-        if (charactersError) {
-          console.error('Error loading characters:', charactersError);
-          toast.error('Failed to load characters');
-        } else {
-          const transformedCharacters = (charactersData || []).map((char: any) => ({
-            id: char.id,
-            name: char.name,
-            description: char.intro,
-            image: char.avatar_url || '/lovable-uploads/3eab3055-d06f-48a5-9790-123de7769f97.png',
-            category: char.tags?.[0] || 'General',
-            tags: Array.isArray(char.tags) ? char.tags : [],
-            created_at: char.created_at,
-            gender: char.gender || null,
-            stats: {
-              messages: Array.isArray(char.messages) ? char.messages.length : 0,
-              likes: Math.floor(Math.random() * 1000)
-            }
-          }));
-          setCharacters(transformedCharacters);
-        }
-      } catch (error) {
-        console.error('Error loading content:', error);
-        toast.error('Failed to load content');
-      } finally {
-        setIsLoading(false);
+    try {
+      const from = pageToLoad * PAGE_SIZE;
+      const to = from + PAGE_SIZE - 1;
+
+      const { data: charactersData, error: charactersError } = await supabase
+        .from('characters')
+        .select('*')
+        .eq('visibility', 'public')
+        .order('created_at', { ascending: false })
+        .range(from, to);
+
+      if (charactersError) {
+        console.error('Error loading characters:', charactersError);
+        toast.error('Failed to load characters');
+        setHasMore(false);
+        return;
       }
-    };
 
-    loadContent();
-  }, []);
+      const transformed = (charactersData || []).map((char: any) => ({
+        id: char.id,
+        name: char.name,
+        description: char.intro,
+        image: char.avatar_url || '/lovable-uploads/3eab3055-d06f-48a5-9790-123de7769f97.png',
+        category: char.tags?.[0] || 'General',
+        tags: Array.isArray(char.tags) ? char.tags : [],
+        created_at: char.created_at,
+        gender: char.gender || null,
+        stats: {
+          messages: Array.isArray(char.messages) ? char.messages.length : 0,
+          likes: Math.floor(Math.random() * 1000)
+        }
+      }));
+
+      setCharacters(prev => pageToLoad === 0 ? transformed : [...prev, ...transformed]);
+      setHasMore((charactersData || []).length === PAGE_SIZE);
+      setPage(pageToLoad);
+    } catch (error) {
+      console.error('Error loading content:', error);
+      toast.error('Failed to load content');
+      setHasMore(false);
+    } finally {
+      if (pageToLoad === 0) setIsLoading(false); else setIsLoadingMore(false);
+    }
+  }, [PAGE_SIZE, isLoadingMore]);
+
+  useEffect(() => {
+    // Initial load
+    setCharacters([]);
+    setHasMore(true);
+    fetchPage(0);
+  }, [fetchPage]);
 
   useEffect(() => {
     const loadFavorites = async () => {
