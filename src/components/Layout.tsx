@@ -4,6 +4,8 @@ import { AppSidebar } from "@/components/AppSidebar";
 import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { useUser } from "@clerk/clerk-react";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 interface LayoutProps {
   children: ReactNode;
@@ -17,10 +19,11 @@ interface LayoutProps {
 
 export function Layout({ children, headerBottom, mainOverflow = 'auto', headerPosition = 'sticky', hideHeader = false, headerBorder = true, headerBottomBorder = true }: LayoutProps) {
   const navigate = useNavigate();
+  const { user } = useUser();
 
   return (
     <SidebarProvider>
-      <div className="min-h-screen flex w-full overflow-x-hidden">
+      <div className="h-screen flex w-full overflow-hidden">
         <AppSidebar />
 
         <div className="flex-1 flex flex-col min-w-0">
@@ -32,7 +35,7 @@ export function Layout({ children, headerBottom, mainOverflow = 'auto', headerPo
                   <SidebarTrigger className="text-foreground hover:text-primary" />
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-3">
                   <Button
                     variant="ghost"
                     size="icon"
@@ -41,10 +44,23 @@ export function Layout({ children, headerBottom, mainOverflow = 'auto', headerPo
                   >
                     <Search className="h-4 w-4" />
                   </Button>
+
+                  <button
+                    onClick={() => navigate('/profile')}
+                    className="rounded-full focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background"
+                    aria-label="Open profile"
+                  >
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage src={user?.imageUrl || ''} alt={user?.fullName || 'User'} />
+                      <AvatarFallback className="text-xs">
+                        {(user?.firstName?.[0] || user?.username?.[0] || 'U').toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                  </button>
                 </div>
               </div>
               {headerBottom ? (
-                <div className={"h-12 flex items-center px-4 " + (headerBottomBorder ? 'border-t border-border' : '')}>
+                <div className={"px-4 py-2 " + (headerBottomBorder ? 'border-t border-border' : '')}>
                   {headerBottom}
                 </div>
               ) : null}
@@ -52,7 +68,7 @@ export function Layout({ children, headerBottom, mainOverflow = 'auto', headerPo
           )}
 
           {/* Main Content */}
-          <main className={mainOverflow === 'hidden' ? 'flex-1 overflow-hidden' : 'flex-1 overflow-auto'}>
+          <main className={mainOverflow === 'hidden' ? 'flex-1 min-h-0 overflow-hidden' : 'flex-1 min-h-0 overflow-auto'}>
             {children}
           </main>
         </div>

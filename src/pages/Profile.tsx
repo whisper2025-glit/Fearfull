@@ -18,7 +18,7 @@ import { useNavigate } from "react-router-dom";
 import { CharacterCard } from "@/components/CharacterCard";
 import SettingsSheet from "@/components/SettingsSheet";
 import { CreateModal } from "@/components/CreateModal";
-import { supabase, uploadImage, getFavoriteCharacters, checkIsFavorited } from "@/lib/supabase";
+import { supabase, uploadImage, getFavoriteCharacters, checkIsFavorited, getMessageCountsForCharacters, getFavoriteCountsForCharacters } from "@/lib/supabase";
 import { toast } from "sonner";
 
 const Profile = () => {
@@ -33,6 +33,7 @@ const Profile = () => {
   const [favoriteCharacters, setFavoriteCharacters] = useState<any[]>([]);
   const [favoritedCharacterIds, setFavoritedCharacterIds] = useState<string[]>([]);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [characterStatsMap, setCharacterStatsMap] = useState<Record<string, { messages: number; likes: number }>>({});
 
   // User profile state with Supabase data
   const [userProfile, setUserProfile] = useState({
@@ -113,10 +114,26 @@ const Profile = () => {
         favorites: favoriteChars.length
       }));
 
-      // Get favorited status for all characters
-      const allCharacterIds = (charactersData || []).map(char => char.id);
+      // Build stats map for both own and favorite characters
+      const allCharacterIds = [
+        ...(charactersData || []).map((c) => c.id),
+        ...favoriteChars.map((c: any) => c.id)
+      ].filter(Boolean);
+
       if (allCharacterIds.length > 0) {
-        const favoritedIds = await checkIsFavorited(user.id, allCharacterIds);
+        const [msgCounts, favCounts, favoritedIds] = await Promise.all([
+          getMessageCountsForCharacters(allCharacterIds),
+          getFavoriteCountsForCharacters(allCharacterIds),
+          checkIsFavorited(user.id, allCharacterIds)
+        ]);
+        const map: Record<string, { messages: number; likes: number }> = {};
+        allCharacterIds.forEach((id) => {
+          map[id] = {
+            messages: msgCounts[id] ?? 0,
+            likes: favCounts[id] ?? 0
+          };
+        });
+        setCharacterStatsMap(map);
         setFavoritedCharacterIds(favoritedIds);
       }
 
@@ -554,8 +571,8 @@ const Profile = () => {
                     image: character.avatar_url || '/lovable-uploads/3eab3055-d06f-48a5-9790-123de7769f97.png',
                     category: character.tags?.[0] || 'General',
                     stats: {
-                      messages: character.messages?.length || 0,
-                      likes: 0
+                      messages: characterStatsMap[character.id]?.messages ?? 0,
+                      likes: characterStatsMap[character.id]?.likes ?? 0
                     },
                     isFavorited: favoritedCharacterIds.includes(character.id)
                   }}

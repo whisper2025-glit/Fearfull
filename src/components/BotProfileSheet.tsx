@@ -3,10 +3,12 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Share2, MessageCircle, Heart, User, ChevronLeft, ChevronDown } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CommentsList } from "./CommentsList";
 import { toast } from "sonner";
 import { useComments } from "@/hooks/useComments";
+import { supabase } from "@/lib/supabase";
+import { useNavigate } from "react-router-dom";
 
 const HERO_IMAGE = "https://cdn.builder.io/api/v1/image/assets%2F420adf53974e411387df983f01823d73%2F4635cc3157e045f592ade58eeea4af3b?format=webp&width=800";
 
@@ -23,8 +25,13 @@ export function BotProfileSheet({
   characterImage = HERO_IMAGE,
   trigger
 }: BotProfileSheetProps) {
+  const navigate = useNavigate();
   const [scrollY, setScrollY] = useState(0);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
+  const [creatorName, setCreatorName] = useState<string>('');
+  const [creatorId, setCreatorId] = useState<string>('');
+  const [dbTags, setDbTags] = useState<string[] | null>(null);
+  const [dbIntro, setDbIntro] = useState<string | null>(null);
 
   // Use the comments hook for real-time data
   const {
@@ -34,6 +41,35 @@ export function BotProfileSheet({
     handleLikeComment,
     handleReplyToComment
   } = useComments(characterId);
+
+  // Load character + creator info from Supabase
+  useEffect(() => {
+    const load = async () => {
+      if (!characterId) return;
+      const { data, error } = await supabase
+        .from('characters')
+        .select(`
+          id, name, intro, tags, owner_id,
+          users:characters_owner_id_fkey:users!characters_owner_id_fkey (
+            id, username, full_name
+          )
+        `)
+        .eq('id', characterId)
+        .single();
+      if (error) {
+        console.error('Error loading character for sheet:', error);
+        return;
+      }
+      if (data) {
+        setCreatorId(data.owner_id);
+        const name = data.users?.username || data.users?.full_name || '';
+        setCreatorName(name);
+        setDbTags(Array.isArray(data.tags) ? data.tags : null);
+        setDbIntro(data.intro || null);
+      }
+    };
+    load();
+  }, [characterId]);
 
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     setScrollY(e.currentTarget.scrollTop);
@@ -130,12 +166,16 @@ export function BotProfileSheet({
               <div>
                 <h1 className="text-2xl font-bold text-white">{characterName}</h1>
                 <div className="flex items-center gap-4 text-sm text-white/80 mt-1">
-                  <span>@Creator</span>
+                  <button
+                    onClick={() => creatorId && navigate(`/creator/${creatorId}`)}
+                    className="hover:text-pink-400 transition-colors"
+                  >
+                    {creatorName ? `@${creatorName}` : '@creator'}
+                  </button>
                   <div className="flex items-center gap-1">
                     <MessageCircle className="h-4 w-4" />
                     <span>{comments.length > 0 ? `${comments.length}` : '0'}</span>
                   </div>
-                  <span>1008 tokens</span>
                 </div>
               </div>
               
@@ -168,7 +208,7 @@ export function BotProfileSheet({
                 <TabsContent value="details" className="mt-4 space-y-4">
                   {/* Tags */}
                   <div className="flex flex-wrap gap-2">
-                    {['AnyPOV', 'Fantasy', 'Sci-Fi'].map((tag, index) => (
+                    {(dbTags && dbTags.length > 0 ? dbTags : ['AnyPOV', 'Fantasy', 'Sci-Fi']).map((tag, index) => (
                       <Badge
                         key={tag}
                         variant="secondary"
@@ -181,13 +221,13 @@ export function BotProfileSheet({
 
                   {/* Description */}
                   <div className="space-y-3">
-                    <h3 className="text-white font-semibold">[Cute, Alien, Oblivious]</h3>
+                    <h3 className="text-white font-semibold">Details</h3>
                     <div className="space-y-2">
                       <div className={`text-white/80 text-sm leading-relaxed transition-all duration-300 ${
                         isDescriptionExpanded ? 'max-h-none' : 'max-h-16 overflow-hidden'
                       }`}>
                         <p className="text-white/80 text-sm leading-relaxed">
-                          While investigating strange lights in the woods, you come across a cute alien woman who is fascinated by Earth but knows very little about it. She has bright, curious eyes and an innocent demeanor that makes her endearing to humans. Despite her advanced alien technology and abilities, she approaches every earthly experience with wonder and excitement, often asking many questions about the simplest things.
+                          {dbIntro || 'No description provided.'}
                         </p>
                       </div>
 

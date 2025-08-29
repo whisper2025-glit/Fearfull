@@ -95,14 +95,14 @@ export function CharacterCard({ character, onClick, onFavoriteChange }: Characte
         </div>
 
         {/* Category Badge */}
-        {character.category && (
+        {character.category && character.category.toLowerCase() !== 'general' && (
           <div className="absolute top-2 left-2">
             <span className="stats-badge bg-primary/20 text-primary border border-primary/30 text-[10px]">
               {character.category}
             </span>
           </div>
         )}
-        
+
         {/* Content */}
         <div className="absolute bottom-0 left-0 right-0 p-3">
           <h3 className="text-sm font-bold text-white mb-1 line-clamp-1">

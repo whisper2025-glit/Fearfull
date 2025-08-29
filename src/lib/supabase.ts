@@ -1578,6 +1578,44 @@ export const addAdventureMessage = async (
   }
 };
 
+// Batch fetch message counts for characters
+export const getMessageCountsForCharacters = async (characterIds: string[]): Promise<Record<string, number>> => {
+  if (!characterIds || characterIds.length === 0) return {};
+  const results = await Promise.all(
+    characterIds.map(async (id) => {
+      const { count, error } = await supabase
+        .from('messages')
+        .select('id', { count: 'exact', head: true })
+        .eq('character_id', id);
+      if (error) {
+        console.error('Error counting messages for character', id, error);
+        return [id, 0] as const;
+      }
+      return [id, count || 0] as const;
+    })
+  );
+  return Object.fromEntries(results);
+};
+
+// Batch fetch favorite counts for characters
+export const getFavoriteCountsForCharacters = async (characterIds: string[]): Promise<Record<string, number>> => {
+  if (!characterIds || characterIds.length === 0) return {};
+  const results = await Promise.all(
+    characterIds.map(async (id) => {
+      const { count, error } = await supabase
+        .from('favorited')
+        .select('id', { count: 'exact', head: true })
+        .eq('character_id', id);
+      if (error) {
+        console.error('Error counting favorites for character', id, error);
+        return [id, 0] as const;
+      }
+      return [id, count || 0] as const;
+    })
+  );
+  return Object.fromEntries(results);
+};
+
 export const getAdventureMessages = async (conversationId: string) => {
   try {
     console.log('🔍 Fetching adventure messages for conversation:', conversationId);

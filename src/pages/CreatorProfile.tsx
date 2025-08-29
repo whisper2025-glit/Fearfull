@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ChevronLeft, MoreHorizontal, Star, Loader2 } from "lucide-react";
 import { CharacterCard } from "@/components/CharacterCard";
-import { supabase, getFavoriteCharacters, checkIsFavorited } from "@/lib/supabase";
+import { supabase, getFavoriteCharacters, checkIsFavorited, getMessageCountsForCharacters, getFavoriteCountsForCharacters } from "@/lib/supabase";
 import { useUser } from "@clerk/clerk-react";
 import { toast } from "sonner";
 
@@ -39,6 +39,7 @@ const CreatorProfile = () => {
   const [userCharacters, setUserCharacters] = useState<any[]>([]);
   const [favoriteCharacters, setFavoriteCharacters] = useState<any[]>([]);
   const [viewerFavoritedIds, setViewerFavoritedIds] = useState<string[]>([]);
+  const [characterStatsMap, setCharacterStatsMap] = useState<Record<string, { messages: number; likes: number }>>({});
 
   // Stats state
   const [stats, setStats] = useState({
@@ -107,6 +108,23 @@ const CreatorProfile = () => {
       // Load creator's favorite characters
       const favoriteChars = await getFavoriteCharacters(userId);
       setFavoriteCharacters(favoriteChars);
+
+      // Build stats map for creator's characters and favorites
+      const allCharacterIds = [...characterIds, ...favoriteChars.map((c: any) => c.id)];
+      if (allCharacterIds.length > 0) {
+        const [msgCounts, favCounts] = await Promise.all([
+          getMessageCountsForCharacters(allCharacterIds),
+          getFavoriteCountsForCharacters(allCharacterIds)
+        ]);
+        const map: Record<string, { messages: number; likes: number }> = {};
+        allCharacterIds.forEach((id) => {
+          map[id] = {
+            messages: msgCounts[id] ?? 0,
+            likes: favCounts[id] ?? 0
+          };
+        });
+        setCharacterStatsMap(map);
+      }
 
       // If current user is viewing, get their favorited status for creator's characters
       if (user && characterIds.length > 0) {
@@ -357,8 +375,8 @@ const CreatorProfile = () => {
                     image: character.avatar_url || '/lovable-uploads/3eab3055-d06f-48a5-9790-123de7769f97.png',
                     category: character.tags?.[0] || 'General',
                     stats: {
-                      messages: character.messages?.length || 0,
-                      likes: 0
+                      messages: characterStatsMap[character.id]?.messages ?? 0,
+                      likes: characterStatsMap[character.id]?.likes ?? 0
                     },
                     isFavorited: viewerFavoritedIds.includes(character.id)
                   }}
