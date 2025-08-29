@@ -109,6 +109,23 @@ const CreatorProfile = () => {
       const favoriteChars = await getFavoriteCharacters(userId);
       setFavoriteCharacters(favoriteChars);
 
+      // Build stats map for creator's characters and favorites
+      const allCharacterIds = [...characterIds, ...favoriteChars.map((c: any) => c.id)];
+      if (allCharacterIds.length > 0) {
+        const [msgCounts, favCounts] = await Promise.all([
+          getMessageCountsForCharacters(allCharacterIds),
+          getFavoriteCountsForCharacters(allCharacterIds)
+        ]);
+        const map: Record<string, { messages: number; likes: number }> = {};
+        allCharacterIds.forEach((id) => {
+          map[id] = {
+            messages: msgCounts[id] ?? 0,
+            likes: favCounts[id] ?? 0
+          };
+        });
+        setCharacterStatsMap(map);
+      }
+
       // If current user is viewing, get their favorited status for creator's characters
       if (user && characterIds.length > 0) {
         const viewerFavorites = await checkIsFavorited(user.id, characterIds);
