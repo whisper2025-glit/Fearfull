@@ -3,12 +3,7 @@ import {
   Home,
   Plus,
   MessageCircle,
-  Search,
-  BookOpen,
-  Wrench,
-  Bot,
-  Settings,
-  Crown
+  Search
 } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useUser, useClerk, SignInButton, SignUpButton } from "@clerk/clerk-react";
@@ -36,10 +31,7 @@ const menuItems = [
   { title: "Create a bot", url: "/create", icon: Plus, isCreateModal: true },
   { title: "Home", url: "/", icon: Home },
   { title: "Chats", url: "/chats", icon: MessageCircle },
-  { title: "Search", url: "/search", icon: Search },
-  { title: "Joybook", url: "/joybook", icon: BookOpen },
-  { title: "Toolkit", url: "/toolkit", icon: Wrench },
-  { title: "Settings", url: "/settings", icon: Settings },
+  { title: "Search", url: "/search", icon: Search }
 ];
 
 export function AppSidebar() {
@@ -107,14 +99,6 @@ export function AppSidebar() {
         <div className="mt-auto space-y-3">
           {isSignedIn ? (
             <>
-              {/* Subscribe Button for authenticated users */}
-              <Button
-                className="w-full bg-gradient-to-r from-primary to-accent hover:opacity-90 text-white font-medium"
-                size={collapsed ? "icon" : "default"}
-              >
-                <Crown className="h-4 w-4" />
-                {!collapsed && <span className="ml-2">Subscribe -50%</span>}
-              </Button>
 
               {/* User Profile */}
               <DropdownMenu>
@@ -142,9 +126,6 @@ export function AppSidebar() {
                 <DropdownMenuContent side="top" align="start" className="bg-background border-border mb-2">
                   <DropdownMenuItem onClick={() => navigate('/profile')} className="cursor-pointer">
                     Profile
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigate('/settings')} className="cursor-pointer">
-                    Settings
                   </DropdownMenuItem>
                   <DropdownMenuItem className="cursor-pointer">
                     Task

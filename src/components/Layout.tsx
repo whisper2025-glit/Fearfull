@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
-import { Search, Crown } from "lucide-react";
+import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 
@@ -38,10 +38,6 @@ export function Layout({ children, headerBottom, mainOverflow = 'auto', headerPo
                   <Search className="h-4 w-4" />
                 </Button>
 
-                <Button variant="outline" className="gradient-text border-primary/20 hover:border-primary/40 text-xs">
-                  <Crown className="h-3 w-3 mr-1" />
-                  50% off!
-                </Button>
               </div>
             </div>
             {headerBottom ? (
