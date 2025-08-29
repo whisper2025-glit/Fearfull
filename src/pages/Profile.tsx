@@ -18,7 +18,7 @@ import { useNavigate } from "react-router-dom";
 import { CharacterCard } from "@/components/CharacterCard";
 import SettingsSheet from "@/components/SettingsSheet";
 import { CreateModal } from "@/components/CreateModal";
-import { supabase, uploadImage, getFavoriteCharacters, checkIsFavorited } from "@/lib/supabase";
+import { supabase, uploadImage, getFavoriteCharacters, checkIsFavorited, getMessageCountsForCharacters, getFavoriteCountsForCharacters } from "@/lib/supabase";
 import { toast } from "sonner";
 
 const Profile = () => {
