@@ -7,11 +7,15 @@ import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { HomeFilters, SortOption } from "@/components/HomeFilters";
+import { useUser } from "@clerk/clerk-react";
+import { getFavoriteCharacters } from "@/lib/supabase";
 
 const Index = () => {
   const navigate = useNavigate();
+  const { isSignedIn, user } = useUser();
   const [activeTag, setActiveTag] = useState<string>('For You');
-  const [sortBy, setSortBy] = useState<SortOption>('Hot');
+  const [sortBy, setSortBy] = useState<SortOption>('Recent Hits');
+  const [gender, setGender] = useState<string>('Gender All');
   const [characters, setCharacters] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
