@@ -149,6 +149,7 @@ const Index = () => {
   return (
     <Layout
       headerBorder={false}
+      headerBottomBorder={false}
       headerBottom={
         <HomeFilters
           activeTag={activeTag}
