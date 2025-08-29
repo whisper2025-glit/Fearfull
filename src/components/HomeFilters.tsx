@@ -54,6 +54,7 @@ const GENDER_OPTIONS = ["Gender All", "Male", "Female", "Non-binary"] as const;
 export function HomeFilters({ activeTag, onTagChange, sortBy, onSortChange, gender, onGenderChange }: HomeFiltersProps) {
   return (
     <div className="w-full space-y-3">
+<<<<<<< HEAD
       {/* Top controls row */}
       <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide">
         {/* Sort dropdown */}
@@ -130,6 +131,81 @@ export function HomeFilters({ activeTag, onTagChange, sortBy, onSortChange, gend
             </div>
           </PopoverContent>
         </Popover>
+=======
+      {/* Row: sticky sort cube + scrollable tags beneath */}
+      <div className="relative">
+        <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide px-1">
+          {/* Sticky cube sort button */}
+          <div className="sticky left-0 z-20 -ml-6 pr-4">
+            <div className="relative">
+              <div className="pointer-events-none absolute inset-y-0 -left-6 w-6 bg-background"></div>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="secondary"
+                    className="h-8 rounded-lg px-3 text-[12px] font-medium bg-secondary border-0 ring-0 focus-visible:ring-0 focus:outline-none shadow-none"
+                    aria-label="Sort"
+                    title={sortBy}
+                  >
+                    <span className="mr-1">{sortBy}</span>
+                    <ChevronDown className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start" className="w-40">
+                  {["Hot","New","Top Chats","Top Rated"].map((o) => (
+                    <DropdownMenuItem key={o} onClick={() => onSortChange(o as SortOption)} className="text-[12px]">
+                      {o}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          </div>
+
+          {/* Tag chips (will slide under the sticky cube) */}
+          {visibleTags.map((t) => (
+            <button
+              key={t}
+              onClick={() => onTagChange(t)}
+              className={clsx(
+                "h-8 rounded-full border border-border/60 bg-secondary/70 px-3 text-[12px] font-medium whitespace-nowrap transition-colors",
+                activeTag === t ? "bg-primary text-primary-foreground border-primary/60" : "hover:bg-secondary"
+              )}
+            >
+              {t}
+            </button>
+          ))}
+
+          {/* All tags popover */}
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="secondary" className="ml-1 h-8 w-8 aspect-square p-0 rounded-lg">
+                <ChevronDown className="h-4 w-4" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent align="start" className="w-[320px]">
+              <div className="grid grid-cols-2 gap-2">
+                {ALL_TAGS.map((t) => (
+                  <button
+                    key={t}
+                    onClick={() => onTagChange(t)}
+                    className={clsx(
+                      "h-8 rounded-full border border-border/60 bg-secondary/70 px-3 text-[12px] font-medium text-left truncate",
+                      activeTag === t ? "bg-primary text-primary-foreground border-primary/60" : "hover:bg-secondary"
+                    )}
+                  >
+                    {t}
+                  </button>
+                ))}
+              </div>
+              <div className="mt-3 flex items-center text-xs text-muted-foreground">
+                More
+                <ChevronRight className="ml-1 h-3 w-3" />
+              </div>
+            </PopoverContent>
+          </Popover>
+        </div>
+>>>>>>> refs/remotes/origin/ai_main_7ef7c75115ff
       </div>
     </div>
   );
