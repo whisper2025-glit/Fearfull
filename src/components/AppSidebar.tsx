@@ -128,12 +128,6 @@ export function AppSidebar() {
                   Profile
                 </DropdownMenuItem>
                 <DropdownMenuItem className="cursor-pointer">
-                  Task
-                </DropdownMenuItem>
-                <DropdownMenuItem className="cursor-pointer">
-                  User guide
-                </DropdownMenuItem>
-                <DropdownMenuItem className="cursor-pointer">
                   Join Discord
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer text-red-600">
