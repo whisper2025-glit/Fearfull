@@ -4,7 +4,6 @@ import {
   Plus,
   MessageCircle,
   Search,
-  BookOpen,
   Wrench,
   Bot,
   Settings,
