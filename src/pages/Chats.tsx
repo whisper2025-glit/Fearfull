@@ -1,13 +1,12 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "@clerk/clerk-react";
-import { MessageCircle, Clock, User, MapPin } from "lucide-react";
+import { MessageCircle, Clock, User } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { supabase, getUserAdventureConversations } from "@/lib/supabase";
+import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 
 interface CharacterHistory {
@@ -19,17 +18,6 @@ interface CharacterHistory {
   totalMessages: number;
   lastMessage: string;
   isVip?: boolean;
-}
-
-interface AdventureHistory {
-  id: string;
-  name: string;
-  adventure_image_url: string;
-  author: string;
-  lastChatDate: string;
-  totalMessages: number;
-  lastMessage: string;
-  conversationId: string;
 }
 
 const formatDate = (dateString: string): string => {
@@ -51,9 +39,7 @@ const formatDate = (dateString: string): string => {
 const Chats = () => {
   const { user } = useUser();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState("recent");
   const [characterHistory, setCharacterHistory] = useState<CharacterHistory[]>([]);
-  const [adventureHistory, setAdventureHistory] = useState<AdventureHistory[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -63,7 +49,6 @@ const Chats = () => {
       setIsLoading(true);
       try {
         // Load character chat history
-        // Get characters the user has chatted with by querying messages
         const { data: messageData, error } = await supabase
           .from('messages')
           .select(`
@@ -122,28 +107,11 @@ const Chats = () => {
           }
         });
 
-        // Convert map to array and sort by last chat date
         const historyArray = Array.from(characterMap.values()).sort(
           (a, b) => new Date(b.lastChatDate).getTime() - new Date(a.lastChatDate).getTime()
         );
 
         setCharacterHistory(historyArray);
-
-        // Load adventure chat history
-        const adventureConversations = await getUserAdventureConversations(user.id);
-
-        const adventureHistoryArray: AdventureHistory[] = adventureConversations.map((conv: any) => ({
-          id: conv.adventure_id,
-          name: conv.adventures?.name || 'Unknown Adventure',
-          adventure_image_url: conv.adventures?.adventure_image_url || '/placeholder.svg',
-          author: conv.adventures?.users?.full_name || 'Unknown',
-          lastChatDate: conv.last_message_at,
-          totalMessages: conv.message_count || 0,
-          lastMessage: 'Adventure in progress...',
-          conversationId: conv.id
-        }));
-
-        setAdventureHistory(adventureHistoryArray);
       } catch (error) {
         console.error('Error loading chat history:', error);
         toast.error('Failed to load chat history');
@@ -159,10 +127,6 @@ const Chats = () => {
     navigate(`/chat/${characterId}`);
   };
 
-  const startAdventureChat = (adventureId: string) => {
-    navigate(`/adventure/${adventureId}`);
-  };
-
   if (!user) {
     return (
       <Layout>
@@ -174,214 +138,97 @@ const Chats = () => {
   }
 
   return (
-    <Layout
-      headerBottom={
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-2 bg-transparent p-0 h-auto">
-            <TabsTrigger
-              value="recent"
-              className="bg-transparent text-white border-b-2 border-transparent data-[state=active]:border-purple-500 data-[state=active]:bg-transparent rounded-none py-3"
-            >
-              <span className="text-sm">Characters</span>
-            </TabsTrigger>
-            <TabsTrigger
-              value="favorites"
-              className="bg-transparent text-white border-b-2 border-transparent data-[state=active]:border-purple-500 data-[state=active]:bg-transparent rounded-none py-3"
-            >
-              <span className="text-sm">Adventures</span>
-            </TabsTrigger>
-          </TabsList>
-        </Tabs>
-      }
-      mainOverflow="auto"
-      headerPosition="fixed"
-    >
+    <Layout>
       <div className="bg-gray-900 text-white min-h-full">
-        <Tabs value={activeTab} className="w-full">
-          {/* Recent Chats */}
-          <TabsContent value="recent" className="pt-28">
-            <div className="px-4 pb-4 space-y-2">
-              {isLoading ? (
-                <div className="space-y-4">
-                  {[...Array(3)].map((_, i) => (
-                    <Card key={i} className="bg-gray-800 border-gray-700 animate-pulse">
-                      <CardContent className="p-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-12 h-12 bg-gray-600 rounded-full"></div>
-                          <div className="flex-1 space-y-2">
-                            <div className="h-4 bg-gray-600 rounded w-1/3"></div>
-                            <div className="h-3 bg-gray-600 rounded w-1/2"></div>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              ) : characterHistory.length === 0 ? (
-                <div className="text-center py-12">
-                  <MessageCircle className="h-16 w-16 text-gray-500 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-300 mb-2">No character chats yet</h3>
-                  <p className="text-gray-500 mb-6">
-                    Start chatting with characters to see them here
-                  </p>
-                  <button
-                    onClick={() => navigate('/')}
-                    className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg transition-colors"
-                  >
-                    Explore Characters
-                  </button>
-                </div>
-              ) : (
-                characterHistory.map((character) => (
-                  <Card
-                    key={character.id}
-                    className="bg-gray-800 border-gray-700 hover:bg-gray-750 transition-colors cursor-pointer"
-                    onClick={() => startNewChat(character.id)}
-                  >
-                    <CardContent className="p-2">
+        <div className="px-4 pb-4 pt-6 space-y-2">
+          {isLoading ? (
+            <div className="space-y-4">
+              {[...Array(3)].map((_, i) => (
+                <Card key={i} className="bg-gray-800 border-gray-700 animate-pulse">
+                  <CardContent className="p-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 bg-gray-600 rounded-full"></div>
+                      <div className="flex-1 space-y-2">
+                        <div className="h-4 bg-gray-600 rounded w-1/3"></div>
+                        <div className="h-3 bg-gray-600 rounded w-1/2"></div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : characterHistory.length === 0 ? (
+            <div className="text-center py-12">
+              <MessageCircle className="h-16 w-16 text-gray-500 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-gray-300 mb-2">No character chats yet</h3>
+              <p className="text-gray-500 mb-6">
+                Start chatting with characters to see them here
+              </p>
+              <button
+                onClick={() => navigate('/')}
+                className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg transition-colors"
+              >
+                Explore Characters
+              </button>
+            </div>
+          ) : (
+            characterHistory.map((character) => (
+              <Card
+                key={character.id}
+                className="bg-gray-800 border-gray-700 hover:bg-gray-750 transition-colors cursor-pointer"
+                onClick={() => startNewChat(character.id)}
+              >
+                <CardContent className="p-2">
+                  <div className="flex items-center gap-2">
+                    {/* Character Avatar */}
+                    <Avatar className="w-10 h-10 flex-shrink-0">
+                      <AvatarImage src={character.avatar_url} alt={character.name} />
+                      <AvatarFallback className="bg-gray-600 text-white text-sm">
+                        {character.name.charAt(0)}
+                      </AvatarFallback>
+                    </Avatar>
+
+                    {/* Character Info */}
+                    <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        {/* Character Avatar */}
-                        <Avatar className="w-10 h-10 flex-shrink-0">
-                          <AvatarImage src={character.avatar_url} alt={character.name} />
-                          <AvatarFallback className="bg-gray-600 text-white text-sm">
-                            {character.name.charAt(0)}
-                          </AvatarFallback>
-                        </Avatar>
+                        <h3 className="font-semibold text-white truncate text-sm">
+                          {character.name}
+                        </h3>
+                        {character.isVip && (
+                          <Badge className="bg-yellow-500 text-black text-xs px-2 py-0.5">
+                            VIP
+                          </Badge>
+                        )}
+                      </div>
+                      
+                      <div className="flex items-center gap-1 text-gray-400 text-xs">
+                        <User className="h-3 w-3" />
+                        <span>by {character.author}</span>
+                      </div>
 
-                        {/* Character Info */}
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2">
-                            <h3 className="font-semibold text-white truncate text-sm">
-                              {character.name}
-                            </h3>
-                            {character.isVip && (
-                              <Badge className="bg-yellow-500 text-black text-xs px-2 py-0.5">
-                                VIP
-                              </Badge>
-                            )}
+                      <p className="text-gray-300 text-xs truncate">
+                        "{character.lastMessage}"
+                      </p>
+                      
+                      <div className="flex items-center justify-between text-xs text-gray-500">
+                        <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-1">
+                            <MessageCircle className="h-3 w-3" />
+                            <span>{character.totalMessages} messages</span>
                           </div>
-                          
-                          <div className="flex items-center gap-1 text-gray-400 text-xs">
-                            <User className="h-3 w-3" />
-                            <span>by {character.author}</span>
-                          </div>
-
-                          <p className="text-gray-300 text-xs truncate">
-                            "{character.lastMessage}"
-                          </p>
-                          
-                          <div className="flex items-center justify-between text-xs text-gray-500">
-                            <div className="flex items-center gap-2">
-                              <div className="flex items-center gap-1">
-                                <MessageCircle className="h-3 w-3" />
-                                <span>{character.totalMessages} messages</span>
-                              </div>
-                              <div className="flex items-center gap-1">
-                                <Clock className="h-3 w-3" />
-                                <span>{formatDate(character.lastChatDate)}</span>
-                              </div>
-                            </div>
+                          <div className="flex items-center gap-1">
+                            <Clock className="h-3 w-3" />
+                            <span>{formatDate(character.lastChatDate)}</span>
                           </div>
                         </div>
                       </div>
-                    </CardContent>
-                  </Card>
-                ))
-              )}
-            </div>
-          </TabsContent>
-
-          {/* Adventures */}
-          <TabsContent value="favorites" className="pt-28">
-            <div className="px-4 pb-4 space-y-2">
-              {isLoading ? (
-                <div className="space-y-4">
-                  {[...Array(3)].map((_, i) => (
-                    <Card key={i} className="bg-gray-800 border-gray-700 animate-pulse">
-                      <CardContent className="p-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-12 h-12 bg-gray-600 rounded-full"></div>
-                          <div className="flex-1 space-y-2">
-                            <div className="h-4 bg-gray-600 rounded w-1/3"></div>
-                            <div className="h-3 bg-gray-600 rounded w-1/2"></div>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              ) : adventureHistory.length === 0 ? (
-                <div className="text-center py-12">
-                  <MapPin className="h-16 w-16 text-gray-500 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-300 mb-2">No adventure history yet</h3>
-                  <p className="text-gray-500 mb-6">
-                    Start playing adventures to see them here
-                  </p>
-                  <button
-                    onClick={() => navigate('/adventures')}
-                    className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg transition-colors"
-                  >
-                    Explore Adventures
-                  </button>
-                </div>
-              ) : (
-                adventureHistory.map((adventure) => (
-                  <Card
-                    key={adventure.conversationId}
-                    className="bg-gray-800 border-gray-700 hover:bg-gray-750 transition-colors cursor-pointer"
-                    onClick={() => startAdventureChat(adventure.id)}
-                  >
-                    <CardContent className="p-2">
-                      <div className="flex items-center gap-2">
-                        {/* Adventure Image */}
-                        <Avatar className="w-10 h-10 flex-shrink-0">
-                          <AvatarImage src={adventure.adventure_image_url} alt={adventure.name} />
-                          <AvatarFallback className="bg-gradient-to-br from-purple-600 to-blue-600 text-white text-sm">
-                            🏰
-                          </AvatarFallback>
-                        </Avatar>
-
-                        {/* Adventure Info */}
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2">
-                            <h3 className="font-semibold text-white truncate text-sm">
-                              {adventure.name}
-                            </h3>
-                            <Badge className="bg-blue-500 text-white text-xs px-2 py-0.5">
-                              Adventure
-                            </Badge>
-                          </div>
-
-                          <div className="flex items-center gap-1 text-gray-400 text-xs">
-                            <User className="h-3 w-3" />
-                            <span>by {adventure.author}</span>
-                          </div>
-
-                          <p className="text-gray-300 text-xs truncate">
-                            {adventure.lastMessage}
-                          </p>
-
-                          <div className="flex items-center justify-between text-xs text-gray-500">
-                            <div className="flex items-center gap-2">
-                              <div className="flex items-center gap-1">
-                                <MessageCircle className="h-3 w-3" />
-                                <span>{adventure.totalMessages} messages</span>
-                              </div>
-                              <div className="flex items-center gap-1">
-                                <Clock className="h-3 w-3" />
-                                <span>{formatDate(adventure.lastChatDate)}</span>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))
-              )}
-            </div>
-          </TabsContent>
-        </Tabs>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))
+          )}
+        </div>
       </div>
     </Layout>
   );

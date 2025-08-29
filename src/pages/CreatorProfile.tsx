@@ -11,8 +11,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ChevronLeft, MoreHorizontal, Star, Loader2 } from "lucide-react";
 import { CharacterCard } from "@/components/CharacterCard";
-import { AdventureCard } from "@/components/AdventureCard";
-import { supabase, getFavoriteCharacters, checkIsFavorited, getFavoriteAdventures, checkAdventureIsFavorited } from "@/lib/supabase";
+import { supabase, getFavoriteCharacters, checkIsFavorited } from "@/lib/supabase";
 import { useUser } from "@clerk/clerk-react";
 import { toast } from "sonner";
 
@@ -39,10 +38,7 @@ const CreatorProfile = () => {
   const [creatorUser, setCreatorUser] = useState<CreatorUser | null>(null);
   const [userCharacters, setUserCharacters] = useState<any[]>([]);
   const [favoriteCharacters, setFavoriteCharacters] = useState<any[]>([]);
-  const [favoriteAdventures, setFavoriteAdventures] = useState<any[]>([]);
   const [viewerFavoritedIds, setViewerFavoritedIds] = useState<string[]>([]);
-  const [viewerFavoritedAdventureIds, setViewerFavoritedAdventureIds] = useState<string[]>([]);
-  const [favoritesSubTab, setFavoritesSubTab] = useState('characters'); // 'characters' or 'adventures'
 
   // Stats state
   const [stats, setStats] = useState({
@@ -81,7 +77,7 @@ const CreatorProfile = () => {
         .from('characters')
         .select('*, messages(id)')
         .eq('owner_id', userId)
-        .eq('visibility', 'public') // Only show public characters
+        .eq('visibility', 'public')
         .order('created_at', { ascending: false });
 
       if (charactersError) {
@@ -112,10 +108,6 @@ const CreatorProfile = () => {
       const favoriteChars = await getFavoriteCharacters(userId);
       setFavoriteCharacters(favoriteChars);
 
-      // Load creator's favorite adventures
-      const favoriteAdvs = await getFavoriteAdventures(userId);
-      setFavoriteAdventures(favoriteAdvs);
-
       // If current user is viewing, get their favorited status for creator's characters
       if (user && characterIds.length > 0) {
         const viewerFavorites = await checkIsFavorited(user.id, characterIds);
@@ -127,11 +119,11 @@ const CreatorProfile = () => {
 
       setStats({
         followers: followersCount,
-        following: 0, // Not implemented yet
+        following: 0,
         likes: totalLikes,
         publicBots: publicBotsCount,
-        favorites: favoriteChars.length + favoriteAdvs.length,
-        posts: 0 // Not implemented yet
+        favorites: favoriteChars.length,
+        posts: 0
       });
 
     } catch (error) {
@@ -147,26 +139,18 @@ const CreatorProfile = () => {
     loadCreatorData();
   }, [userId]);
 
-  // Filter characters/adventures based on active tab and sub-tab
+  // Filter characters based on active tab
   const getCharactersForTab = () => {
     switch (activeTab) {
       case 'bots':
         return userCharacters;
       case 'favorites':
-        return favoritesSubTab === 'characters' ? favoriteCharacters : [];
+        return favoriteCharacters;
       case 'posts':
-        // TODO: Implement posts functionality
         return [];
       default:
         return [];
     }
-  };
-
-  const getAdventuresForTab = () => {
-    if (activeTab === 'favorites' && favoritesSubTab === 'adventures') {
-      return favoriteAdventures;
-    }
-    return [];
   };
 
   // Handle favorite status changes by viewers
@@ -179,15 +163,6 @@ const CreatorProfile = () => {
   };
 
   const displayCharacters = getCharactersForTab();
-  const displayAdventures = getAdventuresForTab();
-
-  const handleAdventureFavoriteChange = async (adventureId: string, isFavorited: boolean) => {
-    if (isFavorited) {
-      setViewerFavoritedAdventureIds(prev => [...prev, adventureId]);
-    } else {
-      setViewerFavoritedAdventureIds(prev => prev.filter(id => id !== adventureId));
-    }
-  };
 
   const tabs = [
     { id: 'bots', label: 'Public Bots', count: stats.publicBots },
@@ -201,51 +176,6 @@ const CreatorProfile = () => {
     { id: 'chats', label: 'Chats' },
     { id: 'likes', label: 'Likes' }
   ];
-
-  const FavoriteCharacterCard = ({ character }: { character: any }) => (
-    <div className="character-card group cursor-pointer w-full bg-card rounded-2xl overflow-hidden">
-      {/* Image Container */}
-      <div className="relative aspect-[4/5] overflow-hidden">
-        <img
-          src={character.image}
-          alt={character.name}
-          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-        />
-
-        {/* Star/Bookmark Icon */}
-        <div className="absolute top-3 right-3">
-          <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-            <Star className="h-4 w-4 text-white fill-white" />
-          </div>
-        </div>
-
-        {/* Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent" />
-
-        {/* Content */}
-        <div className="absolute bottom-0 left-0 right-0 p-4">
-          <h3 className="text-lg font-bold text-white mb-1">
-            {character.name}
-          </h3>
-          <p className="text-sm text-gray-300 mb-3 line-clamp-2">
-            {character.description}
-          </p>
-
-          {/* Tags */}
-          <div className="flex flex-wrap gap-2">
-            {character.tags.map((tag: string, index: number) => (
-              <span
-                key={index}
-                className="px-2 py-1 bg-gray-700/80 text-white text-xs rounded-full"
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
 
   // Show loading if creator data is not yet available
   if (isLoading) {
@@ -374,51 +304,45 @@ const CreatorProfile = () => {
             </DropdownMenu>
           </div>
 
-          {/* Favorites Sub-tabs */}
-          {activeTab === 'favorites' && (
-            <div className="flex gap-4 mb-4">
-              <button
-                onClick={() => setFavoritesSubTab('characters')}
-                className={`text-sm font-medium pb-1 px-3 py-1 rounded-full transition-colors ${
-                  favoritesSubTab === 'characters'
-                    ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400'
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                Characters ({favoriteCharacters.length})
-              </button>
-              <button
-                onClick={() => setFavoritesSubTab('adventures')}
-                className={`text-sm font-medium pb-1 px-3 py-1 rounded-full transition-colors ${
-                  favoritesSubTab === 'adventures'
-                    ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400'
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                Adventures ({favoriteAdventures.length})
-              </button>
-            </div>
-          )}
-
           {/* Content Area */}
-          {(activeTab === 'favorites' && favoritesSubTab === 'adventures') ? (
-            displayAdventures.length > 0 ? (
+          {activeTab === 'favorites' ? (
+            favoriteCharacters.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {displayAdventures.map((adventure) => (
-                  <AdventureCard
-                    key={adventure.id}
-                    adventure={adventure}
-                    isFavorited={viewerFavoritedAdventureIds.includes(adventure.id)}
-                    onFavorite={handleAdventureFavoriteChange}
-                  />
+                {favoriteCharacters.map((character) => (
+                  <div key={character.id} className="character-card group cursor-pointer w-full bg-card rounded-2xl overflow-hidden">
+                    <div className="relative aspect-[4/5] overflow-hidden">
+                      <img
+                        src={character.image}
+                        alt={character.name}
+                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      />
+                      <div className="absolute top-3 right-3">
+                        <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                          <Star className="h-4 w-4 text-white fill-white" />
+                        </div>
+                      </div>
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent" />
+                      <div className="absolute bottom-0 left-0 right-0 p-4">
+                        <h3 className="text-lg font-bold text-white mb-1">{character.name}</h3>
+                        <p className="text-sm text-gray-300 mb-3 line-clamp-2">{character.description}</p>
+                        <div className="flex flex-wrap gap-2">
+                          {character.tags.map((tag: string, index: number) => (
+                            <span key={index} className="px-2 py-1 bg-gray-700/80 text-white text-xs rounded-full">
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 ))}
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center py-16 space-y-4">
                 <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center">
-                  <div className="text-2xl">🏰</div>
+                  <div className="text-2xl">💬</div>
                 </div>
-                <p className="text-muted-foreground text-sm">No favorite adventures yet.</p>
+                <p className="text-muted-foreground text-sm">No favorite characters yet.</p>
               </div>
             )
           ) : displayCharacters.length > 0 ? (
@@ -434,7 +358,7 @@ const CreatorProfile = () => {
                     category: character.tags?.[0] || 'General',
                     stats: {
                       messages: character.messages?.length || 0,
-                      likes: 0 // Placeholder
+                      likes: 0
                     },
                     isFavorited: viewerFavoritedIds.includes(character.id)
                   }}
@@ -449,10 +373,7 @@ const CreatorProfile = () => {
                 <div className="text-2xl">💬</div>
               </div>
               <p className="text-muted-foreground text-sm">
-                {activeTab === 'bots' ? 'No public bots yet.' :
-                 activeTab === 'favorites' && favoritesSubTab === 'characters' ? 'No favorite characters yet.' :
-                 activeTab === 'favorites' && favoritesSubTab === 'adventures' ? 'No favorite adventures yet.' :
-                 'No posts yet.'}
+                {activeTab === 'bots' ? 'No public bots yet.' : 'No posts yet.'}
               </p>
             </div>
           )}
