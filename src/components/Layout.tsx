@@ -60,7 +60,7 @@ export function Layout({ children, headerBottom, mainOverflow = 'auto', headerPo
                 </div>
               </div>
               {headerBottom ? (
-                <div className={"h-12 flex items-center px-4 " + (headerBottomBorder ? 'border-t border-border' : '')}>
+                <div className={"px-4 py-2 " + (headerBottomBorder ? 'border-t border-border' : '')}>
                   {headerBottom}
                 </div>
               ) : null}
