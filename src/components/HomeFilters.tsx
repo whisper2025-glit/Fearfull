@@ -50,10 +50,11 @@ export function HomeFilters({ activeTag, onTagChange, sortBy, onSortChange }: Ho
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="secondary"
-                  className="h-8 w-8 aspect-square p-0 rounded-lg border border-border/60 bg-secondary/80 text-[12px] font-medium"
+                  className="h-8 rounded-lg px-3 text-[12px] font-medium bg-secondary/80 border-0 ring-0 focus-visible:ring-0 focus:outline-none shadow-none"
                   aria-label="Sort"
                   title={sortBy}
                 >
+                  <span className="mr-1">{sortBy}</span>
                   <ChevronDown className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
