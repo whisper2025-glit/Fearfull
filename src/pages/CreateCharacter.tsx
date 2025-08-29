@@ -256,7 +256,7 @@ const CreateCharacter = () => {
                 </Label>
                 <p className="text-muted-foreground text-xs leading-relaxed">
                   Brief Description of your character, for display. This won't influence memory or prompts. You can enter 
-                  plain text or html text here. <a href="#" className="text-blue-400 underline">View the guide book.</a>
+                  plain text or html text here.
                 </p>
                 <Textarea
                   placeholder="e.g. I can talk to you the whole night if you want"
@@ -396,7 +396,7 @@ const CreateCharacter = () => {
                   </Label>
                   <p className="text-muted-foreground text-xs leading-relaxed">
                     The first message your character sends. This will only be included in short-term memory. 
-                    <a href="#" className="text-blue-400 underline"> View the guide book.</a>
+                    
                   </p>
                   <Textarea
                     placeholder="e.g. Hello {{user}}, how are you today?"
@@ -420,7 +420,7 @@ const CreateCharacter = () => {
                 </Label>
                 <p className="text-muted-foreground text-xs leading-relaxed">
                   The detailed description of your character. This will be included in long-term memory. 
-                  <a href="#" className="text-blue-400 underline"> View the guide book.</a>
+                  
                 </p>
                 <Textarea
                   placeholder="The Long Description allows you to have the Character describe themselves (traits, history, mannerisms, etc) and the kinds of things they want to talk about."
@@ -443,7 +443,7 @@ const CreateCharacter = () => {
                 </Label>
                 <p className="text-muted-foreground text-xs leading-relaxed">
                   Describe {'{char}'}'s appearance here. This content will be saved in the long-term context. 
-                  <a href="#" className="text-blue-400 underline"> View the guide book.</a>
+                  
                 </p>
                 <Textarea
                   placeholder="e.g.{{char}} has long, wavy brown hair, bright green eyes, and a warm smile. {{char}}'s skin is fair with a natural glow, and {{char}}'s features are delicate, with a slender frame and a graceful, confident posture."
@@ -466,7 +466,7 @@ const CreateCharacter = () => {
                 </Label>
                 <p className="text-muted-foreground text-xs leading-relaxed">
                   If the switch is turned on in the chat settings, this content will be included as long-term memory. 
-                  <a href="#" className="text-blue-400 underline"> View the guide book.</a>
+                  
                 </p>
                 <Textarea
                   placeholder="Describe the environment the Character is in."
