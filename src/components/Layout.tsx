@@ -23,7 +23,7 @@ export function Layout({ children, headerBottom, mainOverflow = 'auto', headerPo
 
   return (
     <SidebarProvider>
-      <div className="min-h-screen flex w-full overflow-x-hidden">
+      <div className="h-screen flex w-full overflow-hidden">
         <AppSidebar />
 
         <div className="flex-1 flex flex-col min-w-0">
