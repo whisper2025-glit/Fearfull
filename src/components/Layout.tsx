@@ -68,7 +68,7 @@ export function Layout({ children, headerBottom, mainOverflow = 'auto', headerPo
           )}
 
           {/* Main Content */}
-          <main className={mainOverflow === 'hidden' ? 'flex-1 overflow-hidden' : 'flex-1 overflow-auto'}>
+          <main className={mainOverflow === 'hidden' ? 'flex-1 min-h-0 overflow-hidden' : 'flex-1 min-h-0 overflow-auto'}>
             {children}
           </main>
         </div>
