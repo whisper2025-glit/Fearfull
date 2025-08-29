@@ -67,17 +67,8 @@ const CreateCharacter = () => {
             </Button>
             <div className="flex items-center gap-2">
               <h1 className="text-primary font-medium text-sm">New Character...</h1>
-              <span className="bg-yellow-500/20 text-yellow-500 px-2 py-1 rounded-full text-xs font-medium border border-yellow-500/30">
-                Draft
-              </span>
             </div>
           </div>
-          <Button variant="ghost" className="text-muted-foreground text-xs flex items-center gap-1 hover:bg-secondary/50">
-            <div className="bg-muted rounded p-1">
-              <Info className="h-4 w-4" />
-            </div>
-            <span>View Guide</span>
-          </Button>
         </div>
 
         {/* Tab Navigation */}
