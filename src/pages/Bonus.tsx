@@ -33,10 +33,10 @@ const CONVO_KEY = "bonus:conversation:"; // + yyyy-mm-dd
 export default function Bonus() {
   const { user } = useUser();
   const navigate = useNavigate();
-  const [coins, setCoins] = useState<number>(() => Number(localStorage.getItem(COIN_KEY) || 0));
+  const [coins, setCoins] = useState<number>(0);
   const [now, setNow] = useState<number>(Date.now());
-  const [hasCheckedIn, setHasCheckedIn] = useState<boolean>(() => !!localStorage.getItem(CHECKIN_KEY + utcDateKey()));
-  const [hasConvoReward, setHasConvoReward] = useState<boolean>(() => !!localStorage.getItem(CONVO_KEY + utcDateKey()));
+  const [hasCheckedIn, setHasCheckedIn] = useState<boolean>(() => !canClaimDailyReward('checkin'));
+  const [hasConvoReward, setHasConvoReward] = useState<boolean>(() => !canClaimDailyReward('conversation'));
   const [conversationEligible, setConversationEligible] = useState(false);
 
   useEffect(() => {
@@ -45,9 +45,8 @@ export default function Bonus() {
   }, []);
 
   useEffect(() => {
-    const todayKey = utcDateKey();
-    setHasCheckedIn(!!localStorage.getItem(CHECKIN_KEY + todayKey));
-    setHasConvoReward(!!localStorage.getItem(CONVO_KEY + todayKey));
+    setHasCheckedIn(!canClaimDailyReward('checkin'));
+    setHasConvoReward(!canClaimDailyReward('conversation'));
   }, [now]);
 
   useEffect(() => {
@@ -76,27 +75,30 @@ export default function Bonus() {
 
   const timeToReset = useMemo(() => nextMidnightUTC().getTime() - now, [now]);
 
-  const addCoins = (amount: number) => {
-    setCoins(prev => {
-      const next = prev + amount;
-      localStorage.setItem(COIN_KEY, String(next));
-      return next;
-    });
+  const addCoins = async (amount: number, reason: string) => {
+    if (!user) return;
+    try {
+      const newBalance = await incrementUserCoins(user.id, amount, reason);
+      setCoins(newBalance);
+    } catch (error) {
+      console.error('Error adding coins:', error);
+      toast.error('Failed to add coins');
+    }
   };
 
-  const handleCheckIn = () => {
-    if (hasCheckedIn) return;
-    addCoins(50);
-    localStorage.setItem(CHECKIN_KEY + utcDateKey(), '1');
+  const handleCheckIn = async () => {
+    if (hasCheckedIn || !user) return;
+    await addCoins(50, 'daily_checkin');
+    markDailyRewardClaimed('checkin');
     setHasCheckedIn(true);
     toast.success("Daily check-in successful! +50 coins");
   };
 
-  const handleConvoReward = () => {
-    if (hasConvoReward) return;
+  const handleConvoReward = async () => {
+    if (hasConvoReward || !user) return;
     if (!conversationEligible) { toast.error("Have a conversation today to claim this reward."); return; }
-    addCoins(10);
-    localStorage.setItem(CONVO_KEY + utcDateKey(), '1');
+    await addCoins(10, 'daily_conversation_bonus');
+    markDailyRewardClaimed('conversation');
     setHasConvoReward(true);
     toast.success("Conversation reward claimed! +10 coins");
   };
