@@ -65,7 +65,7 @@ export function AppSidebar() {
           </div>
           {!collapsed && (
             <span className="text-xl font-bold text-white">
-              Joyland
+              Whisperchat
             </span>
           )}
         </div>
