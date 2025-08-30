@@ -24,13 +24,13 @@ export function DebugMenu({ selectedModel, currentChatSettings, lastAPICall }: D
   const getStatusColor = (value: number, type: 'temperature' | 'tokens' | 'diversity') => {
     switch (type) {
       case 'temperature':
-        if (value < 0.3) return 'bg-blue-500';
+        if (value < 0.3) return 'bg-cyan-500';
         if (value < 0.7) return 'bg-green-500';
         return 'bg-orange-500';
       case 'tokens':
         if (value < 300) return 'bg-yellow-500';
         if (value < 500) return 'bg-green-500';
-        return 'bg-blue-500';
+        return 'bg-cyan-500';
       case 'diversity':
         if (value < 0.3) return 'bg-red-500';
         if (value < 0.7) return 'bg-green-500';
