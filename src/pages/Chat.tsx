@@ -370,13 +370,25 @@ const Chat = () => {
 
       if (userMessageError) {
         console.error('Error saving user message:', userMessageError);
-      } else if (!conversationToUse && insertedUserMessage?.conversation_id) {
-        conversationToUse = insertedUserMessage.conversation_id;
-        setCurrentConversationId(conversationToUse);
-        // Update URL to include conversation ID
-        const newSearchParams = new URLSearchParams(searchParams);
-        newSearchParams.set('conversation', conversationToUse);
-        navigate(`/chat/${characterId}?${newSearchParams.toString()}`, { replace: true });
+      } else {
+        // Award daily conversation coins once per UTC day
+        const today = new Date().toISOString().split('T')[0];
+        const convoKey = `bonus:conversation:${today}`;
+        const coinKey = 'bonus:coins';
+        if (!localStorage.getItem(convoKey)) {
+          const prev = Number(localStorage.getItem(coinKey) || 0);
+          localStorage.setItem(coinKey, String(prev + 10));
+          localStorage.setItem(convoKey, '1');
+          toast.success('+10 Whisper coins for chatting today');
+        }
+        if (!conversationToUse && insertedUserMessage?.conversation_id) {
+          conversationToUse = insertedUserMessage.conversation_id;
+          setCurrentConversationId(conversationToUse);
+          // Update URL to include conversation ID
+          const newSearchParams = new URLSearchParams(searchParams);
+          newSearchParams.set('conversation', conversationToUse);
+          navigate(`/chat/${characterId}?${newSearchParams.toString()}`, { replace: true });
+        }
       }
 
       // Prepare chat messages for OpenRouter

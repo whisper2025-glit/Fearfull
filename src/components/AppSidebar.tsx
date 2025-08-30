@@ -3,7 +3,8 @@ import {
   Home,
   Plus,
   MessageCircle,
-  Search
+  Search,
+  Gift
 } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useUser, useClerk, SignInButton, SignUpButton } from "@clerk/clerk-react";
@@ -32,7 +33,8 @@ const menuItems = [
   { title: "Create a bot", url: "/create", icon: Plus, isCreateModal: true },
   { title: "Home", url: "/", icon: Home },
   { title: "Chats", url: "/chats", icon: MessageCircle },
-  { title: "Search", url: "/search", icon: Search }
+  { title: "Search", url: "/search", icon: Search },
+  { title: "Bonus", url: "/bonus", icon: Gift }
 ];
 
 export function AppSidebar() {
@@ -63,7 +65,7 @@ export function AppSidebar() {
           </div>
           {!collapsed && (
             <span className="text-xl font-bold text-white">
-              Joyland
+              Whisperchat
             </span>
           )}
         </div>
