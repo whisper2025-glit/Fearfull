@@ -177,7 +177,7 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
       key={model.id}
       className={`border transition-all cursor-pointer rounded-xl overflow-hidden ${
         selectedModel?.id === model.id ? 'border-[#06b6d4]' : 'border-[#2d2e3e]'
-      } ${model.isActive ? 'border-[#06b6d4] bg-gradient-to-br from-[#e74c8c]/10 to-[#c44f93]/5' : 'bg-[#232438]'} ${model.isMain ? 'ring-2 ring-[#ffa500] border-[#ffa500]' : ''} hover:border-[#06b6d4]/60`}
+      } ${model.isActive ? 'border-[#06b6d4] bg-gradient-to-br from-[#06b6d4]/10 to-[#22d3ee]/5' : 'bg-[#232438]'} ${model.isMain ? 'ring-2 ring-[#ffa500] border-[#ffa500]' : ''} hover:border-[#06b6d4]/60`}
       onClick={() => handleModelSelect(model)}
     >
       <CardContent className="p-3">
