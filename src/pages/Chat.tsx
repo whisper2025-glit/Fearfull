@@ -405,18 +405,35 @@ const Chat = () => {
 
       if (userMessageError) {
         console.error('Error saving user message:', userMessageError);
+        toast.error('Failed to send message. Please try again.');
+        setIsLoading(false);
+        return;
       } else {
-        // Award daily conversation coins once per UTC day
+        // Deduct coins for sending the message
+        try {
+          const newBalance = await deductUserCoins(user.id, MESSAGE_COST, 'message_sent');
+          setUserCoins(newBalance);
+          console.log(`💸 ${MESSAGE_COST} coins deducted. New balance: ${newBalance}`);
+        } catch (error) {
+          console.error('Error deducting coins:', error);
+          toast.error('Failed to process coin payment. Message may not have been sent.');
+          setIsLoading(false);
+          return;
+        }
+
+        // Award daily conversation coins once per UTC day (bonus reward)
         if (canClaimDailyReward('conversation')) {
           try {
-            await incrementUserCoins(user.id, 10, 'daily_conversation');
+            const bonusBalance = await incrementUserCoins(user.id, 10, 'daily_conversation');
+            setUserCoins(bonusBalance);
             markDailyRewardClaimed('conversation');
-            toast.success('+10 Whisper coins for chatting today');
+            toast.success('+10 Whisper coins bonus for chatting today!');
           } catch (error) {
             console.error('Error awarding conversation coins:', error);
             // Don't show error to user, coin reward is not critical
           }
         }
+
         if (!conversationToUse && insertedUserMessage?.conversation_id) {
           conversationToUse = insertedUserMessage.conversation_id;
           setCurrentConversationId(conversationToUse);
