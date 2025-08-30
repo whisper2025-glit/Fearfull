@@ -453,10 +453,23 @@ const Chat = () => {
           role: 'system',
           content: openRouterAPI.getRoleplaySystemPrompt(modelToUse, currentCharacter.name)
         },
-        // Add character intro and scenario as context
+        // Enhanced character context for roleplay
         {
           role: 'system',
-          content: `Character: ${currentCharacter.name}\nIntro: ${currentCharacter.intro}\nScenario: ${currentCharacter.scenario}`
+          content: `# CHARACTER PROFILE
+Name: ${currentCharacter.name}
+Introduction: ${currentCharacter.intro}
+${currentCharacter.scenario ? `Scenario: ${currentCharacter.scenario}` : ''}
+${currentCharacter.personality ? `Personality: ${currentCharacter.personality}` : ''}
+${currentCharacter.appearance ? `Appearance: ${currentCharacter.appearance}` : ''}
+${currentCharacter.gender ? `Gender: ${currentCharacter.gender}` : ''}
+${currentCharacter.age ? `Age: ${currentCharacter.age}` : ''}
+${currentCharacter.greeting ? `First Meeting: ${currentCharacter.greeting}` : ''}
+
+# ROLEPLAY CONTEXT
+You are ${currentCharacter.name}. Embody this character completely - their thoughts, emotions, mannerisms, and unique perspective. Create responses that feel authentic to who they are as a person. Use the character information above to guide your portrayal, but bring them to life with your own interpretation and creativity.
+
+The conversation takes place in the scenario described above. Stay immersed in this world and respond as ${currentCharacter.name} would naturally react to the situation and the user's messages.`
         },
         // Add persona information if available
         ...(currentPersona ? [{
