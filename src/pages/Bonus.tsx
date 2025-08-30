@@ -32,6 +32,7 @@ const CONVO_KEY = "bonus:conversation:"; // + yyyy-mm-dd
 
 export default function Bonus() {
   const { user } = useUser();
+  const navigate = useNavigate();
   const [coins, setCoins] = useState<number>(() => Number(localStorage.getItem(COIN_KEY) || 0));
   const [now, setNow] = useState<number>(Date.now());
   const [hasCheckedIn, setHasCheckedIn] = useState<boolean>(() => !!localStorage.getItem(CHECKIN_KEY + utcDateKey()));
