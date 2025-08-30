@@ -372,14 +372,15 @@ const Chat = () => {
         console.error('Error saving user message:', userMessageError);
       } else {
         // Award daily conversation coins once per UTC day
-        const today = new Date().toISOString().split('T')[0];
-        const convoKey = `bonus:conversation:${today}`;
-        const coinKey = 'bonus:coins';
-        if (!localStorage.getItem(convoKey)) {
-          const prev = Number(localStorage.getItem(coinKey) || 0);
-          localStorage.setItem(coinKey, String(prev + 10));
-          localStorage.setItem(convoKey, '1');
-          toast.success('+10 Whisper coins for chatting today');
+        if (canClaimDailyReward('conversation')) {
+          try {
+            await incrementUserCoins(user.id, 10, 'daily_conversation');
+            markDailyRewardClaimed('conversation');
+            toast.success('+10 Whisper coins for chatting today');
+          } catch (error) {
+            console.error('Error awarding conversation coins:', error);
+            // Don't show error to user, coin reward is not critical
+          }
         }
         if (!conversationToUse && insertedUserMessage?.conversation_id) {
           conversationToUse = insertedUserMessage.conversation_id;
