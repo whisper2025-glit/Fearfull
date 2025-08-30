@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Coins, Clock } from "lucide-react";
 import { toast } from "sonner";
 import { useUser } from "@clerk/clerk-react";
-import { supabase } from "@/lib/supabase";
+import { supabase, getUserCoins, incrementUserCoins, canClaimDailyReward, markDailyRewardClaimed, migrateLocalStorageCoins } from "@/lib/supabase";
 import { useNavigate } from "react-router-dom";
 
 const utcDateKey = () => new Date().toISOString().split("T")[0];
