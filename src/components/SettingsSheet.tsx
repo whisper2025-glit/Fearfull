@@ -223,7 +223,7 @@ const SettingsSheet = ({ children }: SettingsSheetProps) => {
             </button>
             
             <div className="text-center text-xs text-gray-400">
-              Use of Joyland.AI is bound by our{" "}
+              Use of Whisperchat.AI is bound by our{" "}
               <button className="text-blue-400 underline hover:text-blue-300">
                 Terms of Service
               </button>{" "}
