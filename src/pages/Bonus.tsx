@@ -122,7 +122,7 @@ export default function Bonus() {
               <CardContent className="p-4 flex items-center gap-3">
                 <div className="flex-1">
                   <h3 className="text-sm font-semibold text-green-400">Rewards for Daily Check-In</h3>
-                  <p className="text-xs text-muted-foreground">Check in and get Joyland coins every day!</p>
+                  <p className="text-xs text-muted-foreground">Check in and get Whisperchat coins every day!</p>
                   <div className="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
                     <Clock className="h-3 w-3" />
                     <span>Refresh in</span>
