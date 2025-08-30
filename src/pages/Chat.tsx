@@ -17,7 +17,7 @@ import { SuggestModal } from "@/components/SuggestModal";
 import { ChatSettingsModal } from "@/components/ChatSettingsModal";
 import { DebugMenu } from "@/components/DebugMenu";
 import { openRouterAPI, ChatMessage } from "@/lib/openrouter";
-import { supabase, createOrUpdateUser, getDefaultPersona, getChatSettings, getDefaultChatSettings, ChatSettings, incrementUserCoins, canClaimDailyReward, markDailyRewardClaimed } from "@/lib/supabase";
+import { supabase, createOrUpdateUser, getDefaultPersona, getChatSettings, getDefaultChatSettings, ChatSettings, incrementUserCoins, canClaimDailyReward, markDailyRewardClaimed, getUserCoins, deductUserCoins } from "@/lib/supabase";
 import { toast } from "sonner";
 
 interface Message {
