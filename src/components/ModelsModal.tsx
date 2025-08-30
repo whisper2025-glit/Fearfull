@@ -176,8 +176,8 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
     <Card
       key={model.id}
       className={`border transition-all cursor-pointer rounded-xl overflow-hidden ${
-        selectedModel?.id === model.id ? 'border-[#e74c8c]' : 'border-[#2d2e3e]'
-      } ${model.isActive ? 'border-[#e74c8c] bg-gradient-to-br from-[#e74c8c]/10 to-[#c44f93]/5' : 'bg-[#232438]'} ${model.isMain ? 'ring-2 ring-[#ffa500] border-[#ffa500]' : ''} hover:border-[#06b6d4]/60`}
+        selectedModel?.id === model.id ? 'border-[#06b6d4]' : 'border-[#2d2e3e]'
+      } ${model.isActive ? 'border-[#06b6d4] bg-gradient-to-br from-[#e74c8c]/10 to-[#c44f93]/5' : 'bg-[#232438]'} ${model.isMain ? 'ring-2 ring-[#ffa500] border-[#ffa500]' : ''} hover:border-[#06b6d4]/60`}
       onClick={() => handleModelSelect(model)}
     >
       <CardContent className="p-3">
@@ -392,7 +392,7 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
                       variant={allModelsTab === 'all' ? 'default' : 'ghost'}
                       className={`text-xs rounded-lg px-3 py-2 ${
                         allModelsTab === 'all'
-                          ? 'bg-[#e74c8c]/20 border border-[#e74c8c] text-[#e74c8c]'
+                          ? 'bg-[#e74c8c]/20 border border-[#06b6d4] text-[#e74c8c]'
                           : 'bg-[#2d2e3e] text-gray-300 hover:bg-[#34354a]'
                       }`}
                       style={{ fontSize: '12px' }}
@@ -404,7 +404,7 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
                       variant={allModelsTab === 'collections' ? 'default' : 'ghost'}
                       className={`text-xs rounded-lg px-3 py-2 ${
                         allModelsTab === 'collections'
-                          ? 'bg-[#e74c8c]/20 border border-[#e74c8c] text-[#e74c8c]'
+                          ? 'bg-[#e74c8c]/20 border border-[#06b6d4] text-[#e74c8c]'
                           : 'bg-[#2d2e3e] text-gray-300 hover:bg-[#34354a]'
                       }`}
                       style={{ fontSize: '12px' }}
@@ -416,7 +416,7 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
                       variant={allModelsTab === 'recently' ? 'default' : 'ghost'}
                       className={`text-xs rounded-lg px-3 py-2 ${
                         allModelsTab === 'recently'
-                          ? 'bg-[#e74c8c]/20 border border-[#e74c8c] text-[#e74c8c]'
+                          ? 'bg-[#e74c8c]/20 border border-[#06b6d4] text-[#e74c8c]'
                           : 'bg-[#2d2e3e] text-gray-300 hover:bg-[#34354a]'
                       }`}
                       style={{ fontSize: '12px' }}
