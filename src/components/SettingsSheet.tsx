@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Sheet,
   SheetContent,
@@ -18,6 +18,8 @@ import {
   Mail,
   Twitter
 } from "lucide-react";
+import { useUser, useClerk } from "@clerk/clerk-react";
+import { supabase } from "@/lib/supabase";
 
 // Custom Discord Icon
 const DiscordIcon = ({ className }: { className?: string }) => (
@@ -41,12 +43,40 @@ const SettingsSheet = ({ children }: SettingsSheetProps) => {
   const [darkMode, setDarkMode] = useState(true);
   const [participateInLeaderboards, setParticipateInLeaderboards] = useState(true);
   const [allowFollowers, setAllowFollowers] = useState(true);
+  const { user } = useUser();
+  const { signOut } = useClerk();
 
-  const userAccount = {
-    uid: "3x2ZPZ",
-    email: "matiureleeroy200804@gmail.com",
+  const [account, setAccount] = useState({
+    uid: "",
+    email: "",
     plan: "free"
-  };
+  });
+
+  useEffect(() => {
+    const loadAccount = async () => {
+      if (!user) return;
+      try {
+        const { data } = await supabase
+          .from("users")
+          .select("email, plan")
+          .eq("id", user.id)
+          .single();
+
+        setAccount({
+          uid: user.id,
+          email: data?.email || user.emailAddresses?.[0]?.emailAddress || "",
+          plan: (data as any)?.plan || "free",
+        });
+      } catch (e) {
+        setAccount({
+          uid: user.id,
+          email: user.emailAddresses?.[0]?.emailAddress || "",
+          plan: "free",
+        });
+      }
+    };
+    loadAccount();
+  }, [user]);
 
   const contactLinks = [
     {
@@ -81,13 +111,11 @@ const SettingsSheet = ({ children }: SettingsSheetProps) => {
     }
   ];
 
-  const handleLogout = () => {
-    // Handle logout logic
-    console.log("Logging out...");
+  const handleLogout = async () => {
+    await signOut();
   };
 
   const handleRemoveAccount = () => {
-    // Handle account removal logic
     console.log("Removing account...");
   };
 
@@ -96,12 +124,11 @@ const SettingsSheet = ({ children }: SettingsSheetProps) => {
       <SheetTrigger asChild>
         {children}
       </SheetTrigger>
-      <SheetContent 
-        side="right" 
+      <SheetContent
+        side="right"
         className="w-full sm:max-w-sm bg-gray-900 text-white border-gray-800 p-0 overflow-y-auto"
       >
         <div className="flex flex-col h-full">
-          {/* Header */}
           <SheetHeader className="p-6 pb-4">
             <SheetTitle className="text-xl font-semibold text-white text-center">
               Settings
@@ -109,7 +136,6 @@ const SettingsSheet = ({ children }: SettingsSheetProps) => {
           </SheetHeader>
 
           <div className="flex-1 px-6 space-y-6">
-            {/* Dark Mode */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <Moon className="h-5 w-5 text-white" />
@@ -124,26 +150,25 @@ const SettingsSheet = ({ children }: SettingsSheetProps) => {
 
             <Separator className="bg-gray-700" />
 
-            {/* Account Section */}
             <div className="space-y-4">
               <h3 className="text-gray-400 text-sm font-medium">Account</h3>
-              
+
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <span className="text-white">UID</span>
-                  <span className="text-gray-300">{userAccount.uid}</span>
+                  <span className="text-gray-300">{account.uid}</span>
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <span className="text-white">Email</span>
-                  <span className="text-gray-300 text-sm">{userAccount.email}</span>
+                  <span className="text-gray-300 text-sm break-all">{account.email}</span>
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <span className="text-white">Current Plan</span>
-                  <span className="text-gray-300">{userAccount.plan}</span>
+                  <span className="text-gray-300 capitalize">{account.plan}</span>
                 </div>
-                
+
                 <button className="flex items-center justify-between w-full text-left">
                   <span className="text-white">Manage Subscription</span>
                   <ChevronRight className="h-4 w-4 text-gray-400" />
@@ -153,10 +178,9 @@ const SettingsSheet = ({ children }: SettingsSheetProps) => {
 
             <Separator className="bg-gray-700" />
 
-            {/* Privacy Section */}
             <div className="space-y-4">
               <h3 className="text-gray-400 text-sm font-medium">Privacy</h3>
-              
+
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <span className="text-white">Participate in leaderboards</span>
@@ -166,7 +190,7 @@ const SettingsSheet = ({ children }: SettingsSheetProps) => {
                     className="data-[state=checked]:bg-cyan-600"
                   />
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <span className="text-white">Allow other users to follow me</span>
                   <Switch
@@ -180,10 +204,9 @@ const SettingsSheet = ({ children }: SettingsSheetProps) => {
 
             <Separator className="bg-gray-700" />
 
-            {/* Contact Us Section */}
             <div className="space-y-4">
               <h3 className="text-gray-400 text-sm font-medium">Contact Us</h3>
-              
+
               <div className="space-y-2">
                 {contactLinks.map((link) => {
                   const IconComponent = link.icon;
@@ -205,7 +228,6 @@ const SettingsSheet = ({ children }: SettingsSheetProps) => {
             </div>
           </div>
 
-          {/* Bottom Actions */}
           <div className="p-6 space-y-4 border-t border-gray-700">
             <Button
               onClick={handleLogout}
@@ -214,14 +236,14 @@ const SettingsSheet = ({ children }: SettingsSheetProps) => {
               <LogOut className="h-4 w-4 mr-2" />
               Log out
             </Button>
-            
+
             <button
               onClick={handleRemoveAccount}
               className="text-white underline text-sm hover:text-gray-300 transition-colors"
             >
               Remove account
             </button>
-            
+
             <div className="text-center text-xs text-gray-400">
               Use of Whisperchat.AI is bound by our{" "}
               <button className="text-cyan-400 underline hover:text-cyan-300">
