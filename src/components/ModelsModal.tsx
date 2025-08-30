@@ -328,10 +328,10 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
                   </Button>
 
                   {showDropdown && (
-                    <div className="absolute top-full left-0 mt-1 bg-[#06b6d4] border border-[#c44f93] rounded-lg shadow-lg z-50 min-w-[120px]">
+                    <div className="absolute top-full left-0 mt-1 bg-[#06b6d4] border border-[#22d3ee] rounded-lg shadow-lg z-50 min-w-[120px]">
                       <div className="p-1">
                         <button
-                          className="w-full text-left px-3 py-2 text-xs hover:bg-[#d63384] rounded text-white font-medium"
+                          className="w-full text-left px-3 py-2 text-xs hover:bg-[#0891b2] rounded text-white font-medium"
                           style={{ fontSize: '12px' }}
                           onClick={() => {
                             setFilterType('active');
@@ -341,7 +341,7 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
                           Active
                         </button>
                         <button
-                          className="w-full text-left px-3 py-2 text-xs hover:bg-[#d63384] rounded text-white"
+                          className="w-full text-left px-3 py-2 text-xs hover:bg-[#0891b2] rounded text-white"
                           style={{ fontSize: '12px' }}
                           onClick={() => {
                             setFilterType('new');
@@ -351,7 +351,7 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
                           New
                         </button>
                         <button
-                          className="w-full text-left px-3 py-2 text-xs hover:bg-[#d63384] rounded text-white"
+                          className="w-full text-left px-3 py-2 text-xs hover:bg-[#0891b2] rounded text-white"
                           style={{ fontSize: '12px' }}
                           onClick={() => {
                             setFilterType('popular');
