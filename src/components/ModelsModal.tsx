@@ -209,12 +209,12 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
                   tag === 'Roleplay' ? 'bg-purple-600 text-white font-medium' :
                   tag === 'Creative' ? 'bg-cyan-600 text-white' :
                   tag === 'Narrative' ? 'bg-indigo-600 text-white' :
-                  tag === 'Character' ? 'bg-pink-600 text-white' :
+                  tag === 'Character' ? 'bg-cyan-600 text-white' :
                   tag === 'Fast' ? 'bg-cyan-600 text-white' :
                   tag === 'Interactive' ? 'bg-teal-600 text-white' :
                   tag === 'Dialogue' ? 'bg-emerald-600 text-white' :
                   tag === 'Consistent' ? 'bg-lime-600 text-white' :
-                  tag === 'Emotional' ? 'bg-rose-600 text-white' :
+                  tag === 'Emotional' ? 'bg-cyan-700 text-white' :
                   tag === 'Complex' ? 'bg-violet-600 text-white' :
                   tag === 'Multilingual' ? 'bg-amber-600 text-white' :
                   tag === 'Cultural' ? 'bg-orange-600 text-white' :
