@@ -432,7 +432,7 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
                   {mockFolders.map((folder) => (
                     <Card
                       key={folder.id}
-                      className="bg-[#232438] border border-[#2d2e3e] hover:border-[#e74c8c]/40 cursor-pointer transition-all rounded-xl"
+                      className="bg-[#232438] border border-[#2d2e3e] hover:border-[#06b6d4]/40 cursor-pointer transition-all rounded-xl"
                       onClick={() => handleFolderSelect(folder)}
                     >
                       <CardContent className="p-4">
