@@ -80,7 +80,7 @@ export function CharacterCard({ character, onClick, onFavoriteChange }: Characte
             size="sm"
             className={`h-8 w-8 p-0 rounded-full backdrop-blur-sm transition-all duration-200 ${
               isFavorited
-                ? 'bg-pink-500/20 hover:bg-pink-500/30 text-pink-400'
+                ? 'bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-400'
                 : 'bg-black/20 hover:bg-black/40 text-white/60 hover:text-white'
             } ${isProcessing ? 'opacity-50 cursor-not-allowed' : ''}`}
             onClick={handleFavoriteClick}
@@ -88,7 +88,7 @@ export function CharacterCard({ character, onClick, onFavoriteChange }: Characte
           >
             <Heart
               className={`h-4 w-4 transition-all duration-200 ${
-                isFavorited ? 'fill-pink-400 text-pink-400' : ''
+                isFavorited ? 'fill-cyan-400 text-cyan-400' : ''
               }`}
             />
           </Button>
