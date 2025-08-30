@@ -168,7 +168,7 @@ export function BotProfileSheet({
                 <div className="flex items-center gap-4 text-sm text-white/80 mt-1">
                   <button
                     onClick={() => creatorId && navigate(`/creator/${creatorId}`)}
-                    className="hover:text-pink-400 transition-colors"
+                    className="hover:text-cyan-400 transition-colors"
                   >
                     {creatorName ? `@${creatorName}` : '@creator'}
                   </button>
@@ -181,7 +181,7 @@ export function BotProfileSheet({
               
               {/* Start Chat Button */}
               <div className="w-full">
-                <div className="w-full rounded-full p-[1px] bg-gradient-to-r from-pink-500 to-cyan-400">
+                <div className="w-full rounded-full p-[1px] bg-gradient-to-r from-gray-500 to-cyan-400">
                   <Button className="w-full rounded-full bg-black/40 hover:bg-black/60 text-white text-base py-3">
                     Start Chat
                   </Button>
@@ -193,13 +193,13 @@ export function BotProfileSheet({
                 <TabsList className="bg-transparent p-0 h-auto w-full justify-start">
                   <TabsTrigger
                     value="details"
-                    className="text-white data-[state=active]:text-pink-400 data-[state=active]:bg-transparent bg-transparent border-b-2 border-transparent data-[state=active]:border-pink-400 rounded-none px-0 mr-6"
+                    className="text-white data-[state=active]:text-cyan-400 data-[state=active]:bg-transparent bg-transparent border-b-2 border-transparent data-[state=active]:border-cyan-400 rounded-none px-0 mr-6"
                   >
                     Details
                   </TabsTrigger>
                   <TabsTrigger
                     value="comments"
-                    className="text-white/60 data-[state=active]:text-pink-400 data-[state=active]:bg-transparent bg-transparent border-b-2 border-transparent data-[state=active]:border-pink-400 rounded-none px-0"
+                    className="text-white/60 data-[state=active]:text-cyan-400 data-[state=active]:bg-transparent bg-transparent border-b-2 border-transparent data-[state=active]:border-cyan-400 rounded-none px-0"
                   >
                     Comments ({comments.length})
                   </TabsTrigger>
@@ -212,7 +212,7 @@ export function BotProfileSheet({
                       <Badge
                         key={tag}
                         variant="secondary"
-                        className={`${index === 0 ? 'bg-pink-500/20 text-pink-300 border-pink-500/30' : 'bg-white/10 text-white/70 border-white/20'} text-xs px-2 py-1 rounded-full`}
+                        className={`${index === 0 ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30' : 'bg-white/10 text-white/70 border-white/20'} text-xs px-2 py-1 rounded-full`}
                       >
                         {tag}
                       </Badge>
@@ -234,7 +234,7 @@ export function BotProfileSheet({
                       {/* View More/Less Button */}
                       <button
                         onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
-                        className="text-pink-400 text-sm font-medium flex items-center gap-1 hover:text-pink-300 transition-colors"
+                        className="text-cyan-400 text-sm font-medium flex items-center gap-1 hover:text-cyan-300 transition-colors"
                       >
                         {isDescriptionExpanded ? 'View Less' : 'View More'}
                         <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isDescriptionExpanded ? 'rotate-180' : ''}`} />
