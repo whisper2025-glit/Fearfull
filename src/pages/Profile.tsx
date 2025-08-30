@@ -312,7 +312,7 @@ const Profile = () => {
         <div className="relative">
           {/* Banner */}
           <div
-            className="h-64 bg-gradient-to-br from-cyan-600 to-purple-700 bg-cover bg-center relative"
+            className="h-64 bg-gradient-to-br from-cyan-600 to-gray-700 bg-cover bg-center relative"
             style={userProfile.banner ? { backgroundImage: `url(${userProfile.banner})` } : {}}
           >
             {/* Dark glass overlay */}
