@@ -202,7 +202,7 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
                 key={index}
                 variant="secondary"
                 className={`text-xs px-1.5 py-0 rounded ${
-                  tag === 'NSFW' ? 'bg-[#e74c8c] text-white' :
+                  tag === 'NSFW' ? 'bg-[#06b6d4] text-white' :
                   tag.includes('%OFF') ? 'bg-[#ffa500] text-black' :
                   tag === 'Main' ? 'bg-[#ffa500] text-black font-bold' :
                   tag === 'Free' ? 'bg-green-600 text-white' :
@@ -328,7 +328,7 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
                   </Button>
 
                   {showDropdown && (
-                    <div className="absolute top-full left-0 mt-1 bg-[#e74c8c] border border-[#c44f93] rounded-lg shadow-lg z-50 min-w-[120px]">
+                    <div className="absolute top-full left-0 mt-1 bg-[#06b6d4] border border-[#c44f93] rounded-lg shadow-lg z-50 min-w-[120px]">
                       <div className="p-1">
                         <button
                           className="w-full text-left px-3 py-2 text-xs hover:bg-[#d63384] rounded text-white font-medium"
@@ -392,7 +392,7 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
                       variant={allModelsTab === 'all' ? 'default' : 'ghost'}
                       className={`text-xs rounded-lg px-3 py-2 ${
                         allModelsTab === 'all'
-                          ? 'bg-[#e74c8c]/20 border border-[#06b6d4] text-cyan-400'
+                          ? 'bg-[#06b6d4]/20 border border-[#06b6d4] text-cyan-400'
                           : 'bg-[#2d2e3e] text-gray-300 hover:bg-[#34354a]'
                       }`}
                       style={{ fontSize: '12px' }}
@@ -404,7 +404,7 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
                       variant={allModelsTab === 'collections' ? 'default' : 'ghost'}
                       className={`text-xs rounded-lg px-3 py-2 ${
                         allModelsTab === 'collections'
-                          ? 'bg-[#e74c8c]/20 border border-[#06b6d4] text-cyan-400'
+                          ? 'bg-[#06b6d4]/20 border border-[#06b6d4] text-cyan-400'
                           : 'bg-[#2d2e3e] text-gray-300 hover:bg-[#34354a]'
                       }`}
                       style={{ fontSize: '12px' }}
@@ -416,7 +416,7 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
                       variant={allModelsTab === 'recently' ? 'default' : 'ghost'}
                       className={`text-xs rounded-lg px-3 py-2 ${
                         allModelsTab === 'recently'
-                          ? 'bg-[#e74c8c]/20 border border-[#06b6d4] text-cyan-400'
+                          ? 'bg-[#06b6d4]/20 border border-[#06b6d4] text-cyan-400'
                           : 'bg-[#2d2e3e] text-gray-300 hover:bg-[#34354a]'
                       }`}
                       style={{ fontSize: '12px' }}
