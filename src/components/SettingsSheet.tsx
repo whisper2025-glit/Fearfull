@@ -77,7 +77,7 @@ const SettingsSheet = ({ children }: SettingsSheetProps) => {
       name: "Email",
       icon: Mail,
       href: "#",
-      color: "text-blue-400"
+      color: "text-cyan-400"
     }
   ];
 
@@ -118,7 +118,7 @@ const SettingsSheet = ({ children }: SettingsSheetProps) => {
               <Switch
                 checked={darkMode}
                 onCheckedChange={setDarkMode}
-                className="data-[state=checked]:bg-blue-600"
+                className="data-[state=checked]:bg-cyan-600"
               />
             </div>
 
@@ -163,7 +163,7 @@ const SettingsSheet = ({ children }: SettingsSheetProps) => {
                   <Switch
                     checked={participateInLeaderboards}
                     onCheckedChange={setParticipateInLeaderboards}
-                    className="data-[state=checked]:bg-blue-600"
+                    className="data-[state=checked]:bg-cyan-600"
                   />
                 </div>
                 
@@ -172,7 +172,7 @@ const SettingsSheet = ({ children }: SettingsSheetProps) => {
                   <Switch
                     checked={allowFollowers}
                     onCheckedChange={setAllowFollowers}
-                    className="data-[state=checked]:bg-blue-600"
+                    className="data-[state=checked]:bg-cyan-600"
                   />
                 </div>
               </div>
@@ -224,11 +224,11 @@ const SettingsSheet = ({ children }: SettingsSheetProps) => {
             
             <div className="text-center text-xs text-gray-400">
               Use of Whisperchat.AI is bound by our{" "}
-              <button className="text-blue-400 underline hover:text-blue-300">
+              <button className="text-cyan-400 underline hover:text-cyan-300">
                 Terms of Service
               </button>{" "}
               and{" "}
-              <button className="text-blue-400 underline hover:text-blue-300">
+              <button className="text-cyan-400 underline hover:text-cyan-300">
                 Privacy Policy
               </button>
             </div>
