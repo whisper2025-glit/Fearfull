@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useUser } from '@clerk/clerk-react';
-import { createOrUpdateUser, supabase } from '@/lib/supabase';
+import { createOrUpdateUser, supabase, processInviteCode } from '@/lib/supabase';
 import { toast } from 'sonner';
 
 export const useUserSync = () => {
@@ -33,10 +33,6 @@ export const useUserSync = () => {
           email: user.emailAddresses?.[0]?.emailAddress
         });
 
-        // Sync user with Supabase using the basic client (no JWT required)
-        const result = await createOrUpdateUser(user);
-        console.log('✅ User synced with Supabase successfully:', result);
-        toast.success(`Welcome, ${result.username || result.full_name || 'User'}!`);
       } catch (error) {
         console.error('❌ Error syncing user:', error);
         // Don't show error toasts for user sync issues, just log them
