@@ -182,6 +182,21 @@ const Profile = () => {
 
   const displayCharacters = getCharactersForTab();
 
+  const getSortedCharacters = (chars: any[]) => {
+    const list = [...(chars || [])];
+    switch (sortBy) {
+      case 'oldest':
+        return list.sort((a, b) => new Date(a.created_at || 0).getTime() - new Date(b.created_at || 0).getTime());
+      case 'chats':
+        return list.sort((a, b) => (characterStatsMap[b.id]?.messages ?? 0) - (characterStatsMap[a.id]?.messages ?? 0));
+      case 'likes':
+        return list.sort((a, b) => (characterStatsMap[b.id]?.likes ?? 0) - (characterStatsMap[a.id]?.likes ?? 0));
+      case 'newest':
+      default:
+        return list.sort((a, b) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime());
+    }
+  };
+
   const tabs = [
     { id: 'bots', label: 'Public Bots', count: stats.publicBots },
     { id: 'favorites', label: 'Favorites', count: stats.favorites },
@@ -561,7 +576,7 @@ const Profile = () => {
             </div>
           ) : displayCharacters.length > 0 ? (
             <div className="grid grid-cols-2 gap-4">
-              {displayCharacters.map((character) => (
+              {getSortedCharacters(displayCharacters).map((character) => (
                 <CharacterCard
                   key={character.id}
                   character={{
