@@ -45,9 +45,18 @@ export default function Bonus() {
   }, []);
 
   useEffect(() => {
-    setHasCheckedIn(!canClaimDailyReward('checkin'));
-    setHasConvoReward(!canClaimDailyReward('conversation'));
-  }, [now]);
+    const checkClaimStatus = async () => {
+      if (!user) return;
+
+      const canClaimCheckin = await canClaimDailyReward(user.id, 'checkin');
+      const canClaimConvo = await canClaimDailyReward(user.id, 'conversation');
+
+      setHasCheckedIn(!canClaimCheckin);
+      setHasConvoReward(!canClaimConvo);
+    };
+
+    checkClaimStatus();
+  }, [now, user]);
 
   useEffect(() => {
     const loadEligibility = async () => {
@@ -109,19 +118,50 @@ export default function Bonus() {
 
   const handleCheckIn = async () => {
     if (hasCheckedIn || !user) return;
+
+    // Double-check server-side before claiming
+    const canClaim = await canClaimDailyReward(user.id, 'checkin');
+    if (!canClaim) {
+      toast.error('Daily check-in already claimed today!');
+      setHasCheckedIn(true);
+      return;
+    }
+
     await addCoins(50, 'daily_checkin');
-    markDailyRewardClaimed('checkin');
-    setHasCheckedIn(true);
-    toast.success("Daily check-in successful! +50 coins");
+    const success = await markDailyRewardClaimed(user.id, 'checkin', 50);
+
+    if (success) {
+      setHasCheckedIn(true);
+      toast.success("Daily check-in successful! +50 coins");
+    } else {
+      toast.error('Failed to record claim. Please try again.');
+    }
   };
 
   const handleConvoReward = async () => {
     if (hasConvoReward || !user) return;
-    if (!conversationEligible) { toast.error("Have a conversation today to claim this reward."); return; }
+    if (!conversationEligible) {
+      toast.error("Have a conversation today to claim this reward.");
+      return;
+    }
+
+    // Double-check server-side before claiming
+    const canClaim = await canClaimDailyReward(user.id, 'conversation');
+    if (!canClaim) {
+      toast.error('Conversation reward already claimed today!');
+      setHasConvoReward(true);
+      return;
+    }
+
     await addCoins(10, 'daily_conversation_bonus');
-    markDailyRewardClaimed('conversation');
-    setHasConvoReward(true);
-    toast.success("Conversation reward claimed! +10 coins");
+    const success = await markDailyRewardClaimed(user.id, 'conversation', 10);
+
+    if (success) {
+      setHasConvoReward(true);
+      toast.success("Conversation reward claimed! +10 coins");
+    } else {
+      toast.error('Failed to record claim. Please try again.');
+    }
   };
 
 
