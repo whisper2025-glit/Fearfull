@@ -150,7 +150,7 @@ export default function Bonus() {
                   </div>
                 </div>
                 <Button disabled={hasConvoReward} onClick={() => { if (conversationEligible) { handleConvoReward(); } else { navigate('/'); } }} className="rounded-full">
-                  {hasConvoReward ? "Claimed" : conversationEligible ? "+10" : "Do a chat"}
+                  {hasConvoReward ? "Claimed" : conversationEligible ? "+10" : "Do chat"}
                 </Button>
               </CardContent>
             </Card>
