@@ -218,6 +218,11 @@ export default function Bonus() {
               </CardContent>
             </Card>
           </div>
+
+          {/* Invite Friends Section */}
+          <div className="mt-8">
+            <InviteFriends />
+          </div>
         </div>
       </div>
     </Layout>
