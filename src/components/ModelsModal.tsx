@@ -207,7 +207,7 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
                   tag === 'Main' ? 'bg-[#ffa500] text-black font-bold' :
                   tag === 'Free' ? 'bg-green-600 text-white' :
                   tag === 'Roleplay' ? 'bg-purple-600 text-white font-medium' :
-                  tag === 'Creative' ? 'bg-blue-600 text-white' :
+                  tag === 'Creative' ? 'bg-cyan-600 text-white' :
                   tag === 'Narrative' ? 'bg-indigo-600 text-white' :
                   tag === 'Character' ? 'bg-pink-600 text-white' :
                   tag === 'Fast' ? 'bg-cyan-600 text-white' :
