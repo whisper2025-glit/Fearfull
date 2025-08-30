@@ -73,6 +73,27 @@ export default function Bonus() {
     loadEligibility();
   }, [user]);
 
+  // Load user coins from database and migrate localStorage coins
+  useEffect(() => {
+    const loadUserCoins = async () => {
+      if (!user) return;
+
+      try {
+        // First, migrate any localStorage coins to database
+        await migrateLocalStorageCoins(user.id);
+
+        // Then load the current balance from database
+        const currentCoins = await getUserCoins(user.id);
+        setCoins(currentCoins);
+      } catch (error) {
+        console.error('Error loading user coins:', error);
+        // Don't show error to user, we'll fallback to 0 coins
+      }
+    };
+
+    loadUserCoins();
+  }, [user]);
+
   const timeToReset = useMemo(() => nextMidnightUTC().getTime() - now, [now]);
 
   const addCoins = async (amount: number, reason: string) => {
