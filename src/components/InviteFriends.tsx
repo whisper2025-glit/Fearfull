@@ -160,7 +160,7 @@ export const InviteFriends = () => {
             </Button>
             <Button
               onClick={handleCopyInviteLink}
-              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
+              className="flex-1 bg-cyan-600 hover:bg-cyan-700 text-white"
               disabled={!inviteStats.invite_code}
             >
               <ExternalLink className="h-4 w-4 mr-2" />
@@ -173,7 +173,7 @@ export const InviteFriends = () => {
             <Button
               onClick={() => shareOnSocial('twitter')}
               size="sm"
-              className="bg-blue-400 hover:bg-blue-500 text-white"
+              className="bg-cyan-400 hover:bg-cyan-500 text-white"
               disabled={!inviteStats.invite_code}
             >
               Twitter
@@ -181,7 +181,7 @@ export const InviteFriends = () => {
             <Button
               onClick={() => shareOnSocial('facebook')}
               size="sm"
-              className="bg-blue-600 hover:bg-blue-700 text-white"
+              className="bg-cyan-600 hover:bg-cyan-700 text-white"
               disabled={!inviteStats.invite_code}
             >
               Facebook
