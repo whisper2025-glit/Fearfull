@@ -6,7 +6,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Upload, Info, ChevronUp, Heart, RotateCcw, Loader2 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { ArrowLeft, Upload, Info, ChevronUp, Heart, RotateCcw, Loader2, ChevronDown } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "@clerk/clerk-react";
 import { supabase, uploadImage } from "@/lib/supabase";
@@ -27,11 +29,30 @@ const CreateCharacter = () => {
     greeting: '',
     visibility: 'public',
     rating: 'filtered',
-    tags: '',
+    tags: [] as string[],
     gender: '',
     characterImage: '',
     sceneImage: ''
   });
+
+  const [isTagsSheetOpen, setIsTagsSheetOpen] = useState(false);
+
+  const HOME_TAGS = [
+    'For You',
+    'Anime',
+    'Romance',
+    'OC',
+    'RPG',
+    'Furry',
+    'Game Characters',
+    'BL & ABO',
+    'Movie & TV',
+    'Helpers',
+    'VTuber',
+    'Cartoon',
+    'Interactive story',
+    'Ai-Roleplay',
+  ];
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -315,25 +336,76 @@ const CreateCharacter = () => {
               </div>
 
               {/* Tags */}
-              <div className="space-y-4">
+              <div className="space-y-3">
                 <Label className="text-primary text-sm font-medium flex items-center gap-2">
                   Tags <Info className="h-4 w-4 text-muted-foreground" />
                 </Label>
-                <div className="relative">
-                  <Select>
-                    <SelectTrigger className="text-xs bg-secondary/50 border-border rounded-lg h-12">
-                      <SelectValue placeholder="Select tags..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="anime">Anime</SelectItem>
-                      <SelectItem value="realistic">Realistic</SelectItem>
-                      <SelectItem value="fantasy">Fantasy</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
-                    <ChevronUp className="h-4 w-4 text-primary rotate-180" />
+
+                {/* Selected tags preview */}
+                {formData.tags.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {formData.tags.map((tag) => (
+                      <Badge key={tag} variant="secondary" className="text-xs px-2 py-0.5">
+                        {tag}
+                      </Badge>
+                    ))}
                   </div>
-                </div>
+                )}
+
+                <Sheet open={isTagsSheetOpen} onOpenChange={setIsTagsSheetOpen}>
+                  <SheetTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="rounded-full text-xs w-full justify-between"
+                    >
+                      {formData.tags.length > 0 ? `${formData.tags.length} tag(s) selected` : 'Select tags'}
+                      <ChevronDown className="h-4 w-4" />
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent side="bottom" className="h-[70vh]">
+                    <SheetHeader>
+                      <SheetTitle className="text-sm">Select Tags</SheetTitle>
+                    </SheetHeader>
+                    <div className="mt-4 space-y-4">
+                      <div className="flex flex-wrap gap-2">
+                        {HOME_TAGS.filter(t => t !== 'For You').map((tag) => {
+                          const selected = formData.tags.includes(tag);
+                          return (
+                            <Badge
+                              key={tag}
+                              variant={selected ? 'default' : 'secondary'}
+                              className={`cursor-pointer text-xs ${selected ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}
+                              onClick={() => {
+                                setFormData(prev => ({
+                                  ...prev,
+                                  tags: prev.tags.includes(tag)
+                                    ? prev.tags.filter((t: string) => t !== tag)
+                                    : [...prev.tags, tag]
+                                }));
+                              }}
+                            >
+                              {tag}
+                            </Badge>
+                          );
+                        })}
+                      </div>
+                      <div className="flex gap-2 pt-4">
+                        <Button size="sm" className="text-xs" onClick={() => setIsTagsSheetOpen(false)}>
+                          Done
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="text-xs"
+                          onClick={() => setFormData(prev => ({ ...prev, tags: [] }))}
+                        >
+                          Clear All
+                        </Button>
+                      </div>
+                    </div>
+                  </SheetContent>
+                </Sheet>
               </div>
 
               {/* Gender */}
@@ -523,7 +595,7 @@ const CreateCharacter = () => {
                       scene_url: sceneUrl,
                       visibility: formData.visibility as 'public' | 'unlisted' | 'private',
                       rating: formData.rating as 'filtered' | 'unfiltered',
-                      tags: formData.tags ? [formData.tags] : null,
+                      tags: formData.tags && formData.tags.length > 0 ? formData.tags : null,
                       gender: formData.gender || null,
                       age: formData.age || null
                     })
