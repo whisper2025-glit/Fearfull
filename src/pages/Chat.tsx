@@ -284,7 +284,7 @@ const Chat = () => {
             ...defaults
           };
           setCurrentChatSettings(defaultSettings);
-          console.log('📋 Using default chat settings');
+          console.log('�� Using default chat settings');
         }
       } catch (error) {
         console.error('Error loading chat settings:', error);
@@ -301,6 +301,30 @@ const Chat = () => {
 
     loadChatSettings();
   }, [user, selectedModel]);
+
+  // Load user coin balance
+  useEffect(() => {
+    const loadUserCoins = async () => {
+      if (!user) {
+        setLoadingCoins(false);
+        return;
+      }
+
+      try {
+        setLoadingCoins(true);
+        const coins = await getUserCoins(user.id);
+        setUserCoins(coins);
+        console.log('💰 User coins loaded:', coins);
+      } catch (error) {
+        console.error('Error loading user coins:', error);
+        setUserCoins(0);
+      } finally {
+        setLoadingCoins(false);
+      }
+    };
+
+    loadUserCoins();
+  }, [user]);
 
   const handleSendMessage = async (messageContent?: string) => {
     const messageToSend = messageContent || message;
