@@ -129,7 +129,7 @@ export default function Bonus() {
     <Layout>
       <div className="flex-1 bg-background text-foreground min-h-full">
         <div className="p-4 space-y-4">
-          <Card className="bg-gradient-to-r from-purple-500/20 to-blue-500/20 border-border">
+          <Card className="bg-gradient-to-r from-purple-500/20 to-cyan-500/20 border-border">
             <CardContent className="p-4">
               <div className="flex items-center justify-center">
                 <div className="flex items-center gap-2 text-green-400">
