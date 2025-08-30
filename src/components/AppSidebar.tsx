@@ -8,7 +8,7 @@ import {
   Gift
 } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useUser, useClerk, SignInButton, SignUpButton } from "@clerk/clerk-react";
+import { useUser, useClerk, SignInButton } from "@clerk/clerk-react";
 import { CreateModal } from "@/components/CreateModal";
 import {
   Sidebar,
