@@ -152,7 +152,7 @@ export default function Bonus() {
                   <div className="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
                     <Clock className="h-3 w-3" />
                     <span>Refresh in</span>
-                    <Badge variant="secondary" className="bg-pink-500/20 text-pink-400">{formatCountdown(timeToReset)}</Badge>
+                    <Badge variant="secondary" className="bg-cyan-500/20 text-cyan-400">{formatCountdown(timeToReset)}</Badge>
                   </div>
                 </div>
                 <Button disabled={hasCheckedIn} onClick={handleCheckIn} className="rounded-full">
@@ -169,7 +169,7 @@ export default function Bonus() {
                   <div className="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
                     <Clock className="h-3 w-3" />
                     <span>Refresh in</span>
-                    <Badge variant="secondary" className="bg-pink-500/20 text-pink-400">{formatCountdown(timeToReset)}</Badge>
+                    <Badge variant="secondary" className="bg-cyan-500/20 text-cyan-400">{formatCountdown(timeToReset)}</Badge>
                   </div>
                 </div>
                 <Button disabled={hasConvoReward} onClick={() => { if (conversationEligible) { handleConvoReward(); } else { navigate('/'); } }} className="rounded-full">
