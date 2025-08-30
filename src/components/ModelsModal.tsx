@@ -473,7 +473,7 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
                 Cancel
               </Button>
               <Button
-                className="flex-1 bg-gradient-to-r from-[#06b6d4] to-[#22d3ee] hover:from-[#d63384] hover:to-[#b83e88] text-white rounded-lg py-2"
+                className="flex-1 bg-gradient-to-r from-[#06b6d4] to-[#22d3ee] hover:from-[#0891b2] hover:to-[#0e7490] text-white rounded-lg py-2"
                 onClick={() => onOpenChange(false)}
                 disabled={!selectedModel}
                 style={{ fontSize: '12px' }}
