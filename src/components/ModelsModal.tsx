@@ -195,7 +195,7 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
         </div>
 
         <div className="flex items-center justify-between mb-2">
-          <p className="text-[#e74c8c] text-xs" style={{ fontSize: '11px' }}>{model.author}</p>
+          <p className="text-cyan-400 text-xs" style={{ fontSize: '11px' }}>{model.author}</p>
           <div className="flex gap-1 flex-wrap">
             {model.tags.slice(0, 2).map((tag, index) => (
               <Badge
@@ -255,7 +255,7 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
         <div className="flex flex-col h-full overflow-hidden">
           <DialogHeader className="px-4 py-3 flex-shrink-0">
             <div className="flex items-center">
-              <DialogTitle className="text-lg font-bold text-[#e74c8c]" style={{ fontSize: '18px' }}>
+              <DialogTitle className="text-lg font-bold text-cyan-400" style={{ fontSize: '18px' }}>
                 Change Model
               </DialogTitle>
             </div>
@@ -392,7 +392,7 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
                       variant={allModelsTab === 'all' ? 'default' : 'ghost'}
                       className={`text-xs rounded-lg px-3 py-2 ${
                         allModelsTab === 'all'
-                          ? 'bg-[#e74c8c]/20 border border-[#06b6d4] text-[#e74c8c]'
+                          ? 'bg-[#e74c8c]/20 border border-[#06b6d4] text-cyan-400'
                           : 'bg-[#2d2e3e] text-gray-300 hover:bg-[#34354a]'
                       }`}
                       style={{ fontSize: '12px' }}
@@ -404,7 +404,7 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
                       variant={allModelsTab === 'collections' ? 'default' : 'ghost'}
                       className={`text-xs rounded-lg px-3 py-2 ${
                         allModelsTab === 'collections'
-                          ? 'bg-[#e74c8c]/20 border border-[#06b6d4] text-[#e74c8c]'
+                          ? 'bg-[#e74c8c]/20 border border-[#06b6d4] text-cyan-400'
                           : 'bg-[#2d2e3e] text-gray-300 hover:bg-[#34354a]'
                       }`}
                       style={{ fontSize: '12px' }}
@@ -416,7 +416,7 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
                       variant={allModelsTab === 'recently' ? 'default' : 'ghost'}
                       className={`text-xs rounded-lg px-3 py-2 ${
                         allModelsTab === 'recently'
-                          ? 'bg-[#e74c8c]/20 border border-[#06b6d4] text-[#e74c8c]'
+                          ? 'bg-[#e74c8c]/20 border border-[#06b6d4] text-cyan-400'
                           : 'bg-[#2d2e3e] text-gray-300 hover:bg-[#34354a]'
                       }`}
                       style={{ fontSize: '12px' }}
