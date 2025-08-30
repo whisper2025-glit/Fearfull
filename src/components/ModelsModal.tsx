@@ -176,14 +176,14 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
     <Card
       key={model.id}
       className={`border transition-all cursor-pointer rounded-xl overflow-hidden ${
-        selectedModel?.id === model.id ? 'border-[#e74c8c]' : 'border-[#2d2e3e]'
-      } ${model.isActive ? 'border-[#e74c8c] bg-gradient-to-br from-[#e74c8c]/10 to-[#c44f93]/5' : 'bg-[#232438]'} ${model.isMain ? 'ring-2 ring-[#ffa500] border-[#ffa500]' : ''} hover:border-[#e74c8c]/60`}
+        selectedModel?.id === model.id ? 'border-[#06b6d4]' : 'border-[#2d2e3e]'
+      } ${model.isActive ? 'border-[#06b6d4] bg-gradient-to-br from-[#06b6d4]/10 to-[#22d3ee]/5' : 'bg-[#232438]'} ${model.isMain ? 'ring-2 ring-[#ffa500] border-[#ffa500]' : ''} hover:border-[#06b6d4]/60`}
       onClick={() => handleModelSelect(model)}
     >
       <CardContent className="p-3">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2 flex-1 min-w-0">
-            <Circle className={`h-2.5 w-2.5 flex-shrink-0 ${model.isActive ? 'fill-[#e74c8c] text-[#e74c8c]' : 'text-gray-500'}`} />
+            <Circle className={`h-2.5 w-2.5 flex-shrink-0 ${model.isActive ? 'fill-[#06b6d4] text-[#06b6d4]' : 'text-gray-500'}`} />
             <h3 className="text-xs font-semibold text-white truncate" style={{ fontSize: '12px' }}>{model.name}</h3>
           </div>
           <div className="flex items-center gap-1">
@@ -195,26 +195,26 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
         </div>
 
         <div className="flex items-center justify-between mb-2">
-          <p className="text-[#e74c8c] text-xs" style={{ fontSize: '11px' }}>{model.author}</p>
+          <p className="text-cyan-400 text-xs" style={{ fontSize: '11px' }}>{model.author}</p>
           <div className="flex gap-1 flex-wrap">
             {model.tags.slice(0, 2).map((tag, index) => (
               <Badge
                 key={index}
                 variant="secondary"
                 className={`text-xs px-1.5 py-0 rounded ${
-                  tag === 'NSFW' ? 'bg-[#e74c8c] text-white' :
+                  tag === 'NSFW' ? 'bg-[#06b6d4] text-white' :
                   tag.includes('%OFF') ? 'bg-[#ffa500] text-black' :
                   tag === 'Main' ? 'bg-[#ffa500] text-black font-bold' :
                   tag === 'Free' ? 'bg-green-600 text-white' :
                   tag === 'Roleplay' ? 'bg-purple-600 text-white font-medium' :
-                  tag === 'Creative' ? 'bg-blue-600 text-white' :
+                  tag === 'Creative' ? 'bg-cyan-600 text-white' :
                   tag === 'Narrative' ? 'bg-indigo-600 text-white' :
-                  tag === 'Character' ? 'bg-pink-600 text-white' :
+                  tag === 'Character' ? 'bg-cyan-600 text-white' :
                   tag === 'Fast' ? 'bg-cyan-600 text-white' :
                   tag === 'Interactive' ? 'bg-teal-600 text-white' :
                   tag === 'Dialogue' ? 'bg-emerald-600 text-white' :
                   tag === 'Consistent' ? 'bg-lime-600 text-white' :
-                  tag === 'Emotional' ? 'bg-rose-600 text-white' :
+                  tag === 'Emotional' ? 'bg-cyan-700 text-white' :
                   tag === 'Complex' ? 'bg-violet-600 text-white' :
                   tag === 'Multilingual' ? 'bg-amber-600 text-white' :
                   tag === 'Cultural' ? 'bg-orange-600 text-white' :
@@ -255,7 +255,7 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
         <div className="flex flex-col h-full overflow-hidden">
           <DialogHeader className="px-4 py-3 flex-shrink-0">
             <div className="flex items-center">
-              <DialogTitle className="text-lg font-bold text-[#e74c8c]" style={{ fontSize: '18px' }}>
+              <DialogTitle className="text-lg font-bold text-cyan-400" style={{ fontSize: '18px' }}>
                 Change Model
               </DialogTitle>
             </div>
@@ -268,7 +268,7 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
               variant={activeTab === 'standard' ? 'default' : 'ghost'}
               className={`flex-1 rounded-2xl text-xs font-medium py-2 border-0 ${
                 activeTab === 'standard'
-                  ? 'bg-gradient-to-r from-[#e74c8c] to-[#c44f93] text-white shadow-lg'
+                  ? 'bg-gradient-to-r from-[#06b6d4] to-[#22d3ee] text-white shadow-lg'
                   : 'bg-[#2d2e3e] text-gray-300 hover:bg-[#34354a]'
               }`}
               style={{ fontSize: '12px' }}
@@ -280,7 +280,7 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
               variant={activeTab === 'pro' ? 'default' : 'ghost'}
               className={`flex-1 rounded-2xl text-xs font-medium py-2 border-0 ${
                 activeTab === 'pro'
-                  ? 'bg-gradient-to-r from-[#e74c8c] to-[#c44f93] text-white shadow-lg'
+                  ? 'bg-gradient-to-r from-[#06b6d4] to-[#22d3ee] text-white shadow-lg'
                   : 'bg-[#2d2e3e] text-gray-300 hover:bg-[#34354a]'
               }`}
               style={{ fontSize: '12px' }}
@@ -292,7 +292,7 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
               variant={activeTab === 'max' ? 'default' : 'ghost'}
               className={`flex-1 rounded-2xl text-xs font-medium py-2 border-0 ${
                 activeTab === 'max'
-                  ? 'bg-gradient-to-r from-[#e74c8c] to-[#c44f93] text-white shadow-lg'
+                  ? 'bg-gradient-to-r from-[#06b6d4] to-[#22d3ee] text-white shadow-lg'
                   : 'bg-[#2d2e3e] text-gray-300 hover:bg-[#34354a]'
               }`}
               style={{ fontSize: '12px' }}
@@ -328,10 +328,10 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
                   </Button>
 
                   {showDropdown && (
-                    <div className="absolute top-full left-0 mt-1 bg-[#e74c8c] border border-[#c44f93] rounded-lg shadow-lg z-50 min-w-[120px]">
+                    <div className="absolute top-full left-0 mt-1 bg-[#06b6d4] border border-[#22d3ee] rounded-lg shadow-lg z-50 min-w-[120px]">
                       <div className="p-1">
                         <button
-                          className="w-full text-left px-3 py-2 text-xs hover:bg-[#d63384] rounded text-white font-medium"
+                          className="w-full text-left px-3 py-2 text-xs hover:bg-[#0891b2] rounded text-white font-medium"
                           style={{ fontSize: '12px' }}
                           onClick={() => {
                             setFilterType('active');
@@ -341,7 +341,7 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
                           Active
                         </button>
                         <button
-                          className="w-full text-left px-3 py-2 text-xs hover:bg-[#d63384] rounded text-white"
+                          className="w-full text-left px-3 py-2 text-xs hover:bg-[#0891b2] rounded text-white"
                           style={{ fontSize: '12px' }}
                           onClick={() => {
                             setFilterType('new');
@@ -351,7 +351,7 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
                           New
                         </button>
                         <button
-                          className="w-full text-left px-3 py-2 text-xs hover:bg-[#d63384] rounded text-white"
+                          className="w-full text-left px-3 py-2 text-xs hover:bg-[#0891b2] rounded text-white"
                           style={{ fontSize: '12px' }}
                           onClick={() => {
                             setFilterType('popular');
@@ -392,7 +392,7 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
                       variant={allModelsTab === 'all' ? 'default' : 'ghost'}
                       className={`text-xs rounded-lg px-3 py-2 ${
                         allModelsTab === 'all'
-                          ? 'bg-[#e74c8c]/20 border border-[#e74c8c] text-[#e74c8c]'
+                          ? 'bg-[#06b6d4]/20 border border-[#06b6d4] text-cyan-400'
                           : 'bg-[#2d2e3e] text-gray-300 hover:bg-[#34354a]'
                       }`}
                       style={{ fontSize: '12px' }}
@@ -404,7 +404,7 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
                       variant={allModelsTab === 'collections' ? 'default' : 'ghost'}
                       className={`text-xs rounded-lg px-3 py-2 ${
                         allModelsTab === 'collections'
-                          ? 'bg-[#e74c8c]/20 border border-[#e74c8c] text-[#e74c8c]'
+                          ? 'bg-[#06b6d4]/20 border border-[#06b6d4] text-cyan-400'
                           : 'bg-[#2d2e3e] text-gray-300 hover:bg-[#34354a]'
                       }`}
                       style={{ fontSize: '12px' }}
@@ -416,7 +416,7 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
                       variant={allModelsTab === 'recently' ? 'default' : 'ghost'}
                       className={`text-xs rounded-lg px-3 py-2 ${
                         allModelsTab === 'recently'
-                          ? 'bg-[#e74c8c]/20 border border-[#e74c8c] text-[#e74c8c]'
+                          ? 'bg-[#06b6d4]/20 border border-[#06b6d4] text-cyan-400'
                           : 'bg-[#2d2e3e] text-gray-300 hover:bg-[#34354a]'
                       }`}
                       style={{ fontSize: '12px' }}
@@ -432,7 +432,7 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
                   {mockFolders.map((folder) => (
                     <Card
                       key={folder.id}
-                      className="bg-[#232438] border border-[#2d2e3e] hover:border-[#e74c8c]/40 cursor-pointer transition-all rounded-xl"
+                      className="bg-[#232438] border border-[#2d2e3e] hover:border-[#06b6d4]/40 cursor-pointer transition-all rounded-xl"
                       onClick={() => handleFolderSelect(folder)}
                     >
                       <CardContent className="p-4">
@@ -473,7 +473,7 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
                 Cancel
               </Button>
               <Button
-                className="flex-1 bg-gradient-to-r from-[#e74c8c] to-[#c44f93] hover:from-[#d63384] hover:to-[#b83e88] text-white rounded-lg py-2"
+                className="flex-1 bg-gradient-to-r from-[#06b6d4] to-[#22d3ee] hover:from-[#0891b2] hover:to-[#0e7490] text-white rounded-lg py-2"
                 onClick={() => onOpenChange(false)}
                 disabled={!selectedModel}
                 style={{ fontSize: '12px' }}

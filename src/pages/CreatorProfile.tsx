@@ -182,6 +182,21 @@ const CreatorProfile = () => {
 
   const displayCharacters = getCharactersForTab();
 
+  const getSortedCharacters = (chars: any[]) => {
+    const list = [...(chars || [])];
+    switch (sortBy) {
+      case 'oldest':
+        return list.sort((a, b) => new Date(a.created_at || 0).getTime() - new Date(b.created_at || 0).getTime());
+      case 'chats':
+        return list.sort((a, b) => (characterStatsMap[b.id]?.messages ?? 0) - (characterStatsMap[a.id]?.messages ?? 0));
+      case 'likes':
+        return list.sort((a, b) => (characterStatsMap[b.id]?.likes ?? 0) - (characterStatsMap[a.id]?.likes ?? 0));
+      case 'newest':
+      default:
+        return list.sort((a, b) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime());
+    }
+  };
+
   const tabs = [
     { id: 'bots', label: 'Public Bots', count: stats.publicBots },
     { id: 'favorites', label: 'Favorites', count: stats.favorites },
@@ -231,7 +246,7 @@ const CreatorProfile = () => {
         <div className="relative">
           {/* Banner */}
           <div
-            className="h-64 bg-gradient-to-br from-blue-600 to-purple-700 bg-cover bg-center relative"
+            className="h-64 bg-gradient-to-br from-cyan-600 to-gray-700 bg-cover bg-center relative"
             style={creatorUser.banner_url ? { backgroundImage: `url(${creatorUser.banner_url})` } : {}}
           >
             {/* Dark glass overlay */}
@@ -293,7 +308,7 @@ const CreatorProfile = () => {
                   onClick={() => setActiveTab(tab.id)}
                   className={`text-sm font-medium pb-2 border-b-2 transition-colors ${
                     activeTab === tab.id 
-                      ? 'text-blue-400 border-blue-400' 
+                      ? 'text-cyan-400 border-cyan-400' 
                       : 'text-muted-foreground border-transparent hover:text-foreground'
                   }`}
                 >
@@ -335,7 +350,7 @@ const CreatorProfile = () => {
                         className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                       />
                       <div className="absolute top-3 right-3">
-                        <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                        <div className="w-8 h-8 bg-cyan-600 rounded-full flex items-center justify-center">
                           <Star className="h-4 w-4 text-white fill-white" />
                         </div>
                       </div>
@@ -365,7 +380,7 @@ const CreatorProfile = () => {
             )
           ) : displayCharacters.length > 0 ? (
             <div className="grid grid-cols-2 gap-4">
-              {displayCharacters.map((character) => (
+              {getSortedCharacters(displayCharacters).map((character) => (
                 <CharacterCard
                   key={character.id}
                   character={{

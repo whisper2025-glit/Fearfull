@@ -301,7 +301,7 @@ export default function CharacterProfile() {
               variant="ghost"
               size="icon"
               className={`h-10 w-10 transition-colors ${
-                isFavorited ? 'text-pink-400' : 'text-white'
+                isFavorited ? 'text-cyan-400' : 'text-white'
               } ${isFavoriteLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
               onClick={handleFavoriteClick}
               disabled={isFavoriteLoading}
@@ -310,7 +310,7 @@ export default function CharacterProfile() {
               }}
             >
               <Heart className={`h-5 w-5 ${
-                isFavorited ? 'fill-pink-400' : ''
+                isFavorited ? 'fill-cyan-400' : ''
               }`} />
             </Button>
           </div>
@@ -347,13 +347,13 @@ export default function CharacterProfile() {
             variant="ghost"
             size="icon"
             className={`h-10 w-10 bg-black/20 backdrop-blur-sm transition-colors ${
-              isFavorited ? 'text-pink-400' : 'text-white'
+              isFavorited ? 'text-cyan-400' : 'text-white'
             } ${isFavoriteLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
             onClick={handleFavoriteClick}
             disabled={isFavoriteLoading}
           >
             <Heart className={`h-5 w-5 ${
-              isFavorited ? 'fill-pink-400' : ''
+              isFavorited ? 'fill-cyan-400' : ''
             }`} />
           </Button>
         </div>
@@ -396,13 +396,13 @@ export default function CharacterProfile() {
               variant="ghost"
               size="icon"
               className={`h-8 w-8 transition-colors ${
-                isFavorited ? 'text-pink-400' : 'text-white'
+                isFavorited ? 'text-cyan-400' : 'text-white'
               } ${isFavoriteLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
               onClick={handleFavoriteClick}
               disabled={isFavoriteLoading}
             >
               <Heart className={`h-4 w-4 ${
-                isFavorited ? 'fill-pink-400' : ''
+                isFavorited ? 'fill-cyan-400' : ''
               }`} />
             </Button>
           </div>
@@ -414,7 +414,7 @@ export default function CharacterProfile() {
             <button
               onClick={() => setActiveTab('details')}
               className={`text-sm font-medium pb-2 border-b-2 transition-colors ${
-                activeTab === 'details' ? 'text-pink-400 border-pink-400' : 'text-white/60 border-transparent'
+                activeTab === 'details' ? 'text-cyan-400 border-cyan-400' : 'text-white/60 border-transparent'
               }`}
             >
               Details
@@ -422,7 +422,7 @@ export default function CharacterProfile() {
             <button
               onClick={() => setActiveTab('comments')}
               className={`text-sm font-medium pb-2 border-b-2 transition-colors ${
-                activeTab === 'comments' ? 'text-pink-400 border-pink-400' : 'text-white/60 border-transparent'
+                activeTab === 'comments' ? 'text-cyan-400 border-cyan-400' : 'text-white/60 border-transparent'
               }`}
             >
               Comments ({comments.length})
@@ -482,7 +482,7 @@ export default function CharacterProfile() {
               pointerEvents: contentHideProgress > 0.7 ? 'none' : 'auto'
             }}
           >
-            <div className="w-full rounded-full p-[1px] bg-gradient-to-r from-pink-500 to-cyan-400">
+            <div className="w-full rounded-full p-[1px] bg-gradient-to-r from-gray-500 to-cyan-400">
               <Button
                 className="w-full rounded-full bg-black/40 hover:bg-black/60 text-white text-sm py-1"
                 onClick={handleStartChat}
@@ -506,7 +506,7 @@ export default function CharacterProfile() {
               <button
                 onClick={() => setActiveTab('details')}
                 className={`text-sm font-medium pb-2 border-b-2 transition-colors ${
-                  activeTab === 'details' ? 'text-pink-400 border-pink-400' : 'text-white/60 border-transparent'
+                  activeTab === 'details' ? 'text-cyan-400 border-cyan-400' : 'text-white/60 border-transparent'
                 }`}
               >
                 Details
@@ -514,7 +514,7 @@ export default function CharacterProfile() {
               <button
                 onClick={() => setActiveTab('comments')}
                 className={`text-sm font-medium pb-2 border-b-2 transition-colors ${
-                  activeTab === 'comments' ? 'text-pink-400 border-pink-400' : 'text-white/60 border-transparent'
+                  activeTab === 'comments' ? 'text-cyan-400 border-cyan-400' : 'text-white/60 border-transparent'
                 }`}
               >
                 Comments ({comments.length})
@@ -545,7 +545,7 @@ export default function CharacterProfile() {
                         variant="secondary"
                         className={`${
                           index === 0 || tag.toLowerCase() === 'unfiltered'
-                            ? 'bg-pink-500/20 text-pink-300 border-pink-500/30'
+                            ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30'
                             : 'bg-gray-600/50 text-gray-300 border-gray-500/30'
                         } text-xs px-3 py-1 rounded-full border`}
                       >
@@ -612,7 +612,7 @@ export default function CharacterProfile() {
                   {/* View More/Less Button */}
                   <button
                     onClick={() => setIsExpanded(!isExpanded)}
-                    className="text-pink-400 text-sm font-medium flex items-center gap-1 mt-3 hover:text-pink-300 transition-colors"
+                    className="text-cyan-400 text-sm font-medium flex items-center gap-1 mt-3 hover:text-cyan-300 transition-colors"
                   >
                     {isExpanded ? 'View Less' : 'View More'}
                     <svg
@@ -633,7 +633,7 @@ export default function CharacterProfile() {
                 <div className="flex items-center justify-between">
                   <h3 className="text-lg font-semibold text-white">Creation Info</h3>
                   <button
-                    className="text-pink-400 text-sm font-medium hover:text-pink-300 transition-colors flex items-center gap-1"
+                    className="text-cyan-400 text-sm font-medium hover:text-cyan-300 transition-colors flex items-center gap-1"
                     onClick={() => navigate(`/creator/${character.owner_id}`)}
                   >
                     View Profile
@@ -653,7 +653,7 @@ export default function CharacterProfile() {
                         className="w-12 h-12 rounded-full object-cover"
                       />
                     ) : (
-                      <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-pink-500 rounded-full flex items-center justify-center">
+                      <div className="w-12 h-12 bg-gradient-to-br from-gray-500 to-cyan-500 rounded-full flex items-center justify-center">
                         <span className="text-white font-bold text-lg">
                           {character.users?.full_name?.charAt(0) || 'U'}
                         </span>
@@ -670,7 +670,7 @@ export default function CharacterProfile() {
                           <span className="text-xs text-white/60">Followers</span>
                         </div>
                         <div className="flex items-center gap-1">
-                          <Heart className="h-3 w-3 text-pink-400" />
+                          <Heart className="h-3 w-3 text-cyan-400" />
                           <span className="text-sm font-medium text-white">{userStats.likesCount}</span>
                           <span className="text-xs text-white/60">Likes</span>
                         </div>

@@ -50,7 +50,7 @@ export function CommentItem({ comment, onLike, onReply, onViewReplies }: Comment
       {/* Avatar */}
       <Avatar className="w-10 h-10 flex-shrink-0">
         <AvatarImage src={comment.author.avatar} />
-        <AvatarFallback className="bg-gradient-to-br from-purple-500 to-pink-500 text-white">
+        <AvatarFallback className="bg-gradient-to-br from-gray-500 to-cyan-500 text-white">
           {comment.author.name.charAt(0).toUpperCase()}
         </AvatarFallback>
       </Avatar>
@@ -92,7 +92,7 @@ export function CommentItem({ comment, onLike, onReply, onViewReplies }: Comment
         {comment.hasReplies && comment.replyCount && comment.replyCount > 0 && (
           <button
             onClick={() => onViewReplies?.(comment.id)}
-            className="flex items-center gap-2 text-pink-400 text-sm font-medium hover:text-pink-300 transition-colors mt-2"
+            className="flex items-center gap-2 text-cyan-400 text-sm font-medium hover:text-cyan-300 transition-colors mt-2"
           >
             <span>─────</span>
             <span>View {comment.replyCount} reply{comment.replyCount !== 1 ? '' : ''}</span>

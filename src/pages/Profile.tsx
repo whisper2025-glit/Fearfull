@@ -182,6 +182,21 @@ const Profile = () => {
 
   const displayCharacters = getCharactersForTab();
 
+  const getSortedCharacters = (chars: any[]) => {
+    const list = [...(chars || [])];
+    switch (sortBy) {
+      case 'oldest':
+        return list.sort((a, b) => new Date(a.created_at || 0).getTime() - new Date(b.created_at || 0).getTime());
+      case 'chats':
+        return list.sort((a, b) => (characterStatsMap[b.id]?.messages ?? 0) - (characterStatsMap[a.id]?.messages ?? 0));
+      case 'likes':
+        return list.sort((a, b) => (characterStatsMap[b.id]?.likes ?? 0) - (characterStatsMap[a.id]?.likes ?? 0));
+      case 'newest':
+      default:
+        return list.sort((a, b) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime());
+    }
+  };
+
   const tabs = [
     { id: 'bots', label: 'Public Bots', count: stats.publicBots },
     { id: 'favorites', label: 'Favorites', count: stats.favorites },
@@ -312,7 +327,7 @@ const Profile = () => {
         <div className="relative">
           {/* Banner */}
           <div
-            className="h-64 bg-gradient-to-br from-blue-600 to-purple-700 bg-cover bg-center relative"
+            className="h-64 bg-gradient-to-br from-cyan-600 to-gray-700 bg-cover bg-center relative"
             style={userProfile.banner ? { backgroundImage: `url(${userProfile.banner})` } : {}}
           >
             {/* Dark glass overlay */}
@@ -492,7 +507,7 @@ const Profile = () => {
                       <Button
                         onClick={handleSaveProfile}
                         disabled={isSaving}
-                        className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                        className="w-full bg-cyan-600 hover:bg-cyan-700 text-white"
                       >
                         {isSaving ? (
                           <>
@@ -522,7 +537,7 @@ const Profile = () => {
                   onClick={() => setActiveTab(tab.id)}
                   className={`text-sm font-medium pb-2 border-b-2 transition-colors ${
                     activeTab === tab.id 
-                      ? 'text-blue-400 border-blue-400' 
+                      ? 'text-cyan-400 border-cyan-400' 
                       : 'text-muted-foreground border-transparent hover:text-foreground'
                   }`}
                 >
@@ -561,7 +576,7 @@ const Profile = () => {
             </div>
           ) : displayCharacters.length > 0 ? (
             <div className="grid grid-cols-2 gap-4">
-              {displayCharacters.map((character) => (
+              {getSortedCharacters(displayCharacters).map((character) => (
                 <CharacterCard
                   key={character.id}
                   character={{
@@ -594,7 +609,7 @@ const Profile = () => {
               {activeTab === 'bots' && (
                 <Button
                   onClick={() => setIsCreateModalOpen(true)}
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-6"
+                  className="bg-cyan-600 hover:bg-cyan-700 text-white px-6"
                 >
                   Create my Bots
                 </Button>

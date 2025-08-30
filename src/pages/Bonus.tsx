@@ -129,7 +129,7 @@ export default function Bonus() {
     <Layout>
       <div className="flex-1 bg-background text-foreground min-h-full">
         <div className="p-4 space-y-4">
-          <Card className="bg-gradient-to-r from-purple-500/20 to-blue-500/20 border-border">
+          <Card className="bg-gradient-to-r from-gray-500/20 to-cyan-500/20 border-border">
             <CardContent className="p-4">
               <div className="flex items-center justify-center">
                 <div className="flex items-center gap-2 text-green-400">
@@ -152,7 +152,7 @@ export default function Bonus() {
                   <div className="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
                     <Clock className="h-3 w-3" />
                     <span>Refresh in</span>
-                    <Badge variant="secondary" className="bg-pink-500/20 text-pink-400">{formatCountdown(timeToReset)}</Badge>
+                    <Badge variant="secondary" className="bg-cyan-500/20 text-cyan-400">{formatCountdown(timeToReset)}</Badge>
                   </div>
                 </div>
                 <Button disabled={hasCheckedIn} onClick={handleCheckIn} className="rounded-full">
@@ -169,7 +169,7 @@ export default function Bonus() {
                   <div className="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
                     <Clock className="h-3 w-3" />
                     <span>Refresh in</span>
-                    <Badge variant="secondary" className="bg-pink-500/20 text-pink-400">{formatCountdown(timeToReset)}</Badge>
+                    <Badge variant="secondary" className="bg-cyan-500/20 text-cyan-400">{formatCountdown(timeToReset)}</Badge>
                   </div>
                 </div>
                 <Button disabled={hasConvoReward} onClick={() => { if (conversationEligible) { handleConvoReward(); } else { navigate('/'); } }} className="rounded-full">

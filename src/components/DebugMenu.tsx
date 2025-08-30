@@ -24,13 +24,13 @@ export function DebugMenu({ selectedModel, currentChatSettings, lastAPICall }: D
   const getStatusColor = (value: number, type: 'temperature' | 'tokens' | 'diversity') => {
     switch (type) {
       case 'temperature':
-        if (value < 0.3) return 'bg-blue-500';
+        if (value < 0.3) return 'bg-cyan-500';
         if (value < 0.7) return 'bg-green-500';
         return 'bg-orange-500';
       case 'tokens':
         if (value < 300) return 'bg-yellow-500';
         if (value < 500) return 'bg-green-500';
-        return 'bg-blue-500';
+        return 'bg-cyan-500';
       case 'diversity':
         if (value < 0.3) return 'bg-red-500';
         if (value < 0.7) return 'bg-green-500';
@@ -63,7 +63,7 @@ export function DebugMenu({ selectedModel, currentChatSettings, lastAPICall }: D
           <Card className="w-80 bg-[#1a1b2e] border-[#2d2e3e] text-white shadow-xl">
             <CardHeader className="pb-3">
               <CardTitle className="text-sm flex items-center gap-2">
-                <Activity className="h-4 w-4 text-[#e74c8c]" />
+                <Activity className="h-4 w-4 text-cyan-400" />
                 Chat Settings Debug
               </CardTitle>
             </CardHeader>
@@ -71,7 +71,7 @@ export function DebugMenu({ selectedModel, currentChatSettings, lastAPICall }: D
             <CardContent className="space-y-4 text-sm">
               {/* Current Model */}
               <div>
-                <h4 className="font-medium text-[#e74c8c] mb-2 flex items-center gap-2">
+                <h4 className="font-medium text-cyan-400 mb-2 flex items-center gap-2">
                   <Settings className="h-3 w-3" />
                   Selected Model
                 </h4>
@@ -97,7 +97,7 @@ export function DebugMenu({ selectedModel, currentChatSettings, lastAPICall }: D
 
               {/* Current Settings */}
               <div>
-                <h4 className="font-medium text-[#e74c8c] mb-2 flex items-center gap-2">
+                <h4 className="font-medium text-cyan-400 mb-2 flex items-center gap-2">
                   <Zap className="h-3 w-3" />
                   Applied Settings
                 </h4>
@@ -143,7 +143,7 @@ export function DebugMenu({ selectedModel, currentChatSettings, lastAPICall }: D
               {/* Last API Call */}
               {lastAPICall && (
                 <div>
-                  <h4 className="font-medium text-[#e74c8c] mb-2">Last API Call</h4>
+                  <h4 className="font-medium text-cyan-400 mb-2">Last API Call</h4>
                   <div className="bg-[#232438] rounded-lg p-3 space-y-1">
                     <div className="flex justify-between">
                       <span className="text-gray-400">Temperature:</span>
@@ -167,7 +167,7 @@ export function DebugMenu({ selectedModel, currentChatSettings, lastAPICall }: D
 
               {/* Settings Status */}
               <div>
-                <h4 className="font-medium text-[#e74c8c] mb-2">Status</h4>
+                <h4 className="font-medium text-cyan-400 mb-2">Status</h4>
                 <div className="bg-[#232438] rounded-lg p-3">
                   <div className="flex items-center gap-2">
                     <div className={`w-2 h-2 rounded-full ${currentChatSettings ? 'bg-green-500' : 'bg-red-500'}`} />

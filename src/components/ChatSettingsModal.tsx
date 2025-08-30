@@ -96,7 +96,7 @@ export function ChatSettingsModal({ open, onOpenChange, selectedModel, onOpenMod
               <Button
                 onClick={handleSave}
                 disabled={isSaving || isLoading || !selectedModel}
-                className="flex items-center gap-2 bg-[#e74c8c] hover:bg-[#d63384] text-white rounded-lg px-4 py-2"
+                className="flex items-center gap-2 bg-cyan-600 hover:bg-cyan-700 text-white rounded-lg px-4 py-2"
                 style={{ fontSize: '12px' }}
               >
                 <Save className="h-3 w-3" />
@@ -113,7 +113,7 @@ export function ChatSettingsModal({ open, onOpenChange, selectedModel, onOpenMod
             {/* Model Settings */}
             <div>
               <div className="mb-4">
-                <h3 className="text-[#e74c8c] font-semibold" style={{ fontSize: '14px' }}>
+                <h3 className="text-cyan-400 font-semibold" style={{ fontSize: '14px' }}>
                   Model Settings
                 </h3>
               </div>
@@ -128,13 +128,13 @@ export function ChatSettingsModal({ open, onOpenChange, selectedModel, onOpenMod
                 
                 {/* Current Model Display */}
                 <div
-                  className="bg-[#232438] border border-[#2d2e3e] rounded-xl p-3 mt-3 cursor-pointer hover:border-[#e74c8c]/60 transition-colors"
+                  className="bg-[#232438] border border-[#2d2e3e] rounded-xl p-3 mt-3 cursor-pointer hover:border-cyan-500/60 transition-colors"
                   onClick={onOpenModelsModal}
                 >
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
                       <Badge
-                        className="bg-[#e74c8c] text-white text-xs px-2 py-0.5 rounded-full"
+                        className="bg-cyan-600 text-white text-xs px-2 py-0.5 rounded-full"
                         style={{ fontSize: '10px' }}
                       >
                         {selectedModel?.tags?.includes('NSFW') ? 'Unfiltered' : 'Filtered'}
@@ -170,7 +170,7 @@ export function ChatSettingsModal({ open, onOpenChange, selectedModel, onOpenMod
                       {selectedModel?.rating || '3.40'}
                     </span>
                     <span className="flex items-center gap-1">
-                      <svg className="h-3 w-3 fill-pink-400" viewBox="0 0 24 24">
+                      <svg className="h-3 w-3 fill-cyan-400" viewBox="0 0 24 24">
                         <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
                       </svg>
                       2.4K
@@ -201,7 +201,7 @@ export function ChatSettingsModal({ open, onOpenChange, selectedModel, onOpenMod
                     <path d="M12 6v6l4 2" />
                   </svg>
                 </div>
-                <div className="bg-[#e74c8c] text-white text-center px-3 py-1 rounded-lg mb-3 font-medium inline-block" style={{ fontSize: '12px' }}>
+                <div className="bg-cyan-600 text-white text-center px-3 py-1 rounded-lg mb-3 font-medium inline-block" style={{ fontSize: '12px' }}>
                   {temperature[0].toFixed(2)}
                 </div>
                 <Slider
@@ -228,7 +228,7 @@ export function ChatSettingsModal({ open, onOpenChange, selectedModel, onOpenMod
                     <path d="M12 6v6l4 2" />
                   </svg>
                 </div>
-                <div className="bg-[#e74c8c] text-white text-center px-3 py-1 rounded-lg mb-3 font-medium inline-block" style={{ fontSize: '12px' }}>
+                <div className="bg-cyan-600 text-white text-center px-3 py-1 rounded-lg mb-3 font-medium inline-block" style={{ fontSize: '12px' }}>
                   {contentDiversity[0].toFixed(2)}
                 </div>
                 <Slider
@@ -249,7 +249,7 @@ export function ChatSettingsModal({ open, onOpenChange, selectedModel, onOpenMod
 
             {/* General Settings */}
             <div>
-              <h3 className="text-[#e74c8c] font-semibold mb-4" style={{ fontSize: '14px' }}>
+              <h3 className="text-cyan-400 font-semibold mb-4" style={{ fontSize: '14px' }}>
                 General Settings
               </h3>
 
@@ -263,7 +263,7 @@ export function ChatSettingsModal({ open, onOpenChange, selectedModel, onOpenMod
                 <p className="text-gray-400 mb-3" style={{ fontSize: '12px' }}>
                   The maximum amount of tokens that an AI will generate to respond. One word is approximately 3-4 tokens.
                 </p>
-                <div className="bg-[#e74c8c] text-white text-center px-3 py-1 rounded-lg mb-3 font-medium inline-block" style={{ fontSize: '12px' }}>
+                <div className="bg-cyan-600 text-white text-center px-3 py-1 rounded-lg mb-3 font-medium inline-block" style={{ fontSize: '12px' }}>
                   {maxMessageLength[0]}
                 </div>
                 <Slider
