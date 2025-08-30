@@ -83,6 +83,10 @@ const Chat = () => {
     timestamp: string;
   } | null>(null);
 
+  // Coin balance state
+  const [userCoins, setUserCoins] = useState<number>(0);
+  const [loadingCoins, setLoadingCoins] = useState(true);
+
   const { user } = useUser();
 
   // Load character and messages from Supabase
