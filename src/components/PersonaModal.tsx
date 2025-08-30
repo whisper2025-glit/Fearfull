@@ -232,7 +232,7 @@ export function PersonaModal({ open, onOpenChange, onPersonaSelect, currentPerso
                     </p>
                     <Button
                       onClick={handleCreateNew}
-                      className="bg-gradient-to-r from-[#e74c8c] to-[#c44f93] text-white"
+                      className="bg-gradient-to-r from-[#06b6d4] to-[#22d3ee] text-white"
                       style={{ fontSize: '12px' }}
                     >
                       <Plus className="h-4 w-4 mr-2" />
@@ -244,14 +244,14 @@ export function PersonaModal({ open, onOpenChange, onPersonaSelect, currentPerso
                     <Card
                       key={persona.id}
                       className={`bg-[#2d2e3e] border-[#3d3e4e] hover:bg-[#34354a] transition-colors cursor-pointer ${
-                        currentPersona?.id === persona.id ? 'ring-2 ring-[#e74c8c]' : ''
+                        currentPersona?.id === persona.id ? 'ring-2 ring-[#06b6d4]' : ''
                       }`}
                       onClick={() => handleSelectPersona(persona)}
                     >
                       <CardContent className="p-3">
                         <div className="flex items-center gap-3">
                           <Avatar className="w-10 h-10 flex-shrink-0">
-                            <AvatarFallback className="bg-gradient-to-r from-[#e74c8c] to-[#c44f93] text-white text-sm">
+                            <AvatarFallback className="bg-gradient-to-r from-[#06b6d4] to-[#22d3ee] text-white text-sm">
                               {persona.name.charAt(0)}
                             </AvatarFallback>
                           </Avatar>
@@ -267,7 +267,7 @@ export function PersonaModal({ open, onOpenChange, onPersonaSelect, currentPerso
                                 </Badge>
                               )}
                               {currentPersona?.id === persona.id && (
-                                <Check className="h-4 w-4 text-[#e74c8c]" />
+                                <Check className="h-4 w-4 text-cyan-400" />
                               )}
                             </div>
                             
@@ -348,7 +348,7 @@ export function PersonaModal({ open, onOpenChange, onPersonaSelect, currentPerso
                         variant={selectedGender === gender ? 'default' : 'outline'}
                         className={`flex-1 rounded-2xl py-2 border-0 text-xs font-medium ${
                           selectedGender === gender
-                            ? 'bg-gradient-to-r from-[#e74c8c] to-[#c44f93] text-white shadow-lg'
+                            ? 'bg-gradient-to-r from-[#06b6d4] to-[#22d3ee] text-white shadow-lg'
                             : 'bg-[#2d2e3e] text-gray-300 hover:bg-[#34354a] border-[#3d3e4e]'
                         }`}
                         style={{ fontSize: '12px' }}
