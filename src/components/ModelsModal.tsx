@@ -268,7 +268,7 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
               variant={activeTab === 'standard' ? 'default' : 'ghost'}
               className={`flex-1 rounded-2xl text-xs font-medium py-2 border-0 ${
                 activeTab === 'standard'
-                  ? 'bg-gradient-to-r from-[#e74c8c] to-[#c44f93] text-white shadow-lg'
+                  ? 'bg-gradient-to-r from-[#06b6d4] to-[#22d3ee] text-white shadow-lg'
                   : 'bg-[#2d2e3e] text-gray-300 hover:bg-[#34354a]'
               }`}
               style={{ fontSize: '12px' }}
@@ -280,7 +280,7 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
               variant={activeTab === 'pro' ? 'default' : 'ghost'}
               className={`flex-1 rounded-2xl text-xs font-medium py-2 border-0 ${
                 activeTab === 'pro'
-                  ? 'bg-gradient-to-r from-[#e74c8c] to-[#c44f93] text-white shadow-lg'
+                  ? 'bg-gradient-to-r from-[#06b6d4] to-[#22d3ee] text-white shadow-lg'
                   : 'bg-[#2d2e3e] text-gray-300 hover:bg-[#34354a]'
               }`}
               style={{ fontSize: '12px' }}
@@ -292,7 +292,7 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
               variant={activeTab === 'max' ? 'default' : 'ghost'}
               className={`flex-1 rounded-2xl text-xs font-medium py-2 border-0 ${
                 activeTab === 'max'
-                  ? 'bg-gradient-to-r from-[#e74c8c] to-[#c44f93] text-white shadow-lg'
+                  ? 'bg-gradient-to-r from-[#06b6d4] to-[#22d3ee] text-white shadow-lg'
                   : 'bg-[#2d2e3e] text-gray-300 hover:bg-[#34354a]'
               }`}
               style={{ fontSize: '12px' }}
@@ -473,7 +473,7 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
                 Cancel
               </Button>
               <Button
-                className="flex-1 bg-gradient-to-r from-[#e74c8c] to-[#c44f93] hover:from-[#d63384] hover:to-[#b83e88] text-white rounded-lg py-2"
+                className="flex-1 bg-gradient-to-r from-[#06b6d4] to-[#22d3ee] hover:from-[#d63384] hover:to-[#b83e88] text-white rounded-lg py-2"
                 onClick={() => onOpenChange(false)}
                 disabled={!selectedModel}
                 style={{ fontSize: '12px' }}
