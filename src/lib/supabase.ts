@@ -1653,6 +1653,154 @@ export const markDailyRewardClaimed = (rewardType: 'checkin' | 'conversation'): 
   localStorage.setItem(key, '1');
 };
 
+// Invite System Functions
+export interface InviteStats {
+  invite_code: string;
+  invites_used: number;
+  max_invites: number;
+}
+
+export const getUserInviteStats = async (userId: string): Promise<InviteStats> => {
+  try {
+    console.log('📊 Fetching invite stats for user:', userId);
+
+    const { data, error } = await supabase.rpc('get_invite_stats', {
+      p_user_id: userId
+    });
+
+    if (error) {
+      console.error('❌ Error fetching invite stats:', error);
+      throw error;
+    }
+
+    // RPC returns an array, get the first item
+    const stats = data && data.length > 0 ? data[0] : {
+      invite_code: '',
+      invites_used: 0,
+      max_invites: 10
+    };
+
+    console.log('✅ Invite stats fetched:', stats);
+    return stats;
+  } catch (error) {
+    console.error('❌ Final error in getUserInviteStats:', error);
+    // Return default stats on error
+    return {
+      invite_code: '',
+      invites_used: 0,
+      max_invites: 10
+    };
+  }
+};
+
+export const processInviteCode = async (inviteeId: string, inviteCode: string): Promise<{success: boolean, message: string, coinsAwarded?: number}> => {
+  try {
+    console.log('🎫 Processing invite code:', { inviteeId, inviteCode });
+
+    const { data, error } = await supabase.rpc('process_invite_code_usage', {
+      p_invitee_id: inviteeId,
+      p_invite_code: inviteCode
+    });
+
+    if (error) {
+      console.error('❌ Error processing invite code:', error);
+      return { success: false, message: 'Failed to process invite code' };
+    }
+
+    const result = data && data.length > 0 ? data[0] : null;
+
+    if (!result || !result.success) {
+      if (!result || !result.inviter_id) {
+        return { success: false, message: 'Invalid invite code' };
+      } else if (result.coins_awarded === 0) {
+        return { success: false, message: 'Invite code limit reached or already used' };
+      } else {
+        return { success: false, message: 'Failed to process invite' };
+      }
+    }
+
+    console.log('✅ Invite code processed successfully:', result);
+    return {
+      success: true,
+      message: `Invite processed! ${result.coins_awarded} coins awarded to inviter.`,
+      coinsAwarded: result.coins_awarded
+    };
+  } catch (error) {
+    console.error('❌ Final error in processInviteCode:', error);
+    return { success: false, message: 'An error occurred while processing the invite code' };
+  }
+};
+
+export const generateInviteCode = async (): Promise<string> => {
+  try {
+    console.log('🔗 Generating new invite code');
+
+    const { data, error } = await supabase.rpc('generate_invite_code');
+
+    if (error) {
+      console.error('❌ Error generating invite code:', error);
+      throw error;
+    }
+
+    console.log('✅ Invite code generated:', data);
+    return data || '';
+  } catch (error) {
+    console.error('❌ Final error in generateInviteCode:', error);
+    // Fallback to simple random code generation
+    const chars = 'ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
+    let result = '';
+    for (let i = 0; i < 8; i++) {
+      result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return result;
+  }
+};
+
+export const ensureUserHasInviteCode = async (userId: string): Promise<string> => {
+  try {
+    console.log('🔍 Ensuring user has invite code:', userId);
+
+    // First check if user already has an invite code
+    const { data: user, error: fetchError } = await supabase
+      .from('users')
+      .select('invite_code')
+      .eq('id', userId)
+      .single();
+
+    if (fetchError) {
+      console.error('❌ Error fetching user invite code:', fetchError);
+      throw fetchError;
+    }
+
+    // If user already has an invite code, return it
+    if (user?.invite_code) {
+      console.log('✅ User already has invite code:', user.invite_code);
+      return user.invite_code;
+    }
+
+    // Generate a new invite code
+    const newInviteCode = await generateInviteCode();
+
+    // Update user with the new invite code
+    const { error: updateError } = await supabase
+      .from('users')
+      .update({ invite_code: newInviteCode })
+      .eq('id', userId);
+
+    if (updateError) {
+      console.error('❌ Error updating user invite code:', updateError);
+      throw updateError;
+    }
+
+    console.log('✅ New invite code assigned to user:', newInviteCode);
+    return newInviteCode;
+  } catch (error) {
+    console.error('❌ Final error in ensureUserHasInviteCode:', error);
+    // Return a fallback code if everything fails
+    return 'ERROR_CODE';
+  }
+};
+
 // Adventure Conversation and Message CRUD operations
 export const createAdventureConversation = async (
   userId: string,
