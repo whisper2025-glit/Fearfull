@@ -7,6 +7,7 @@ import { Coins, Clock } from "lucide-react";
 import { toast } from "sonner";
 import { useUser } from "@clerk/clerk-react";
 import { supabase } from "@/lib/supabase";
+import { useNavigate } from "react-router-dom";
 
 const utcDateKey = () => new Date().toISOString().split("T")[0];
 const startOfTodayUTC = () => new Date(`${utcDateKey()}T00:00:00.000Z`);
