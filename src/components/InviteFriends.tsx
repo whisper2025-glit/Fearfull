@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Copy, Check, ExternalLink, Coins } from "lucide-react";
+import { Coins } from "lucide-react";
 import { toast } from "sonner";
 import { useUser } from "@clerk/clerk-react";
 import { getUserInviteStats, ensureUserHasInviteCode, InviteStats } from "@/lib/supabase";
@@ -14,7 +14,6 @@ export const InviteFriends = () => {
     max_invites: 10
   });
   const [loading, setLoading] = useState(true);
-  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     const loadInviteStats = async () => {
@@ -49,46 +48,6 @@ export const InviteFriends = () => {
     loadInviteStats();
   }, [user]);
 
-  const handleCopyInviteCode = async () => {
-    try {
-      await navigator.clipboard.writeText(inviteStats.invite_code);
-      setCopied(true);
-      toast.success('Invite code copied to clipboard!');
-      setTimeout(() => setCopied(false), 2000);
-    } catch (error) {
-      toast.error('Failed to copy invite code');
-    }
-  };
-
-  const handleCopyInviteLink = async () => {
-    try {
-      const inviteLink = `https://whisperchat-ai.netlify.app/?invite=${inviteStats.invite_code}`;
-      await navigator.clipboard.writeText(inviteLink);
-      toast.success('Invite link copied to clipboard!');
-    } catch (error) {
-      toast.error('Failed to copy invite link');
-    }
-  };
-
-  const shareOnSocial = (platform: 'twitter' | 'facebook' | 'whatsapp') => {
-    const inviteLink = `https://whisperchat-ai.netlify.app/?invite=${inviteStats.invite_code}`;
-    const message = `Join me on WhisperChat AI! Use my invite code ${inviteStats.invite_code} and get started chatting with AI characters. ${inviteLink}`;
-    
-    let shareUrl = '';
-    switch (platform) {
-      case 'twitter':
-        shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(message)}`;
-        break;
-      case 'facebook':
-        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(inviteLink)}`;
-        break;
-      case 'whatsapp':
-        shareUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
-        break;
-    }
-    
-    window.open(shareUrl, '_blank', 'width=600,height=400');
-  };
 
   if (loading) {
     return (
@@ -139,62 +98,6 @@ export const InviteFriends = () => {
             {inviteStats.invite_code || 'Loading...'}
           </div>
           
-          {/* Action Buttons */}
-          <div className="flex gap-3 mb-4">
-            <Button
-              onClick={handleCopyInviteCode}
-              className="flex-1 bg-gray-700 hover:bg-gray-600 text-white"
-              disabled={!inviteStats.invite_code}
-            >
-              {copied ? (
-                <>
-                  <Check className="h-4 w-4 mr-2" />
-                  Copied!
-                </>
-              ) : (
-                <>
-                  <Copy className="h-4 w-4 mr-2" />
-                  Copy Code
-                </>
-              )}
-            </Button>
-            <Button
-              onClick={handleCopyInviteLink}
-              className="flex-1 bg-cyan-600 hover:bg-cyan-700 text-white"
-              disabled={!inviteStats.invite_code}
-            >
-              <ExternalLink className="h-4 w-4 mr-2" />
-              Copy Link
-            </Button>
-          </div>
-
-          {/* Social Share Buttons */}
-          <div className="flex gap-2 justify-center">
-            <Button
-              onClick={() => shareOnSocial('twitter')}
-              size="sm"
-              className="bg-cyan-400 hover:bg-cyan-500 text-white"
-              disabled={!inviteStats.invite_code}
-            >
-              Twitter
-            </Button>
-            <Button
-              onClick={() => shareOnSocial('facebook')}
-              size="sm"
-              className="bg-cyan-600 hover:bg-cyan-700 text-white"
-              disabled={!inviteStats.invite_code}
-            >
-              Facebook
-            </Button>
-            <Button
-              onClick={() => shareOnSocial('whatsapp')}
-              size="sm"
-              className="bg-green-600 hover:bg-green-700 text-white"
-              disabled={!inviteStats.invite_code}
-            >
-              WhatsApp
-            </Button>
-          </div>
         </div>
 
         {/* Stats */}
