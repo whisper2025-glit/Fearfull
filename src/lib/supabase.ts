@@ -1455,6 +1455,175 @@ export const getFavoriteAdventures = async (userId: string) => {
   }
 };
 
+// Whisper Coins Management Functions
+export const getUserCoins = async (userId: string): Promise<number> => {
+  try {
+    console.log('🪙 Fetching user coins for:', userId);
+
+    const { data, error } = await supabase
+      .from('users')
+      .select('coins')
+      .eq('id', userId)
+      .single();
+
+    if (error) {
+      console.error('❌ Error fetching user coins:', error);
+      // If user doesn't exist, return 0 (they'll be created when they earn coins)
+      if (error.code === 'PGRST116') {
+        return 0;
+      }
+      throw error;
+    }
+
+    const coins = data?.coins ?? 0;
+    console.log('✅ User coins fetched:', coins);
+    return coins;
+  } catch (error) {
+    console.error('❌ Final error in getUserCoins:', error);
+    return 0;
+  }
+};
+
+export const incrementUserCoins = async (userId: string, amount: number, reason: string = 'coins_earned'): Promise<number> => {
+  try {
+    console.log('💰 Incrementing user coins:', { userId, amount, reason });
+
+    // Ensure user exists first
+    await createOrUpdateUser({ id: userId });
+
+    // Use a database function for atomic increment
+    const { data, error } = await supabase.rpc('increment_user_coins', {
+      user_id: userId,
+      coin_amount: amount,
+      transaction_reason: reason
+    });
+
+    if (error) {
+      console.error('❌ RPC increment failed, trying direct update:', error);
+
+      // Fallback to direct update if RPC doesn't exist
+      const { data: currentUser, error: fetchError } = await supabase
+        .from('users')
+        .select('coins')
+        .eq('id', userId)
+        .single();
+
+      if (fetchError) {
+        console.error('❌ Error fetching current coins:', fetchError);
+        throw fetchError;
+      }
+
+      const currentCoins = currentUser?.coins ?? 0;
+      const newCoins = currentCoins + amount;
+
+      const { data: updatedUser, error: updateError } = await supabase
+        .from('users')
+        .update({ coins: newCoins })
+        .eq('id', userId)
+        .select('coins')
+        .single();
+
+      if (updateError) {
+        console.error('❌ Error updating user coins:', updateError);
+        throw updateError;
+      }
+
+      console.log('✅ User coins incremented (fallback):', updatedUser.coins);
+      return updatedUser.coins;
+    }
+
+    console.log('✅ User coins incremented via RPC:', data);
+    return data;
+  } catch (error) {
+    console.error('❌ Final error in incrementUserCoins:', error);
+    throw error;
+  }
+};
+
+export const deductUserCoins = async (userId: string, amount: number, reason: string = 'coins_spent'): Promise<number> => {
+  try {
+    console.log('💸 Deducting user coins:', { userId, amount, reason });
+
+    // Check current balance first
+    const currentCoins = await getUserCoins(userId);
+    if (currentCoins < amount) {
+      throw new Error(`Insufficient coins. Current: ${currentCoins}, Required: ${amount}`);
+    }
+
+    // Use a database function for atomic deduction
+    const { data, error } = await supabase.rpc('deduct_user_coins', {
+      user_id: userId,
+      coin_amount: amount,
+      transaction_reason: reason
+    });
+
+    if (error) {
+      console.error('❌ RPC deduction failed, trying direct update:', error);
+
+      // Fallback to direct update if RPC doesn't exist
+      const newCoins = currentCoins - amount;
+
+      const { data: updatedUser, error: updateError } = await supabase
+        .from('users')
+        .update({ coins: newCoins })
+        .eq('id', userId)
+        .select('coins')
+        .single();
+
+      if (updateError) {
+        console.error('❌ Error updating user coins:', updateError);
+        throw updateError;
+      }
+
+      console.log('✅ User coins deducted (fallback):', updatedUser.coins);
+      return updatedUser.coins;
+    }
+
+    console.log('✅ User coins deducted via RPC:', data);
+    return data;
+  } catch (error) {
+    console.error('❌ Final error in deductUserCoins:', error);
+    throw error;
+  }
+};
+
+// Migrate localStorage coins to database (one-time migration)
+export const migrateLocalStorageCoins = async (userId: string): Promise<void> => {
+  try {
+    const COIN_KEY = "bonus:coins";
+    const localCoins = Number(localStorage.getItem(COIN_KEY) || 0);
+
+    if (localCoins > 0) {
+      console.log('🔄 Migrating localStorage coins to database:', localCoins);
+
+      // Add the localStorage coins to the user's database balance
+      await incrementUserCoins(userId, localCoins, 'localStorage_migration');
+
+      // Clear localStorage to prevent double migration
+      localStorage.removeItem(COIN_KEY);
+
+      console.log('✅ localStorage coins migrated successfully');
+    }
+  } catch (error) {
+    console.error('❌ Error migrating localStorage coins:', error);
+    // Don't throw error to avoid breaking the app - migration is optional
+  }
+};
+
+// Check if user can claim daily reward
+export const canClaimDailyReward = (rewardType: 'checkin' | 'conversation'): boolean => {
+  const today = new Date().toISOString().split('T')[0];
+  const key = rewardType === 'checkin' ? `bonus:checkin:${today}` : `bonus:conversation:${today}`;
+  return !localStorage.getItem(key);
+};
+
+// Mark daily reward as claimed
+export const markDailyRewardClaimed = (rewardType: 'checkin' | 'conversation'): void => {
+  const today = new Date().toISOString().split('T')[0];
+  const key = rewardType === 'checkin' ? `bonus:checkin:${today}` : `bonus:conversation:${today}`;
+  localStorage.setItem(key, '1');
+};
+
 // Adventure Conversation and Message CRUD operations
 export const createAdventureConversation = async (
   userId: string,
