@@ -183,7 +183,7 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
       <CardContent className="p-3">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2 flex-1 min-w-0">
-            <Circle className={`h-2.5 w-2.5 flex-shrink-0 ${model.isActive ? 'fill-[#e74c8c] text-[#e74c8c]' : 'text-gray-500'}`} />
+            <Circle className={`h-2.5 w-2.5 flex-shrink-0 ${model.isActive ? 'fill-[#06b6d4] text-[#06b6d4]' : 'text-gray-500'}`} />
             <h3 className="text-xs font-semibold text-white truncate" style={{ fontSize: '12px' }}>{model.name}</h3>
           </div>
           <div className="flex items-center gap-1">
