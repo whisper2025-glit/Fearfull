@@ -131,7 +131,7 @@ export function CommentsList({
           {/* User Avatar */}
           <Avatar className="w-8 h-8 flex-shrink-0">
             <AvatarImage src={user?.imageUrl} />
-            <AvatarFallback className="bg-gradient-to-br from-purple-500 to-pink-500 text-white text-sm">
+            <AvatarFallback className="bg-gradient-to-br from-gray-500 to-cyan-500 text-white text-sm">
               {user?.firstName?.charAt(0) || user?.username?.charAt(0) || 'U'}
             </AvatarFallback>
           </Avatar>
