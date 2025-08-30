@@ -63,6 +63,7 @@ export interface Database {
           bio: string | null;
           gender: string | null;
           coins: number; // Whisper coins balance
+          invite_code: string; // Unique invite code for this user
           created_at: string;
           updated_at: string;
         };
@@ -76,6 +77,7 @@ export interface Database {
           bio?: string | null;
           gender?: string | null;
           coins?: number; // Whisper coins balance
+          invite_code?: string; // Unique invite code for this user
           created_at?: string;
           updated_at?: string;
         };
@@ -89,6 +91,7 @@ export interface Database {
           bio?: string | null;
           gender?: string | null;
           coins?: number; // Whisper coins balance
+          invite_code?: string; // Unique invite code for this user
           created_at?: string;
           updated_at?: string;
         };
@@ -820,7 +823,7 @@ export const setDefaultPersona = async (personaId: string, userId: string) => {
       throw error;
     }
 
-    console.log('✅ Default persona set successfully:', data);
+    console.log('��� Default persona set successfully:', data);
     return data;
   } catch (error) {
     console.error('❌ Final error in setDefaultPersona:', error);
