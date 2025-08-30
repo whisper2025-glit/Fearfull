@@ -40,7 +40,7 @@ export function CreateModal({ open, onOpenChange }: CreateModalProps) {
             className="w-full h-auto p-4 flex items-center justify-between hover:bg-accent/50 border border-border rounded-lg"
           >
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-500 to-purple-500 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-500 to-gray-500 flex items-center justify-center">
                 <User className="w-5 h-5 text-white" />
               </div>
               <div className="text-left">
