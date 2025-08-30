@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { useUser } from "@clerk/clerk-react";
-import { ArrowLeft, Home, MoreHorizontal, Lightbulb, Clock, Users, Bot, ChevronDown, Loader2, User, Settings } from "lucide-react";
+import { ArrowLeft, Home, MoreHorizontal, Lightbulb, Clock, Users, Bot, ChevronDown, Loader2, User, Settings, Coins } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
@@ -17,7 +17,7 @@ import { SuggestModal } from "@/components/SuggestModal";
 import { ChatSettingsModal } from "@/components/ChatSettingsModal";
 import { DebugMenu } from "@/components/DebugMenu";
 import { openRouterAPI, ChatMessage } from "@/lib/openrouter";
-import { supabase, createOrUpdateUser, getDefaultPersona, getChatSettings, getDefaultChatSettings, ChatSettings } from "@/lib/supabase";
+import { supabase, createOrUpdateUser, getDefaultPersona, getChatSettings, getDefaultChatSettings, ChatSettings, incrementUserCoins, canClaimDailyReward, markDailyRewardClaimed, getUserCoins, deductUserCoins } from "@/lib/supabase";
 import { toast } from "sonner";
 
 interface Message {
@@ -82,6 +82,10 @@ const Chat = () => {
     top_p: number;
     timestamp: string;
   } | null>(null);
+
+  // Coin balance state
+  const [userCoins, setUserCoins] = useState<number>(0);
+  const [loadingCoins, setLoadingCoins] = useState(true);
 
   const { user } = useUser();
 
@@ -298,9 +302,40 @@ const Chat = () => {
     loadChatSettings();
   }, [user, selectedModel]);
 
+  // Load user coin balance
+  useEffect(() => {
+    const loadUserCoins = async () => {
+      if (!user) {
+        setLoadingCoins(false);
+        return;
+      }
+
+      try {
+        setLoadingCoins(true);
+        const coins = await getUserCoins(user.id);
+        setUserCoins(coins);
+        console.log('💰 User coins loaded:', coins);
+      } catch (error) {
+        console.error('Error loading user coins:', error);
+        setUserCoins(0);
+      } finally {
+        setLoadingCoins(false);
+      }
+    };
+
+    loadUserCoins();
+  }, [user]);
+
   const handleSendMessage = async (messageContent?: string) => {
     const messageToSend = messageContent || message;
     if (!messageToSend.trim() || isLoading || !currentCharacter || !user) return;
+
+    // Check if user has enough coins (2 coins per message)
+    const MESSAGE_COST = 2;
+    if (userCoins < MESSAGE_COST) {
+      toast.error(`You need ${MESSAGE_COST} coins to send a message. You have ${userCoins} coins.`);
+      return;
+    }
 
     // Use default model if none selected
     const modelToUse = selectedModel || {
@@ -370,17 +405,35 @@ const Chat = () => {
 
       if (userMessageError) {
         console.error('Error saving user message:', userMessageError);
+        toast.error('Failed to send message. Please try again.');
+        setIsLoading(false);
+        return;
       } else {
-        // Award daily conversation coins once per UTC day
-        const today = new Date().toISOString().split('T')[0];
-        const convoKey = `bonus:conversation:${today}`;
-        const coinKey = 'bonus:coins';
-        if (!localStorage.getItem(convoKey)) {
-          const prev = Number(localStorage.getItem(coinKey) || 0);
-          localStorage.setItem(coinKey, String(prev + 10));
-          localStorage.setItem(convoKey, '1');
-          toast.success('+10 Whisper coins for chatting today');
+        // Deduct coins for sending the message
+        try {
+          const newBalance = await deductUserCoins(user.id, MESSAGE_COST, 'message_sent');
+          setUserCoins(newBalance);
+          console.log(`💸 ${MESSAGE_COST} coins deducted. New balance: ${newBalance}`);
+        } catch (error) {
+          console.error('Error deducting coins:', error);
+          toast.error('Failed to process coin payment. Message may not have been sent.');
+          setIsLoading(false);
+          return;
         }
+
+        // Award daily conversation coins once per UTC day (bonus reward)
+        if (canClaimDailyReward('conversation')) {
+          try {
+            const bonusBalance = await incrementUserCoins(user.id, 10, 'daily_conversation');
+            setUserCoins(bonusBalance);
+            markDailyRewardClaimed('conversation');
+            toast.success('+10 Whisper coins bonus for chatting today!');
+          } catch (error) {
+            console.error('Error awarding conversation coins:', error);
+            // Don't show error to user, coin reward is not critical
+          }
+        }
+
         if (!conversationToUse && insertedUserMessage?.conversation_id) {
           conversationToUse = insertedUserMessage.conversation_id;
           setCurrentConversationId(conversationToUse);
@@ -526,9 +579,9 @@ const Chat = () => {
       {/* Header */}
       <header className="relative z-10 flex items-center justify-between p-4 border-b border-border/30 bg-background/20 backdrop-blur-sm">
         <div className="flex items-center gap-3">
-          <Button 
-            variant="ghost" 
-            size="icon" 
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={() => navigate(-1)}
             className="text-muted-foreground hover:text-foreground"
           >
@@ -536,10 +589,19 @@ const Chat = () => {
           </Button>
           <h1 className="text-sm font-semibold">{currentCharacter.name}</h1>
         </div>
-        
+
+        {/* Coin Balance Display */}
+        <div className="flex items-center gap-2 bg-card/30 backdrop-blur-sm px-3 py-1 rounded-full border border-border/30">
+          <Coins className="h-4 w-4 text-yellow-500" />
+          <span className="text-sm font-medium">
+            {loadingCoins ? '...' : userCoins}
+          </span>
+          <span className="text-xs text-muted-foreground">coins</span>
+        </div>
+
         <div className="flex items-center gap-2">
-          <Button 
-            variant="ghost" 
+          <Button
+            variant="ghost"
             size="icon"
             onClick={() => navigate('/')}
             className="text-muted-foreground hover:text-foreground"
@@ -698,27 +760,50 @@ const Chat = () => {
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder={isLoading ? "AI is typing..." : "Type a message"}
-              disabled={isLoading}
+              placeholder={isLoading ? "AI is typing..." : userCoins < 2 ? "Need 2 coins to send message" : "Type a message"}
+              disabled={isLoading || userCoins < 2}
               className="flex-1 bg-card/50 border-border resize-none min-h-[40px] max-h-[120px] text-sm chat-text"
               rows={1}
             />
             <Button
               onClick={handleSendMessage}
-              disabled={!message.trim() || isLoading}
+              disabled={!message.trim() || isLoading || userCoins < 2}
               className="px-4 self-end"
               size="sm"
+              variant={userCoins < 2 ? "secondary" : "default"}
             >
               {isLoading ? (
                 <>
                   <Loader2 className="h-3 w-3 mr-1 animate-spin" />
                   Sending
                 </>
+              ) : userCoins < 2 ? (
+                <>
+                  <Coins className="h-3 w-3 mr-1" />
+                  Need 2
+                </>
               ) : (
-                'Send'
+                <>
+                  <Coins className="h-3 w-3 mr-1" />
+                  Send (2)
+                </>
               )}
             </Button>
           </div>
+          {userCoins < 2 && (
+            <div className="mt-2 text-xs text-center text-muted-foreground">
+              You need 2 coins to send a message. Visit the{' '}
+              <Button
+                variant="link"
+                size="sm"
+                className="h-auto p-0 text-primary underline text-xs"
+                onClick={() => navigate('/bonus')}
+              >
+                Bonus page
+              </Button>
+              {' '}to earn more coins.
+            </div>
+          )}
         </div>
       </div>
 

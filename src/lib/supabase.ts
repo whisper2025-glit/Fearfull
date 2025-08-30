@@ -62,6 +62,8 @@ export interface Database {
           banner_url: string | null;
           bio: string | null;
           gender: string | null;
+          coins: number; // Whisper coins balance
+          invite_code: string; // Unique invite code for this user
           created_at: string;
           updated_at: string;
         };
@@ -74,6 +76,8 @@ export interface Database {
           banner_url?: string | null;
           bio?: string | null;
           gender?: string | null;
+          coins?: number; // Whisper coins balance
+          invite_code?: string; // Unique invite code for this user
           created_at?: string;
           updated_at?: string;
         };
@@ -86,6 +90,8 @@ export interface Database {
           banner_url?: string | null;
           bio?: string | null;
           gender?: string | null;
+          coins?: number; // Whisper coins balance
+          invite_code?: string; // Unique invite code for this user
           created_at?: string;
           updated_at?: string;
         };
@@ -498,6 +504,32 @@ export interface Database {
           updated_at?: string;
         };
       };
+      invites: {
+        Row: {
+          id: string;
+          inviter_id: string; // User who created the invite code
+          invitee_id: string; // User who used the invite code
+          invite_code: string; // The invite code that was used
+          coins_awarded: number; // Coins awarded for this invite (usually 100)
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          inviter_id: string;
+          invitee_id: string;
+          invite_code: string;
+          coins_awarded?: number;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          inviter_id?: string;
+          invitee_id?: string;
+          invite_code?: string;
+          coins_awarded?: number;
+          created_at?: string;
+        };
+      };
       adventure_messages: {
         Row: {
           id: string;
@@ -586,12 +618,22 @@ export const createOrUpdateUser = async (clerkUser: any) => {
   });
 
   const displayName = clerkUser.fullName || clerkUser.firstName || clerkUser.username || 'User';
+
+  // Generate invite code for new users
+  let inviteCode = '';
+  try {
+    inviteCode = await generateInviteCode();
+  } catch (error) {
+    console.error('⚠️ Failed to generate invite code, will assign later');
+  }
+
   const userData = {
     id: clerkUser.id,
     username: clerkUser.username || generateUsername(displayName, clerkUser.id),
     full_name: displayName,
     email: clerkUser.emailAddresses?.[0]?.emailAddress || null,
     avatar_url: clerkUser.imageUrl || null,
+    invite_code: inviteCode,
     updated_at: new Date().toISOString()
   };
 
@@ -1449,6 +1491,323 @@ export const getFavoriteAdventures = async (userId: string) => {
   } catch (error) {
     console.error('❌ Final error in getFavoriteAdventures:', error);
     return [];
+  }
+};
+
+// Whisper Coins Management Functions
+export const getUserCoins = async (userId: string): Promise<number> => {
+  try {
+    console.log('🪙 Fetching user coins for:', userId);
+
+    const { data, error } = await supabase
+      .from('users')
+      .select('coins')
+      .eq('id', userId)
+      .single();
+
+    if (error) {
+      console.error('❌ Error fetching user coins:', error);
+      // If user doesn't exist, return 0 (they'll be created when they earn coins)
+      if (error.code === 'PGRST116') {
+        return 0;
+      }
+      throw error;
+    }
+
+    const coins = data?.coins ?? 0;
+    console.log('✅ User coins fetched:', coins);
+    return coins;
+  } catch (error) {
+    console.error('❌ Final error in getUserCoins:', error);
+    return 0;
+  }
+};
+
+export const incrementUserCoins = async (userId: string, amount: number, reason: string = 'coins_earned'): Promise<number> => {
+  try {
+    console.log('💰 Incrementing user coins:', { userId, amount, reason });
+
+    // Ensure user exists first
+    await createOrUpdateUser({ id: userId });
+
+    // Use a database function for atomic increment
+    const { data, error } = await supabase.rpc('increment_user_coins', {
+      user_id: userId,
+      coin_amount: amount,
+      transaction_reason: reason
+    });
+
+    if (error) {
+      console.error('❌ RPC increment failed, trying direct update:', error);
+
+      // Fallback to direct update if RPC doesn't exist
+      const { data: currentUser, error: fetchError } = await supabase
+        .from('users')
+        .select('coins')
+        .eq('id', userId)
+        .single();
+
+      if (fetchError) {
+        console.error('❌ Error fetching current coins:', fetchError);
+        throw fetchError;
+      }
+
+      const currentCoins = currentUser?.coins ?? 0;
+      const newCoins = currentCoins + amount;
+
+      const { data: updatedUser, error: updateError } = await supabase
+        .from('users')
+        .update({ coins: newCoins })
+        .eq('id', userId)
+        .select('coins')
+        .single();
+
+      if (updateError) {
+        console.error('❌ Error updating user coins:', updateError);
+        throw updateError;
+      }
+
+      console.log('✅ User coins incremented (fallback):', updatedUser.coins);
+      return updatedUser.coins;
+    }
+
+    console.log('✅ User coins incremented via RPC:', data);
+    return data;
+  } catch (error) {
+    console.error('❌ Final error in incrementUserCoins:', error);
+    throw error;
+  }
+};
+
+export const deductUserCoins = async (userId: string, amount: number, reason: string = 'coins_spent'): Promise<number> => {
+  try {
+    console.log('💸 Deducting user coins:', { userId, amount, reason });
+
+    // Check current balance first
+    const currentCoins = await getUserCoins(userId);
+    if (currentCoins < amount) {
+      throw new Error(`Insufficient coins. Current: ${currentCoins}, Required: ${amount}`);
+    }
+
+    // Use a database function for atomic deduction
+    const { data, error } = await supabase.rpc('deduct_user_coins', {
+      user_id: userId,
+      coin_amount: amount,
+      transaction_reason: reason
+    });
+
+    if (error) {
+      console.error('❌ RPC deduction failed, trying direct update:', error);
+
+      // Fallback to direct update if RPC doesn't exist
+      const newCoins = currentCoins - amount;
+
+      const { data: updatedUser, error: updateError } = await supabase
+        .from('users')
+        .update({ coins: newCoins })
+        .eq('id', userId)
+        .select('coins')
+        .single();
+
+      if (updateError) {
+        console.error('❌ Error updating user coins:', updateError);
+        throw updateError;
+      }
+
+      console.log('✅ User coins deducted (fallback):', updatedUser.coins);
+      return updatedUser.coins;
+    }
+
+    console.log('✅ User coins deducted via RPC:', data);
+    return data;
+  } catch (error) {
+    console.error('❌ Final error in deductUserCoins:', error);
+    throw error;
+  }
+};
+
+// Migrate localStorage coins to database (one-time migration)
+export const migrateLocalStorageCoins = async (userId: string): Promise<void> => {
+  try {
+    const COIN_KEY = "bonus:coins";
+    const localCoins = Number(localStorage.getItem(COIN_KEY) || 0);
+
+    if (localCoins > 0) {
+      console.log('🔄 Migrating localStorage coins to database:', localCoins);
+
+      // Add the localStorage coins to the user's database balance
+      await incrementUserCoins(userId, localCoins, 'localStorage_migration');
+
+      // Clear localStorage to prevent double migration
+      localStorage.removeItem(COIN_KEY);
+
+      console.log('✅ localStorage coins migrated successfully');
+    }
+  } catch (error) {
+    console.error('❌ Error migrating localStorage coins:', error);
+    // Don't throw error to avoid breaking the app - migration is optional
+  }
+};
+
+// Check if user can claim daily reward
+export const canClaimDailyReward = (rewardType: 'checkin' | 'conversation'): boolean => {
+  const today = new Date().toISOString().split('T')[0];
+  const key = rewardType === 'checkin' ? `bonus:checkin:${today}` : `bonus:conversation:${today}`;
+  return !localStorage.getItem(key);
+};
+
+// Mark daily reward as claimed
+export const markDailyRewardClaimed = (rewardType: 'checkin' | 'conversation'): void => {
+  const today = new Date().toISOString().split('T')[0];
+  const key = rewardType === 'checkin' ? `bonus:checkin:${today}` : `bonus:conversation:${today}`;
+  localStorage.setItem(key, '1');
+};
+
+// Invite System Functions
+export interface InviteStats {
+  invite_code: string;
+  invites_used: number;
+  max_invites: number;
+}
+
+export const getUserInviteStats = async (userId: string): Promise<InviteStats> => {
+  try {
+    console.log('📊 Fetching invite stats for user:', userId);
+
+    const { data, error } = await supabase.rpc('get_invite_stats', {
+      p_user_id: userId
+    });
+
+    if (error) {
+      console.error('❌ Error fetching invite stats:', error);
+      throw error;
+    }
+
+    // RPC returns an array, get the first item
+    const stats = data && data.length > 0 ? data[0] : {
+      invite_code: '',
+      invites_used: 0,
+      max_invites: 10
+    };
+
+    console.log('✅ Invite stats fetched:', stats);
+    return stats;
+  } catch (error) {
+    console.error('❌ Final error in getUserInviteStats:', error);
+    // Return default stats on error
+    return {
+      invite_code: '',
+      invites_used: 0,
+      max_invites: 10
+    };
+  }
+};
+
+export const processInviteCode = async (inviteeId: string, inviteCode: string): Promise<{success: boolean, message: string, coinsAwarded?: number}> => {
+  try {
+    console.log('🎫 Processing invite code:', { inviteeId, inviteCode });
+
+    const { data, error } = await supabase.rpc('process_invite_code_usage', {
+      p_invitee_id: inviteeId,
+      p_invite_code: inviteCode
+    });
+
+    if (error) {
+      console.error('❌ Error processing invite code:', error);
+      return { success: false, message: 'Failed to process invite code' };
+    }
+
+    const result = data && data.length > 0 ? data[0] : null;
+
+    if (!result || !result.success) {
+      if (!result || !result.inviter_id) {
+        return { success: false, message: 'Invalid invite code' };
+      } else if (result.coins_awarded === 0) {
+        return { success: false, message: 'Invite code limit reached or already used' };
+      } else {
+        return { success: false, message: 'Failed to process invite' };
+      }
+    }
+
+    console.log('✅ Invite code processed successfully:', result);
+    return {
+      success: true,
+      message: `Invite processed! ${result.coins_awarded} coins awarded to inviter.`,
+      coinsAwarded: result.coins_awarded
+    };
+  } catch (error) {
+    console.error('❌ Final error in processInviteCode:', error);
+    return { success: false, message: 'An error occurred while processing the invite code' };
+  }
+};
+
+export const generateInviteCode = async (): Promise<string> => {
+  try {
+    console.log('🔗 Generating new invite code');
+
+    const { data, error } = await supabase.rpc('generate_invite_code');
+
+    if (error) {
+      console.error('❌ Error generating invite code:', error);
+      throw error;
+    }
+
+    console.log('✅ Invite code generated:', data);
+    return data || '';
+  } catch (error) {
+    console.error('❌ Final error in generateInviteCode:', error);
+    // Fallback to simple random code generation
+    const chars = 'ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
+    let result = '';
+    for (let i = 0; i < 8; i++) {
+      result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return result;
+  }
+};
+
+export const ensureUserHasInviteCode = async (userId: string): Promise<string> => {
+  try {
+    console.log('🔍 Ensuring user has invite code:', userId);
+
+    // First check if user already has an invite code
+    const { data: user, error: fetchError } = await supabase
+      .from('users')
+      .select('invite_code')
+      .eq('id', userId)
+      .single();
+
+    if (fetchError) {
+      console.error('❌ Error fetching user invite code:', fetchError);
+      throw fetchError;
+    }
+
+    // If user already has an invite code, return it
+    if (user?.invite_code) {
+      console.log('✅ User already has invite code:', user.invite_code);
+      return user.invite_code;
+    }
+
+    // Generate a new invite code
+    const newInviteCode = await generateInviteCode();
+
+    // Update user with the new invite code
+    const { error: updateError } = await supabase
+      .from('users')
+      .update({ invite_code: newInviteCode })
+      .eq('id', userId);
+
+    if (updateError) {
+      console.error('❌ Error updating user invite code:', updateError);
+      throw updateError;
+    }
+
+    console.log('✅ New invite code assigned to user:', newInviteCode);
+    return newInviteCode;
+  } catch (error) {
+    console.error('❌ Final error in ensureUserHasInviteCode:', error);
+    // Return a fallback code if everything fails
+    return 'ERROR_CODE';
   }
 };
 
