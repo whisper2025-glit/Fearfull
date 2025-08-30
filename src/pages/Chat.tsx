@@ -284,7 +284,7 @@ const Chat = () => {
             ...defaults
           };
           setCurrentChatSettings(defaultSettings);
-          console.log('�� Using default chat settings');
+          console.log('📋 Using default chat settings');
         }
       } catch (error) {
         console.error('Error loading chat settings:', error);
@@ -329,6 +329,13 @@ const Chat = () => {
   const handleSendMessage = async (messageContent?: string) => {
     const messageToSend = messageContent || message;
     if (!messageToSend.trim() || isLoading || !currentCharacter || !user) return;
+
+    // Check if user has enough coins (2 coins per message)
+    const MESSAGE_COST = 2;
+    if (userCoins < MESSAGE_COST) {
+      toast.error(`You need ${MESSAGE_COST} coins to send a message. You have ${userCoins} coins.`);
+      return;
+    }
 
     // Use default model if none selected
     const modelToUse = selectedModel || {
