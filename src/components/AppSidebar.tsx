@@ -60,7 +60,7 @@ export function AppSidebar() {
       <SidebarContent className="p-4 space-y-6">
         {/* Logo */}
         <div className="flex items-center gap-3 px-2">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-cyan-500 flex items-center justify-center">
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-gray-500 to-cyan-500 flex items-center justify-center">
             <div className="w-4 h-4 bg-white rounded-sm transform rotate-12"></div>
           </div>
           {!collapsed && (
@@ -111,7 +111,7 @@ export function AppSidebar() {
                 >
                   <Avatar className="w-8 h-8 flex-shrink-0">
                     <AvatarImage src={user?.imageUrl} />
-                    <AvatarFallback className="bg-gradient-to-br from-cyan-400 to-purple-500 text-white text-sm">
+                    <AvatarFallback className="bg-gradient-to-br from-cyan-400 to-gray-500 text-white text-sm">
                       {user?.username?.charAt(0) || user?.fullName?.charAt(0) || user?.firstName?.charAt(0) || user?.lastName?.charAt(0) || "U"}
                     </AvatarFallback>
                   </Avatar>
