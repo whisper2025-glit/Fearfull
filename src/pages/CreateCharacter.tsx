@@ -320,14 +320,17 @@ const CreateCharacter = () => {
                   Tags <Info className="h-4 w-4 text-muted-foreground" />
                 </Label>
                 <div className="relative">
-                  <Select>
+                  <Select
+                    value={formData.tags}
+                    onValueChange={(value) => handleInputChange('tags', value)}
+                  >
                     <SelectTrigger className="text-xs bg-secondary/50 border-border rounded-lg h-12">
                       <SelectValue placeholder="Select tags..." />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="anime">Anime</SelectItem>
-                      <SelectItem value="realistic">Realistic</SelectItem>
-                      <SelectItem value="fantasy">Fantasy</SelectItem>
+                      <SelectItem value="Anime">Anime</SelectItem>
+                      <SelectItem value="Realistic">Realistic</SelectItem>
+                      <SelectItem value="Fantasy">Fantasy</SelectItem>
                     </SelectContent>
                   </Select>
                   <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
