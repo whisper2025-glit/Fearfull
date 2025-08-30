@@ -422,12 +422,14 @@ const Chat = () => {
         }
 
         // Award daily conversation coins once per UTC day (bonus reward)
-        if (canClaimDailyReward('conversation')) {
+        if (await canClaimDailyReward(user.id, 'conversation')) {
           try {
             const bonusBalance = await incrementUserCoins(user.id, 10, 'daily_conversation');
             setUserCoins(bonusBalance);
-            markDailyRewardClaimed('conversation');
-            toast.success('+10 Whisper coins bonus for chatting today!');
+            const success = await markDailyRewardClaimed(user.id, 'conversation', 10);
+            if (success) {
+              toast.success('+10 Whisper coins bonus for chatting today!');
+            }
           } catch (error) {
             console.error('Error awarding conversation coins:', error);
             // Don't show error to user, coin reward is not critical
