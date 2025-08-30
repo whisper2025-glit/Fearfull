@@ -34,10 +34,21 @@ const Index = () => {
       const from = pageToLoad * PAGE_SIZE;
       const to = from + PAGE_SIZE - 1;
 
-      const { data: charactersData, error: charactersError } = await supabase
+      let query = supabase
         .from('characters')
         .select('*')
-        .eq('visibility', 'public')
+        .eq('visibility', 'public');
+
+      if (gender !== 'Gender All') {
+        const g = gender.replace('Gender ', '');
+        query = query.eq('gender', g);
+      }
+
+      if (activeTag && activeTag !== 'For You') {
+        query = query.contains('tags', [activeTag]);
+      }
+
+      const { data: charactersData, error: charactersError } = await query
         .order('created_at', { ascending: false })
         .range(from, to);
 
@@ -86,7 +97,7 @@ const Index = () => {
     } finally {
       if (pageToLoad === 0) setIsLoading(false); else setIsLoadingMore(false);
     }
-  }, [PAGE_SIZE, isLoadingMore, isSignedIn, user]);
+  }, [PAGE_SIZE, isLoadingMore, isSignedIn, user, gender, activeTag]);
 
   useEffect(() => {
     // Initial load
@@ -94,6 +105,13 @@ const Index = () => {
     setHasMore(true);
     fetchPage(0);
   }, [fetchPage]);
+
+  useEffect(() => {
+    setCharacters([]);
+    setHasMore(true);
+    setPage(0);
+    fetchPage(0);
+  }, [activeTag, gender]);
 
   useEffect(() => {
     const loadFavorites = async () => {
