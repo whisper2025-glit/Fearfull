@@ -425,13 +425,13 @@ const Search = () => {
                         trendingCreators.map((creator) => (
                           <div
                             key={creator.id}
-                            className="bg-gradient-to-r from-purple-500/20 to-cyan-500/20 rounded-xl p-4 space-y-3 cursor-pointer hover:from-purple-500/30 hover:to-cyan-500/30 transition-all duration-200"
+                            className="bg-gradient-to-r from-gray-500/20 to-cyan-500/20 rounded-xl p-4 space-y-3 cursor-pointer hover:from-gray-500/30 hover:to-cyan-500/30 transition-all duration-200"
                             onClick={() => handleCreatorClick(creator.id)}
                           >
                             <div className="flex items-center gap-3">
                               <Avatar className="w-12 h-12">
                                 <AvatarImage src={creator.avatar_url} />
-                                <AvatarFallback className="bg-gradient-to-br from-purple-500 to-cyan-500 text-white text-sm">
+                                <AvatarFallback className="bg-gradient-to-br from-gray-500 to-cyan-500 text-white text-sm">
                                   {creator.username?.charAt(0) || creator.email?.charAt(0) || 'U'}
                                 </AvatarFallback>
                               </Avatar>
