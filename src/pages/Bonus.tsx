@@ -149,7 +149,7 @@ export default function Bonus() {
                     <Badge variant="secondary" className="bg-pink-500/20 text-pink-400">{formatCountdown(timeToReset)}</Badge>
                   </div>
                 </div>
-                <Button disabled={hasConvoReward || !conversationEligible} onClick={handleConvoReward} className="rounded-full">
+                <Button disabled={hasConvoReward} onClick={() => { if (conversationEligible) { handleConvoReward(); } else { navigate('/'); } }} className="rounded-full">
                   {hasConvoReward ? "Claimed" : conversationEligible ? "+10" : "Do a chat"}
                 </Button>
               </CardContent>
