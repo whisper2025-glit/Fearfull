@@ -71,7 +71,7 @@ const SettingsSheet = ({ children }: SettingsSheetProps) => {
       name: "Instagram",
       icon: Instagram,
       href: "#",
-      color: "text-pink-500"
+      color: "text-cyan-500"
     },
     {
       name: "Email",
