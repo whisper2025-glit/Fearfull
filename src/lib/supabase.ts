@@ -504,6 +504,32 @@ export interface Database {
           updated_at?: string;
         };
       };
+      invites: {
+        Row: {
+          id: string;
+          inviter_id: string; // User who created the invite code
+          invitee_id: string; // User who used the invite code
+          invite_code: string; // The invite code that was used
+          coins_awarded: number; // Coins awarded for this invite (usually 100)
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          inviter_id: string;
+          invitee_id: string;
+          invite_code: string;
+          coins_awarded?: number;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          inviter_id?: string;
+          invitee_id?: string;
+          invite_code?: string;
+          coins_awarded?: number;
+          created_at?: string;
+        };
+      };
       adventure_messages: {
         Row: {
           id: string;
@@ -823,7 +849,7 @@ export const setDefaultPersona = async (personaId: string, userId: string) => {
       throw error;
     }
 
-    console.log('��� Default persona set successfully:', data);
+    console.log('✅ Default persona set successfully:', data);
     return data;
   } catch (error) {
     console.error('❌ Final error in setDefaultPersona:', error);
