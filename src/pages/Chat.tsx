@@ -760,27 +760,50 @@ const Chat = () => {
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder={isLoading ? "AI is typing..." : "Type a message"}
-              disabled={isLoading}
+              placeholder={isLoading ? "AI is typing..." : userCoins < 2 ? "Need 2 coins to send message" : "Type a message"}
+              disabled={isLoading || userCoins < 2}
               className="flex-1 bg-card/50 border-border resize-none min-h-[40px] max-h-[120px] text-sm chat-text"
               rows={1}
             />
             <Button
               onClick={handleSendMessage}
-              disabled={!message.trim() || isLoading}
+              disabled={!message.trim() || isLoading || userCoins < 2}
               className="px-4 self-end"
               size="sm"
+              variant={userCoins < 2 ? "secondary" : "default"}
             >
               {isLoading ? (
                 <>
                   <Loader2 className="h-3 w-3 mr-1 animate-spin" />
                   Sending
                 </>
+              ) : userCoins < 2 ? (
+                <>
+                  <Coins className="h-3 w-3 mr-1" />
+                  Need 2
+                </>
               ) : (
-                'Send'
+                <>
+                  <Coins className="h-3 w-3 mr-1" />
+                  Send (2)
+                </>
               )}
             </Button>
           </div>
+          {userCoins < 2 && (
+            <div className="mt-2 text-xs text-center text-muted-foreground">
+              You need 2 coins to send a message. Visit the{' '}
+              <Button
+                variant="link"
+                size="sm"
+                className="h-auto p-0 text-primary underline text-xs"
+                onClick={() => navigate('/bonus')}
+              >
+                Bonus page
+              </Button>
+              {' '}to earn more coins.
+            </div>
+          )}
         </div>
       </div>
 
