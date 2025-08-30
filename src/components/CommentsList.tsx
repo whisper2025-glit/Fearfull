@@ -153,7 +153,7 @@ export function CommentsList({
               onClick={handleSubmitComment}
               disabled={!newComment.trim() || isSubmitting || !user}
               size="icon"
-              className="absolute right-2 top-2 h-8 w-8 bg-pink-500 hover:bg-pink-600 text-white disabled:opacity-50"
+              className="absolute right-2 top-2 h-8 w-8 bg-cyan-600 hover:bg-cyan-700 text-white disabled:opacity-50"
             >
               <Send className="h-4 w-4" />
             </Button>
