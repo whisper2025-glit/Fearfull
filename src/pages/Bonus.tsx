@@ -3,7 +3,7 @@ import { Layout } from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Coins, Clock, RotateCcw } from "lucide-react";
+import { Coins, Clock } from "lucide-react";
 import { toast } from "sonner";
 import { useUser } from "@clerk/clerk-react";
 import { supabase } from "@/lib/supabase";
@@ -99,32 +99,11 @@ export default function Bonus() {
     toast.success("Conversation reward claimed! +10 coins");
   };
 
-  const resetBonuses = () => {
-    // Clear all related keys and set coins to 0
-    for (let i = localStorage.length - 1; i >= 0; i--) {
-      const k = localStorage.key(i);
-      if (!k) continue;
-      if (k === COIN_KEY || k.startsWith(CHECKIN_KEY) || k.startsWith(CONVO_KEY)) {
-        localStorage.removeItem(k);
-      }
-    }
-    localStorage.setItem(COIN_KEY, '0');
-    setCoins(0);
-    setHasCheckedIn(false);
-    setHasConvoReward(false);
-    toast.success('Bonuses reset. Coins set to 0.');
-  };
 
   return (
     <Layout>
       <div className="flex-1 bg-background text-foreground min-h-full">
         <div className="p-4 space-y-4">
-          <div className="flex justify-end">
-            <Button variant="outline" size="sm" onClick={resetBonuses} className="rounded-full">
-              <RotateCcw className="h-4 w-4 mr-2" /> Reset
-            </Button>
-          </div>
-
           <Card className="bg-gradient-to-r from-purple-500/20 to-blue-500/20 border-border">
             <CardContent className="p-4">
               <div className="flex items-center justify-center">
