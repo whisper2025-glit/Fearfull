@@ -113,13 +113,13 @@ export function AppSidebar() {
                   <Avatar className="w-8 h-8 flex-shrink-0">
                     <AvatarImage src={user?.imageUrl} />
                     <AvatarFallback className="bg-gradient-to-br from-blue-400 to-purple-500 text-white text-sm">
-                      {user?.firstName?.charAt(0) || user?.emailAddresses[0]?.emailAddress?.charAt(0) || "U"}
+                      {user?.username?.charAt(0) || user?.fullName?.charAt(0) || user?.firstName?.charAt(0) || user?.lastName?.charAt(0) || "U"}
                     </AvatarFallback>
                   </Avatar>
                   {!collapsed && (
                     <div className="flex-1 text-left">
                       <p className="text-sm font-medium">
-                        {user?.firstName || user?.emailAddresses[0]?.emailAddress || "User"}
+                        {user?.username || user?.fullName || (user?.firstName && user?.lastName ? `${user.firstName} ${user.lastName}` : user?.firstName || user?.lastName) || "User"}
                       </p>
                       <p className="text-xs text-muted-foreground">Free Plan</p>
                     </div>
