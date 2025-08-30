@@ -579,9 +579,9 @@ const Chat = () => {
       {/* Header */}
       <header className="relative z-10 flex items-center justify-between p-4 border-b border-border/30 bg-background/20 backdrop-blur-sm">
         <div className="flex items-center gap-3">
-          <Button 
-            variant="ghost" 
-            size="icon" 
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={() => navigate(-1)}
             className="text-muted-foreground hover:text-foreground"
           >
@@ -589,10 +589,19 @@ const Chat = () => {
           </Button>
           <h1 className="text-sm font-semibold">{currentCharacter.name}</h1>
         </div>
-        
+
+        {/* Coin Balance Display */}
+        <div className="flex items-center gap-2 bg-card/30 backdrop-blur-sm px-3 py-1 rounded-full border border-border/30">
+          <Coins className="h-4 w-4 text-yellow-500" />
+          <span className="text-sm font-medium">
+            {loadingCoins ? '...' : userCoins}
+          </span>
+          <span className="text-xs text-muted-foreground">coins</span>
+        </div>
+
         <div className="flex items-center gap-2">
-          <Button 
-            variant="ghost" 
+          <Button
+            variant="ghost"
             size="icon"
             onClick={() => navigate('/')}
             className="text-muted-foreground hover:text-foreground"
