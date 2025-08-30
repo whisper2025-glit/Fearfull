@@ -62,6 +62,7 @@ export interface Database {
           banner_url: string | null;
           bio: string | null;
           gender: string | null;
+          coins: number; // Whisper coins balance
           created_at: string;
           updated_at: string;
         };
@@ -74,6 +75,7 @@ export interface Database {
           banner_url?: string | null;
           bio?: string | null;
           gender?: string | null;
+          coins?: number; // Whisper coins balance
           created_at?: string;
           updated_at?: string;
         };
@@ -86,6 +88,7 @@ export interface Database {
           banner_url?: string | null;
           bio?: string | null;
           gender?: string | null;
+          coins?: number; // Whisper coins balance
           created_at?: string;
           updated_at?: string;
         };
