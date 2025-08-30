@@ -312,7 +312,7 @@ const Profile = () => {
         <div className="relative">
           {/* Banner */}
           <div
-            className="h-64 bg-gradient-to-br from-blue-600 to-purple-700 bg-cover bg-center relative"
+            className="h-64 bg-gradient-to-br from-cyan-600 to-purple-700 bg-cover bg-center relative"
             style={userProfile.banner ? { backgroundImage: `url(${userProfile.banner})` } : {}}
           >
             {/* Dark glass overlay */}
@@ -492,7 +492,7 @@ const Profile = () => {
                       <Button
                         onClick={handleSaveProfile}
                         disabled={isSaving}
-                        className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                        className="w-full bg-cyan-600 hover:bg-cyan-700 text-white"
                       >
                         {isSaving ? (
                           <>
@@ -522,7 +522,7 @@ const Profile = () => {
                   onClick={() => setActiveTab(tab.id)}
                   className={`text-sm font-medium pb-2 border-b-2 transition-colors ${
                     activeTab === tab.id 
-                      ? 'text-blue-400 border-blue-400' 
+                      ? 'text-cyan-400 border-cyan-400' 
                       : 'text-muted-foreground border-transparent hover:text-foreground'
                   }`}
                 >
@@ -594,7 +594,7 @@ const Profile = () => {
               {activeTab === 'bots' && (
                 <Button
                   onClick={() => setIsCreateModalOpen(true)}
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-6"
+                  className="bg-cyan-600 hover:bg-cyan-700 text-white px-6"
                 >
                   Create my Bots
                 </Button>
