@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { useUser } from "@clerk/clerk-react";
 import { supabase, getUserCoins, incrementUserCoins, canClaimDailyReward, markDailyRewardClaimed, migrateLocalStorageCoins } from "@/lib/supabase";
 import { useNavigate } from "react-router-dom";
+import { InviteFriends } from "@/components/InviteFriends";
 
 const utcDateKey = () => new Date().toISOString().split("T")[0];
 const startOfTodayUTC = () => new Date(`${utcDateKey()}T00:00:00.000Z`);
