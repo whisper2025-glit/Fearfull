@@ -618,12 +618,22 @@ export const createOrUpdateUser = async (clerkUser: any) => {
   });
 
   const displayName = clerkUser.fullName || clerkUser.firstName || clerkUser.username || 'User';
+
+  // Generate invite code for new users
+  let inviteCode = '';
+  try {
+    inviteCode = await generateInviteCode();
+  } catch (error) {
+    console.error('⚠️ Failed to generate invite code, will assign later');
+  }
+
   const userData = {
     id: clerkUser.id,
     username: clerkUser.username || generateUsername(displayName, clerkUser.id),
     full_name: displayName,
     email: clerkUser.emailAddresses?.[0]?.emailAddress || null,
     avatar_url: clerkUser.imageUrl || null,
+    invite_code: inviteCode,
     updated_at: new Date().toISOString()
   };
 
