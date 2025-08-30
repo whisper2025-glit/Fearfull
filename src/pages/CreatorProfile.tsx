@@ -231,7 +231,7 @@ const CreatorProfile = () => {
         <div className="relative">
           {/* Banner */}
           <div
-            className="h-64 bg-gradient-to-br from-cyan-600 to-purple-700 bg-cover bg-center relative"
+            className="h-64 bg-gradient-to-br from-cyan-600 to-gray-700 bg-cover bg-center relative"
             style={creatorUser.banner_url ? { backgroundImage: `url(${creatorUser.banner_url})` } : {}}
           >
             {/* Dark glass overlay */}
