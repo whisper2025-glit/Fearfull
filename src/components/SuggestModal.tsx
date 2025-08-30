@@ -180,8 +180,8 @@ Example format:
         <div className="flex flex-col h-full overflow-hidden">
           <DialogHeader className="px-4 py-4 flex-shrink-0 border-b border-[#2d2e3e]">
             <div className="flex items-center gap-2">
-              <Lightbulb className="h-5 w-5 text-[#e74c8c]" />
-              <DialogTitle className="text-lg font-bold text-[#e74c8c]">
+              <Lightbulb className="h-5 w-5 text-cyan-400" />
+              <DialogTitle className="text-lg font-bold text-cyan-400">
                 Response Suggestions
               </DialogTitle>
             </div>
@@ -193,7 +193,7 @@ Example format:
           <div className="flex-1 p-4 overflow-y-auto min-h-0">
             {isLoading ? (
               <div className="flex flex-col items-center justify-center h-full gap-4">
-                <Loader2 className="h-8 w-8 animate-spin text-[#e74c8c]" />
+                <Loader2 className="h-8 w-8 animate-spin text-cyan-400" />
                 <p className="text-gray-400 text-sm">Generating suggestions...</p>
               </div>
             ) : (
@@ -201,13 +201,13 @@ Example format:
                 {suggestions.map((suggestion, index) => (
                   <Card
                     key={index}
-                    className="group bg-[#232438] border-[#2d2e3e] hover:border-[#e74c8c]/60 cursor-pointer transition-all duration-200 hover:bg-[#2a2b42]"
+                    className="group bg-[#232438] border-[#2d2e3e] hover:border-[#06b6d4]/60 cursor-pointer transition-all duration-200 hover:bg-[#2a2b42]"
                     onClick={() => handleSuggestionClick(suggestion)}
                   >
                     <CardContent className="p-4">
                       <div className="flex items-start gap-3">
-                        <div className="flex-shrink-0 w-6 h-6 bg-[#e74c8c]/20 rounded-full flex items-center justify-center">
-                          <span className="text-xs font-bold text-[#e74c8c]">{index + 1}</span>
+                        <div className="flex-shrink-0 w-6 h-6 bg-[#06b6d4]/20 rounded-full flex items-center justify-center">
+                          <span className="text-xs font-bold text-cyan-400">{index + 1}</span>
                         </div>
                         <div className="flex-1">
                           <p className="text-white text-sm leading-relaxed">
@@ -250,7 +250,7 @@ Example format:
                 Cancel
               </Button>
               <Button
-                className="flex-1 bg-gradient-to-r from-[#e74c8c] to-[#c44f93] hover:from-[#d63384] hover:to-[#b83e88] text-white rounded-lg"
+                className="flex-1 bg-gradient-to-r from-[#06b6d4] to-[#22d3ee] hover:from-[#0891b2] hover:to-[#0e7490] text-white rounded-lg"
                 onClick={handleRefresh}
                 disabled={isLoading}
               >
