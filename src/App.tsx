@@ -74,6 +74,11 @@ const AppContent = () => {
             <Bonus />
           </ProtectedRoute>
         } />
+        <Route path="/test-asterisk" element={
+          <ProtectedRoute>
+            <AsteriskTestPage />
+          </ProtectedRoute>
+        } />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
