@@ -69,7 +69,7 @@ export const MessageFormatter: React.FC<MessageFormatterProps> = ({
       }
     }
 
-    return parts.length > 0 ? parts : [text];
+    return parts.length > 0 ? parts : [processedText];
   };
 
   const formattedContent = formatMessage(content);
