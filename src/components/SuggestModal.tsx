@@ -126,16 +126,18 @@ CHARACTER CONTEXT:
 - Generate exactly 3 different response suggestions for the USER (not the character)
 - Each suggestion should be 1-2 sentences long
 - Make them diverse in tone: one casual/friendly, one curious/inquisitive, one action-oriented
-- Keep them appropriate for the roleplay context
+- Include physical actions and expressions using asterisks (*action*) when appropriate
+- Actions should feel natural to the roleplay context and can range from simple to complex
+- Keep them appropriate for the roleplay context (including mature themes if relevant)
 - Make them feel natural and engaging
 - Format each suggestion on a separate line starting with a number (1., 2., 3.)
 - Do not include quotes around the suggestions
 - Focus on what the USER should say, not what the character should say
 
 Example format:
-1. That sounds fascinating! I'd love to learn more about your experiences.
-2. What made you decide to take that path?
-3. Let's explore this place together - lead the way!`;
+1. That sounds fascinating! *leans forward with interest* I'd love to learn more about your experiences.
+2. What made you decide to take that path? *tilts head curiously*
+3. *takes your hand gently* Let's explore this place together - lead the way!`;
 
     return prompt;
   };
