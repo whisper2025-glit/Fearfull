@@ -15,24 +15,34 @@ const AsteriskTestPage = () => {
       description: "Text without spaces around asterisks"
     },
     {
-      title: "Multiple Actions",
-      input: "She looked at him*smiling softly*then*walked closer*and whispered*quietly*hello there",
-      description: "Multiple asterisk sections in one message"
+      title: "Complex Emotional Action",
+      input: "*he held her hand as she passed away in his arms*",
+      description: "Long, complex emotional action description"
     },
     {
-      title: "Mixed Spacing",
-      input: "Hello *waves* how are you*looks concerned*today?",
-      description: "Mix of spaced and non-spaced asterisks"
+      title: "Passionate/Intimate Action",
+      input: "*he kisses her neck passionately trailing upwards to find her lips in a passionate kiss*",
+      description: "Detailed passionate action with multiple movements"
     },
     {
-      title: "Start/End with Actions",
-      input: "*enters the room quietly*Hello everyone*leaves quickly*",
-      description: "Starting and ending with action text"
+      title: "Mixed Complex Actions",
+      input: "She whispered his name*running her fingers through his hair as their eyes met*then pulled him closer*their hearts beating as one*",
+      description: "Multiple complex actions in sequence"
     },
     {
-      title: "NSFW Example",
-      input: "She moaned softly*pressing closer against him*as their lips met*passionately*",
-      description: "Adult content with action formatting"
+      title: "Simple vs Complex",
+      input: "He smiled*waves excitedly*then*slowly approaches her, taking her hand gently and bringing it to his lips for a tender kiss*goodbye",
+      description: "Comparison between simple and complex actions"
+    },
+    {
+      title: "NSFW Detailed Scene",
+      input: "She moaned softly*pressing her body closer against his as he caressed her curves*their passion growing*breathing heavily as they moved together in perfect harmony*",
+      description: "Adult content with detailed action formatting"
+    },
+    {
+      title: "Emotional Complexity",
+      input: "I'm sorry*tears streaming down her face as she struggles to find the words*I never meant for this to happen*voice breaking with emotion*",
+      description: "Complex emotional expressions and physical reactions"
     }
   ];
 
