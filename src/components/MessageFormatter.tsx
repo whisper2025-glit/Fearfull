@@ -11,11 +11,14 @@ interface MessageFormatterProps {
  * Component that formats message content by parsing asterisks (*text*) 
  * and converting them to italicized, darker text for actions/descriptions
  */
-export const MessageFormatter: React.FC<MessageFormatterProps> = ({ 
-  content, 
-  className = '' 
+export const MessageFormatter: React.FC<MessageFormatterProps> = ({
+  content,
+  className = '',
+  enforceComplexActions = true // Default to enforcing complex actions
 }) => {
   const formatMessage = (text: string) => {
+    // Enhance simple actions if enforcement is enabled
+    const processedText = enforceComplexActions ? enhanceSimpleActions(text) : text;
     const parts: React.ReactNode[] = [];
     let currentIndex = 0;
     let partIndex = 0;
