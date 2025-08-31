@@ -38,6 +38,11 @@ interface Character {
   scenario: string;
   avatar: string;
   messages: Message[];
+  personality?: string;
+  appearance?: string;
+  gender?: string;
+  age?: string;
+  greeting?: string;
 }
 
 const Chat = () => {
