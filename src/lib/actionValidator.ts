@@ -52,11 +52,12 @@ export function validateActionComplexity(action: string): ActionValidationResult
   const simpleIndicatorCount = SIMPLE_ACTION_INDICATORS.filter(
     indicator => trimmedAction.includes(indicator)
   ).length;
-  
-  if (simpleIndicatorCount > 2 && wordCount < 12) {
+
+  // Allow any word count - focus on content quality over length
+  if (simpleIndicatorCount > 3) {
     return {
       isValid: false,
-      reason: 'Action appears too simple despite length',
+      reason: 'Action appears too simple based on content',
       suggestion: 'Add emotional complexity, sensory details, or passionate elements'
     };
   }
