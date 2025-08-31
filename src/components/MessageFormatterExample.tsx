@@ -8,11 +8,12 @@ import { Card } from '@/components/ui/card';
  */
 export const MessageFormatterExample: React.FC = () => {
   const exampleMessages = [
+    "Hello!*he walked to her and kisses her on the forehead*did you miss me",
     "Hello there! *waves enthusiastically* How are you doing today?",
     "*looks around nervously* I think we're being watched... *whispers* Follow me.",
-    "The sun was setting as *she gently touched his hand* and smiled warmly.",
+    "The sun was setting as*she gently touched his hand*and smiled warmly.",
     "*adjusts glasses and clears throat* Let me explain this complex topic to you.",
-    "Normal text here. *This should be italicized and darker* Back to normal text.",
+    "Normal text here.*This should be italicized and darker*Back to normal text.",
     "*dramatic gasp* I can't believe you said that! *covers mouth in shock*"
   ];
 
