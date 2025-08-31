@@ -33,16 +33,9 @@ const SIMPLE_ACTION_INDICATORS = [
  */
 export function validateActionComplexity(action: string): ActionValidationResult {
   const trimmedAction = action.trim().toLowerCase();
-  
-  // Check minimum word count (must be at least 8 words)
   const wordCount = trimmedAction.split(/\s+/).length;
-  if (wordCount < 8) {
-    return {
-      isValid: false,
-      reason: 'Action too short - must be at least 8 words',
-      suggestion: 'Add emotional depth, sensory details, or complex movements'
-    };
-  }
+
+  // No word count restrictions - focus purely on complexity and content
 
   // Check for forbidden simple actions
   for (const forbidden of FORBIDDEN_SIMPLE_ACTIONS) {
