@@ -519,31 +519,34 @@ const Chat = () => {
           }
         }));
 
-      // Get response from OpenRouter using current chat settings
+      // Get response from Enhanced OpenRouter using optimized roleplay settings
       const settingsToUse = currentChatSettings || {
-        temperature: 0.70,
-        content_diversity: 0.05,
-        max_tokens: 195
+        temperature: 0.85,
+        content_diversity: 0.9,
+        max_tokens: 400
       };
 
-      const apiOptions = {
+      const enhancedOptions = {
         temperature: settingsToUse.temperature,
         max_tokens: settingsToUse.max_tokens,
-        // Note: content_diversity (top_p) may need different parameter name based on OpenRouter API
-        top_p: settingsToUse.content_diversity
+        top_p: settingsToUse.content_diversity,
+        frequency_penalty: 0.3,
+        presence_penalty: 0.6
       };
 
       // Track API call for debugging
       setLastAPICall({
-        temperature: apiOptions.temperature,
-        max_tokens: apiOptions.max_tokens,
-        top_p: apiOptions.top_p,
+        temperature: enhancedOptions.temperature,
+        max_tokens: enhancedOptions.max_tokens,
+        top_p: enhancedOptions.top_p,
         timestamp: new Date().toISOString()
       });
 
-      const response = await openRouterAPI.createChatCompletion(modelToUse, chatMessages, apiOptions);
-
-      const botResponseContent = response.choices[0]?.message?.content || "I apologize, but I couldn't generate a response.";
+      const botResponseContent = await enhancedOpenRouterAPI.createRoleplayResponse(
+        enhancedMessages,
+        roleplayContext,
+        enhancedOptions
+      );
 
       const botMessage: Message = {
         id: Date.now() + 1,
