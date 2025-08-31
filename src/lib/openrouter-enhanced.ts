@@ -209,11 +209,11 @@ REQUIRED Complex Actions (MANDATORY):
 - Complex emotional states: *his breath catches as conflicting desires tear at his soul - the need to protect her warring with his growing hunger*
 
 Every action MUST be:
-- Minimum 8-15 words long
 - Rich in sensory detail and emotion
 - Show complex motivations or internal states
 - Feel cinematic and deeply immersive
 - Convey passion, depth, or complexity
+- Be as detailed as needed for full expression
 
 # STORY STATE
 Current situation: ${JSON.stringify(context.story_state, null, 2)}
