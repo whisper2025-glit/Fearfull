@@ -211,9 +211,10 @@ Example format:
                           <span className="text-xs font-bold text-cyan-400">{index + 1}</span>
                         </div>
                         <div className="flex-1">
-                          <p className="text-white text-sm leading-relaxed">
-                            {suggestion}
-                          </p>
+                          <MessageFormatter
+                            content={suggestion}
+                            className="text-white text-sm leading-relaxed"
+                          />
                           <p className="text-xs text-gray-500 mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
                             Click to send
                           </p>
