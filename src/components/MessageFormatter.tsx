@@ -31,7 +31,7 @@ export const MessageFormatter: React.FC<MessageFormatterProps> = ({
     while ((match = asteriskRegex.exec(processedText)) !== null) {
       // Add text before the asterisk match
       if (match.index > currentIndex) {
-        const beforeText = text.slice(currentIndex, match.index);
+        const beforeText = processedText.slice(currentIndex, match.index);
         if (beforeText) {
           parts.push(
             <React.Fragment key={`text-${partIndex++}`}>
