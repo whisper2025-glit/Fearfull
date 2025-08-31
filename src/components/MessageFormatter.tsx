@@ -33,11 +33,7 @@ export const MessageFormatter: React.FC<MessageFormatterProps> = ({
       parts.push(
         <span
           key={`action-${match.index}`}
-          className="italic font-medium text-foreground/90 opacity-80"
-          style={{ 
-            filter: 'brightness(0.7)', // Makes text darker
-            fontStyle: 'italic'
-          }}
+          className="action-text"
         >
           {actionText}
         </span>
