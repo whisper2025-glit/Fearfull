@@ -58,8 +58,8 @@ export const MessageFormatter: React.FC<MessageFormatterProps> = ({
     }
 
     // Add remaining text after the last match
-    if (currentIndex < text.length) {
-      const remainingText = text.slice(currentIndex);
+    if (currentIndex < processedText.length) {
+      const remainingText = processedText.slice(currentIndex);
       if (remainingText) {
         parts.push(
           <React.Fragment key={`text-${partIndex++}`}>
