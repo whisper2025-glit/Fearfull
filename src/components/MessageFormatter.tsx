@@ -1,8 +1,10 @@
 import React from 'react';
+import { enhanceSimpleActions } from '@/lib/actionValidator';
 
 interface MessageFormatterProps {
   content: string;
   className?: string;
+  enforceComplexActions?: boolean; // Option to enhance/filter simple actions
 }
 
 /**
