@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Loader2, Lightbulb, MessageCircle } from "lucide-react";
 import { openRouterAPI, ChatMessage } from "@/lib/openrouter";
+import { MessageFormatter } from "./MessageFormatter";
 import { Model } from "./ModelsModal";
 import { toast } from "sonner";
 
