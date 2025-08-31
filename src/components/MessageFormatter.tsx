@@ -28,7 +28,7 @@ export const MessageFormatter: React.FC<MessageFormatterProps> = ({
     const asteriskRegex = /\*([^*]+?)\*/g;
     let match;
 
-    while ((match = asteriskRegex.exec(text)) !== null) {
+    while ((match = asteriskRegex.exec(processedText)) !== null) {
       // Add text before the asterisk match
       if (match.index > currentIndex) {
         const beforeText = text.slice(currentIndex, match.index);
