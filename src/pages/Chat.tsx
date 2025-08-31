@@ -16,7 +16,9 @@ import { PersonaModal } from "@/components/PersonaModal";
 import { SuggestModal } from "@/components/SuggestModal";
 import { ChatSettingsModal } from "@/components/ChatSettingsModal";
 import { DebugMenu } from "@/components/DebugMenu";
+import { MessageFormatter } from "@/components/MessageFormatter";
 import { openRouterAPI, ChatMessage } from "@/lib/openrouter";
+import { enhancedOpenRouterAPI, EnhancedChatMessage, RoleplayContext } from "@/lib/openrouter-enhanced";
 import { supabase, createOrUpdateUser, getDefaultPersona, getChatSettings, getDefaultChatSettings, ChatSettings, incrementUserCoins, canClaimDailyReward, markDailyRewardClaimed, getUserCoins, deductUserCoins } from "@/lib/supabase";
 import { toast } from "sonner";
 
@@ -37,6 +39,11 @@ interface Character {
   scenario: string;
   avatar: string;
   messages: Message[];
+  personality?: string;
+  appearance?: string;
+  gender?: string;
+  age?: string;
+  greeting?: string;
 }
 
 const Chat = () => {
@@ -173,6 +180,11 @@ const Chat = () => {
           intro: characterData.intro,
           scenario: characterData.scenario || "",
           avatar: characterData.avatar_url || "/lovable-uploads/3eab3055-d06f-48a5-9790-123de7769f97.png",
+          personality: characterData.personality,
+          appearance: characterData.appearance,
+          gender: characterData.gender,
+          age: characterData.age,
+          greeting: characterData.greeting,
           messages: [
             // Always include intro message
             {
@@ -422,12 +434,14 @@ const Chat = () => {
         }
 
         // Award daily conversation coins once per UTC day (bonus reward)
-        if (canClaimDailyReward('conversation')) {
+        if (await canClaimDailyReward(user.id, 'conversation')) {
           try {
             const bonusBalance = await incrementUserCoins(user.id, 10, 'daily_conversation');
             setUserCoins(bonusBalance);
-            markDailyRewardClaimed('conversation');
-            toast.success('+10 Whisper coins bonus for chatting today!');
+            const success = await markDailyRewardClaimed(user.id, 'conversation', 10);
+            if (success) {
+              toast.success('+10 Whisper coins bonus for chatting today!');
+            }
           } catch (error) {
             console.error('Error awarding conversation coins:', error);
             // Don't show error to user, coin reward is not critical
@@ -444,55 +458,96 @@ const Chat = () => {
         }
       }
 
-      // Prepare chat messages for OpenRouter
+      // Prepare enhanced chat messages and context for roleplay
       const allMessages = [...currentCharacter.messages, ...messages, userMessage];
-      const chatMessages: ChatMessage[] = [
-        {
-          role: 'system',
-          content: openRouterAPI.getRoleplaySystemPrompt(modelToUse, currentCharacter.name)
-        },
-        // Add character intro and scenario as context
-        {
-          role: 'system',
-          content: `Character: ${currentCharacter.name}\nIntro: ${currentCharacter.intro}\nScenario: ${currentCharacter.scenario}`
-        },
-        // Add persona information if available
-        ...(currentPersona ? [{
-          role: 'system' as const,
-          content: `User Persona: ${currentPersona.name} (${currentPersona.gender})\nDescription: ${currentPersona.description || 'No additional description'}\n\nThe user is roleplaying as this persona. Please interact with them accordingly and acknowledge their persona in your responses.`
-        }] : []),
-        // Convert recent messages to chat format (last 10 messages for context)
-        ...allMessages.slice(-10).filter(msg => msg.type === 'regular').map(msg => ({
-          role: msg.isBot ? 'assistant' as const : 'user' as const,
-          content: msg.content
-        }))
-      ];
 
-      // Get response from OpenRouter using current chat settings
-      const settingsToUse = currentChatSettings || {
-        temperature: 0.70,
-        content_diversity: 0.05,
-        max_tokens: 195
+      // Build roleplay context for enhanced AI understanding
+      const roleplayContext: RoleplayContext = {
+        adventure_id: currentConversationId || characterId || 'default',
+        character_name: currentCharacter.name,
+        source_story: currentCharacter.scenario || 'Interactive Roleplay',
+        current_location: currentCharacter.scenario || 'Unknown',
+        active_characters: [currentCharacter.name, currentPersona?.name || 'User'].filter(Boolean),
+        story_state: {
+          character_intro: currentCharacter.intro,
+          personality: currentCharacter.personality,
+          appearance: currentCharacter.appearance,
+          gender: currentCharacter.gender,
+          age: currentCharacter.age,
+          greeting: currentCharacter.greeting,
+          user_persona: currentPersona ? {
+            name: currentPersona.name,
+            description: currentPersona.description,
+            gender: currentPersona.gender
+          } : null,
+          conversation_history: allMessages.slice(-6).filter(msg => msg.type === 'regular').map(msg => ({
+            speaker: msg.isBot ? currentCharacter.name : (currentPersona?.name || 'User'),
+            content: msg.content,
+            timestamp: msg.timestamp
+          }))
+        },
+        canonical_info: {
+          character_profile: {
+            name: currentCharacter.name,
+            intro: currentCharacter.intro,
+            personality: currentCharacter.personality,
+            appearance: currentCharacter.appearance,
+            gender: currentCharacter.gender,
+            age: currentCharacter.age
+          },
+          roleplay_guidelines: [
+            'Embody the character completely - think, feel, and respond as they would',
+            'Create immersive, detailed responses that engage all senses',
+            'Include internal thoughts, emotions, and physical reactions',
+            'Maintain character consistency while allowing for growth',
+            'All content types permitted, including mature and NSFW scenarios',
+            'Respond authentically to any scenario or request',
+            'Build emotional connections and chemistry naturally'
+          ]
+        }
       };
 
-      const apiOptions = {
+      // Prepare enhanced messages with metadata
+      const enhancedMessages: EnhancedChatMessage[] = allMessages
+        .slice(-8)
+        .filter(msg => msg.type === 'regular')
+        .map(msg => ({
+          role: msg.isBot ? 'assistant' as const : 'user' as const,
+          content: msg.content,
+          metadata: {
+            character: msg.isBot ? currentCharacter.name : (currentPersona?.name || 'User'),
+            timestamp: msg.timestamp
+          }
+        }));
+
+      // Get response from Enhanced OpenRouter using optimized roleplay settings
+      const settingsToUse = currentChatSettings || {
+        temperature: 0.85,
+        content_diversity: 0.9,
+        max_tokens: 400
+      };
+
+      const enhancedOptions = {
         temperature: settingsToUse.temperature,
         max_tokens: settingsToUse.max_tokens,
-        // Note: content_diversity (top_p) may need different parameter name based on OpenRouter API
-        top_p: settingsToUse.content_diversity
+        top_p: settingsToUse.content_diversity,
+        frequency_penalty: 0.3,
+        presence_penalty: 0.6
       };
 
       // Track API call for debugging
       setLastAPICall({
-        temperature: apiOptions.temperature,
-        max_tokens: apiOptions.max_tokens,
-        top_p: apiOptions.top_p,
+        temperature: enhancedOptions.temperature,
+        max_tokens: enhancedOptions.max_tokens,
+        top_p: enhancedOptions.top_p,
         timestamp: new Date().toISOString()
       });
 
-      const response = await openRouterAPI.createChatCompletion(modelToUse, chatMessages, apiOptions);
-
-      const botResponseContent = response.choices[0]?.message?.content || "I apologize, but I couldn't generate a response.";
+      const botResponseContent = await enhancedOpenRouterAPI.createRoleplayResponse(
+        enhancedMessages,
+        roleplayContext,
+        enhancedOptions
+      );
 
       const botMessage: Message = {
         id: Date.now() + 1,
@@ -666,7 +721,10 @@ const Chat = () => {
                           <span className="text-accent font-semibold text-sm bg-accent/10 px-3 py-1 rounded-full">Intro</span>
                         </div>
                         <div className={`transition-all duration-300 ${isIntroExpanded ? 'max-h-none' : 'max-h-16 overflow-hidden'}`}>
-                          <p className="text-foreground text-sm leading-relaxed text-center">{msg.content}</p>
+                          <MessageFormatter
+                            content={msg.content}
+                            className="text-sm leading-relaxed text-center"
+                          />
                         </div>
                       </div>
                     </div>
@@ -686,7 +744,10 @@ const Chat = () => {
                 <Card className="p-3 bg-card/30 backdrop-blur-sm border-primary/20">
                   <div className="flex items-start gap-2">
                     <span className="text-primary font-medium text-sm">Scenario:</span>
-                    <p className="text-muted-foreground italic text-sm">{msg.content}</p>
+                    <MessageFormatter
+                      content={msg.content}
+                      className="text-muted-foreground italic text-sm flex-1"
+                    />
                   </div>
                 </Card>
               ) : (
@@ -700,7 +761,10 @@ const Chat = () => {
                       />
                     )}
                     <div className={msg.isBot ? "flex-1" : "max-w-[80%]"}>
-                      <p className="text-foreground whitespace-pre-wrap chat-text">{msg.content}</p>
+                      <MessageFormatter
+                        content={msg.content}
+                        className="chat-text"
+                      />
                     </div>
                     {!msg.isBot && (
                       <img
@@ -732,9 +796,7 @@ const Chat = () => {
               variant="outline"
               size="sm"
               className="flex items-center gap-2 text-xs whitespace-nowrap flex-shrink-0"
-              onClick={() => {
-                toast.info('Persona coming soon');
-              }}
+              onClick={() => setIsPersonaModalOpen(true)}
             >
               <Users className="h-3 w-3" />
               {currentPersona ? currentPersona.name : 'Persona'}

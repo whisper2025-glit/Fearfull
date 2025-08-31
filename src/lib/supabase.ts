@@ -668,7 +668,7 @@ export const createOrUpdateUser = async (clerkUser: any) => {
       throw error;
     }
 
-    console.log('✅ Supabase upsert successful:', data);
+    console.log('��� Supabase upsert successful:', data);
     return data;
   } catch (error) {
     console.error('❌ Final error in createOrUpdateUser:', error);
@@ -1650,17 +1650,82 @@ export const migrateLocalStorageCoins = async (userId: string): Promise<void> =>
 };
 
 // Check if user can claim daily reward
-export const canClaimDailyReward = (rewardType: 'checkin' | 'conversation'): boolean => {
-  const today = new Date().toISOString().split('T')[0];
-  const key = rewardType === 'checkin' ? `bonus:checkin:${today}` : `bonus:conversation:${today}`;
-  return !localStorage.getItem(key);
+export const canClaimDailyReward = async (userId: string, rewardType: 'checkin' | 'conversation'): Promise<boolean> => {
+  try {
+    const today = new Date().toISOString().split('T')[0];
+
+    const { data, error } = await supabase
+      .from('daily_claims')
+      .select('id')
+      .eq('user_id', userId)
+      .eq('claim_type', rewardType)
+      .eq('claim_date', today)
+      .single();
+
+    if (error && error.code !== 'PGRST116') {
+      console.error('Error checking daily claim:', error);
+      return false;
+    }
+
+    // If no record found (PGRST116), user can claim
+    return !data;
+  } catch (error) {
+    console.error('Error checking daily claim:', error);
+    return false;
+  }
 };
 
 // Mark daily reward as claimed
-export const markDailyRewardClaimed = (rewardType: 'checkin' | 'conversation'): void => {
-  const today = new Date().toISOString().split('T')[0];
-  const key = rewardType === 'checkin' ? `bonus:checkin:${today}` : `bonus:conversation:${today}`;
-  localStorage.setItem(key, '1');
+export const markDailyRewardClaimed = async (userId: string, rewardType: 'checkin' | 'conversation', coinsAwarded: number): Promise<boolean> => {
+  try {
+    const today = new Date().toISOString().split('T')[0];
+
+    const { error } = await supabase
+      .from('daily_claims')
+      .insert({
+        user_id: userId,
+        claim_type: rewardType,
+        claim_date: today,
+        coins_awarded: coinsAwarded
+      });
+
+    if (error) {
+      console.error('Error marking daily claim:', error);
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    console.error('Error marking daily claim:', error);
+    return false;
+  }
+};
+
+// Get user's daily claim status for today
+export const getDailyClaimStatus = async (userId: string): Promise<{checkin: boolean, conversation: boolean}> => {
+  try {
+    const today = new Date().toISOString().split('T')[0];
+
+    const { data, error } = await supabase
+      .from('daily_claims')
+      .select('claim_type')
+      .eq('user_id', userId)
+      .eq('claim_date', today);
+
+    if (error) {
+      console.error('Error getting daily claim status:', error);
+      return { checkin: false, conversation: false };
+    }
+
+    const claimedTypes = data?.map(claim => claim.claim_type) || [];
+    return {
+      checkin: claimedTypes.includes('checkin'),
+      conversation: claimedTypes.includes('conversation')
+    };
+  } catch (error) {
+    console.error('Error getting daily claim status:', error);
+    return { checkin: false, conversation: false };
+  }
 };
 
 // Invite System Functions

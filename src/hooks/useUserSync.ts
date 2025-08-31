@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useUser } from '@clerk/clerk-react';
-import { createOrUpdateUser, supabase } from '@/lib/supabase';
+import { createOrUpdateUser, supabase, processInviteCode } from '@/lib/supabase';
 import { toast } from 'sonner';
 
 export const useUserSync = () => {
@@ -36,7 +36,31 @@ export const useUserSync = () => {
         // Sync user with Supabase using the basic client (no JWT required)
         const result = await createOrUpdateUser(user);
         console.log('✅ User synced with Supabase successfully:', result);
-        toast.success(`Welcome, ${result.username || result.full_name || 'User'}!`);
+
+        // Process invite code if present in URL (only for new or first-time users)
+        const urlParams = new URLSearchParams(window.location.search);
+        const inviteCode = urlParams.get('invite');
+
+        if (inviteCode) {
+          console.log('🎫 Processing invite code:', inviteCode);
+          try {
+            const inviteResult = await processInviteCode(user.id, inviteCode);
+            if (inviteResult.success) {
+              toast.success(`Welcome! Invite processed successfully. ${inviteResult.coinsAwarded} coins awarded to your inviter!`);
+              // Remove invite parameter from URL
+              const newUrl = new URL(window.location.href);
+              newUrl.searchParams.delete('invite');
+              window.history.replaceState({}, '', newUrl.toString());
+            } else {
+              toast.info(`Welcome! Note: ${inviteResult.message}`);
+            }
+          } catch (error) {
+            console.error('Error processing invite:', error);
+            toast.info('Welcome! Note: Could not process invite code.');
+          }
+        } else {
+          toast.success(`Welcome, ${result.username || result.full_name || 'User'}!`);
+        }
       } catch (error) {
         console.error('❌ Error syncing user:', error);
         // Don't show error toasts for user sync issues, just log them

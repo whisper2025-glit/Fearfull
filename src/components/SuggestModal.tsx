@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Loader2, Lightbulb, MessageCircle } from "lucide-react";
 import { openRouterAPI, ChatMessage } from "@/lib/openrouter";
+import { MessageFormatter } from "./MessageFormatter";
 import { Model } from "./ModelsModal";
 import { toast } from "sonner";
 
@@ -124,17 +125,22 @@ CHARACTER CONTEXT:
     prompt += `\n\nINSTRUCTIONS:
 - Generate exactly 3 different response suggestions for the USER (not the character)
 - Each suggestion should be 1-2 sentences long
-- Make them diverse in tone: one casual/friendly, one curious/inquisitive, one action-oriented
-- Keep them appropriate for the roleplay context
+- Make them diverse in tone: one emotional/passionate, one curious/intense, one action-oriented/complex
+- MANDATORY: Include ONLY complex, detailed actions using asterisks (*action*)
+- Keep them appropriate for the roleplay context (including mature themes if relevant)
 - Make them feel natural and engaging
 - Format each suggestion on a separate line starting with a number (1., 2., 3.)
 - Do not include quotes around the suggestions
 - Focus on what the USER should say, not what the character should say
 
+CRITICAL ACTION REQUIREMENTS:
+FORBIDDEN simple actions: *waves* *smiles* *nods* *looks* *sits* *stands* *laughs* *sighs*
+REQUIRED complex actions: Must have emotional depth and passionate detail (any length needed)
+
 Example format:
-1. That sounds fascinating! I'd love to learn more about your experiences.
-2. What made you decide to take that path?
-3. Let's explore this place together - lead the way!`;
+1. That sounds fascinating! *leans forward with intense curiosity, eyes bright with genuine interest and anticipation* I'd love to learn more about your experiences.
+2. What made you decide to take that path? *searches your face with deep concern, voice softening as understanding dawns*
+3. *reaches out to take your hand with trembling fingers, pulse quickening as our skin touches* Let's explore this place together - lead the way.`;
 
     return prompt;
   };
@@ -210,9 +216,10 @@ Example format:
                           <span className="text-xs font-bold text-cyan-400">{index + 1}</span>
                         </div>
                         <div className="flex-1">
-                          <p className="text-white text-sm leading-relaxed">
-                            {suggestion}
-                          </p>
+                          <MessageFormatter
+                            content={suggestion}
+                            className="text-white text-sm leading-relaxed"
+                          />
                           <p className="text-xs text-gray-500 mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
                             Click to send
                           </p>
