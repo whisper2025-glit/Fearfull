@@ -199,8 +199,8 @@ ${context.canonical_info ? JSON.stringify(context.canonical_info, null, 2) : 'Us
 
 FORBIDDEN Simple Actions (COMPLETELY BANNED):
 - *waves* *smiles* *nods* *shrugs* *laughs* *sighs* *winks* *looks* *sits* *stands* *walks*
-- Any action under 8 words
 - Basic emotions without detail: *happy* *sad* *angry* *surprised*
+- Any action lacking emotional depth or complexity
 
 REQUIRED Complex Actions (MANDATORY):
 - Detailed emotional expressions: *tears welling in her eyes as overwhelming grief crashes over her like a relentless tide*
