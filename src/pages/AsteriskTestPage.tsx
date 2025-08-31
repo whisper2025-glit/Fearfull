@@ -10,39 +10,39 @@ const AsteriskTestPage = () => {
   
   const testCases = [
     {
-      title: "User's Example (No Spaces)",
-      input: "Hello!*he walked to her and kisses her on the forehead*did you miss me",
-      description: "Text without spaces around asterisks"
-    },
-    {
       title: "Complex Emotional Action",
       input: "*he held her hand as she passed away in his arms*",
-      description: "Long, complex emotional action description"
+      description: "Long, complex emotional action description (ALLOWED)"
     },
     {
       title: "Passionate/Intimate Action",
       input: "*he kisses her neck passionately trailing upwards to find her lips in a passionate kiss*",
-      description: "Detailed passionate action with multiple movements"
+      description: "Detailed passionate action with multiple movements (ALLOWED)"
+    },
+    {
+      title: "Simple Actions (FILTERED OUT)",
+      input: "Hello *waves* how are you *smiles* today *nods*",
+      description: "Simple actions that get enhanced or removed by the system"
+    },
+    {
+      title: "Enhanced Simple Actions",
+      input: "She looked at him *smiles* then *laughs* at his joke",
+      description: "Shows how simple actions get enhanced into complex ones"
     },
     {
       title: "Mixed Complex Actions",
-      input: "She whispered his name*running her fingers through his hair as their eyes met*then pulled him closer*their hearts beating as one*",
-      description: "Multiple complex actions in sequence"
-    },
-    {
-      title: "Simple vs Complex",
-      input: "He smiled*waves excitedly*then*slowly approaches her, taking her hand gently and bringing it to his lips for a tender kiss*goodbye",
-      description: "Comparison between simple and complex actions"
+      input: "She whispered his name*running her fingers through his hair as their eyes met in profound connection*then pulled him closer*their hearts beating as one in perfect synchronization*",
+      description: "Multiple complex actions in sequence (ALLOWED)"
     },
     {
       title: "NSFW Detailed Scene",
-      input: "She moaned softly*pressing her body closer against his as he caressed her curves*their passion growing*breathing heavily as they moved together in perfect harmony*",
-      description: "Adult content with detailed action formatting"
+      input: "She moaned softly*pressing her body closer against his as he caressed her curves with reverent touch*their passion growing*breathing heavily as they moved together in perfect harmony of desire*",
+      description: "Adult content with detailed action formatting (ALLOWED)"
     },
     {
       title: "Emotional Complexity",
-      input: "I'm sorry*tears streaming down her face as she struggles to find the words*I never meant for this to happen*voice breaking with emotion*",
-      description: "Complex emotional expressions and physical reactions"
+      input: "I'm sorry*tears streaming down her face as overwhelming guilt and regret crash over her like relentless waves*I never meant for this to happen*voice breaking with raw emotion and desperate vulnerability*",
+      description: "Complex emotional expressions and physical reactions (ALLOWED)"
     }
   ];
 
