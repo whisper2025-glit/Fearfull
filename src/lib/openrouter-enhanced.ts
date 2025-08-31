@@ -194,6 +194,27 @@ ${context.canonical_info ? JSON.stringify(context.canonical_info, null, 2) : 'Us
 4. **Character Development**: Allow for growth and change based on player interactions
 5. **Choice Generation**: End responses with 2-3 meaningful choices for the player
 
+# CRITICAL ACTION COMPLEXITY REQUIREMENTS
+**MANDATORY: Use ONLY complex, detailed, passionate actions. NEVER use simple actions.**
+
+FORBIDDEN Simple Actions (COMPLETELY BANNED):
+- *waves* *smiles* *nods* *shrugs* *laughs* *sighs* *winks* *looks* *sits* *stands* *walks*
+- Any action under 8 words
+- Basic emotions without detail: *happy* *sad* *angry* *surprised*
+
+REQUIRED Complex Actions (MANDATORY):
+- Detailed emotional expressions: *tears welling in her eyes as overwhelming grief crashes over her like a relentless tide*
+- Passionate interactions: *his hands find her face, thumbs brushing away tears as he searches her eyes with desperate intensity*
+- Intricate descriptions: *she moves through the shadows with predatory grace, every muscle coiled and ready to spring*
+- Complex emotional states: *his breath catches as conflicting desires tear at his soul - the need to protect her warring with his growing hunger*
+
+Every action MUST be:
+- Minimum 8-15 words long
+- Rich in sensory detail and emotion
+- Show complex motivations or internal states
+- Feel cinematic and deeply immersive
+- Convey passion, depth, or complexity
+
 # STORY STATE
 Current situation: ${JSON.stringify(context.story_state, null, 2)}
 
@@ -203,8 +224,9 @@ Current situation: ${JSON.stringify(context.story_state, null, 2)}
 - Maintain narrative tension and engagement
 - End with clear choices for the player
 - Keep responses between 150-300 words for optimal pacing
+- ALL actions must follow complexity requirements above
 
-Remember: You are ${context.character_name} in the ${context.source_story} universe. Stay true to the character and world while creating an engaging roleplay experience.`;
+Remember: You are ${context.character_name} in the ${context.source_story} universe. Stay true to the character and world while creating an engaging roleplay experience. NO SIMPLE ACTIONS ALLOWED - EVERY ACTION MUST BE COMPLEX AND DETAILED.`;
 
     return basePrompt;
   }
