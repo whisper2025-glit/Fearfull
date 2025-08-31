@@ -721,7 +721,10 @@ const Chat = () => {
                           <span className="text-accent font-semibold text-sm bg-accent/10 px-3 py-1 rounded-full">Intro</span>
                         </div>
                         <div className={`transition-all duration-300 ${isIntroExpanded ? 'max-h-none' : 'max-h-16 overflow-hidden'}`}>
-                          <p className="text-foreground text-sm leading-relaxed text-center">{msg.content}</p>
+                          <MessageFormatter
+                            content={msg.content}
+                            className="text-sm leading-relaxed text-center"
+                          />
                         </div>
                       </div>
                     </div>
@@ -741,7 +744,10 @@ const Chat = () => {
                 <Card className="p-3 bg-card/30 backdrop-blur-sm border-primary/20">
                   <div className="flex items-start gap-2">
                     <span className="text-primary font-medium text-sm">Scenario:</span>
-                    <p className="text-muted-foreground italic text-sm">{msg.content}</p>
+                    <MessageFormatter
+                      content={msg.content}
+                      className="text-muted-foreground italic text-sm flex-1"
+                    />
                   </div>
                 </Card>
               ) : (
@@ -755,7 +761,10 @@ const Chat = () => {
                       />
                     )}
                     <div className={msg.isBot ? "flex-1" : "max-w-[80%]"}>
-                      <p className="text-foreground whitespace-pre-wrap chat-text">{msg.content}</p>
+                      <MessageFormatter
+                        content={msg.content}
+                        className="chat-text"
+                      />
                     </div>
                     {!msg.isBot && (
                       <img
