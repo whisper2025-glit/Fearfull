@@ -91,10 +91,14 @@ const AsteriskTestPage = () => {
             <h3 className="font-semibold text-lg mb-3">✨ Expected Behavior</h3>
             <div className="space-y-2 text-sm">
               <p>• Text between asterisks (*action*) should appear in <span className="action-text">italic, darker styling</span></p>
+              <p>• Works perfectly for simple actions: <span className="action-text">*waves excitedly*</span></p>
+              <p>• Handles complex descriptions: <span className="action-text">*he held her hand as she passed away in his arms*</span></p>
+              <p>• Supports passionate scenes: <span className="action-text">*he kisses her neck passionately trailing upwards*</span></p>
               <p>• Regular text should remain unchanged</p>
               <p>• Works with or without spaces around asterisks</p>
               <p>• Multiple actions in one message are supported</p>
               <p>• Perfect for roleplay scenarios including NSFW content</p>
+              <p>• Now works in suggestions modal too!</p>
             </div>
           </Card>
         </div>
