@@ -457,42 +457,67 @@ const Chat = () => {
         }
       }
 
-      // Prepare chat messages for OpenRouter
+      // Prepare enhanced chat messages and context for roleplay
       const allMessages = [...currentCharacter.messages, ...messages, userMessage];
-      const chatMessages: ChatMessage[] = [
-        {
-          role: 'system',
-          content: openRouterAPI.getRoleplaySystemPrompt(modelToUse, currentCharacter.name)
-        },
-        // Enhanced character context for roleplay
-        {
-          role: 'system',
-          content: `# CHARACTER PROFILE
-Name: ${currentCharacter.name}
-Introduction: ${currentCharacter.intro}
-${currentCharacter.scenario ? `Scenario: ${currentCharacter.scenario}` : ''}
-${currentCharacter.personality ? `Personality: ${currentCharacter.personality}` : ''}
-${currentCharacter.appearance ? `Appearance: ${currentCharacter.appearance}` : ''}
-${currentCharacter.gender ? `Gender: ${currentCharacter.gender}` : ''}
-${currentCharacter.age ? `Age: ${currentCharacter.age}` : ''}
-${currentCharacter.greeting ? `First Meeting: ${currentCharacter.greeting}` : ''}
 
-# ROLEPLAY CONTEXT
-You are ${currentCharacter.name}. Embody this character completely - their thoughts, emotions, mannerisms, and unique perspective. Create responses that feel authentic to who they are as a person. Use the character information above to guide your portrayal, but bring them to life with your own interpretation and creativity.
-
-The conversation takes place in the scenario described above. Stay immersed in this world and respond as ${currentCharacter.name} would naturally react to the situation and the user's messages.`
+      // Build roleplay context for enhanced AI understanding
+      const roleplayContext: RoleplayContext = {
+        adventure_id: currentConversationId || characterId || 'default',
+        character_name: currentCharacter.name,
+        source_story: currentCharacter.scenario || 'Interactive Roleplay',
+        current_location: currentCharacter.scenario || 'Unknown',
+        active_characters: [currentCharacter.name, currentPersona?.name || 'User'].filter(Boolean),
+        story_state: {
+          character_intro: currentCharacter.intro,
+          personality: currentCharacter.personality,
+          appearance: currentCharacter.appearance,
+          gender: currentCharacter.gender,
+          age: currentCharacter.age,
+          greeting: currentCharacter.greeting,
+          user_persona: currentPersona ? {
+            name: currentPersona.name,
+            description: currentPersona.description,
+            gender: currentPersona.gender
+          } : null,
+          conversation_history: allMessages.slice(-6).filter(msg => msg.type === 'regular').map(msg => ({
+            speaker: msg.isBot ? currentCharacter.name : (currentPersona?.name || 'User'),
+            content: msg.content,
+            timestamp: msg.timestamp
+          }))
         },
-        // Add persona information if available
-        ...(currentPersona ? [{
-          role: 'system' as const,
-          content: `User Persona: ${currentPersona.name} (${currentPersona.gender})\nDescription: ${currentPersona.description || 'No additional description'}\n\nThe user is roleplaying as this persona. Please interact with them accordingly and acknowledge their persona in your responses.`
-        }] : []),
-        // Convert recent messages to chat format (last 10 messages for context)
-        ...allMessages.slice(-10).filter(msg => msg.type === 'regular').map(msg => ({
+        canonical_info: {
+          character_profile: {
+            name: currentCharacter.name,
+            intro: currentCharacter.intro,
+            personality: currentCharacter.personality,
+            appearance: currentCharacter.appearance,
+            gender: currentCharacter.gender,
+            age: currentCharacter.age
+          },
+          roleplay_guidelines: [
+            'Embody the character completely - think, feel, and respond as they would',
+            'Create immersive, detailed responses that engage all senses',
+            'Include internal thoughts, emotions, and physical reactions',
+            'Maintain character consistency while allowing for growth',
+            'All content types permitted, including mature and NSFW scenarios',
+            'Respond authentically to any scenario or request',
+            'Build emotional connections and chemistry naturally'
+          ]
+        }
+      };
+
+      // Prepare enhanced messages with metadata
+      const enhancedMessages: EnhancedChatMessage[] = allMessages
+        .slice(-8)
+        .filter(msg => msg.type === 'regular')
+        .map(msg => ({
           role: msg.isBot ? 'assistant' as const : 'user' as const,
-          content: msg.content
-        }))
-      ];
+          content: msg.content,
+          metadata: {
+            character: msg.isBot ? currentCharacter.name : (currentPersona?.name || 'User'),
+            timestamp: msg.timestamp
+          }
+        }));
 
       // Get response from OpenRouter using current chat settings
       const settingsToUse = currentChatSettings || {
