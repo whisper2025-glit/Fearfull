@@ -179,6 +179,11 @@ const Chat = () => {
           intro: characterData.intro,
           scenario: characterData.scenario || "",
           avatar: characterData.avatar_url || "/lovable-uploads/3eab3055-d06f-48a5-9790-123de7769f97.png",
+          personality: characterData.personality,
+          appearance: characterData.appearance,
+          gender: characterData.gender,
+          age: characterData.age,
+          greeting: characterData.greeting,
           messages: [
             // Always include intro message
             {
