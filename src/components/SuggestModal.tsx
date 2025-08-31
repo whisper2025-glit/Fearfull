@@ -125,19 +125,22 @@ CHARACTER CONTEXT:
     prompt += `\n\nINSTRUCTIONS:
 - Generate exactly 3 different response suggestions for the USER (not the character)
 - Each suggestion should be 1-2 sentences long
-- Make them diverse in tone: one casual/friendly, one curious/inquisitive, one action-oriented
-- Include physical actions and expressions using asterisks (*action*) when appropriate
-- Actions should feel natural to the roleplay context and can range from simple to complex
+- Make them diverse in tone: one emotional/passionate, one curious/intense, one action-oriented/complex
+- MANDATORY: Include ONLY complex, detailed actions using asterisks (*action*)
 - Keep them appropriate for the roleplay context (including mature themes if relevant)
 - Make them feel natural and engaging
 - Format each suggestion on a separate line starting with a number (1., 2., 3.)
 - Do not include quotes around the suggestions
 - Focus on what the USER should say, not what the character should say
 
+CRITICAL ACTION REQUIREMENTS:
+FORBIDDEN simple actions: *waves* *smiles* *nods* *looks* *sits* *stands* *laughs* *sighs*
+REQUIRED complex actions: Must be 8+ words with emotional depth and detail
+
 Example format:
-1. That sounds fascinating! *leans forward with interest* I'd love to learn more about your experiences.
-2. What made you decide to take that path? *tilts head curiously*
-3. *takes your hand gently* Let's explore this place together - lead the way!`;
+1. That sounds fascinating! *leans forward with intense curiosity, eyes bright with genuine interest and anticipation* I'd love to learn more about your experiences.
+2. What made you decide to take that path? *searches your face with deep concern, voice softening as understanding dawns*
+3. *reaches out to take your hand with trembling fingers, pulse quickening as our skin touches* Let's explore this place together - lead the way.`;
 
     return prompt;
   };
