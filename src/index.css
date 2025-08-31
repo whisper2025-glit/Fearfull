@@ -109,6 +109,23 @@
 
   .chat-text {
     font-size: 14px;
+    line-height: 1.6;
+    word-wrap: break-word;
+  }
+
+  /* Action text styling for asterisk-enclosed content */
+  .action-text {
+    @apply italic font-medium;
+    color: hsla(var(--foreground), 0.75);
+    filter: brightness(0.8);
+  }
+
+  /* Enhanced action text for roleplay messages in chat */
+  .chat-text .action-text {
+    @apply font-semibold italic;
+    color: hsla(var(--muted-foreground), 1);
+    filter: brightness(0.7) contrast(1.1);
+    opacity: 0.9;
   }
 
   .scrollbar-hide {
