@@ -88,17 +88,29 @@ const AsteriskTestPage = () => {
           ))}
 
           <Card className="p-6 bg-primary/5 border-primary/20">
-            <h3 className="font-semibold text-lg mb-3">✨ Expected Behavior</h3>
+            <h3 className="font-semibold text-lg mb-3">✨ Complex Action Requirements</h3>
             <div className="space-y-2 text-sm">
-              <p>• Text between asterisks (*action*) should appear in <span className="action-text">italic, darker styling</span></p>
-              <p>• Works perfectly for simple actions: <span className="action-text">*waves excitedly*</span></p>
-              <p>• Handles complex descriptions: <span className="action-text">*he held her hand as she passed away in his arms*</span></p>
-              <p>• Supports passionate scenes: <span className="action-text">*he kisses her neck passionately trailing upwards*</span></p>
-              <p>• Regular text should remain unchanged</p>
-              <p>• Works with or without spaces around asterisks</p>
-              <p>• Multiple actions in one message are supported</p>
-              <p>• Perfect for roleplay scenarios including NSFW content</p>
-              <p>• Now works in suggestions modal too!</p>
+              <p>• <strong>ONLY COMPLEX ACTIONS ALLOWED:</strong> Text between asterisks (*action*) must be detailed and passionate</p>
+              <p>• <span className="text-red-400">❌ FORBIDDEN:</span> Simple actions like <span className="line-through">*waves* *smiles* *nods* *laughs*</span></p>
+              <p>• <span className="text-green-400">✅ REQUIRED:</span> <span className="action-text">*tears streaming down her face as overwhelming emotion crashes over her*</span></p>
+              <p>• <span className="text-green-400">✅ REQUIRED:</span> <span className="action-text">*he kisses her neck passionately trailing upwards to find her lips*</span></p>
+              <p>• Minimum 8 words per action with emotional depth or sensory details</p>
+              <p>• System automatically enhances or removes simple actions</p>
+              <p>• Perfect for passionate, intimate, and NSFW roleplay scenarios</p>
+              <p>• Works in chat messages, suggestions modal, and all roleplay responses</p>
+              <p>• AI models trained to generate only complex actions</p>
+            </div>
+          </Card>
+
+          <Card className="p-6 bg-red-900/20 border-red-500/20">
+            <h3 className="font-semibold text-lg mb-3 text-red-400">🚫 Forbidden Simple Actions</h3>
+            <div className="text-sm space-y-1 text-red-300">
+              <p>These actions are completely banned and will be enhanced or removed:</p>
+              <div className="bg-red-950/50 p-3 rounded mt-2 font-mono text-xs">
+                *waves* *smiles* *nods* *shrugs* *laughs* *sighs* *winks*<br/>
+                *looks* *sits* *stands* *walks* *blushes* *giggles* *grins*<br/>
+                *happy* *sad* *angry* *surprised* *confused* *excited*
+              </div>
             </div>
           </Card>
         </div>
