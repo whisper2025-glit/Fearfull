@@ -71,7 +71,9 @@ export const useUserSync = () => {
             toast.info('Welcome! Note: Could not process invite code.');
           }
         } else {
-          toast.success(`Welcome, ${result.username || result.full_name || 'User'}!`);
+          // Use the best available name for welcome message
+          const welcomeName = result.full_name || result.username || user.fullName || user.firstName || user.username || 'User';
+          toast.success(`Welcome, ${welcomeName}!`);
         }
       } catch (error) {
         console.error('❌ Error syncing user:', error);
