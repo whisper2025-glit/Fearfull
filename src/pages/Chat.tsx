@@ -64,15 +64,16 @@ const Chat = () => {
   const [chatPageSettings, setChatPageSettings] = useState<ChatPageSettings>(() => {
     try {
       const saved = localStorage.getItem('chat_page_settings');
-      return saved ? JSON.parse(saved) as ChatPageSettings : {
-        animated: true,
-        fullScreen: false,
-        sceneCardOpacity: 1,
-        chatBubbleOpacity: 0.75,
-        chatBubblesTheme: 'default'
-      };
+      if (saved) {
+        const raw = JSON.parse(saved);
+        const sceneCardOpacity = Math.min(1, Math.max(0, Number(raw.sceneCardOpacity ?? 1)));
+        const chatBubbleOpacity = Math.min(1, Math.max(0.5, Number(raw.chatBubbleOpacity ?? 0.75)));
+        const theme = ['default','glass','rounded'].includes(raw.chatBubblesTheme) ? raw.chatBubblesTheme : 'default';
+        return { sceneCardOpacity, chatBubbleOpacity, chatBubblesTheme: theme } as ChatPageSettings;
+      }
+      return { sceneCardOpacity: 1, chatBubbleOpacity: 0.75, chatBubblesTheme: 'default' };
     } catch {
-      return { animated: true, fullScreen: false, sceneCardOpacity: 1, chatBubbleOpacity: 0.75, chatBubblesTheme: 'default' };
+      return { sceneCardOpacity: 1, chatBubbleOpacity: 0.75, chatBubblesTheme: 'default' };
     }
   });
   const [currentPersona, setCurrentPersona] = useState<any>(null);
