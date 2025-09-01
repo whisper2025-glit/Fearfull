@@ -1,22 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { RotateCcw, Save } from "lucide-react";
 
 export type ChatPageSettings = {
-  animated: boolean;
-  fullScreen: boolean;
   sceneCardOpacity: number; // 0..1
   chatBubbleOpacity: number; // 0.5..1
   chatBubblesTheme: "default" | "glass" | "rounded";
 };
 
 const DEFAULT_SETTINGS: ChatPageSettings = {
-  animated: true,
-  fullScreen: false,
   sceneCardOpacity: 1,
   chatBubbleOpacity: 0.75,
   chatBubblesTheme: "default",
@@ -63,22 +58,6 @@ export function ChatPageSettingsModal({ open, onOpenChange, value, onSave }: Cha
           </DialogHeader>
 
           <div className="px-4 pb-4 space-y-4 flex-1 overflow-y-auto">
-            <div className="flex items-center justify-between rounded-xl border border-[#2d2e3e] bg-[#232438] p-4">
-              <div>
-                <div className="text-white font-medium">Animated</div>
-                <div className="text-xs text-gray-400">Turning off the switch will display only the avatar's cover.</div>
-              </div>
-              <Switch checked={settings.animated} onCheckedChange={(v) => setSettings(s => ({ ...s, animated: v }))} />
-            </div>
-
-            <div className="flex items-center justify-between rounded-xl border border-[#2d2e3e] bg-[#232438] p-4">
-              <div>
-                <div className="text-white font-medium">Full Screen</div>
-                <div className="text-xs text-gray-400">Turn off full screen to view the scene card better</div>
-              </div>
-              <Switch checked={settings.fullScreen} onCheckedChange={(v) => setSettings(s => ({ ...s, fullScreen: v }))} />
-            </div>
-
             <div className="rounded-xl border border-[#2d2e3e] bg-[#232438] p-4">
               <div className="flex items-center justify-between mb-2">
                 <div className="text-white font-medium">Scene Card Opacity</div>
