@@ -23,13 +23,14 @@ export const MessageFormatter: React.FC<MessageFormatterProps> = ({
     let currentIndex = 0;
     let partIndex = 0;
 
-    // Enhanced regular expression to match text between asterisks
-    // Matches *text* where text can contain any characters except asterisks
-    const asteriskRegex = /\*([^*]+?)\*/g;
+    // Combined regex to match both markdown images and asterisk actions
+    // Markdown image syntax: ![alt text](image_url)
+    // Asterisk syntax: *action text*
+    const combinedRegex = /!\[([^\]]*?)\]\(([^)]+?)\)|\*([^*]+?)\*/g;
     let match;
 
-    while ((match = asteriskRegex.exec(processedText)) !== null) {
-      // Add text before the asterisk match
+    while ((match = combinedRegex.exec(processedText)) !== null) {
+      // Add text before the current match
       if (match.index > currentIndex) {
         const beforeText = processedText.slice(currentIndex, match.index);
         if (beforeText) {
@@ -41,17 +42,46 @@ export const MessageFormatter: React.FC<MessageFormatterProps> = ({
         }
       }
 
-      // Add the asterisk content as italicized action text
-      const actionText = match[1];
-      if (actionText.trim()) {
-        parts.push(
-          <span
-            key={`action-${partIndex++}`}
-            className="action-text"
-          >
-            {actionText}
-          </span>
-        );
+      // Check if this is a markdown image match
+      if (match[0].startsWith('![')) {
+        const altText = match[1] || '';
+        const imageUrl = match[2];
+
+        if (imageUrl.trim()) {
+          parts.push(
+            <img
+              key={`image-${partIndex++}`}
+              src={imageUrl}
+              alt={altText}
+              className="max-w-full h-auto rounded-lg my-2 shadow-md"
+              style={{ maxHeight: '400px' }}
+              onError={(e) => {
+                // Handle broken images gracefully
+                const target = e.target as HTMLImageElement;
+                target.style.display = 'none';
+                // Add fallback text
+                const fallback = document.createElement('span');
+                fallback.textContent = `[Image: ${altText || 'Broken image'}]`;
+                fallback.className = 'text-muted-foreground italic';
+                target.parentNode?.insertBefore(fallback, target);
+              }}
+            />
+          );
+        }
+      }
+      // Check if this is an asterisk action match
+      else if (match[0].startsWith('*')) {
+        const actionText = match[3];
+        if (actionText.trim()) {
+          parts.push(
+            <span
+              key={`action-${partIndex++}`}
+              className="action-text"
+            >
+              {actionText}
+            </span>
+          );
+        }
       }
 
       currentIndex = match.index + match[0].length;
