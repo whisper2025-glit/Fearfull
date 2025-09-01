@@ -17,6 +17,7 @@ import { SuggestModal } from "@/components/SuggestModal";
 import { ChatSettingsModal } from "@/components/ChatSettingsModal";
 import { DebugMenu } from "@/components/DebugMenu";
 import { MessageFormatter } from "@/components/MessageFormatter";
+import { enhanceSimpleActions } from "@/lib/actionValidator";
 import { openRouterAPI, ChatMessage } from "@/lib/openrouter";
 import { enhancedOpenRouterAPI, EnhancedChatMessage, RoleplayContext } from "@/lib/openrouter-enhanced";
 import { supabase, createOrUpdateUser, getDefaultPersona, getChatSettings, getDefaultChatSettings, ChatSettings, incrementUserCoins, canClaimDailyReward, markDailyRewardClaimed, getUserCoins, deductUserCoins } from "@/lib/supabase";
@@ -549,9 +550,12 @@ const Chat = () => {
         enhancedOptions
       );
 
+      // Enforce strict action formatting in AI output
+      const filteredBotContent = enhanceSimpleActions(botResponseContent);
+
       const botMessage: Message = {
         id: Date.now() + 1,
-        content: botResponseContent,
+        content: filteredBotContent,
         isBot: true,
         timestamp: new Date().toLocaleTimeString(),
         type: "regular"
@@ -566,7 +570,7 @@ const Chat = () => {
           character_id: characterId,
           conversation_id: conversationToUse,
           author_id: null, // Bot messages have null author_id
-          content: botResponseContent,
+          content: filteredBotContent,
           is_bot: true,
           type: 'regular'
         });
@@ -762,7 +766,7 @@ const Chat = () => {
                     )}
                     <div className={msg.isBot ? "flex-1" : "max-w-[80%]"}>
                       <MessageFormatter
-                        content={msg.content}
+                        content={msg.isBot && msg.type === 'regular' ? enhanceSimpleActions(msg.content) : msg.content}
                         className="chat-text"
                       />
                     </div>
