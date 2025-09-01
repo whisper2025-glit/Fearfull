@@ -45,8 +45,8 @@ class OpenRouterService {
   };
 
   constructor() {
-    this.apiKey = import.meta.env.VITE_OPENROUTER_API_KEY || '';
-    
+    this.apiKey = import.meta.env.VITE_OPENROUTER_AI_API_KEY || '';
+
     if (!this.apiKey) {
       console.warn('OpenRouter API key not found in environment variables');
     }
@@ -63,13 +63,13 @@ class OpenRouterService {
 
   private validateApiKey(): boolean {
     if (!this.apiKey) {
-      throw new Error('OpenRouter API key is not configured. Please add VITE_OPENROUTER_API_KEY to your environment variables.');
+      throw new Error('OpenRouter API key is not configured. Please add VITE_OPENROUTER_AI_API_KEY to your environment variables.');
     }
-    
+
     if (!this.apiKey.startsWith('sk-or-v1-')) {
       throw new Error('Invalid OpenRouter API key format. Key should start with "sk-or-v1-"');
     }
-    
+
     return true;
   }
 
@@ -207,12 +207,35 @@ class OpenRouterService {
   }
 
   async testConnection(): Promise<{ success: boolean; message: string }> {
-    // 🚫 DISABLED: Preventing automatic token usage
-    console.log('🚫 testConnection() disabled to prevent token usage');
-    return {
-      success: true,
-      message: 'Connection test disabled (tokens saved)'
-    };
+    try {
+      this.validateApiKey();
+
+      // Test with a minimal request to check API key validity
+      const response = await fetch('https://openrouter.ai/api/v1/models', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${this.apiKey}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        return {
+          success: true,
+          message: 'OpenRouter API connection successful'
+        };
+      } else {
+        return {
+          success: false,
+          message: `API connection failed: ${response.status} ${response.statusText}`
+        };
+      }
+    } catch (error) {
+      return {
+        success: false,
+        message: `Connection test failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+      };
+    }
   }
 
   getRoleplaySystemPrompt(model: Model, characterName?: string): string {

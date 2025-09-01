@@ -13,6 +13,7 @@ import { useNavigate } from "react-router-dom";
 import { useUser } from "@clerk/clerk-react";
 import { supabase, uploadImage } from "@/lib/supabase";
 import { toast } from "sonner";
+import { MessageFormatter } from "@/components/MessageFormatter";
 
 const CreateCharacter = () => {
   const navigate = useNavigate();
@@ -275,8 +276,8 @@ const CreateCharacter = () => {
                   <Info className="h-4 w-4 text-muted-foreground" />
                 </Label>
                 <p className="text-muted-foreground text-xs leading-relaxed">
-                  Brief Description of your character, for display. This won't influence memory or prompts. You can enter 
-                  plain text or html text here.
+                  Brief Description of your character, for display. This won't influence memory or prompts. You can enter
+                  plain text, HTML, or use markdown image syntax like <code className="bg-muted px-1 py-0.5 rounded">![alt text](image_url)</code>.
                 </p>
                 <Textarea
                   placeholder="e.g. I can talk to you the whole night if you want"
@@ -440,8 +441,8 @@ const CreateCharacter = () => {
                     <Info className="h-4 w-4 text-muted-foreground" />
                   </Label>
                   <p className="text-muted-foreground text-xs leading-relaxed">
-                    The first message your character sends. This will only be included in short-term memory. 
-                    
+                    The first message your character sends. This will only be included in short-term memory.
+                    You can use markdown images with <code className="bg-muted px-1 py-0.5 rounded">![alt text](image_url)</code> and actions with <code className="bg-muted px-1 py-0.5 rounded">*action*</code>.
                   </p>
                   <Textarea
                     placeholder="e.g. Hello {{user}}, how are you today?"
@@ -459,8 +460,8 @@ const CreateCharacter = () => {
                   Personality <Info className="h-4 w-4 text-muted-foreground" />
                 </Label>
                 <p className="text-muted-foreground text-xs leading-relaxed">
-                  The detailed description of your character. This will be included in long-term memory. 
-                  
+                  The detailed description of your character. This will be included in long-term memory.
+                  You can include reference images using <code className="bg-muted px-1 py-0.5 rounded">![alt text](image_url)</code>.
                 </p>
                 <Textarea
                   placeholder="The Long Description allows you to have the Character describe themselves (traits, history, mannerisms, etc) and the kinds of things they want to talk about."
@@ -477,8 +478,8 @@ const CreateCharacter = () => {
                   Appearance <Info className="h-4 w-4 text-muted-foreground" />
                 </Label>
                 <p className="text-muted-foreground text-xs leading-relaxed">
-                  Describe {'{char}'}'s appearance here. This content will be saved in the long-term context. 
-                  
+                  Describe {'{char}'}'s appearance here. This content will be saved in the long-term context.
+                  Add reference images with <code className="bg-muted px-1 py-0.5 rounded">![alt text](image_url)</code>.
                 </p>
                 <Textarea
                   placeholder="e.g.{{char}} has long, wavy brown hair, bright green eyes, and a warm smile. {{char}}'s skin is fair with a natural glow, and {{char}}'s features are delicate, with a slender frame and a graceful, confident posture."
@@ -495,8 +496,8 @@ const CreateCharacter = () => {
                   Scenario <Info className="h-4 w-4 text-muted-foreground" />
                 </Label>
                 <p className="text-muted-foreground text-xs leading-relaxed">
-                  If the switch is turned on in the chat settings, this content will be included as long-term memory. 
-                  
+                  If the switch is turned on in the chat settings, this content will be included as long-term memory.
+                  Include scene images with <code className="bg-muted px-1 py-0.5 rounded">![alt text](image_url)</code>.
                 </p>
                 <Textarea
                   placeholder="Describe the environment the Character is in."
@@ -515,18 +516,60 @@ const CreateCharacter = () => {
               <h2 className="text-sm font-medium">{formData.name || "Your OC's Name"}</h2>
               <div className="border-t border-border pt-6">
                 <h3 className="text-sm font-medium mb-3">Intro</h3>
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  {formData.intro || "Your OC's introduction"}
-                </p>
-              </div>
-              <div className="border-t border-border pt-6">
-                <h3 className="text-sm font-medium mb-3">{formData.name || "Your OC's Name"}</h3>
-                <div className="bg-secondary/50 rounded-lg p-4 text-left">
-                  <p className="text-xs text-muted-foreground leading-relaxed">
-                    {formData.greeting || "Please fill in the greetings column on the left"}
-                  </p>
+                <div className="text-xs text-muted-foreground leading-relaxed">
+                  <MessageFormatter
+                    content={formData.intro || "Your OC's introduction"}
+                    className="text-xs leading-relaxed"
+                  />
                 </div>
               </div>
+              <div className="border-t border-border pt-6">
+                <h3 className="text-sm font-medium mb-3">Greeting</h3>
+                <div className="bg-secondary/50 rounded-lg p-4 text-left">
+                  <div className="text-xs text-muted-foreground leading-relaxed">
+                    <MessageFormatter
+                      content={formData.greeting || "Please fill in the greetings column on the left"}
+                      className="text-xs leading-relaxed chat-text"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {formData.personality && (
+                <div className="border-t border-border pt-6">
+                  <h3 className="text-sm font-medium mb-3">Personality</h3>
+                  <div className="text-xs text-muted-foreground leading-relaxed">
+                    <MessageFormatter
+                      content={formData.personality}
+                      className="text-xs leading-relaxed chat-text"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {formData.appearance && (
+                <div className="border-t border-border pt-6">
+                  <h3 className="text-sm font-medium mb-3">Appearance</h3>
+                  <div className="text-xs text-muted-foreground leading-relaxed">
+                    <MessageFormatter
+                      content={formData.appearance}
+                      className="text-xs leading-relaxed chat-text"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {formData.scenario && (
+                <div className="border-t border-border pt-6">
+                  <h3 className="text-sm font-medium mb-3">Scenario</h3>
+                  <div className="text-xs text-muted-foreground leading-relaxed">
+                    <MessageFormatter
+                      content={formData.scenario}
+                      className="text-xs leading-relaxed chat-text"
+                    />
+                  </div>
+                </div>
+              )}
             </div>
           )}
 

@@ -1,4 +1,4 @@
-import { Heart, MessageCircle } from "lucide-react";
+import { Heart, MessageCircle, Edit } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "@clerk/clerk-react";
@@ -23,9 +23,11 @@ interface CharacterCardProps {
   character: Character;
   onClick: () => void;
   onFavoriteChange?: (characterId: string, isFavorited: boolean) => void;
+  showEditButton?: boolean;
+  onEditClick?: (characterId: string) => void;
 }
 
-export function CharacterCard({ character, onClick, onFavoriteChange }: CharacterCardProps) {
+export function CharacterCard({ character, onClick, onFavoriteChange, showEditButton = false, onEditClick }: CharacterCardProps) {
   const { user } = useUser();
   const [isFavorited, setIsFavorited] = useState(character.isFavorited || false);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -57,6 +59,13 @@ export function CharacterCard({ character, onClick, onFavoriteChange }: Characte
       setIsProcessing(false);
     }
   };
+
+  const handleEditClick = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent card click
+    if (onEditClick) {
+      onEditClick(character.id);
+    }
+  };
   return (
     <div 
       className="character-card group cursor-pointer w-full"
@@ -73,8 +82,20 @@ export function CharacterCard({ character, onClick, onFavoriteChange }: Characte
         {/* Gradient Overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
         
-        {/* Favorite Button */}
-        <div className="absolute top-2 right-2">
+        {/* Action Buttons */}
+        <div className="absolute top-2 right-2 flex gap-1">
+          {showEditButton && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 w-8 p-0 rounded-full backdrop-blur-sm transition-all duration-200 bg-primary/20 hover:bg-primary/30 text-primary hover:text-primary-foreground"
+              onClick={handleEditClick}
+              title="Edit Character"
+            >
+              <Edit className="h-4 w-4" />
+            </Button>
+          )}
+
           <Button
             variant="ghost"
             size="sm"
@@ -85,6 +106,7 @@ export function CharacterCard({ character, onClick, onFavoriteChange }: Characte
             } ${isProcessing ? 'opacity-50 cursor-not-allowed' : ''}`}
             onClick={handleFavoriteClick}
             disabled={isProcessing}
+            title={isFavorited ? "Remove from favorites" : "Add to favorites"}
           >
             <Heart
               className={`h-4 w-4 transition-all duration-200 ${

@@ -42,8 +42,8 @@ export interface RoleplayOptions {
 }
 
 class EnhancedOpenRouterService {
-  private readonly roleplayModel = 'tngtech/deepseek-r1t2-chimera:free';
-  private readonly agentModel = 'moonshotai/kimi-k2:free';
+  private readonly roleplayModel = 'mistralai/mistral-7b-instruct:free';
+  private readonly agentModel = 'mistralai/mistral-7b-instruct:free';
   private readonly baseURL = 'https://openrouter.ai/api/v1';
   
   private readonly defaultRoleplayOptions: RoleplayOptions = {
@@ -64,8 +64,8 @@ class EnhancedOpenRouterService {
   };
 
   constructor() {
-    const apiKey = import.meta.env.VITE_OPENROUTER_API_KEY || '';
-    
+    const apiKey = import.meta.env.VITE_OPENROUTER_AI_API_KEY || '';
+
     if (!apiKey) {
       console.warn('OpenRouter API key not found in environment variables');
     }
@@ -73,7 +73,7 @@ class EnhancedOpenRouterService {
 
   private getHeaders(): Record<string, string> {
     return {
-      'Authorization': `Bearer ${import.meta.env.VITE_OPENROUTER_API_KEY}`,
+      'Authorization': `Bearer ${import.meta.env.VITE_OPENROUTER_AI_API_KEY}`,
       'Content-Type': 'application/json',
       'HTTP-Referer': window.location.origin,
       'X-Title': 'Adventure Roleplay Chat App',
@@ -81,15 +81,15 @@ class EnhancedOpenRouterService {
   }
 
   private validateApiKey(): boolean {
-    const apiKey = import.meta.env.VITE_OPENROUTER_API_KEY;
+    const apiKey = import.meta.env.VITE_OPENROUTER_AI_API_KEY;
     if (!apiKey) {
-      throw new Error('OpenRouter API key is not configured. Please add VITE_OPENROUTER_API_KEY to your environment variables.');
+      throw new Error('OpenRouter API key is not configured. Please add VITE_OPENROUTER_AI_API_KEY to your environment variables.');
     }
-    
+
     if (!apiKey.startsWith('sk-or-v1-')) {
       throw new Error('Invalid OpenRouter API key format. Key should start with "sk-or-v1-"');
     }
-    
+
     return true;
   }
 
@@ -401,17 +401,17 @@ Respond with JSON: {"isValid": boolean, "issues": [string array], "suggestions":
   getRoleplayModels(): RoleplayModel[] {
     return [
       {
-        id: 'tngtech/deepseek-r1t2-chimera:free',
-        name: 'DeepSeek R1T2 Chimera (Free)',
+        id: 'mistralai/mistral-7b-instruct:free',
+        name: 'Mistral 7B Instruct (Free)',
         description: 'Optimized for creative roleplay and storytelling',
         context_length: 32768,
         pricing: { prompt: 0, completion: 0 }
       },
       {
-        id: 'moonshotai/kimi-k2:free',
-        name: 'Kimi K2 (Free)',
+        id: 'microsoft/phi-3-mini-128k-instruct:free',
+        name: 'Phi-3 Mini (Free)',
         description: 'Advanced reasoning for complex scenarios',
-        context_length: 16384,
+        context_length: 128000,
         pricing: { prompt: 0, completion: 0 }
       }
     ];
