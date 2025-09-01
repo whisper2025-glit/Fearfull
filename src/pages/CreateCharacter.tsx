@@ -526,9 +526,12 @@ const CreateCharacter = () => {
               <div className="border-t border-border pt-6">
                 <h3 className="text-sm font-medium mb-3">{formData.name || "Your OC's Name"}</h3>
                 <div className="bg-secondary/50 rounded-lg p-4 text-left">
-                  <p className="text-xs text-muted-foreground leading-relaxed">
-                    {formData.greeting || "Please fill in the greetings column on the left"}
-                  </p>
+                  <div className="text-xs text-muted-foreground leading-relaxed">
+                    <MessageFormatter
+                      content={formData.greeting || "Please fill in the greetings column on the left"}
+                      className="text-xs leading-relaxed chat-text"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
