@@ -42,8 +42,8 @@ export interface RoleplayOptions {
 }
 
 class EnhancedOpenRouterService {
-  private readonly roleplayModel = 'tngtech/deepseek-r1t2-chimera:free';
-  private readonly agentModel = 'moonshotai/kimi-k2:free';
+  private readonly roleplayModel = 'mistralai/mistral-7b-instruct:free';
+  private readonly agentModel = 'mistralai/mistral-7b-instruct:free';
   private readonly baseURL = 'https://openrouter.ai/api/v1';
   
   private readonly defaultRoleplayOptions: RoleplayOptions = {
