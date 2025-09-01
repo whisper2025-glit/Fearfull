@@ -13,6 +13,7 @@ import { useNavigate } from "react-router-dom";
 import { useUser } from "@clerk/clerk-react";
 import { supabase, uploadImage } from "@/lib/supabase";
 import { toast } from "sonner";
+import { MessageFormatter } from "@/components/MessageFormatter";
 
 const CreateCharacter = () => {
   const navigate = useNavigate();
