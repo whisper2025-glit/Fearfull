@@ -45,8 +45,8 @@ class OpenRouterService {
   };
 
   constructor() {
-    this.apiKey = import.meta.env.VITE_OPENROUTER_API_KEY || '';
-    
+    this.apiKey = import.meta.env.VITE_OPENROUTER_AI_API_KEY || '';
+
     if (!this.apiKey) {
       console.warn('OpenRouter API key not found in environment variables');
     }
