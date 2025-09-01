@@ -67,7 +67,7 @@ const Chat = () => {
       if (saved) {
         const raw = JSON.parse(saved);
         const sceneCardOpacity = Math.min(1, Math.max(0, Number(raw.sceneCardOpacity ?? 1)));
-        const chatBubbleOpacity = Math.min(1, Math.max(0.5, Number(raw.chatBubbleOpacity ?? 0.75)));
+        const chatBubbleOpacity = Math.min(1, Math.max(0, Number(raw.chatBubbleOpacity ?? 0.75)));
         const theme = ['default','dark','blackPink','seaSaltCheese','glass','rounded'].includes(raw.chatBubblesTheme) ? raw.chatBubblesTheme : 'default';
         return { sceneCardOpacity, chatBubbleOpacity, chatBubblesTheme: theme } as ChatPageSettings;
       }
@@ -780,11 +780,12 @@ const Chat = () => {
                   className={`${(() => {
                     const base = 'p-3 backdrop-blur-sm';
                     const align = msg.isBot ? '' : 'ml-8';
+                    const a = chatPageSettings.chatBubbleOpacity;
                     const theme = chatPageSettings.chatBubblesTheme;
                     if (theme === 'dark') return `${base} ${align} text-white`;
                     if (theme === 'blackPink') return `${base} ${align} text-white`;
                     if (theme === 'seaSaltCheese') return `${base} ${align} text-black`;
-                    if (theme === 'glass') return `${base} ${align} border border-white/10 backdrop-blur-md`;
+                    if (theme === 'glass') return `${base} ${align} ${a > 0 ? 'border border-white/10' : ''} backdrop-blur-md`;
                     if (theme === 'rounded') return `${base} ${align} rounded-2xl`;
                     return `${base} ${align}`;
                   })()}`}
@@ -792,6 +793,7 @@ const Chat = () => {
                     backgroundColor: (() => {
                       const a = chatPageSettings.chatBubbleOpacity;
                       const theme = chatPageSettings.chatBubblesTheme;
+                      if (a <= 0) return 'rgba(0,0,0,0)';
                       if (theme === 'default' || theme === 'rounded') {
                         return msg.isBot ? `hsl(var(--card) / ${a})` : `hsl(var(--primary) / ${a})`;
                       }
