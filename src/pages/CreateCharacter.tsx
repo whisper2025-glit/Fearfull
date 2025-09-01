@@ -460,8 +460,8 @@ const CreateCharacter = () => {
                   Personality <Info className="h-4 w-4 text-muted-foreground" />
                 </Label>
                 <p className="text-muted-foreground text-xs leading-relaxed">
-                  The detailed description of your character. This will be included in long-term memory. 
-                  
+                  The detailed description of your character. This will be included in long-term memory.
+                  You can include reference images using <code className="bg-muted px-1 py-0.5 rounded">![alt text](image_url)</code>.
                 </p>
                 <Textarea
                   placeholder="The Long Description allows you to have the Character describe themselves (traits, history, mannerisms, etc) and the kinds of things they want to talk about."
