@@ -401,17 +401,17 @@ Respond with JSON: {"isValid": boolean, "issues": [string array], "suggestions":
   getRoleplayModels(): RoleplayModel[] {
     return [
       {
-        id: 'tngtech/deepseek-r1t2-chimera:free',
-        name: 'DeepSeek R1T2 Chimera (Free)',
+        id: 'mistralai/mistral-7b-instruct:free',
+        name: 'Mistral 7B Instruct (Free)',
         description: 'Optimized for creative roleplay and storytelling',
         context_length: 32768,
         pricing: { prompt: 0, completion: 0 }
       },
       {
-        id: 'moonshotai/kimi-k2:free',
-        name: 'Kimi K2 (Free)',
+        id: 'microsoft/phi-3-mini-128k-instruct:free',
+        name: 'Phi-3 Mini (Free)',
         description: 'Advanced reasoning for complex scenarios',
-        context_length: 16384,
+        context_length: 128000,
         pricing: { prompt: 0, completion: 0 }
       }
     ];
