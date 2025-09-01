@@ -478,8 +478,8 @@ const CreateCharacter = () => {
                   Appearance <Info className="h-4 w-4 text-muted-foreground" />
                 </Label>
                 <p className="text-muted-foreground text-xs leading-relaxed">
-                  Describe {'{char}'}'s appearance here. This content will be saved in the long-term context. 
-                  
+                  Describe {'{char}'}'s appearance here. This content will be saved in the long-term context.
+                  Add reference images with <code className="bg-muted px-1 py-0.5 rounded">![alt text](image_url)</code>.
                 </p>
                 <Textarea
                   placeholder="e.g.{{char}} has long, wavy brown hair, bright green eyes, and a warm smile. {{char}}'s skin is fair with a natural glow, and {{char}}'s features are delicate, with a slender frame and a graceful, confident posture."
