@@ -19,7 +19,7 @@ import {
   Twitter
 } from "lucide-react";
 import { useUser, useClerk } from "@clerk/clerk-react";
-import { supabase } from "@/lib/supabase";
+import { supabase, setSupabaseAuth } from "@/lib/supabase";
 
 // Custom Discord Icon
 const DiscordIcon = ({ className }: { className?: string }) => (
@@ -112,6 +112,15 @@ const SettingsSheet = ({ children }: SettingsSheetProps) => {
   ];
 
   const handleLogout = async () => {
+    try {
+      // Clear Supabase session first
+      await setSupabaseAuth(null);
+      console.log('🔓 Supabase session cleared');
+    } catch (error) {
+      console.warn('⚠️ Error clearing Supabase session on logout:', error);
+    }
+
+    // Then sign out from Clerk
     await signOut();
   };
 
