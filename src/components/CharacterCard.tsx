@@ -27,7 +27,7 @@ interface CharacterCardProps {
   onEditClick?: (characterId: string) => void;
 }
 
-export function CharacterCard({ character, onClick, onFavoriteChange }: CharacterCardProps) {
+export function CharacterCard({ character, onClick, onFavoriteChange, showEditButton = false, onEditClick }: CharacterCardProps) {
   const { user } = useUser();
   const [isFavorited, setIsFavorited] = useState(character.isFavorited || false);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -57,6 +57,13 @@ export function CharacterCard({ character, onClick, onFavoriteChange }: Characte
       toast.error('Failed to update favorite status');
     } finally {
       setIsProcessing(false);
+    }
+  };
+
+  const handleEditClick = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent card click
+    if (onEditClick) {
+      onEditClick(character.id);
     }
   };
   return (
