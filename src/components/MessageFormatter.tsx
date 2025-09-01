@@ -49,23 +49,33 @@ export const MessageFormatter: React.FC<MessageFormatterProps> = ({
 
         if (imageUrl.trim()) {
           parts.push(
-            <img
-              key={`image-${partIndex++}`}
-              src={imageUrl}
-              alt={altText}
-              className="max-w-full h-auto rounded-lg my-2 shadow-md"
-              style={{ maxHeight: '400px' }}
-              onError={(e) => {
-                // Handle broken images gracefully
-                const target = e.target as HTMLImageElement;
-                target.style.display = 'none';
-                // Add fallback text
-                const fallback = document.createElement('span');
-                fallback.textContent = `[Image: ${altText || 'Broken image'}]`;
-                fallback.className = 'text-muted-foreground italic';
-                target.parentNode?.insertBefore(fallback, target);
-              }}
-            />
+            <div key={`image-container-${partIndex++}`} className="my-2">
+              <img
+                src={imageUrl}
+                alt={altText}
+                className="max-w-full h-auto rounded-lg shadow-md border border-border/30 hover:shadow-xl hover:border-primary/30 transition-all duration-300"
+                style={{ maxHeight: '400px' }}
+                onError={(e) => {
+                  // Handle broken images gracefully by replacing with fallback
+                  const target = e.target as HTMLImageElement;
+                  const container = target.parentElement;
+                  if (container) {
+                    container.innerHTML = `<span class="image-fallback">[Image: ${altText || 'Failed to load image'}]</span>`;
+                  }
+                }}
+                onLoad={(e) => {
+                  // Add subtle animation when image loads
+                  const target = e.target as HTMLImageElement;
+                  target.style.opacity = '0';
+                  target.style.transform = 'scale(0.95)';
+                  requestAnimationFrame(() => {
+                    target.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                    target.style.opacity = '1';
+                    target.style.transform = 'scale(1)';
+                  });
+                }}
+              />
+            </div>
           );
         }
       }
