@@ -649,7 +649,7 @@ const Chat = () => {
     >
       {/* Background overlay for better readability */}
       {sceneBackground && (
-        <div className={`absolute inset-0 z-0 ${chatPageSettings.animated ? 'animate-float' : ''}`} style={{ backgroundColor: 'rgba(0,0,0,0.2)', opacity: chatPageSettings.sceneCardOpacity }} />
+        <div className="absolute inset-0 bg-black/20 z-0" style={{ opacity: chatPageSettings.sceneCardOpacity }} />
       )}
 
       {/* Header */}
