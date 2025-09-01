@@ -9,7 +9,7 @@ import {
 import { useLocation, useNavigate } from "react-router-dom";
 import { useUser, useClerk, SignInButton } from "@clerk/clerk-react";
 import { CreateModal } from "@/components/CreateModal";
-import { setSupabaseAuth, supabase } from "@/lib/supabase";
+import { supabase } from "@/lib/supabase";
 import {
   Sidebar,
   SidebarContent,
@@ -90,15 +90,6 @@ export function AppSidebar() {
   const isActive = (path: string) => currentPath === path;
 
   const handleSignOut = async () => {
-    try {
-      // Clear Supabase session first
-      await setSupabaseAuth(null);
-      console.log('🔓 Supabase session cleared');
-    } catch (error) {
-      console.warn('⚠️ Error clearing Supabase session on logout:', error);
-    }
-
-    // Then sign out from Clerk
     await signOut();
   };
 
