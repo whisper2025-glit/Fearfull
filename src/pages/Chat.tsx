@@ -855,6 +855,7 @@ const Chat = () => {
               size="sm"
               className="flex items-center gap-2 text-xs whitespace-nowrap flex-shrink-0"
               onClick={() => setIsSuggestModalOpen(true)}
+              disabled={!hasApiKey}
             >
               <Lightbulb className="h-3 w-3" />
               Suggest
