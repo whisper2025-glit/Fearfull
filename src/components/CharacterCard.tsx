@@ -82,8 +82,20 @@ export function CharacterCard({ character, onClick, onFavoriteChange, showEditBu
         {/* Gradient Overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
         
-        {/* Favorite Button */}
-        <div className="absolute top-2 right-2">
+        {/* Action Buttons */}
+        <div className="absolute top-2 right-2 flex gap-1">
+          {showEditButton && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 w-8 p-0 rounded-full backdrop-blur-sm transition-all duration-200 bg-primary/20 hover:bg-primary/30 text-primary hover:text-primary-foreground"
+              onClick={handleEditClick}
+              title="Edit Character"
+            >
+              <Edit className="h-4 w-4" />
+            </Button>
+          )}
+
           <Button
             variant="ghost"
             size="sm"
@@ -94,6 +106,7 @@ export function CharacterCard({ character, onClick, onFavoriteChange, showEditBu
             } ${isProcessing ? 'opacity-50 cursor-not-allowed' : ''}`}
             onClick={handleFavoriteClick}
             disabled={isProcessing}
+            title={isFavorited ? "Remove from favorites" : "Add to favorites"}
           >
             <Heart
               className={`h-4 w-4 transition-all duration-200 ${
