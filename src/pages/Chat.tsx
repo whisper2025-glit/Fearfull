@@ -777,7 +777,17 @@ const Chat = () => {
                 </Card>
               ) : (
                 <Card
-                  className={`p-3 ${msg.isBot ? 'bg-card/20 backdrop-blur-sm' : 'bg-primary/20 ml-8 backdrop-blur-sm'} ${chatPageSettings.chatBubblesTheme === 'glass' ? 'bg-white/10 dark:bg-black/20 border border-white/10 backdrop-blur-md' : ''} ${chatPageSettings.chatBubblesTheme === 'rounded' ? 'rounded-2xl' : ''}`}
+                  className={`${(() => {
+                    const base = 'p-3 backdrop-blur-sm';
+                    const theme = chatPageSettings.chatBubblesTheme;
+                    if (theme === 'default') return `${base} ${msg.isBot ? 'bg-card/20' : 'bg-primary/20 ml-8'}`;
+                    if (theme === 'dark') return `${base} ${msg.isBot ? 'bg-black text-white' : 'bg-gray-800 text-white ml-8'}`;
+                    if (theme === 'blackPink') return `${base} ${msg.isBot ? 'bg-gray-700 text-white' : 'bg-pink-500 text-white ml-8'}`;
+                    if (theme === 'seaSaltCheese') return `${base} ${msg.isBot ? 'bg-sky-400/60 text-black' : 'bg-amber-200 text-black ml-8'}`;
+                    if (theme === 'glass') return `${base} bg-white/10 dark:bg-black/20 border border-white/10 backdrop-blur-md ${msg.isBot ? '' : 'ml-8'}`;
+                    if (theme === 'rounded') return `${base} ${msg.isBot ? 'bg-card/20' : 'bg-primary/20 ml-8'} rounded-2xl`;
+                    return `${base} ${msg.isBot ? 'bg-card/20' : 'bg-primary/20 ml-8'}`;
+                  })()}`}
                   style={{ opacity: chatPageSettings.chatBubbleOpacity }}
                 >
                   <div className={`flex items-start gap-3 ${msg.isBot ? '' : 'justify-end'}`}>
