@@ -17,6 +17,13 @@ export const MessageFormatterExample: React.FC = () => {
     "*dramatic gasp* I can't believe you said that! *covers mouth in shock*"
   ];
 
+  const imageExamples = [
+    "Look at this beautiful sunset! ![Sunset over mountains](https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=250&fit=crop&crop=center) *points toward the horizon with wonder*",
+    "I found this cozy coffee shop downtown. ![Coffee shop interior](https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=400&h=250&fit=crop&crop=center) *takes a sip of coffee* The atmosphere is perfect for reading.",
+    "*pulls out phone excitedly* Check out this adorable cat I saw today! ![Cute cat](https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=300&h=300&fit=crop&crop=center)",
+    "The architecture here is stunning. ![Modern building](https://images.unsplash.com/photo-1480714378408-67cf0d13bc1f?w=500&h=300&fit=crop&crop=center) *looks up in awe* I could stare at this all day."
+  ];
+
   return (
     <div className="space-y-4 p-4">
       <h2 className="text-lg font-bold mb-4">Asterisk Formatting Examples</h2>
