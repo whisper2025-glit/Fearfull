@@ -23,6 +23,8 @@ interface CharacterCardProps {
   character: Character;
   onClick: () => void;
   onFavoriteChange?: (characterId: string, isFavorited: boolean) => void;
+  showEditButton?: boolean;
+  onEditClick?: (characterId: string) => void;
 }
 
 export function CharacterCard({ character, onClick, onFavoriteChange }: CharacterCardProps) {
