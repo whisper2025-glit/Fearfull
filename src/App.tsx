@@ -80,6 +80,7 @@ const AppContent = () => {
             <AsteriskTestPage />
           </ProtectedRoute>
         } />
+        <Route path="/test-images" element={<ImageTest />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
