@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
@@ -29,9 +30,9 @@ interface ChatPageSettingsModalProps {
 }
 
 export function ChatPageSettingsModal({ open, onOpenChange, value, onSave }: ChatPageSettingsModalProps) {
-  const [settings, setSettings] = React.useState<ChatPageSettings>(value || DEFAULT_SETTINGS);
+  const [settings, setSettings] = useState<ChatPageSettings>(value || DEFAULT_SETTINGS);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (open) {
       setSettings(value || DEFAULT_SETTINGS);
     }
