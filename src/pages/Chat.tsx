@@ -15,6 +15,7 @@ import { ModelsModal, Model } from "@/components/ModelsModal";
 import { PersonaModal } from "@/components/PersonaModal";
 import { SuggestModal } from "@/components/SuggestModal";
 import { ChatSettingsModal } from "@/components/ChatSettingsModal";
+import { ChatPageSettingsModal } from "@/components/ChatPageSettingsModal";
 import { DebugMenu } from "@/components/DebugMenu";
 import { MessageFormatter } from "@/components/MessageFormatter";
 import { enhanceSimpleActions } from "@/lib/actionValidator";
@@ -59,6 +60,7 @@ const Chat = () => {
   const [isPersonaModalOpen, setIsPersonaModalOpen] = useState(false);
   const [isSuggestModalOpen, setIsSuggestModalOpen] = useState(false);
   const [isChatSettingsModalOpen, setIsChatSettingsModalOpen] = useState(false);
+  const [isChatPageSettingsModalOpen, setIsChatPageSettingsModalOpen] = useState(false);
   const [currentPersona, setCurrentPersona] = useState<any>(null);
   const [sceneBackground, setSceneBackground] = useState<string>("");
   const [selectedModel, setSelectedModel] = useState<Model | null>({
@@ -686,6 +688,10 @@ const Chat = () => {
                 <Settings className="mr-2 h-4 w-4" />
                 Chat Settings
               </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setIsChatPageSettingsModalOpen(true)}>
+                <Settings className="mr-2 h-4 w-4" />
+                Chat Page Settings
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -934,6 +940,11 @@ const Chat = () => {
           setIsModelsModalOpen(true);
         }}
         onSettingsChange={setCurrentChatSettings}
+      />
+
+      <ChatPageSettingsModal
+        open={isChatPageSettingsModalOpen}
+        onOpenChange={setIsChatPageSettingsModalOpen}
       />
 
       {/* Debug Menu */}
