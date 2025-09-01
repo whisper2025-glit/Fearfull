@@ -144,20 +144,37 @@ const AsteriskTestPage = () => {
             ))}
           </div>
 
-          <Card className="p-6 bg-primary/5 border-primary/20">
-            <h3 className="font-semibold text-lg mb-3">✨ Complex Action Requirements</h3>
-            <div className="space-y-2 text-sm">
-              <p>• <strong>ONLY COMPLEX ACTIONS ALLOWED:</strong> Text between asterisks (*action*) must be detailed and passionate</p>
-              <p>• <span className="text-red-400">❌ FORBIDDEN:</span> Simple actions like <span className="line-through">*waves* *smiles* *nods* *laughs*</span></p>
-              <p>• <span className="text-green-400">✅ REQUIRED:</span> <span className="action-text">*tears streaming down her face as overwhelming emotion crashes over her*</span></p>
-              <p>• <span className="text-green-400">✅ REQUIRED:</span> <span className="action-text">*he kisses her neck passionately trailing upwards to find her lips*</span></p>
-              <p>• Minimum 8 words per action with emotional depth or sensory details</p>
-              <p>• System automatically enhances or removes simple actions</p>
-              <p>• Perfect for passionate, intimate, and NSFW roleplay scenarios</p>
-              <p>• Works in chat messages, suggestions modal, and all roleplay responses</p>
-              <p>• AI models trained to generate only complex actions</p>
-            </div>
-          </Card>
+          <div className="grid md:grid-cols-2 gap-6">
+            <Card className="p-6 bg-primary/5 border-primary/20">
+              <h3 className="font-semibold text-lg mb-3">✨ Complex Action Requirements</h3>
+              <div className="space-y-2 text-sm">
+                <p>• <strong>ONLY COMPLEX ACTIONS ALLOWED:</strong> Text between asterisks (*action*) must be detailed and passionate</p>
+                <p>• <span className="text-red-400">❌ FORBIDDEN:</span> Simple actions like <span className="line-through">*waves* *smiles* *nods* *laughs*</span></p>
+                <p>• <span className="text-green-400">✅ REQUIRED:</span> <span className="action-text">*tears streaming down her face as overwhelming emotion crashes over her*</span></p>
+                <p>• <span className="text-green-400">✅ REQUIRED:</span> <span className="action-text">*he kisses her neck passionately trailing upwards to find her lips*</span></p>
+                <p>• Minimum 8 words per action with emotional depth or sensory details</p>
+                <p>• System automatically enhances or removes simple actions</p>
+                <p>• Perfect for passionate, intimate, and NSFW roleplay scenarios</p>
+                <p>• Works in chat messages, suggestions modal, and all roleplay responses</p>
+                <p>• AI models trained to generate only complex actions</p>
+              </div>
+            </Card>
+
+            <Card className="p-6 bg-accent/5 border-accent/20">
+              <h3 className="font-semibold text-lg mb-3">🖼️ Markdown Image Features</h3>
+              <div className="space-y-2 text-sm">
+                <p>• <strong>Syntax:</strong> <code className="bg-muted px-1 py-0.5 rounded text-xs">![alt text](image_url)</code></p>
+                <p>• <span className="text-green-400">✅ FEATURES:</span> Auto-resize, hover effects, shadow styling</p>
+                <p>• <span className="text-green-400">✅ FALLBACK:</span> Graceful handling of broken images</p>
+                <p>• <span className="text-green-400">✅ RESPONSIVE:</span> Maximum 400px height, full width scaling</p>
+                <p>• <span className="text-green-400">✅ ANIMATION:</span> Smooth loading with fade-in effect</p>
+                <p>• <span className="text-green-400">✅ ACCESSIBLE:</span> Alt text support for screen readers</p>
+                <p>• Works seamlessly with asterisk action formatting</p>
+                <p>• Perfect for roleplay scenes, character references, locations</p>
+                <p>• Compatible with all chat messages and responses</p>
+              </div>
+            </Card>
+          </div>
 
           <Card className="p-6 bg-red-900/20 border-red-500/20">
             <h3 className="font-semibold text-lg mb-3 text-red-400">🚫 Forbidden Simple Actions</h3>
