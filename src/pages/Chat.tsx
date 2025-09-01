@@ -15,7 +15,7 @@ import { ModelsModal, Model } from "@/components/ModelsModal";
 import { PersonaModal } from "@/components/PersonaModal";
 import { SuggestModal } from "@/components/SuggestModal";
 import { ChatSettingsModal } from "@/components/ChatSettingsModal";
-import { ChatPageSettingsModal } from "@/components/ChatPageSettingsModal";
+import { ChatPageSettingsModal, ChatPageSettings } from "@/components/ChatPageSettingsModal";
 import { DebugMenu } from "@/components/DebugMenu";
 import { MessageFormatter } from "@/components/MessageFormatter";
 import { enhanceSimpleActions } from "@/lib/actionValidator";
@@ -61,6 +61,20 @@ const Chat = () => {
   const [isSuggestModalOpen, setIsSuggestModalOpen] = useState(false);
   const [isChatSettingsModalOpen, setIsChatSettingsModalOpen] = useState(false);
   const [isChatPageSettingsModalOpen, setIsChatPageSettingsModalOpen] = useState(false);
+  const [chatPageSettings, setChatPageSettings] = useState<ChatPageSettings>(() => {
+    try {
+      const saved = localStorage.getItem('chat_page_settings');
+      return saved ? JSON.parse(saved) as ChatPageSettings : {
+        animated: true,
+        fullScreen: false,
+        sceneCardOpacity: 1,
+        chatBubbleOpacity: 0.75,
+        chatBubblesTheme: 'default'
+      };
+    } catch {
+      return { animated: true, fullScreen: false, sceneCardOpacity: 1, chatBubbleOpacity: 0.75, chatBubblesTheme: 'default' };
+    }
+  });
   const [currentPersona, setCurrentPersona] = useState<any>(null);
   const [sceneBackground, setSceneBackground] = useState<string>("");
   const [selectedModel, setSelectedModel] = useState<Model | null>({
@@ -634,10 +648,11 @@ const Chat = () => {
     >
       {/* Background overlay for better readability */}
       {sceneBackground && (
-        <div className="absolute inset-0 bg-black/20 z-0" />
+        <div className={`absolute inset-0 z-0 ${chatPageSettings.animated ? 'animate-float' : ''}`} style={{ backgroundColor: 'rgba(0,0,0,0.2)', opacity: chatPageSettings.sceneCardOpacity }} />
       )}
 
       {/* Header */}
+      {!chatPageSettings.fullScreen && (
       <header className="relative z-10 flex items-center justify-between p-4 border-b border-border/30 bg-background/20 backdrop-blur-sm">
         <div className="flex items-center gap-3">
           <Button
@@ -696,9 +711,10 @@ const Chat = () => {
           </DropdownMenu>
         </div>
       </header>
+      )}
 
       {/* Chat Content */}
-      <div className="relative z-10 flex-1 flex flex-col max-w-full mx-auto h-[calc(100vh-4rem)]">
+      <div className="relative z-10 flex-1 flex flex-col max-w-full mx-auto" style={{ height: chatPageSettings.fullScreen ? '100vh' : 'calc(100vh - 4rem)' }}>
         {/* Messages */}
         <div className="flex-1 px-4 py-4 overflow-y-auto">
           {allMessages.map((msg) => (
@@ -761,7 +777,10 @@ const Chat = () => {
                   </div>
                 </Card>
               ) : (
-                <Card className={`p-3 ${msg.isBot ? 'bg-card/20 backdrop-blur-sm' : 'bg-primary/20 ml-8 backdrop-blur-sm'}`}>
+                <Card
+                  className={`p-3 ${msg.isBot ? 'bg-card/20 backdrop-blur-sm' : 'bg-primary/20 ml-8 backdrop-blur-sm'} ${chatPageSettings.chatBubblesTheme === 'glass' ? 'bg-white/10 dark:bg-black/20 border border-white/10 backdrop-blur-md' : ''} ${chatPageSettings.chatBubblesTheme === 'rounded' ? 'rounded-2xl' : ''}`}
+                  style={{ opacity: chatPageSettings.chatBubbleOpacity }}
+                >
                   <div className={`flex items-start gap-3 ${msg.isBot ? '' : 'justify-end'}`}>
                     {msg.isBot && (
                       <img
@@ -945,6 +964,8 @@ const Chat = () => {
       <ChatPageSettingsModal
         open={isChatPageSettingsModalOpen}
         onOpenChange={setIsChatPageSettingsModalOpen}
+        value={chatPageSettings}
+        onSave={(v) => setChatPageSettings(v)}
       />
 
       {/* Debug Menu */}
