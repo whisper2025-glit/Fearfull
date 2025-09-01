@@ -149,6 +149,35 @@
     display: none;  /* Safari and Chrome */
   }
 
+  /* Markdown image styling for chat messages */
+  .chat-text img {
+    @apply rounded-lg border border-border/30 shadow-lg;
+    max-width: 100%;
+    height: auto;
+    max-height: 400px;
+    margin: 0.75rem 0;
+    object-fit: cover;
+    transition: all 0.3s ease;
+  }
+
+  .chat-text img:hover {
+    @apply shadow-xl border-primary/30;
+    transform: scale(1.02);
+  }
+
+  /* Image loading state */
+  .chat-text img[src=""] {
+    @apply bg-muted animate-pulse;
+    min-height: 100px;
+  }
+
+  /* Fallback text for broken images */
+  .chat-text .image-fallback {
+    @apply text-muted-foreground italic text-sm bg-muted/30 px-3 py-2 rounded border border-dashed border-border/50;
+    display: inline-block;
+    margin: 0.5rem 0;
+  }
+
   .line-clamp-2 {
     display: -webkit-box;
     -webkit-line-clamp: 2;
