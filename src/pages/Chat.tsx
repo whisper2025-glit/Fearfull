@@ -653,7 +653,6 @@ const Chat = () => {
       )}
 
       {/* Header */}
-      {!chatPageSettings.fullScreen && (
       <header className="relative z-10 flex items-center justify-between p-4 border-b border-border/30 bg-background/20 backdrop-blur-sm">
         <div className="flex items-center gap-3">
           <Button
@@ -712,10 +711,9 @@ const Chat = () => {
           </DropdownMenu>
         </div>
       </header>
-      )}
 
       {/* Chat Content */}
-      <div className="relative z-10 flex-1 flex flex-col max-w-full mx-auto" style={{ height: chatPageSettings.fullScreen ? '100vh' : 'calc(100vh - 4rem)' }}>
+      <div className="relative z-10 flex-1 flex flex-col max-w-full mx-auto h-[calc(100vh-4rem)]">
         {/* Messages */}
         <div className="flex-1 px-4 py-4 overflow-y-auto">
           {allMessages.map((msg) => (
