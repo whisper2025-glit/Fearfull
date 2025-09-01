@@ -496,8 +496,8 @@ const CreateCharacter = () => {
                   Scenario <Info className="h-4 w-4 text-muted-foreground" />
                 </Label>
                 <p className="text-muted-foreground text-xs leading-relaxed">
-                  If the switch is turned on in the chat settings, this content will be included as long-term memory. 
-                  
+                  If the switch is turned on in the chat settings, this content will be included as long-term memory.
+                  Include scene images with <code className="bg-muted px-1 py-0.5 rounded">![alt text](image_url)</code>.
                 </p>
                 <Textarea
                   placeholder="Describe the environment the Character is in."
