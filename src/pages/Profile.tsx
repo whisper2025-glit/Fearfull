@@ -603,7 +603,6 @@ const Profile = () => {
                   onClick={() => navigate(`/character/${character.id}`)}
                   onFavoriteChange={handleFavoriteChange}
                   showEditButton={activeTab === 'bots' && character.owner_id === user?.id}
-                  onEditClick={(characterId) => navigate(`/edit/${characterId}`)}
                 />
               ))}
             </div>
