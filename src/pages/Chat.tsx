@@ -779,16 +779,37 @@ const Chat = () => {
                 <Card
                   className={`${(() => {
                     const base = 'p-3 backdrop-blur-sm';
+                    const align = msg.isBot ? '' : 'ml-8';
                     const theme = chatPageSettings.chatBubblesTheme;
-                    if (theme === 'default') return `${base} ${msg.isBot ? 'bg-card/20' : 'bg-primary/20 ml-8'}`;
-                    if (theme === 'dark') return `${base} ${msg.isBot ? 'bg-black text-white' : 'bg-gray-800 text-white ml-8'}`;
-                    if (theme === 'blackPink') return `${base} ${msg.isBot ? 'bg-gray-700 text-white' : 'bg-pink-500 text-white ml-8'}`;
-                    if (theme === 'seaSaltCheese') return `${base} ${msg.isBot ? 'bg-sky-400/60 text-black' : 'bg-amber-200 text-black ml-8'}`;
-                    if (theme === 'glass') return `${base} bg-white/10 dark:bg-black/20 border border-white/10 backdrop-blur-md ${msg.isBot ? '' : 'ml-8'}`;
-                    if (theme === 'rounded') return `${base} ${msg.isBot ? 'bg-card/20' : 'bg-primary/20 ml-8'} rounded-2xl`;
-                    return `${base} ${msg.isBot ? 'bg-card/20' : 'bg-primary/20 ml-8'}`;
+                    if (theme === 'dark') return `${base} ${align} text-white`;
+                    if (theme === 'blackPink') return `${base} ${align} text-white`;
+                    if (theme === 'seaSaltCheese') return `${base} ${align} text-black`;
+                    if (theme === 'glass') return `${base} ${align} border border-white/10 backdrop-blur-md`;
+                    if (theme === 'rounded') return `${base} ${align} rounded-2xl`;
+                    return `${base} ${align}`;
                   })()}`}
-                  style={{ opacity: chatPageSettings.chatBubbleOpacity }}
+                  style={{
+                    backgroundColor: (() => {
+                      const a = chatPageSettings.chatBubbleOpacity;
+                      const theme = chatPageSettings.chatBubblesTheme;
+                      if (theme === 'default' || theme === 'rounded') {
+                        return msg.isBot ? `hsl(var(--card) / ${a})` : `hsl(var(--primary) / ${a})`;
+                      }
+                      if (theme === 'dark') {
+                        return msg.isBot ? `rgba(0,0,0,${a})` : `rgba(31,41,55,${a})`;
+                      }
+                      if (theme === 'blackPink') {
+                        return msg.isBot ? `rgba(55,65,81,${a})` : `rgba(236,72,153,${a})`;
+                      }
+                      if (theme === 'seaSaltCheese') {
+                        return msg.isBot ? `rgba(56,189,248,${a})` : `rgba(253,230,138,${a})`;
+                      }
+                      if (theme === 'glass') {
+                        return `rgba(255,255,255,${Math.min(1, a * 0.2)})`;
+                      }
+                      return msg.isBot ? `hsl(var(--card) / ${a})` : `hsl(var(--primary) / ${a})`;
+                    })()
+                  }}
                 >
                   <div className={`flex items-start gap-3 ${msg.isBot ? '' : 'justify-end'}`}>
                     {msg.isBot && (
