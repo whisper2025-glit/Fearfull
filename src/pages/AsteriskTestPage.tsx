@@ -7,8 +7,8 @@ import { ArrowLeft } from 'lucide-react';
 
 const AsteriskTestPage = () => {
   const navigate = useNavigate();
-  
-  const testCases = [
+
+  const asteriskTestCases = [
     {
       title: "Complex Emotional Action",
       input: "*he held her hand as she passed away in his arms*",
