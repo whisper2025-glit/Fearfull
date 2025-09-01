@@ -68,7 +68,7 @@ const Chat = () => {
         const raw = JSON.parse(saved);
         const sceneCardOpacity = Math.min(1, Math.max(0, Number(raw.sceneCardOpacity ?? 1)));
         const chatBubbleOpacity = Math.min(1, Math.max(0.5, Number(raw.chatBubbleOpacity ?? 0.75)));
-        const theme = ['default','glass','rounded'].includes(raw.chatBubblesTheme) ? raw.chatBubblesTheme : 'default';
+        const theme = ['default','dark','blackPink','seaSaltCheese','glass','rounded'].includes(raw.chatBubblesTheme) ? raw.chatBubblesTheme : 'default';
         return { sceneCardOpacity, chatBubbleOpacity, chatBubblesTheme: theme } as ChatPageSettings;
       }
       return { sceneCardOpacity: 1, chatBubbleOpacity: 0.75, chatBubblesTheme: 'default' };
