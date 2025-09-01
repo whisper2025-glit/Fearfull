@@ -69,7 +69,7 @@ const Profile = () => {
 
       if (userError && userError.code !== 'PGRST116') {
         console.error('Error loading user:', userError);
-        // Still set fallback values from Clerk if there's an error
+        // Set fallback values from Clerk if there's an error
         setUserProfile({
           name: user.fullName || user.firstName || user.username || 'User',
           bio: '',
@@ -78,16 +78,16 @@ const Profile = () => {
           banner: ''
         });
       } else if (userData) {
-        // Prioritize Supabase data, but fallback to Clerk if needed
+        // Use Supabase data when available, with smart fallbacks
         setUserProfile({
-          name: userData.full_name || userData.username || user.fullName || user.firstName || user.username || 'User',
+          name: userData.full_name || user.fullName || user.firstName || user.username || 'User',
           bio: userData.bio || '',
           gender: userData.gender || '',
           avatar: userData.avatar_url || user.imageUrl || '',
           banner: userData.banner_url || ''
         });
       } else {
-        // Set default values from Clerk
+        // Set default values from Clerk for new users
         setUserProfile({
           name: user.fullName || user.firstName || user.username || 'User',
           bio: '',
