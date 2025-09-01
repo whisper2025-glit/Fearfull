@@ -2,13 +2,13 @@ import React, { useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { RotateCcw, Save } from "lucide-react";
+import { RotateCcw, Save, ChevronRight } from "lucide-react";
+import { ChatBubbleThemeModal, ChatBubbleTheme } from "@/components/ChatBubbleThemeModal";
 
 export type ChatPageSettings = {
   sceneCardOpacity: number; // 0..1
   chatBubbleOpacity: number; // 0.5..1
-  chatBubblesTheme: "default" | "glass" | "rounded";
+  chatBubblesTheme: ChatBubbleTheme;
 };
 
 const DEFAULT_SETTINGS: ChatPageSettings = {
@@ -26,6 +26,7 @@ interface ChatPageSettingsModalProps {
 
 export function ChatPageSettingsModal({ open, onOpenChange, value, onSave }: ChatPageSettingsModalProps) {
   const [settings, setSettings] = useState<ChatPageSettings>(value || DEFAULT_SETTINGS);
+  const [isThemeOpen, setIsThemeOpen] = useState(false);
 
   useEffect(() => {
     if (open) {
@@ -85,23 +86,33 @@ export function ChatPageSettingsModal({ open, onOpenChange, value, onSave }: Cha
             </div>
 
             <div className="rounded-xl border border-[#2d2e3e] bg-[#232438] p-4">
-              <div className="flex items-center justify-between mb-2">
-                <div className="text-white font-medium">Chat Bubbles Theme</div>
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="text-white font-medium">Chat Bubbles Theme</div>
+                  <div className="text-xs text-gray-400">Tap to choose a bubble theme</div>
+                </div>
+                <Button variant="ghost" className="text-white" onClick={() => setIsThemeOpen(true)}>
+                  {settings.chatBubblesTheme === 'default' ? 'Default Theme' :
+                   settings.chatBubblesTheme === 'dark' ? 'Dark' :
+                   settings.chatBubblesTheme === 'blackPink' ? 'Black Pink' :
+                   settings.chatBubblesTheme === 'seaSaltCheese' ? 'Sea Salt Cheese' : settings.chatBubblesTheme}
+                  <ChevronRight className="h-4 w-4 ml-1" />
+                </Button>
               </div>
-              <Select value={settings.chatBubblesTheme} onValueChange={(v: ChatPageSettings["chatBubblesTheme"]) => setSettings(s => ({ ...s, chatBubblesTheme: v }))}>
-                <SelectTrigger className="w-full bg-[#1a1b2e] border-[#2d2e3e] text-white">
-                  <SelectValue placeholder="Default Theme" />
-                </SelectTrigger>
-                <SelectContent className="bg-[#1a1b2e] border-[#2d2e3e] text-white">
-                  <SelectItem value="default">Default Theme</SelectItem>
-                  <SelectItem value="glass">Glass</SelectItem>
-                  <SelectItem value="rounded">Rounded</SelectItem>
-                </SelectContent>
-              </Select>
             </div>
           </div>
         </div>
       </DialogContent>
+
+      <ChatBubbleThemeModal
+        open={isThemeOpen}
+        value={settings.chatBubblesTheme}
+        onOpenChange={setIsThemeOpen}
+        onSelect={(theme) => {
+          setSettings(s => ({ ...s, chatBubblesTheme: theme }));
+          setIsThemeOpen(false);
+        }}
+      />
     </Dialog>
   );
 }
