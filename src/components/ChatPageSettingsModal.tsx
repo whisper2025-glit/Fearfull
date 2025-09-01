@@ -80,7 +80,7 @@ export function ChatPageSettingsModal({ open, onOpenChange, value, onSave }: Cha
                 </Button>
               </div>
               <div className="flex items-center gap-2">
-                <Slider value={[settings.chatBubbleOpacity]} min={0.5} max={1} step={0.01} onValueChange={(v) => setSettings(s => ({ ...s, chatBubbleOpacity: v[0] }))} />
+                <Slider value={[settings.chatBubbleOpacity]} min={0} max={1} step={0.01} onValueChange={(v) => setSettings(s => ({ ...s, chatBubbleOpacity: v[0] }))} />
                 <div className="w-12 text-center bg-pink-500 text-white rounded-md text-xs py-1">{settings.chatBubbleOpacity.toFixed(2)}</div>
               </div>
             </div>
