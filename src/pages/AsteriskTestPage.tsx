@@ -80,11 +80,14 @@ const AsteriskTestPage = () => {
           >
             <ArrowLeft className="h-4 w-4" />
           </Button>
-          <h1 className="text-2xl font-bold">Asterisk Formatting Test</h1>
+          <h1 className="text-2xl font-bold">Message Formatting Test</h1>
         </div>
 
-        <div className="space-y-6">
-          {testCases.map((testCase, index) => (
+        <div className="space-y-8">
+          {/* Asterisk Formatting Section */}
+          <div className="space-y-6">
+            <h2 className="text-xl font-semibold border-b border-border pb-2">Asterisk Action Formatting</h2>
+            {asteriskTestCases.map((testCase, index) => (
             <Card key={index} className="p-6">
               <h3 className="font-semibold text-lg mb-2">{testCase.title}</h3>
               <p className="text-sm text-muted-foreground mb-4">{testCase.description}</p>
@@ -108,7 +111,38 @@ const AsteriskTestPage = () => {
                 </div>
               </div>
             </Card>
-          ))}
+            ))}
+          </div>
+
+          {/* Markdown Image Section */}
+          <div className="space-y-6">
+            <h2 className="text-xl font-semibold border-b border-border pb-2">Markdown Image Support</h2>
+            {imageTestCases.map((testCase, index) => (
+              <Card key={`image-${index}`} className="p-6">
+                <h3 className="font-semibold text-lg mb-2">{testCase.title}</h3>
+                <p className="text-sm text-muted-foreground mb-4">{testCase.description}</p>
+
+                <div className="space-y-4">
+                  <div>
+                    <span className="text-sm font-medium text-muted-foreground">Raw Input:</span>
+                    <code className="block bg-muted/50 p-3 rounded mt-1 text-sm font-mono overflow-x-auto">
+                      {testCase.input}
+                    </code>
+                  </div>
+
+                  <div>
+                    <span className="text-sm font-medium text-muted-foreground">Formatted Output:</span>
+                    <div className="bg-card/50 p-4 rounded mt-1 border">
+                      <MessageFormatter
+                        content={testCase.input}
+                        className="chat-text text-base leading-relaxed"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </div>
 
           <Card className="p-6 bg-primary/5 border-primary/20">
             <h3 className="font-semibold text-lg mb-3">✨ Complex Action Requirements</h3>
