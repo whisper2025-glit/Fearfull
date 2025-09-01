@@ -441,8 +441,8 @@ const CreateCharacter = () => {
                     <Info className="h-4 w-4 text-muted-foreground" />
                   </Label>
                   <p className="text-muted-foreground text-xs leading-relaxed">
-                    The first message your character sends. This will only be included in short-term memory. 
-                    
+                    The first message your character sends. This will only be included in short-term memory.
+                    You can use markdown images with <code className="bg-muted px-1 py-0.5 rounded">![alt text](image_url)</code> and actions with <code className="bg-muted px-1 py-0.5 rounded">*action*</code>.
                   </p>
                   <Textarea
                     placeholder="e.g. Hello {{user}}, how are you today?"
