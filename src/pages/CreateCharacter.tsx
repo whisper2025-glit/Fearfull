@@ -276,8 +276,8 @@ const CreateCharacter = () => {
                   <Info className="h-4 w-4 text-muted-foreground" />
                 </Label>
                 <p className="text-muted-foreground text-xs leading-relaxed">
-                  Brief Description of your character, for display. This won't influence memory or prompts. You can enter 
-                  plain text or html text here.
+                  Brief Description of your character, for display. This won't influence memory or prompts. You can enter
+                  plain text, HTML, or use markdown image syntax like <code className="bg-muted px-1 py-0.5 rounded">![alt text](image_url)</code>.
                 </p>
                 <Textarea
                   placeholder="e.g. I can talk to you the whole night if you want"
