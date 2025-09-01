@@ -25,37 +25,86 @@ export const MessageFormatterExample: React.FC = () => {
   ];
 
   return (
-    <div className="space-y-4 p-4">
-      <h2 className="text-lg font-bold mb-4">Asterisk Formatting Examples</h2>
-      <p className="text-sm text-muted-foreground mb-4">
-        Text between asterisks (*action*) will be displayed in italics and darker for actions/descriptions.
-      </p>
-      
-      {exampleMessages.map((message, index) => (
-        <Card key={index} className="p-4 bg-card/20 backdrop-blur-sm">
-          <div className="mb-2">
-            <span className="text-xs text-muted-foreground">Raw text:</span>
-            <code className="block text-xs bg-muted/50 p-2 rounded mt-1 font-mono">
-              {message}
-            </code>
-          </div>
-          <div>
-            <span className="text-xs text-muted-foreground">Formatted result:</span>
-            <div className="mt-1">
-              <MessageFormatter content={message} className="chat-text" />
-            </div>
-          </div>
-        </Card>
-      ))}
+    <div className="space-y-6 p-4">
+      <div>
+        <h2 className="text-xl font-bold mb-2">Message Formatting Examples</h2>
+        <p className="text-sm text-muted-foreground mb-6">
+          The MessageFormatter component supports both asterisk actions and markdown images for rich roleplay experiences.
+        </p>
+      </div>
 
+      {/* Asterisk Formatting Section */}
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold">Asterisk Action Formatting</h3>
+        <p className="text-sm text-muted-foreground mb-4">
+          Text between asterisks (*action*) will be displayed in italics and darker for actions/descriptions.
+        </p>
+
+        {exampleMessages.map((message, index) => (
+          <Card key={index} className="p-4 bg-card/20 backdrop-blur-sm">
+            <div className="mb-2">
+              <span className="text-xs text-muted-foreground">Raw text:</span>
+              <code className="block text-xs bg-muted/50 p-2 rounded mt-1 font-mono">
+                {message}
+              </code>
+            </div>
+            <div>
+              <span className="text-xs text-muted-foreground">Formatted result:</span>
+              <div className="mt-1">
+                <MessageFormatter content={message} className="chat-text" />
+              </div>
+            </div>
+          </Card>
+        ))}
+      </div>
+
+      {/* Markdown Image Section */}
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold">Markdown Image Support</h3>
+        <p className="text-sm text-muted-foreground mb-4">
+          Use markdown syntax ![alt text](image_url) to embed images in your messages.
+        </p>
+
+        {imageExamples.map((message, index) => (
+          <Card key={`image-${index}`} className="p-4 bg-card/20 backdrop-blur-sm">
+            <div className="mb-2">
+              <span className="text-xs text-muted-foreground">Raw text:</span>
+              <code className="block text-xs bg-muted/50 p-2 rounded mt-1 font-mono overflow-x-auto">
+                {message}
+              </code>
+            </div>
+            <div>
+              <span className="text-xs text-muted-foreground">Formatted result:</span>
+              <div className="mt-1">
+                <MessageFormatter content={message} className="chat-text" />
+              </div>
+            </div>
+          </Card>
+        ))}
+      </div>
+
+      {/* How it works section */}
       <Card className="p-4 bg-primary/10 border-primary/20">
         <h3 className="font-semibold mb-2">✨ How it works:</h3>
-        <ul className="text-sm space-y-1 text-muted-foreground">
-          <li>• Text between single asterisks (*text*) becomes italicized action text</li>
-          <li>• Action text is darker and uses a medium font weight</li>
-          <li>• Perfect for roleplay actions, descriptions, and character emotions</li>
-          <li>• Regular text remains unchanged</li>
-        </ul>
+        <div className="grid md:grid-cols-2 gap-4">
+          <div>
+            <h4 className="font-medium mb-2">Asterisk Actions:</h4>
+            <ul className="text-sm space-y-1 text-muted-foreground">
+              <li>• Text between single asterisks (*text*) becomes action text</li>
+              <li>• Action text is italicized and uses a darker color</li>
+              <li>• Perfect for roleplay actions and emotions</li>
+            </ul>
+          </div>
+          <div>
+            <h4 className="font-medium mb-2">Markdown Images:</h4>
+            <ul className="text-sm space-y-1 text-muted-foreground">
+              <li>• Use ![alt text](image_url) syntax</li>
+              <li>• Images are automatically resized and styled</li>
+              <li>• Graceful fallback for broken images</li>
+              <li>• Hover effects and smooth loading</li>
+            </ul>
+          </div>
+        </div>
       </Card>
     </div>
   );
