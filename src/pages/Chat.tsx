@@ -15,6 +15,7 @@ import { ModelsModal, Model } from "@/components/ModelsModal";
 import { PersonaModal } from "@/components/PersonaModal";
 import { SuggestModal } from "@/components/SuggestModal";
 import { ChatSettingsModal } from "@/components/ChatSettingsModal";
+import { ChatPageSettingsModal, ChatPageSettings } from "@/components/ChatPageSettingsModal";
 import { DebugMenu } from "@/components/DebugMenu";
 import { MessageFormatter } from "@/components/MessageFormatter";
 import { enhanceSimpleActions } from "@/lib/actionValidator";
@@ -59,6 +60,22 @@ const Chat = () => {
   const [isPersonaModalOpen, setIsPersonaModalOpen] = useState(false);
   const [isSuggestModalOpen, setIsSuggestModalOpen] = useState(false);
   const [isChatSettingsModalOpen, setIsChatSettingsModalOpen] = useState(false);
+  const [isChatPageSettingsModalOpen, setIsChatPageSettingsModalOpen] = useState(false);
+  const [chatPageSettings, setChatPageSettings] = useState<ChatPageSettings>(() => {
+    try {
+      const saved = localStorage.getItem('chat_page_settings');
+      if (saved) {
+        const raw = JSON.parse(saved);
+        const sceneCardOpacity = Math.min(1, Math.max(0, Number(raw.sceneCardOpacity ?? 1)));
+        const chatBubbleOpacity = Math.min(1, Math.max(0, Number(raw.chatBubbleOpacity ?? 0.75)));
+        const theme = ['default','dark','blackPink','seaSaltCheese','glass','rounded'].includes(raw.chatBubblesTheme) ? raw.chatBubblesTheme : 'default';
+        return { sceneCardOpacity, chatBubbleOpacity, chatBubblesTheme: theme } as ChatPageSettings;
+      }
+      return { sceneCardOpacity: 1, chatBubbleOpacity: 0.75, chatBubblesTheme: 'default' };
+    } catch {
+      return { sceneCardOpacity: 1, chatBubbleOpacity: 0.75, chatBubblesTheme: 'default' };
+    }
+  });
   const [currentPersona, setCurrentPersona] = useState<any>(null);
   const [sceneBackground, setSceneBackground] = useState<string>("");
   const [selectedModel, setSelectedModel] = useState<Model | null>({
@@ -78,6 +95,7 @@ const Chat = () => {
     tier: 'free'
   });
   const [isLoading, setIsLoading] = useState(false);
+  const hasApiKey = Boolean((import.meta as any).env?.VITE_OPENROUTER_AI_API_KEY && (import.meta as any).env?.VITE_OPENROUTER_AI_API_KEY.startsWith('sk-or-v1-'));
 
   // State for current character and messages loaded from Supabase
   const [currentCharacter, setCurrentCharacter] = useState<Character | null>(null);
@@ -632,7 +650,7 @@ const Chat = () => {
     >
       {/* Background overlay for better readability */}
       {sceneBackground && (
-        <div className="absolute inset-0 bg-black/20 z-0" />
+        <div className="absolute inset-0 z-0 bg-background transition-opacity" style={{ opacity: 1 - chatPageSettings.sceneCardOpacity }} />
       )}
 
       {/* Header */}
@@ -685,6 +703,10 @@ const Chat = () => {
               <DropdownMenuItem onClick={() => setIsChatSettingsModalOpen(true)}>
                 <Settings className="mr-2 h-4 w-4" />
                 Chat Settings
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setIsChatPageSettingsModalOpen(true)}>
+                <Settings className="mr-2 h-4 w-4" />
+                Chat Page Settings
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -755,7 +777,43 @@ const Chat = () => {
                   </div>
                 </Card>
               ) : (
-                <Card className={`p-3 ${msg.isBot ? 'bg-card/20 backdrop-blur-sm' : 'bg-primary/20 ml-8 backdrop-blur-sm'}`}>
+                <Card
+                  className={`${(() => {
+                    const base = 'p-3 backdrop-blur-sm';
+                    const align = msg.isBot ? '' : 'ml-8';
+                    const a = chatPageSettings.chatBubbleOpacity;
+                    const theme = chatPageSettings.chatBubblesTheme;
+                    if (theme === 'dark') return `${base} ${align} text-white`;
+                    if (theme === 'blackPink') return `${base} ${align} text-white`;
+                    if (theme === 'seaSaltCheese') return `${base} ${align} text-black`;
+                    if (theme === 'glass') return `${base} ${align} ${a > 0 ? 'border border-white/10' : ''} backdrop-blur-md`;
+                    if (theme === 'rounded') return `${base} ${align} rounded-2xl`;
+                    return `${base} ${align}`;
+                  })()}`}
+                  style={{
+                    backgroundColor: (() => {
+                      const a = chatPageSettings.chatBubbleOpacity;
+                      const theme = chatPageSettings.chatBubblesTheme;
+                      if (a <= 0) return 'rgba(0,0,0,0)';
+                      if (theme === 'default' || theme === 'rounded') {
+                        return msg.isBot ? `hsl(var(--card) / ${a})` : `hsl(var(--primary) / ${a})`;
+                      }
+                      if (theme === 'dark') {
+                        return msg.isBot ? `rgba(0,0,0,${a})` : `rgba(31,41,55,${a})`;
+                      }
+                      if (theme === 'blackPink') {
+                        return msg.isBot ? `rgba(55,65,81,${a})` : `rgba(236,72,153,${a})`;
+                      }
+                      if (theme === 'seaSaltCheese') {
+                        return msg.isBot ? `rgba(56,189,248,${a})` : `rgba(253,230,138,${a})`;
+                      }
+                      if (theme === 'glass') {
+                        return `rgba(255,255,255,${Math.min(1, a * 0.2)})`;
+                      }
+                      return msg.isBot ? `hsl(var(--card) / ${a})` : `hsl(var(--primary) / ${a})`;
+                    })()
+                  }}
+                >
                   <div className={`flex items-start gap-3 ${msg.isBot ? '' : 'justify-end'}`}>
                     {msg.isBot && (
                       <img
@@ -786,12 +844,18 @@ const Chat = () => {
 
         {/* Action Buttons */}
         <div className="pb-2 bg-background/20 backdrop-blur-sm">
+          {!hasApiKey && (
+            <div className="mx-4 my-2 rounded-lg border border-yellow-500/40 bg-yellow-500/10 text-yellow-200 px-3 py-2 text-xs">
+              OpenRouter API key not configured. Add VITE_OPENROUTER_AI_API_KEY to enable AI responses.
+            </div>
+          )}
           <div className="flex gap-2 mb-3 overflow-x-auto px-4 scrollbar-hide">
             <Button
               variant="outline"
               size="sm"
               className="flex items-center gap-2 text-xs whitespace-nowrap flex-shrink-0"
               onClick={() => setIsSuggestModalOpen(true)}
+              disabled={!hasApiKey}
             >
               <Lightbulb className="h-3 w-3" />
               Suggest
@@ -826,23 +890,27 @@ const Chat = () => {
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder={isLoading ? "AI is typing..." : userCoins < 2 ? "Need 2 coins to send message" : "Type a message"}
-              disabled={isLoading || userCoins < 2}
+              placeholder={
+                isLoading ? "AI is typing..." : !hasApiKey ? "Configure OpenRouter API key to chat" : userCoins < 2 ? "Need 2 coins to send message" : "Type a message"
+              }
+              disabled={isLoading || userCoins < 2 || !hasApiKey}
               className="flex-1 bg-card/50 border-border resize-none min-h-[40px] max-h-[120px] text-sm chat-text"
               rows={1}
             />
             <Button
               onClick={handleSendMessage}
-              disabled={!message.trim() || isLoading || userCoins < 2}
+              disabled={!message.trim() || isLoading || userCoins < 2 || !hasApiKey}
               className="px-4 self-end"
               size="sm"
-              variant={userCoins < 2 ? "secondary" : "default"}
+              variant={!hasApiKey || userCoins < 2 ? "secondary" : "default"}
             >
               {isLoading ? (
                 <>
                   <Loader2 className="h-3 w-3 mr-1 animate-spin" />
                   Sending
                 </>
+              ) : !hasApiKey ? (
+                <>API Key</>
               ) : userCoins < 2 ? (
                 <>
                   <Coins className="h-3 w-3 mr-1" />
@@ -934,6 +1002,13 @@ const Chat = () => {
           setIsModelsModalOpen(true);
         }}
         onSettingsChange={setCurrentChatSettings}
+      />
+
+      <ChatPageSettingsModal
+        open={isChatPageSettingsModalOpen}
+        onOpenChange={setIsChatPageSettingsModalOpen}
+        value={chatPageSettings}
+        onSave={(v) => setChatPageSettings(v)}
       />
 
       {/* Debug Menu */}
