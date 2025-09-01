@@ -20,11 +20,11 @@ const ThemeCard: React.FC<{
 }> = ({ label, vip, selected, onClick, preview }) => (
   <button
     onClick={onClick}
-    className={`relative rounded-2xl p-3 w-full h-36 border transition-colors text-left ${
+    className={`relative rounded-xl p-2 w-full h-28 border transition-colors text-left ${
       selected ? 'border-pink-500 ring-2 ring-pink-500/40' : 'border-[#2d2e3e]'
     } bg-[#232438] hover:border-pink-500/60`}
   >
-    <div className="h-16 mb-3 flex items-center justify-between gap-2">
+    <div className="h-12 mb-2 flex items-center justify-between gap-2">
       {preview}
     </div>
     <div className="flex items-center justify-between">
@@ -42,26 +42,26 @@ const ThemeCard: React.FC<{
 export function ChatBubbleThemeModal({ open, onOpenChange, value, onSelect }: ChatBubbleThemeModalProps) {
   const PreviewDefault = (
     <div className="flex w-full gap-2">
-      <div className="h-8 w-16 rounded-xl bg-black/60" />
-      <div className="h-8 w-20 rounded-xl bg-purple-900/70 ml-auto" />
+      <div className="h-6 w-14 rounded-xl bg-black/60" />
+      <div className="h-6 w-16 rounded-xl bg-purple-900/70 ml-auto" />
     </div>
   );
   const PreviewDark = (
     <div className="flex w-full gap-2">
-      <div className="h-8 w-16 rounded-xl bg-gray-700" />
-      <div className="h-8 w-20 rounded-xl bg-black ml-auto" />
+      <div className="h-6 w-14 rounded-xl bg-gray-700" />
+      <div className="h-6 w-16 rounded-xl bg-black ml-auto" />
     </div>
   );
   const PreviewBlackPink = (
     <div className="flex w-full gap-2">
-      <div className="h-8 w-16 rounded-xl bg-pink-500" />
-      <div className="h-8 w-20 rounded-xl bg-gray-700 ml-auto" />
+      <div className="h-6 w-14 rounded-xl bg-pink-500" />
+      <div className="h-6 w-16 rounded-xl bg-gray-700 ml-auto" />
     </div>
   );
   const PreviewSeaSalt = (
     <div className="flex w-full gap-2">
-      <div className="h-8 w-16 rounded-xl bg-sky-400/70" />
-      <div className="h-8 w-20 rounded-xl bg-amber-200 ml-auto" />
+      <div className="h-6 w-14 rounded-xl bg-sky-400/70" />
+      <div className="h-6 w-16 rounded-xl bg-amber-200 ml-auto" />
     </div>
   );
 
@@ -74,7 +74,7 @@ export function ChatBubbleThemeModal({ open, onOpenChange, value, onSelect }: Ch
           </DialogHeader>
 
           <div className="px-4 pb-4 flex-1 overflow-y-auto">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-2">
               <ThemeCard label="Default Theme" selected={value==='default'} onClick={() => onSelect('default')} preview={PreviewDefault} />
               <ThemeCard label="Dark" selected={value==='dark'} onClick={() => onSelect('dark')} preview={PreviewDark} />
               <ThemeCard label="Black Pink" vip selected={value==='blackPink'} onClick={() => onSelect('blackPink')} preview={PreviewBlackPink} />
