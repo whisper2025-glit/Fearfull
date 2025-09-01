@@ -890,23 +890,27 @@ const Chat = () => {
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder={isLoading ? "AI is typing..." : userCoins < 2 ? "Need 2 coins to send message" : "Type a message"}
-              disabled={isLoading || userCoins < 2}
+              placeholder={
+                isLoading ? "AI is typing..." : !hasApiKey ? "Configure OpenRouter API key to chat" : userCoins < 2 ? "Need 2 coins to send message" : "Type a message"
+              }
+              disabled={isLoading || userCoins < 2 || !hasApiKey}
               className="flex-1 bg-card/50 border-border resize-none min-h-[40px] max-h-[120px] text-sm chat-text"
               rows={1}
             />
             <Button
               onClick={handleSendMessage}
-              disabled={!message.trim() || isLoading || userCoins < 2}
+              disabled={!message.trim() || isLoading || userCoins < 2 || !hasApiKey}
               className="px-4 self-end"
               size="sm"
-              variant={userCoins < 2 ? "secondary" : "default"}
+              variant={!hasApiKey || userCoins < 2 ? "secondary" : "default"}
             >
               {isLoading ? (
                 <>
                   <Loader2 className="h-3 w-3 mr-1 animate-spin" />
                   Sending
                 </>
+              ) : !hasApiKey ? (
+                <>API Key</>
               ) : userCoins < 2 ? (
                 <>
                   <Coins className="h-3 w-3 mr-1" />
