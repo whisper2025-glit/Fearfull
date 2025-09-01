@@ -1,11 +1,10 @@
 import { useEffect } from 'react';
-import { useUser, useAuth } from '@clerk/clerk-react';
-import { createOrUpdateUser, supabase, processInviteCode, setSupabaseAuth } from '@/lib/supabase';
+import { useUser } from '@clerk/clerk-react';
+import { createOrUpdateUser, processInviteCode } from '@/lib/supabase';
 import { toast } from 'sonner';
 
 export const useUserSync = () => {
   const { user, isLoaded } = useUser();
-  const { getToken } = useAuth();
 
   useEffect(() => {
     console.log('🔄 useUserSync useEffect triggered', {
@@ -34,18 +33,7 @@ export const useUserSync = () => {
           email: user.emailAddresses?.[0]?.emailAddress
         });
 
-        // Get Clerk token and set Supabase auth session
-        try {
-          const token = await getToken({ template: 'supabase' });
-          if (token) {
-            console.log('🔑 Setting Supabase auth with Clerk token');
-            await setSupabaseAuth(token);
-          }
-        } catch (tokenError) {
-          console.warn('⚠️ Could not get Clerk token, using anonymous access:', tokenError);
-        }
-
-        // Sync user with Supabase
+        // Sync user with Supabase using the basic client (no JWT required)
         const result = await createOrUpdateUser(user);
         console.log('✅ User synced with Supabase successfully:', result);
 
@@ -82,49 +70,8 @@ export const useUserSync = () => {
       }
     };
 
-    // Handle sign out cleanup
-    const handleSignOut = async () => {
-      if (!isLoaded) return;
-      
-      if (!user) {
-        console.log('🔓 User signed out, clearing Supabase session');
-        try {
-          await setSupabaseAuth(null);
-        } catch (error) {
-          console.warn('⚠️ Error clearing Supabase session:', error);
-        }
-      }
-    };
-
-    if (isLoaded) {
-      if (user) {
-        syncUser();
-      } else {
-        handleSignOut();
-      }
-    }
-  }, [user, isLoaded, getToken]);
-
-  // Also handle token refresh
-  useEffect(() => {
-    if (!user || !isLoaded) return;
-
-    const refreshSupabaseAuth = async () => {
-      try {
-        const token = await getToken({ template: 'supabase' });
-        if (token) {
-          await setSupabaseAuth(token);
-        }
-      } catch (error) {
-        console.warn('⚠️ Error refreshing Supabase auth:', error);
-      }
-    };
-
-    // Refresh auth every 45 minutes (Clerk tokens expire after 1 hour)
-    const interval = setInterval(refreshSupabaseAuth, 45 * 60 * 1000);
-
-    return () => clearInterval(interval);
-  }, [user, isLoaded, getToken]);
+    syncUser();
+  }, [user, isLoaded]);
 
   return { user, isLoaded };
 };
