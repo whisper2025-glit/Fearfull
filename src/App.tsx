@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useUserSync } from "@/hooks/useUserSync";
+import "@/lib/authTest"; // Import auth test helpers for console debugging
 import Index from "./pages/Index";
 import Chat from "./pages/Chat";
 import Chats from "./pages/Chats";
