@@ -524,7 +524,7 @@ const CreateCharacter = () => {
                 </div>
               </div>
               <div className="border-t border-border pt-6">
-                <h3 className="text-sm font-medium mb-3">{formData.name || "Your OC's Name"}</h3>
+                <h3 className="text-sm font-medium mb-3">Greeting</h3>
                 <div className="bg-secondary/50 rounded-lg p-4 text-left">
                   <div className="text-xs text-muted-foreground leading-relaxed">
                     <MessageFormatter
@@ -534,6 +534,42 @@ const CreateCharacter = () => {
                   </div>
                 </div>
               </div>
+
+              {formData.personality && (
+                <div className="border-t border-border pt-6">
+                  <h3 className="text-sm font-medium mb-3">Personality</h3>
+                  <div className="text-xs text-muted-foreground leading-relaxed">
+                    <MessageFormatter
+                      content={formData.personality}
+                      className="text-xs leading-relaxed chat-text"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {formData.appearance && (
+                <div className="border-t border-border pt-6">
+                  <h3 className="text-sm font-medium mb-3">Appearance</h3>
+                  <div className="text-xs text-muted-foreground leading-relaxed">
+                    <MessageFormatter
+                      content={formData.appearance}
+                      className="text-xs leading-relaxed chat-text"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {formData.scenario && (
+                <div className="border-t border-border pt-6">
+                  <h3 className="text-sm font-medium mb-3">Scenario</h3>
+                  <div className="text-xs text-muted-foreground leading-relaxed">
+                    <MessageFormatter
+                      content={formData.scenario}
+                      className="text-xs leading-relaxed chat-text"
+                    />
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
