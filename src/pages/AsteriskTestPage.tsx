@@ -46,6 +46,29 @@ const AsteriskTestPage = () => {
     }
   ];
 
+  const imageTestCases = [
+    {
+      title: "Basic Image with Action",
+      input: "Look at this beautiful sunset! ![Sunset over mountains](https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=250&fit=crop&crop=center) *points toward the horizon with wonder in her eyes*",
+      description: "Combines markdown image with complex action formatting"
+    },
+    {
+      title: "Multiple Images in Conversation",
+      input: "Found these amazing places today: ![Coffee shop](https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=300&h=200&fit=crop) *takes a sip of coffee* and ![Library](https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=300&h=200&fit=crop) *runs fingers along the book spines lovingly*",
+      description: "Multiple images with actions in a single message"
+    },
+    {
+      title: "Image with Emotional Context",
+      input: "*pulls out phone with trembling hands* This was the last photo we took together... ![Happy couple](https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?w=350&h=250&fit=crop) *tears welling up as precious memories flood back*",
+      description: "Emotional storytelling combining images and complex actions"
+    },
+    {
+      title: "Broken Image Test",
+      input: "Here's what I was talking about: ![Broken image example](https://invalid-url-that-will-fail.com/image.jpg) *waits for your reaction*",
+      description: "Tests graceful fallback for broken/invalid image URLs"
+    }
+  ];
+
   return (
     <div className="min-h-screen bg-background p-6">
       <div className="max-w-4xl mx-auto">
