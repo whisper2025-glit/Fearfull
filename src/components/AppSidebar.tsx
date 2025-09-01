@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Home,
   Plus,
@@ -9,6 +9,7 @@ import {
 import { useLocation, useNavigate } from "react-router-dom";
 import { useUser, useClerk, SignInButton } from "@clerk/clerk-react";
 import { CreateModal } from "@/components/CreateModal";
+import { supabase } from "@/lib/supabase";
 import {
   Sidebar,
   SidebarContent,
@@ -44,10 +45,23 @@ export function AppSidebar() {
   const currentPath = location.pathname;
   const collapsed = state === "collapsed";
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [userDisplayName, setUserDisplayName] = useState<string>('');
 
   // Clerk authentication hooks
   const { isSignedIn, user } = useUser();
   const { signOut } = useClerk();
+
+  // Set display name from Clerk user data (simple approach)
+  useEffect(() => {
+    if (!user) {
+      setUserDisplayName('');
+      return;
+    }
+
+    // Use the best available name from Clerk
+    const displayName = user.fullName || user.firstName || user.username || 'User';
+    setUserDisplayName(displayName);
+  }, [user]);
 
   const isActive = (path: string) => currentPath === path;
 
@@ -112,13 +126,13 @@ export function AppSidebar() {
                   <Avatar className="w-8 h-8 flex-shrink-0">
                     <AvatarImage src={user?.imageUrl} />
                     <AvatarFallback className="bg-gradient-to-br from-cyan-400 to-gray-500 text-white text-sm">
-                      {user?.username?.charAt(0) || user?.fullName?.charAt(0) || user?.firstName?.charAt(0) || user?.lastName?.charAt(0) || "U"}
+                      {(userDisplayName || user?.username || user?.fullName || user?.firstName || 'U').charAt(0).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
                   {!collapsed && (
                     <div className="flex-1 text-left">
                       <p className="text-sm font-medium">
-                        {user?.username || user?.fullName || (user?.firstName && user?.lastName ? `${user.firstName} ${user.lastName}` : user?.firstName || user?.lastName) || "User"}
+                        {userDisplayName || 'User'}
                       </p>
                       <p className="text-xs text-muted-foreground">Free Plan</p>
                     </div>

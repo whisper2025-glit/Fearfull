@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import { createOrUpdateUser as createOrUpdateUserImpl } from './createOrUpdateUser';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
@@ -591,6 +592,30 @@ export const uploadImage = async (bucket: string, path: string, file: File) => {
   return { data, publicUrl };
 };
 
+// Helper function to get the best available display name for a user
+export const getUserDisplayName = async (clerkUser: any): Promise<string> => {
+  if (!clerkUser) return 'User';
+
+  try {
+    // First, try to get the user from Supabase
+    const { data: userData, error } = await supabase
+      .from('users')
+      .select('username, full_name')
+      .eq('id', clerkUser.id)
+      .single();
+
+    if (!error && userData) {
+      // Return the best available name from Supabase
+      return userData.full_name || userData.username || clerkUser.fullName || clerkUser.firstName || clerkUser.username || 'User';
+    }
+  } catch (error) {
+    console.warn('⚠️ Could not load user from Supabase, using Clerk data:', error);
+  }
+
+  // Fallback to Clerk user data
+  return clerkUser.fullName || clerkUser.firstName || clerkUser.username || 'User';
+};
+
 // Helper function to generate username from display name
 const generateUsername = (displayName: string, userId: string): string => {
   // Remove spaces and special characters, convert to lowercase
@@ -617,6 +642,7 @@ export const createOrUpdateUser = async (clerkUser: any) => {
     email: clerkUser.emailAddresses?.[0]?.emailAddress
   });
 
+  // Get the best display name, but for database storage prefer the raw Clerk data
   const displayName = clerkUser.fullName || clerkUser.firstName || clerkUser.username || 'User';
 
   // Generate invite code for new users

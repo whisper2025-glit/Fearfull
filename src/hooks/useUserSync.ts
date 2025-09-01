@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useUser } from '@clerk/clerk-react';
-import { createOrUpdateUser, supabase, processInviteCode } from '@/lib/supabase';
+import { processInviteCode } from '@/lib/supabase';
+import { createOrUpdateUser } from '@/lib/createOrUpdateUser';
 import { toast } from 'sonner';
 
 export const useUserSync = () => {
@@ -59,7 +60,9 @@ export const useUserSync = () => {
             toast.info('Welcome! Note: Could not process invite code.');
           }
         } else {
-          toast.success(`Welcome, ${result.username || result.full_name || 'User'}!`);
+          // Use the best available name for welcome message
+          const welcomeName = result.full_name || result.username || user.fullName || user.firstName || user.username || 'User';
+          toast.success(`Welcome, ${welcomeName}!`);
         }
       } catch (error) {
         console.error('❌ Error syncing user:', error);
