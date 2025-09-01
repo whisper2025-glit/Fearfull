@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useUser } from '@clerk/clerk-react';
-import { createOrUpdateUser, processInviteCode } from '@/lib/supabase';
+import { processInviteCode } from '@/lib/supabase';
+import { createOrUpdateUser } from '@/lib/createOrUpdateUser';
 import { toast } from 'sonner';
 
 export const useUserSync = () => {
