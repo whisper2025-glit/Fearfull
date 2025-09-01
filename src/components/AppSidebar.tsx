@@ -51,40 +51,16 @@ export function AppSidebar() {
   const { isSignedIn, user } = useUser();
   const { signOut } = useClerk();
 
-  // Load user display name from Supabase when user changes
+  // Set display name from Clerk user data (simple approach)
   useEffect(() => {
-    const loadUserDisplayName = async () => {
-      if (!user) {
-        setUserDisplayName('');
-        return;
-      }
+    if (!user) {
+      setUserDisplayName('');
+      return;
+    }
 
-      try {
-        const { data: userData, error } = await supabase
-          .from('users')
-          .select('username, full_name')
-          .eq('id', user.id)
-          .single();
-
-        if (!error && userData) {
-          // Use Supabase data as priority
-          const displayName = userData.full_name || userData.username ||
-                             user.fullName || user.firstName || user.username || 'User';
-          setUserDisplayName(displayName);
-        } else {
-          // Fallback to Clerk data
-          const displayName = user.fullName || user.firstName || user.username || 'User';
-          setUserDisplayName(displayName);
-        }
-      } catch (error) {
-        console.warn('⚠️ Error loading user display name:', error);
-        // Fallback to Clerk data
-        const displayName = user.fullName || user.firstName || user.username || 'User';
-        setUserDisplayName(displayName);
-      }
-    };
-
-    loadUserDisplayName();
+    // Use the best available name from Clerk
+    const displayName = user.fullName || user.firstName || user.username || 'User';
+    setUserDisplayName(displayName);
   }, [user]);
 
   const isActive = (path: string) => currentPath === path;
