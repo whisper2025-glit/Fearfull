@@ -1,52 +1,42 @@
 import React from 'react';
-import { enhanceSimpleActions } from '@/lib/actionValidator';
-
 interface MessageFormatterProps {
   content: string;
   className?: string;
-  enforceComplexActions?: boolean; // Option to enhance/filter simple actions
+  enforceComplexActions?: boolean; // Kept for compatibility but defaults to false
 }
 
 /**
- * Component that formats message content by parsing asterisks (*text*) 
- * and converting them to italicized, darker text for actions/descriptions
+ * Consistently renders asterisk actions without altering user content.
+ * - *text* becomes <span class="action-text">text</span>
+ * - Escaped asterisks (\*) render as literal *
+ * - Markdown images ![alt](url) are preserved
  */
 export const MessageFormatter: React.FC<MessageFormatterProps> = ({
   content,
   className = '',
-  enforceComplexActions = true // Default to enforcing complex actions
+  enforceComplexActions = false
 }) => {
+  const decodeEscapes = (s: string) => s.replace(/\\\*/g, '*');
+
   const formatMessage = (text: string) => {
-    // Enhance simple actions if enforcement is enabled
-    const processedText = enforceComplexActions ? enhanceSimpleActions(text) : text;
+    const processedText = text; // do not mutate content
     const parts: React.ReactNode[] = [];
     let currentIndex = 0;
     let partIndex = 0;
 
-    // Combined regex to match both markdown images and asterisk actions
-    // Markdown image syntax: ![alt text](image_url)
-    // Asterisk syntax: *action text*
-    const combinedRegex = /!\[([^\]]*?)\]\(([^)]+?)\)|\*([^*]+?)\*/g;
-    let match;
+    // Match markdown images or unescaped *...*
+    const combinedRegex = /!\[([^\]]*?)\]\(([^)]+?)\)|(?<!\\)\*([^*]+?)(?<!\\)\*/g;
+    let match: RegExpExecArray | null;
 
     while ((match = combinedRegex.exec(processedText)) !== null) {
-      // Add text before the current match
       if (match.index > currentIndex) {
-        const beforeText = processedText.slice(currentIndex, match.index);
-        if (beforeText) {
-          parts.push(
-            <React.Fragment key={`text-${partIndex++}`}>
-              {beforeText}
-            </React.Fragment>
-          );
-        }
+        const beforeText = decodeEscapes(processedText.slice(currentIndex, match.index));
+        if (beforeText) parts.push(<React.Fragment key={`text-${partIndex++}`}>{beforeText}</React.Fragment>);
       }
 
-      // Check if this is a markdown image match
       if (match[0].startsWith('![')) {
         const altText = match[1] || '';
         const imageUrl = match[2];
-
         if (imageUrl.trim()) {
           parts.push(
             <div key={`image-container-${partIndex++}`} className="my-2">
@@ -56,15 +46,11 @@ export const MessageFormatter: React.FC<MessageFormatterProps> = ({
                 className="max-w-full h-auto rounded-lg shadow-md border border-border/30 hover:shadow-xl hover:border-primary/30 transition-all duration-300"
                 style={{ maxHeight: '400px' }}
                 onError={(e) => {
-                  // Handle broken images gracefully by replacing with fallback
                   const target = e.target as HTMLImageElement;
                   const container = target.parentElement;
-                  if (container) {
-                    container.innerHTML = `<span class="image-fallback">[Image: ${altText || 'Failed to load image'}]</span>`;
-                  }
+                  if (container) container.innerHTML = `<span class="image-fallback">[Image: ${altText || 'Failed to load image'}]</span>`;
                 }}
                 onLoad={(e) => {
-                  // Add subtle animation when image loads
                   const target = e.target as HTMLImageElement;
                   target.style.opacity = '0';
                   target.style.transform = 'scale(0.95)';
@@ -78,17 +64,12 @@ export const MessageFormatter: React.FC<MessageFormatterProps> = ({
             </div>
           );
         }
-      }
-      // Check if this is an asterisk action match
-      else if (match[0].startsWith('*')) {
+      } else if (match[0].startsWith('*')) {
         const actionText = match[3];
         if (actionText.trim()) {
           parts.push(
-            <span
-              key={`action-${partIndex++}`}
-              className="action-text"
-            >
-              {actionText}
+            <span key={`action-${partIndex++}`} className="action-text">
+              {decodeEscapes(actionText)}
             </span>
           );
         }
@@ -97,19 +78,12 @@ export const MessageFormatter: React.FC<MessageFormatterProps> = ({
       currentIndex = match.index + match[0].length;
     }
 
-    // Add remaining text after the last match
     if (currentIndex < processedText.length) {
-      const remainingText = processedText.slice(currentIndex);
-      if (remainingText) {
-        parts.push(
-          <React.Fragment key={`text-${partIndex++}`}>
-            {remainingText}
-          </React.Fragment>
-        );
-      }
+      const remainingText = decodeEscapes(processedText.slice(currentIndex));
+      if (remainingText) parts.push(<React.Fragment key={`text-${partIndex++}`}>{remainingText}</React.Fragment>);
     }
 
-    return parts.length > 0 ? parts : [processedText];
+    return parts.length > 0 ? parts : [decodeEscapes(processedText)];
   };
 
   const formattedContent = formatMessage(content);
