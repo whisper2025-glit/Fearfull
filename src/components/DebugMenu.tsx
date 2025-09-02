@@ -1,14 +1,11 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Bug, ChevronDown, ChevronRight, Activity, Settings, Zap } from "lucide-react";
-import { Model } from "@/components/ModelsModal";
+import { Bug, ChevronDown, ChevronRight, Activity, Zap } from "lucide-react";
 import { ChatSettings } from "@/lib/supabase";
 
 interface DebugMenuProps {
-  selectedModel?: Model | null;
   currentChatSettings?: ChatSettings | null;
   lastAPICall?: {
     temperature: number;
@@ -18,7 +15,7 @@ interface DebugMenuProps {
   } | null;
 }
 
-export function DebugMenu({ selectedModel, currentChatSettings, lastAPICall }: DebugMenuProps) {
+export function DebugMenu({ currentChatSettings, lastAPICall }: DebugMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   const getStatusColor = (value: number, type: 'temperature' | 'tokens' | 'diversity') => {
@@ -69,32 +66,6 @@ export function DebugMenu({ selectedModel, currentChatSettings, lastAPICall }: D
             </CardHeader>
             
             <CardContent className="space-y-4 text-sm">
-              {/* Current Model */}
-              <div>
-                <h4 className="font-medium text-cyan-400 mb-2 flex items-center gap-2">
-                  <Settings className="h-3 w-3" />
-                  Selected Model
-                </h4>
-                <div className="bg-[#232438] rounded-lg p-3 space-y-1">
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">Name:</span>
-                    <span className="text-xs truncate max-w-[150px]" title={selectedModel?.name}>
-                      {selectedModel?.name || 'None'}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">Provider:</span>
-                    <Badge variant="outline" className="text-xs">
-                      {selectedModel?.provider || 'N/A'}
-                    </Badge>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">Memory:</span>
-                    <span>{selectedModel?.memory || 'N/A'}</span>
-                  </div>
-                </div>
-              </div>
-
               {/* Current Settings */}
               <div>
                 <h4 className="font-medium text-cyan-400 mb-2 flex items-center gap-2">
@@ -173,12 +144,6 @@ export function DebugMenu({ selectedModel, currentChatSettings, lastAPICall }: D
                     <div className={`w-2 h-2 rounded-full ${currentChatSettings ? 'bg-green-500' : 'bg-red-500'}`} />
                     <span className="text-xs">
                       {currentChatSettings ? 'Settings Loaded' : 'Using Defaults'}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2 mt-1">
-                    <div className={`w-2 h-2 rounded-full ${selectedModel ? 'bg-green-500' : 'bg-red-500'}`} />
-                    <span className="text-xs">
-                      {selectedModel ? 'Model Selected' : 'No Model'}
                     </span>
                   </div>
                   <div className="flex items-center gap-2 mt-1">
