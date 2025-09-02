@@ -58,13 +58,13 @@ const Chat = () => {
   const [isModelsModalOpen, setIsModelsModalOpen] = useState(false);
   const [isChatPageSettingsModalOpen, setIsChatPageSettingsModalOpen] = useState(false);
   const [selectedModel, setSelectedModel] = useState<Model>({
-    id: "default-model",
-    name: "openrouter/auto",
-    title: "OpenRouter Auto",
-    description: "General conversation via OpenRouter",
+    id: "mistral-nemo-free",
+    name: "mistralai/mistral-nemo:free",
+    title: "Mistral Nemo (free)",
+    description: "Roleplay as the character via OpenRouter",
     features: [
-      "Automatic model routing",
-      "Neutral behavior (no system prompts)"
+      "Mistral Nemo free on OpenRouter",
+      "Character-aware roleplay"
     ]
   });
   const [chatPageSettings, setChatPageSettings] = useState<ChatPageSettings>(() => {
