@@ -16,6 +16,7 @@ import { ModelsModal, Model } from "@/components/ModelsModal";
 import { ChatPageSettingsModal, ChatPageSettings } from "@/components/ChatPageSettingsModal";
 import { MessageFormatter } from "@/components/MessageFormatter";
 import { supabase, createOrUpdateUser, getDefaultPersona, incrementUserCoins, canClaimDailyReward, markDailyRewardClaimed, getUserCoins, deductUserCoins } from "@/lib/supabase";
+import { deepSeekAPI, ChatMessage as DeepSeekMessage } from "@/lib/deepseek-api";
 import { toast } from "sonner";
 
 interface Message {
