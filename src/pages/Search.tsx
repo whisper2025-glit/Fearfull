@@ -435,7 +435,7 @@ const Search = () => {
                                   {creator.full_name?.charAt(0) || creator.username?.charAt(0) || creator.email?.charAt(0) || 'U'}
                                 </AvatarFallback>
                               </Avatar>
-                              <h3 className="text-sm font-semibold text-white">{creator.username || creator.full_name || 'Unknown User'}</h3>
+                              <h3 className="text-sm font-semibold text-white">{creator.full_name || creator.username || 'Unknown User'}</h3>
                             </div>
 
                             <div className="flex justify-between text-center">
