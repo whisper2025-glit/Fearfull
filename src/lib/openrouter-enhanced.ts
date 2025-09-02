@@ -176,13 +176,22 @@ class EnhancedOpenRouterService {
   }
 
   private buildRoleplaySystemPrompt(context: RoleplayContext): string {
+    const userPersonaName = context.story_state?.user_persona?.name || 'User';
     const basePrompt = `You are an expert AI roleplay assistant specialized in the "${context.source_story}" universe. You are currently roleplaying as ${context.character_name}.
+
+# CRITICAL IDENTITY RULES - READ FIRST
+🚫 ABSOLUTE PROHIBITION: NEVER impersonate the user (${userPersonaName})
+🚫 NEVER write as ${userPersonaName} or from their perspective
+🚫 NEVER describe ${userPersonaName}'s thoughts, feelings, or internal states
+🚫 NEVER write actions for ${userPersonaName} using "I" from their perspective
+✅ YOU ARE ONLY ${context.character_name} - write ONLY as this character
 
 # CHARACTER & SETTING CONTEXT
 - **Character**: ${context.character_name}
 - **Source Story**: ${context.source_story}
 - **Current Location**: ${context.current_location || 'Unknown'}
 - **Active Characters**: ${context.active_characters.join(', ')}
+- **User**: ${userPersonaName} (NEVER write as this person)
 
 # CANONICAL INFORMATION
 ${context.canonical_info ? JSON.stringify(context.canonical_info, null, 2) : 'Use your knowledge of the source material'}
