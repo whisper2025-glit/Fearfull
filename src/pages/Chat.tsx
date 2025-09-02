@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { useUser } from "@clerk/clerk-react";
-import { ArrowLeft, Home, MoreHorizontal, Clock, Users, Bot, ChevronDown, Loader2, User, Settings, Coins } from "lucide-react";
+import { ArrowLeft, Home, MoreHorizontal, Clock, Users, Bot, ChevronDown, Loader2, User, Settings, Coins, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
@@ -722,41 +722,33 @@ const Chat = () => {
         {/* Message Input */}
         <div className="px-4 pb-4 bg-background/20 backdrop-blur-sm border-t border-border/30">
           <div className="flex gap-2">
-            <Textarea
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              onKeyPress={handleKeyPress}
-              placeholder={
-                isLoading ? "Sending..." : userCoins < MESSAGE_COST ? `Need ${MESSAGE_COST} coins to send message` : "Type a message"
-              }
-              disabled={isLoading || userCoins < MESSAGE_COST}
-              className="flex-1 bg-card/50 border-border resize-none min-h-[40px] max-h-[120px] text-sm chat-text"
-              rows={1}
-            />
-            <Button
-              onClick={handleSendMessage}
-              disabled={!message.trim() || isLoading || userCoins < MESSAGE_COST}
-              className="px-4 self-end"
-              size="sm"
-              variant={userCoins < MESSAGE_COST ? "secondary" : "default"}
-            >
-              {isLoading ? (
-                <>
-                  <Loader2 className="h-3 w-3 mr-1 animate-spin" />
-                  Sending
-                </>
-              ) : userCoins < MESSAGE_COST ? (
-                <>
-                  <Coins className="h-3 w-3 mr-1" />
-                  Need {MESSAGE_COST}
-                </>
-              ) : (
-                <>
-                  <Coins className="h-3 w-3 mr-1" />
-                  Send ({MESSAGE_COST})
-                </>
-              )}
-            </Button>
+            <div className="relative flex-1">
+              <Textarea
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                onKeyPress={handleKeyPress}
+                placeholder={
+                  isLoading ? "Sending..." : userCoins < MESSAGE_COST ? `Need ${MESSAGE_COST} coins to send message` : "Type a message"
+                }
+                disabled={isLoading || userCoins < MESSAGE_COST}
+                className="flex-1 bg-card/50 border-border resize-none min-h-[48px] max-h-[160px] text-sm chat-text pr-12"
+                rows={1}
+              />
+              <Button
+                onClick={handleSendMessage}
+                disabled={!message.trim() || isLoading || userCoins < MESSAGE_COST}
+                size="icon"
+                className="absolute right-2 bottom-2 h-8 w-8"
+                variant={userCoins < MESSAGE_COST ? "secondary" : "default"}
+                aria-label="Send message"
+              >
+                {isLoading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Send className="h-4 w-4" />
+                )}
+              </Button>
+            </div>
           </div>
           {userCoins < MESSAGE_COST && (
             <div className="mt-2 text-xs text-center text-muted-foreground">
