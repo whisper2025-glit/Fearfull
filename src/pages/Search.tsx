@@ -432,7 +432,7 @@ const Search = () => {
                               <Avatar className="w-12 h-12">
                                 <AvatarImage src={creator.avatar_url} />
                                 <AvatarFallback className="bg-gradient-to-br from-gray-500 to-cyan-500 text-white text-sm">
-                                  {creator.username?.charAt(0) || creator.email?.charAt(0) || 'U'}
+                                  {creator.full_name?.charAt(0) || creator.username?.charAt(0) || creator.email?.charAt(0) || 'U'}
                                 </AvatarFallback>
                               </Avatar>
                               <h3 className="text-sm font-semibold text-white">{creator.username || creator.full_name || 'Unknown User'}</h3>
