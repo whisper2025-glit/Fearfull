@@ -25,13 +25,13 @@ interface ModelsModalProps {
 
 const mockModels: Model[] = [
   {
-    id: "default-model",
-    name: "openrouter/auto",
-    title: "OpenRouter Auto",
-    description: "General conversation via OpenRouter",
+    id: "mistral-nemo-free",
+    name: "mistralai/mistral-nemo:free",
+    title: "Mistral Nemo (free)",
+    description: "Roleplay as the character via OpenRouter",
     features: [
-      "Automatic model routing",
-      "Neutral behavior (no system prompts)"
+      "Mistral Nemo free on OpenRouter",
+      "Character-aware roleplay"
     ],
     isSelected: true
   },
@@ -158,8 +158,8 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
                     ))}
                   </div>
 
-                  {/* Selection indicator for default option */}
-                  {currentSelectedModel.id === model.id && model.id === 'default-model' && (
+                  {/* Selection indicator */}
+                  {currentSelectedModel.id === model.id && model.id === 'mistral-nemo-free' && (
                     <div className="absolute top-4 right-4">
                       <div className="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center">
                         <div className="w-2 h-2 bg-white rounded-full" />
