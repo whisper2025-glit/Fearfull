@@ -360,6 +360,27 @@ Format as a JSON array of strings.`;
     response: string,
     context: RoleplayContext
   ): Promise<{ isValid: boolean; issues: string[]; suggestions: string[] }> {
+    // Quick check for obvious user impersonation patterns
+    const userPersonaName = context.story_state?.user_persona?.name;
+    const impersonationPatterns = [
+      new RegExp(`\\[${userPersonaName}\\]`, 'i'),
+      new RegExp(`${userPersonaName}:`, 'i'),
+      /I watch as (she|he|they)/i,
+      /I offer (her|him|them)/i,
+      /My heart aches for (her|him|them)/i,
+      /I can't help but feel.*for (her|him|them)/i
+    ];
+
+    const hasImpersonation = impersonationPatterns.some(pattern => pattern.test(response));
+
+    if (hasImpersonation) {
+      return {
+        isValid: false,
+        issues: ['Response contains user impersonation - AI is writing from user perspective instead of character perspective'],
+        suggestions: ['Rewrite to only include character thoughts and actions, not user actions or feelings']
+      };
+    }
+
     const prompt = `Validate this roleplay response for canonical accuracy and quality:
 
 Response: ${response}
@@ -372,7 +393,8 @@ Check for:
 1. Character consistency (personality, abilities, speech patterns)
 2. Canon compliance (lore, rules, established facts)
 3. Narrative quality (engagement, pacing, detail)
-4. Roleplay immersion (second person, choice generation)
+4. Roleplay immersion (staying in character perspective)
+5. CRITICAL: User impersonation (AI must NEVER write as the user or describe user's actions/thoughts)
 
 Respond with JSON: {"isValid": boolean, "issues": [string array], "suggestions": [string array]}`;
 
