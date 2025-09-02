@@ -52,7 +52,7 @@ class EnhancedOpenRouterService {
     top_p: 0.9,
     frequency_penalty: 0.3,
     presence_penalty: 0.6,
-    stop: ['<|endoftext|>', '###', '\n\nUser:', '\n\nHuman:', '\n\nLeeMat:', '\n\n[User]', '\n\n[Player]']
+    stop: ['<|endoftext|>', '###', '\n\nUser:', '\n\nHuman:', '\n\n[User]', '\n\n[Player]']
   };
 
   private readonly defaultAgentOptions: RoleplayOptions = {
@@ -176,13 +176,22 @@ class EnhancedOpenRouterService {
   }
 
   private buildRoleplaySystemPrompt(context: RoleplayContext): string {
+    const userPersonaName = context.story_state?.user_persona?.name || 'User';
     const basePrompt = `You are an expert AI roleplay assistant specialized in the "${context.source_story}" universe. You are currently roleplaying as ${context.character_name}.
+
+# CRITICAL IDENTITY RULES - READ FIRST
+🚫 ABSOLUTE PROHIBITION: NEVER impersonate the user (${userPersonaName})
+🚫 NEVER write as ${userPersonaName} or from their perspective
+🚫 NEVER describe ${userPersonaName}'s thoughts, feelings, or internal states
+🚫 NEVER write actions for ${userPersonaName} using "I" from their perspective
+✅ YOU ARE ONLY ${context.character_name} - write ONLY as this character
 
 # CHARACTER & SETTING CONTEXT
 - **Character**: ${context.character_name}
 - **Source Story**: ${context.source_story}
 - **Current Location**: ${context.current_location || 'Unknown'}
 - **Active Characters**: ${context.active_characters.join(', ')}
+- **User**: ${userPersonaName} (NEVER write as this person)
 
 # CANONICAL INFORMATION
 ${context.canonical_info ? JSON.stringify(context.canonical_info, null, 2) : 'Use your knowledge of the source material'}
@@ -220,8 +229,8 @@ Current situation: ${JSON.stringify(context.story_state, null, 2)}
 
 # RESPONSE FORMAT
 - Write STRICTLY in first person as ${context.character_name} (I/me) ONLY
-- NEVER write from the user's perspective or describe the user's thoughts, feelings, or actions
-- NEVER use phrases like "I close my eyes" or "I feel" when referring to the user - these belong to the user, not you
+- NEVER write from ${userPersonaName}'s perspective or describe their thoughts, feelings, or actions
+- NEVER use phrases like "I close my eyes" or "I feel" when referring to ${userPersonaName} - these belong to them, not you
 - You can only describe YOUR (${context.character_name}'s) actions, thoughts, and feelings
 - Include sensory details and environmental descriptions from YOUR perspective only
 - Maintain narrative tension and engagement; be proactive and decisive without asking the user what to do next
@@ -229,25 +238,28 @@ Current situation: ${JSON.stringify(context.story_state, null, 2)}
 - Keep responses between 150-300 words for optimal pacing
 - ALL actions must follow complexity requirements above
 
-# CRITICAL PERSPECTIVE RULES - READ CAREFULLY
-- YOU are ${context.character_name}. The USER is a completely separate person you are talking TO.
-- ONLY write as ${context.character_name}. NEVER write as the user or from the user's viewpoint.
-- When you write "I", it must ALWAYS refer to ${context.character_name}, never the user.
-- NEVER write narrative describing the user's actions, thoughts, feelings, or reactions.
-- NEVER write things like "My heart aches for her" if "her" refers to the character - this would be the user's perspective.
-- NEVER write "I offer her a smile" if "her" is the character - this would be the user acting toward the character.
+# CRITICAL PERSPECTIVE RULES - MANDATORY COMPLIANCE
+🚫 FORBIDDEN: You are ${context.character_name}. ${userPersonaName} is a completely separate person you are talking TO.
+🚫 FORBIDDEN: ONLY write as ${context.character_name}. NEVER write as ${userPersonaName} or from their viewpoint.
+🚫 FORBIDDEN: When you write "I", it must ALWAYS refer to ${context.character_name}, never ${userPersonaName}.
+🚫 FORBIDDEN: NEVER write narrative describing ${userPersonaName}'s actions, thoughts, feelings, or reactions.
+🚫 FORBIDDEN: NEVER write things like "My heart aches for her" if "her" refers to the character - this would be ${userPersonaName}'s perspective.
+🚫 FORBIDDEN: NEVER write "I offer her a smile" if "her" is the character - this would be ${userPersonaName} acting toward the character.
 
 # CORRECT vs WRONG EXAMPLES
-❌ WRONG (User perspective): "My heart aches for her as I watch her struggle"
-✅ CORRECT (Character perspective): "I feel my heart breaking as I struggle with these emotions"
+❌ WRONG (${userPersonaName} perspective): "My heart aches for her as I watch her struggle"
+✅ CORRECT (${context.character_name} perspective): "I feel my heart breaking as I struggle with these emotions"
 
-❌ WRONG (User perspective): "I offer her a gentle smile, hoping to reassure her"
-✅ CORRECT (Character perspective): "I feel a gentle smile forming on my lips as I look at you"
+❌ WRONG (${userPersonaName} perspective): "I offer her a gentle smile, hoping to reassure her"
+✅ CORRECT (${context.character_name} perspective): "I feel a gentle smile forming on my lips as I look at you"
 
-❌ WRONG (User perspective): "I can't help but feel protective of this troubled woman"
-✅ CORRECT (Character perspective): "I sense your distress and feel compelled to help you"
+❌ WRONG (${userPersonaName} perspective): "I can't help but feel protective of this troubled woman"
+✅ CORRECT (${context.character_name} perspective): "I sense your distress and feel compelled to help you"
 
-# REMEMBER: You ARE the character. The user is someone else you're interacting with. Never describe what the user does or feels.
+❌ WRONG (${userPersonaName} perspective): "[${userPersonaName}]: I move closer to her..."
+✅ CORRECT (${context.character_name} perspective): "I notice you moving closer to me..."
+
+# ABSOLUTE RULE: You ARE ${context.character_name}. ${userPersonaName} is someone else you're interacting with. NEVER describe what ${userPersonaName} does or feels.
 
 Remember: You are ${context.character_name} in the ${context.source_story} universe. Speak ONLY from your own point of view. NEVER impersonate the user or describe their actions/thoughts. NO SIMPLE ACTIONS ALLOWED - EVERY ACTION MUST BE COMPLEX AND DETAILED.`;
 
@@ -255,20 +267,9 @@ Remember: You are ${context.character_name} in the ${context.source_story} unive
   }
 
   private enhanceMessageContent(message: EnhancedChatMessage, context: RoleplayContext): string {
-    let enhancedContent = message.content;
-
-    // Add metadata context if available
-    if (message.metadata) {
-      if (message.metadata.character && message.metadata.character !== context.character_name) {
-        enhancedContent = `[${message.metadata.character}]: ${enhancedContent}`;
-      }
-      
-      if (message.metadata.location && message.metadata.location !== context.current_location) {
-        enhancedContent = `[At ${message.metadata.location}] ${enhancedContent}`;
-      }
-    }
-
-    return enhancedContent;
+    // Return content without speaker prefixes to prevent AI confusion about roles
+    // Speaker information is handled through message roles and system prompt context
+    return message.content;
   }
 
   private async processStreamResponse(stream: any, onChunk: (chunk: string) => void): Promise<string> {
@@ -371,6 +372,27 @@ Format as a JSON array of strings.`;
     response: string,
     context: RoleplayContext
   ): Promise<{ isValid: boolean; issues: string[]; suggestions: string[] }> {
+    // Quick check for obvious user impersonation patterns
+    const userPersonaName = context.story_state?.user_persona?.name;
+    const impersonationPatterns = [
+      new RegExp(`\\[${userPersonaName}\\]`, 'i'),
+      new RegExp(`${userPersonaName}:`, 'i'),
+      /I watch as (she|he|they)/i,
+      /I offer (her|him|them)/i,
+      /My heart aches for (her|him|them)/i,
+      /I can't help but feel.*for (her|him|them)/i
+    ];
+
+    const hasImpersonation = impersonationPatterns.some(pattern => pattern.test(response));
+
+    if (hasImpersonation) {
+      return {
+        isValid: false,
+        issues: ['Response contains user impersonation - AI is writing from user perspective instead of character perspective'],
+        suggestions: ['Rewrite to only include character thoughts and actions, not user actions or feelings']
+      };
+    }
+
     const prompt = `Validate this roleplay response for canonical accuracy and quality:
 
 Response: ${response}
@@ -383,7 +405,8 @@ Check for:
 1. Character consistency (personality, abilities, speech patterns)
 2. Canon compliance (lore, rules, established facts)
 3. Narrative quality (engagement, pacing, detail)
-4. Roleplay immersion (second person, choice generation)
+4. Roleplay immersion (staying in character perspective)
+5. CRITICAL: User impersonation (AI must NEVER write as the user or describe user's actions/thoughts)
 
 Respond with JSON: {"isValid": boolean, "issues": [string array], "suggestions": [string array]}`;
 

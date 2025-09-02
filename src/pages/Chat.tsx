@@ -563,11 +563,47 @@ const Chat = () => {
         timestamp: new Date().toISOString()
       });
 
-      const botResponseContent = await enhancedOpenRouterAPI.createRoleplayResponse(
+      let botResponseContent = await enhancedOpenRouterAPI.createRoleplayResponse(
         enhancedMessages,
         roleplayContext,
         enhancedOptions
       );
+
+      // Validate response for impersonation issues
+      const validation = await enhancedOpenRouterAPI.validateRoleplayResponse(
+        botResponseContent,
+        roleplayContext
+      );
+
+      if (!validation.isValid && validation.issues.some(issue => issue.includes('impersonation'))) {
+        console.warn('AI impersonation detected, regenerating response...');
+        // Try again with stricter prompt
+        const stricterMessages = [
+          {
+            role: 'system' as const,
+            content: `CRITICAL: You are ${roleplayContext.character_name}. NEVER write as the user. NEVER describe user actions or thoughts. Only write your own character's perspective.`
+          },
+          ...enhancedMessages.slice(1) // Skip original system message
+        ];
+
+        const retryResponse = await enhancedOpenRouterAPI.createRoleplayResponse(
+          stricterMessages.slice(0, -1).concat(enhancedMessages.slice(-1)),
+          roleplayContext,
+          enhancedOptions
+        );
+
+        const retryValidation = await enhancedOpenRouterAPI.validateRoleplayResponse(
+          retryResponse,
+          roleplayContext
+        );
+
+        if (retryValidation.isValid || !retryValidation.issues.some(issue => issue.includes('impersonation'))) {
+          botResponseContent = retryResponse;
+        } else {
+          // If still impersonating, use fallback response
+          botResponseContent = `*I pause for a moment, considering how to respond appropriately while staying true to my character.*`;
+        }
+      }
 
       // Enforce strict action formatting in AI output
       const filteredBotContent = enhanceSimpleActions(botResponseContent);
