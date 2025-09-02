@@ -60,8 +60,8 @@ const Chat = () => {
   const [selectedModel, setSelectedModel] = useState<Model>({
     id: "mistral-nemo-free",
     name: "mistralai/mistral-nemo:free",
-    title: "Mistral Nemo (free)",
-    description: "Roleplay as the character via OpenRouter",
+    title: "Free Model",
+    description: "Mistral Nemo (free) via OpenRouter",
     features: [
       "Mistral Nemo free on OpenRouter",
       "Character-aware roleplay"
