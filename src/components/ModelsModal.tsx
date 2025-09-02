@@ -26,12 +26,12 @@ interface ModelsModalProps {
 const mockModels: Model[] = [
   {
     id: "free-model",
-    name: "Free Model",
+    name: "deepseek/deepseek-chat-v3.1:free",
     title: "Free Model",
-    description: "Basic AI conversation",
+    description: "Character roleplay with DeepSeek AI",
     features: [
-      "Basic AI conversation",
-      "Supports both casual chat and roleplay"
+      "Powered by DeepSeek Chat v3.1",
+      "Character-focused roleplay conversations"
     ],
     isSelected: true
   },
