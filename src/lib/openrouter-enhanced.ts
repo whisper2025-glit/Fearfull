@@ -52,7 +52,7 @@ class EnhancedOpenRouterService {
     top_p: 0.9,
     frequency_penalty: 0.3,
     presence_penalty: 0.6,
-    stop: ['<|endoftext|>', '###', '\n\nUser:', '\n\nHuman:', '\n\nLeeMat:', '\n\n[User]', '\n\n[Player]']
+    stop: ['<|endoftext|>', '###', '\n\nUser:', '\n\nHuman:', '\n\n[User]', '\n\n[Player]']
   };
 
   private readonly defaultAgentOptions: RoleplayOptions = {
