@@ -379,7 +379,87 @@ const Chat = () => {
         }
       }
 
-      toast.success('Message sent successfully');
+      // Generate AI response if "Free Model" is selected
+      if (selectedModel?.id === 'free-model') {
+        try {
+          // Prepare conversation history for AI
+          const allMessagesIncludingNew = [...allMessages, userMessage];
+          const conversationHistory: DeepSeekMessage[] = allMessagesIncludingNew
+            .filter(msg => msg.type === 'regular')
+            .slice(-8) // Keep last 8 messages for context
+            .map(msg => ({
+              role: msg.isBot ? 'assistant' as const : 'user' as const,
+              content: msg.content
+            }));
+
+          // Generate AI response
+          const aiResponse = await deepSeekAPI.generateCharacterResponse(
+            {
+              name: currentCharacter.name,
+              intro: currentCharacter.intro,
+              scenario: currentCharacter.scenario,
+              personality: currentCharacter.personality,
+              appearance: currentCharacter.appearance,
+              gender: currentCharacter.gender,
+              age: currentCharacter.age,
+              greeting: currentCharacter.greeting
+            },
+            conversationHistory,
+            currentPersona ? {
+              name: currentPersona.name,
+              description: currentPersona.description,
+              gender: currentPersona.gender
+            } : undefined
+          );
+
+          // Add AI response to local state
+          const botMessage: Message = {
+            id: Date.now() + 1,
+            content: aiResponse,
+            isBot: true,
+            timestamp: new Date().toLocaleTimeString(),
+            type: "regular"
+          };
+
+          setMessages(prev => [...prev, botMessage]);
+
+          // Save AI response to Supabase
+          const { error: botMessageError } = await supabase
+            .from('messages')
+            .insert({
+              character_id: characterId,
+              conversation_id: conversationToUse,
+              author_id: null, // Bot messages have null author_id
+              content: aiResponse,
+              is_bot: true,
+              type: 'regular'
+            });
+
+          if (botMessageError) {
+            console.error('Error saving bot message:', botMessageError);
+            toast.error('AI response generated but failed to save');
+          } else {
+            toast.success(`${currentCharacter.name} responded`);
+          }
+
+        } catch (aiError) {
+          console.error('Error generating AI response:', aiError);
+          const errorBotMessage: Message = {
+            id: Date.now() + 1,
+            content: "I'm having trouble responding right now. Please try again.",
+            isBot: true,
+            timestamp: new Date().toLocaleTimeString(),
+            type: "regular"
+          };
+          setMessages(prev => [...prev, errorBotMessage]);
+
+          const errorMessage = aiError instanceof Error ? aiError.message : 'Unknown AI error';
+          toast.error(`AI response failed: ${errorMessage}`);
+        }
+      } else {
+        toast.success('Message sent successfully');
+      }
+
     } catch (error) {
       console.error('Error sending message:', error);
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
