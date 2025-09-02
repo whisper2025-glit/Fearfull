@@ -25,13 +25,13 @@ interface ModelsModalProps {
 
 const mockModels: Model[] = [
   {
-    id: "free-model",
-    name: "deepseek/deepseek-chat-v3.1:free",
-    title: "Free Model",
-    description: "Character roleplay with DeepSeek AI",
+    id: "default-model",
+    name: "openrouter/auto",
+    title: "OpenRouter Auto",
+    description: "General conversation via OpenRouter",
     features: [
-      "Powered by DeepSeek Chat v3.1",
-      "Character-focused roleplay conversations"
+      "Automatic model routing",
+      "Neutral behavior (no system prompts)"
     ],
     isSelected: true
   },
@@ -158,8 +158,8 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
                     ))}
                   </div>
 
-                  {/* Selection indicator for Free Model */}
-                  {currentSelectedModel.id === model.id && model.id === 'free-model' && (
+                  {/* Selection indicator for default option */}
+                  {currentSelectedModel.id === model.id && model.id === 'default-model' && (
                     <div className="absolute top-4 right-4">
                       <div className="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center">
                         <div className="w-2 h-2 bg-white rounded-full" />
