@@ -16,7 +16,7 @@ import { ModelsModal, Model } from "@/components/ModelsModal";
 import { ChatPageSettingsModal, ChatPageSettings } from "@/components/ChatPageSettingsModal";
 import { MessageFormatter } from "@/components/MessageFormatter";
 import { supabase, createOrUpdateUser, getDefaultPersona, incrementUserCoins, canClaimDailyReward, markDailyRewardClaimed, getUserCoins, deductUserCoins } from "@/lib/supabase";
-import { deepSeekAPI, ChatMessage as DeepSeekMessage } from "@/lib/deepseek-api";
+import { openRouterAI, ChatMessage as AIMessage } from "@/lib/ai-client";
 import { toast } from "sonner";
 
 interface Message {
@@ -58,13 +58,13 @@ const Chat = () => {
   const [isModelsModalOpen, setIsModelsModalOpen] = useState(false);
   const [isChatPageSettingsModalOpen, setIsChatPageSettingsModalOpen] = useState(false);
   const [selectedModel, setSelectedModel] = useState<Model>({
-    id: "free-model",
-    name: "deepseek/deepseek-chat-v3.1:free",
-    title: "Free Model",
-    description: "Character roleplay with DeepSeek AI",
+    id: "default-model",
+    name: "openrouter/auto",
+    title: "OpenRouter Auto",
+    description: "General conversation via OpenRouter",
     features: [
-      "Powered by DeepSeek Chat v3.1",
-      "Character-focused roleplay conversations"
+      "Automatic model routing",
+      "Neutral behavior (no system prompts)"
     ]
   });
   const [chatPageSettings, setChatPageSettings] = useState<ChatPageSettings>(() => {
@@ -388,85 +388,79 @@ const Chat = () => {
         }
       }
 
-      // Generate AI response if "Free Model" is selected
-      if (selectedModel?.id === 'free-model') {
-        try {
-          // Prepare conversation history for AI
-          const allMessagesIncludingNew = [...allMessages, userMessage];
-          const conversationHistory: DeepSeekMessage[] = allMessagesIncludingNew
-            .filter(msg => msg.type === 'regular')
-            .slice(-8) // Keep last 8 messages for context
-            .map(msg => ({
-              role: msg.isBot ? 'assistant' as const : 'user' as const,
-              content: msg.content
-            }));
+      try {
+        // Prepare conversation history for AI (last 8 regular messages)
+        const allMessagesIncludingNew = [...allMessages, userMessage];
+        const conversationHistory: AIMessage[] = allMessagesIncludingNew
+          .filter(msg => msg.type === 'regular')
+          .slice(-8)
+          .map(msg => ({
+            role: msg.isBot ? 'assistant' as const : 'user' as const,
+            content: msg.content
+          }));
 
-          // Generate AI response
-          const aiResponse = await deepSeekAPI.generateCharacterResponse(
-            {
-              name: currentCharacter.name,
-              intro: currentCharacter.intro,
-              scenario: currentCharacter.scenario,
-              personality: currentCharacter.personality,
-              appearance: currentCharacter.appearance,
-              gender: currentCharacter.gender,
-              age: currentCharacter.age,
-              greeting: currentCharacter.greeting
-            },
-            conversationHistory,
-            currentPersona ? {
-              name: currentPersona.name,
-              description: currentPersona.description,
-              gender: currentPersona.gender
-            } : undefined
-          );
+        // Generate AI response (no system prompts applied)
+        const aiResponse = await openRouterAI.generateCharacterResponse(
+          {
+            name: currentCharacter.name,
+            intro: currentCharacter.intro,
+            scenario: currentCharacter.scenario,
+            personality: currentCharacter.personality,
+            appearance: currentCharacter.appearance,
+            gender: currentCharacter.gender,
+            age: currentCharacter.age,
+            greeting: currentCharacter.greeting
+          },
+          conversationHistory,
+          currentPersona ? {
+            name: currentPersona.name,
+            description: currentPersona.description,
+            gender: currentPersona.gender
+          } : undefined
+        );
 
-          // Add AI response to local state
-          const botMessage: Message = {
-            id: Date.now() + 1,
+        // Add AI response to local state
+        const botMessage: Message = {
+          id: Date.now() + 1,
+          content: aiResponse,
+          isBot: true,
+          timestamp: new Date().toLocaleTimeString(),
+          type: "regular"
+        };
+
+        setMessages(prev => [...prev, botMessage]);
+
+        // Save AI response to Supabase
+        const { error: botMessageError } = await supabase
+          .from('messages')
+          .insert({
+            character_id: characterId,
+            conversation_id: conversationToUse,
+            author_id: null,
             content: aiResponse,
-            isBot: true,
-            timestamp: new Date().toLocaleTimeString(),
-            type: "regular"
-          };
+            is_bot: true,
+            type: 'regular'
+          });
 
-          setMessages(prev => [...prev, botMessage]);
-
-          // Save AI response to Supabase
-          const { error: botMessageError } = await supabase
-            .from('messages')
-            .insert({
-              character_id: characterId,
-              conversation_id: conversationToUse,
-              author_id: null, // Bot messages have null author_id
-              content: aiResponse,
-              is_bot: true,
-              type: 'regular'
-            });
-
-          if (botMessageError) {
-            console.error('Error saving bot message:', botMessageError);
-            toast.error('AI response generated but failed to save');
-          } else {
-            toast.success(`${currentCharacter.name} responded`);
-          }
-
-        } catch (aiError) {
-          console.error('Error generating AI response:', aiError);
-          const errorBotMessage: Message = {
-            id: Date.now() + 1,
-            content: "I'm having trouble responding right now. Please try again.",
-            isBot: true,
-            timestamp: new Date().toLocaleTimeString(),
-            type: "regular"
-          };
-          setMessages(prev => [...prev, errorBotMessage]);
-
-          const errorMessage = aiError instanceof Error ? aiError.message : 'Unknown AI error';
-          toast.error(`AI response failed: ${errorMessage}`);
+        if (botMessageError) {
+          console.error('Error saving bot message:', botMessageError);
+          toast.error('AI response generated but failed to save');
+        } else {
+          toast.success(`${currentCharacter.name} responded`);
         }
-      } else {
-        toast.success('Message sent successfully');
+      } catch (aiError) {
+        console.error('Error generating AI response:', aiError);
+        const errorBotMessage: Message = {
+          id: Date.now() + 1,
+          content: "I'm having trouble responding right now. Please try again.",
+          isBot: true,
+          timestamp: new Date().toLocaleTimeString(),
+          type: "regular"
+        };
+        setMessages(prev => [...prev, errorBotMessage]);
+
+        const errorMessage = aiError instanceof Error ? aiError.message : 'Unknown AI error';
+        toast.error(`AI response failed: ${errorMessage}`);
       }
 
     } catch (error) {
