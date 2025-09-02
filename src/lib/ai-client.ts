@@ -10,7 +10,7 @@ class OpenRouterClient {
 
   constructor() {
     this.apiKey = import.meta.env.VITE_OPENROUTER_API_KEY || '';
-    this.model = import.meta.env.VITE_OPENROUTER_MODEL || 'openrouter/auto';
+    this.model = import.meta.env.VITE_OPENROUTER_MODEL || 'mistralai/mistral-nemo:free';
   }
 
   private getHeaders(): Record<string, string> {
@@ -31,15 +31,32 @@ class OpenRouterClient {
     }
   }
 
-  // No system prompts added; forwards conversation history as-is
+  private buildSystemPrompt(character: any, persona?: any): string {
+    const parts: string[] = [];
+    parts.push(`You are ${character.name}. Stay strictly in character and speak in first person as ${character.name}.`);
+    if (character.personality) parts.push(`Personality: ${character.personality}.`);
+    if (character.appearance) parts.push(`Appearance: ${character.appearance}.`);
+    parts.push(`Backstory: ${character.intro}`);
+    if (character.scenario) parts.push(`Current scenario: ${character.scenario}`);
+    if (character.gender) parts.push(`Gender: ${character.gender}.`);
+    if (character.age) parts.push(`Age: ${character.age}.`);
+    if (character.greeting) parts.push(`Opening tone: ${character.greeting}`);
+    if (persona?.name) parts.push(`You are talking to ${persona.name}${persona.gender ? ` (${persona.gender})` : ''}${persona.description ? ` – ${persona.description}` : ''}. Never speak as the user.`);
+    parts.push('Keep responses immersive and natural (2-3 short paragraphs). Avoid OOC or meta commentary.');
+    return parts.join(' ');
+  }
+
   async generateCharacterResponse(
-    _character: any,
+    character: any,
     conversationHistory: ChatMessage[],
-    _persona?: any
+    persona?: any
   ): Promise<string> {
     this.validateApiKey();
 
-    const messages: ChatMessage[] = [...conversationHistory];
+    const messages: ChatMessage[] = [
+      { role: 'system', content: this.buildSystemPrompt(character, persona) },
+      ...conversationHistory,
+    ];
 
     const requestBody = {
       model: this.model,
