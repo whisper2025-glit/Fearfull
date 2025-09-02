@@ -64,7 +64,7 @@ class EnhancedOpenRouterService {
   };
 
   constructor() {
-    const apiKey = import.meta.env.VITE_OPENROUTER_AI_API_KEY || '';
+    const apiKey = import.meta.env.VITE_OPENROUTER_API_KEY || '';
 
     if (!apiKey) {
       console.warn('OpenRouter API key not found in environment variables');
@@ -73,7 +73,7 @@ class EnhancedOpenRouterService {
 
   private getHeaders(): Record<string, string> {
     return {
-      'Authorization': `Bearer ${import.meta.env.VITE_OPENROUTER_AI_API_KEY}`,
+      'Authorization': `Bearer ${import.meta.env.VITE_OPENROUTER_API_KEY}`,
       'Content-Type': 'application/json',
       'HTTP-Referer': window.location.origin,
       'X-Title': 'Adventure Roleplay Chat App',
@@ -81,9 +81,9 @@ class EnhancedOpenRouterService {
   }
 
   private validateApiKey(): boolean {
-    const apiKey = import.meta.env.VITE_OPENROUTER_AI_API_KEY;
+    const apiKey = import.meta.env.VITE_OPENROUTER_API_KEY;
     if (!apiKey) {
-      throw new Error('OpenRouter API key is not configured. Please add VITE_OPENROUTER_AI_API_KEY to your environment variables.');
+      throw new Error('OpenRouter API key is not configured. Please add VITE_OPENROUTER_API_KEY to your environment variables.');
     }
 
     if (!apiKey.startsWith('sk-or-v1-')) {

@@ -45,7 +45,7 @@ class OpenRouterService {
   };
 
   constructor() {
-    this.apiKey = import.meta.env.VITE_OPENROUTER_AI_API_KEY || '';
+    this.apiKey = import.meta.env.VITE_OPENROUTER_API_KEY || '';
 
     if (!this.apiKey) {
       console.warn('OpenRouter API key not found in environment variables');
@@ -63,7 +63,7 @@ class OpenRouterService {
 
   private validateApiKey(): boolean {
     if (!this.apiKey) {
-      throw new Error('OpenRouter API key is not configured. Please add VITE_OPENROUTER_AI_API_KEY to your environment variables.');
+      throw new Error('OpenRouter API key is not configured. Please add VITE_OPENROUTER_API_KEY to your environment variables.');
     }
 
     if (!this.apiKey.startsWith('sk-or-v1-')) {
