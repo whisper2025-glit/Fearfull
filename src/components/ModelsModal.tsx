@@ -89,7 +89,7 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg h-[80vh] bg-[#1a1b2e] border-[#2d2e3e] p-0 rounded-2xl w-[95vw] sm:w-auto sm:max-w-lg !gap-0 !grid-cols-1 !grid-rows-1 flex flex-col overflow-hidden">
+      <DialogContent className="max-w-lg h-[80vh] bg-[#1a1b2e] border-[#2d2e3e] p-0 rounded-2xl w-[95vw] sm:w-auto sm:max-w-lg !gap-0 !grid-cols-1 !grid-rows-1 flex flex-col overflow-hidden text-xs">
         <div className="flex flex-col h-full overflow-hidden">
           {/* Header */}
           <DialogHeader className="px-6 py-6 flex-shrink-0 text-center relative">
@@ -101,7 +101,7 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
             >
               <X className="h-5 w-5" />
             </Button>
-            <DialogTitle className="text-xl font-bold text-white leading-tight">
+            <DialogTitle className="text-sm font-bold text-white leading-tight">
               Choose the model<br />that suits you best
             </DialogTitle>
           </DialogHeader>
@@ -134,7 +134,7 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
                 <CardContent className="relative p-4 space-y-3">
                   {/* Title and Badge */}
                   <div className="flex items-center justify-between">
-                    <h3 className="text-xl font-bold text-white">{model.title}</h3>
+                    <h3 className="text-sm font-bold text-white">{model.title}</h3>
                     {model.isLimitedFree && (
                       <Badge className="bg-yellow-500 text-black text-xs px-2 py-1 rounded-full font-medium">
                         Limited Time Free
@@ -148,9 +148,9 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
                       <p 
                         key={index} 
                         className={`${
-                          index === 0 
-                            ? 'text-white font-medium text-sm' 
-                            : 'text-gray-300 text-sm'
+                          index === 0
+                            ? 'text-white font-medium text-xs'
+                            : 'text-gray-300 text-xs'
                         }`}
                       >
                         • {feature}
@@ -174,8 +174,9 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
           {/* Footer */}
           <div className="p-6 flex-shrink-0">
             <Button
+              size="sm"
               onClick={handleUseModel}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-2xl py-3 text-lg font-semibold"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-md text-xs font-semibold"
             >
               Use it
             </Button>
