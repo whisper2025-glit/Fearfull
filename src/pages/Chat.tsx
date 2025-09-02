@@ -54,7 +54,9 @@ const Chat = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isIntroExpanded, setIsIntroExpanded] = useState(true);
   const [isPersonaModalOpen, setIsPersonaModalOpen] = useState(false);
+  const [isModelsModalOpen, setIsModelsModalOpen] = useState(false);
   const [isChatPageSettingsModalOpen, setIsChatPageSettingsModalOpen] = useState(false);
+  const [selectedModel, setSelectedModel] = useState<Model | null>(null);
   const [chatPageSettings, setChatPageSettings] = useState<ChatPageSettings>(() => {
     try {
       const saved = localStorage.getItem('chat_page_settings');
