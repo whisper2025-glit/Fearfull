@@ -151,7 +151,7 @@ const Search = () => {
             ...character,
             message_count: messageCount || 0,
             conversation_count: conversationCount || 0,
-            creator_username: character.owner?.username || 'Unknown'
+            creator_username: character.owner?.full_name || character.owner?.username || 'Unknown'
           };
         }));
         setTrendingCharacters(processedCharacters);
