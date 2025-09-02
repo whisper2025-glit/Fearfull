@@ -622,6 +622,16 @@ const Chat = () => {
               {currentPersona ? currentPersona.name : 'Persona'}
               {currentPersona && <div className="w-1.5 h-1.5 bg-green-500 rounded-full" />}
             </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-2 text-xs whitespace-nowrap flex-shrink-0"
+              onClick={() => setIsModelsModalOpen(true)}
+            >
+              <Bot className="h-3 w-3" />
+              {selectedModel ? selectedModel.title : 'Models'}
+              {selectedModel && <div className="w-1.5 h-1.5 bg-green-500 rounded-full" />}
+            </Button>
           </div>
         </div>
 
