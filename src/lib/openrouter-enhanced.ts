@@ -255,20 +255,9 @@ Remember: You are ${context.character_name} in the ${context.source_story} unive
   }
 
   private enhanceMessageContent(message: EnhancedChatMessage, context: RoleplayContext): string {
-    let enhancedContent = message.content;
-
-    // Add metadata context if available
-    if (message.metadata) {
-      if (message.metadata.character && message.metadata.character !== context.character_name) {
-        enhancedContent = `[${message.metadata.character}]: ${enhancedContent}`;
-      }
-      
-      if (message.metadata.location && message.metadata.location !== context.current_location) {
-        enhancedContent = `[At ${message.metadata.location}] ${enhancedContent}`;
-      }
-    }
-
-    return enhancedContent;
+    // Return content without speaker prefixes to prevent AI confusion about roles
+    // Speaker information is handled through message roles and system prompt context
+    return message.content;
   }
 
   private async processStreamResponse(stream: any, onChunk: (chunk: string) => void): Promise<string> {
