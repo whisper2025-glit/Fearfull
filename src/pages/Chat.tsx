@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { useUser } from "@clerk/clerk-react";
-import { ArrowLeft, Home, MoreHorizontal, Lightbulb, Clock, Users, Bot, ChevronDown, Loader2, User, Settings, Coins } from "lucide-react";
+import { ArrowLeft, Home, MoreHorizontal, Clock, Users, Bot, ChevronDown, Loader2, User, Settings, Coins } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
@@ -11,16 +11,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ModelsModal, Model } from "@/components/ModelsModal";
 import { PersonaModal } from "@/components/PersonaModal";
-import { SuggestModal } from "@/components/SuggestModal";
-import { ChatSettingsModal } from "@/components/ChatSettingsModal";
+import { ModelsModal, Model } from "@/components/ModelsModal";
 import { ChatPageSettingsModal, ChatPageSettings } from "@/components/ChatPageSettingsModal";
 import { MessageFormatter } from "@/components/MessageFormatter";
-import { enhanceSimpleActions } from "@/lib/actionValidator";
-import { openRouterAPI, ChatMessage } from "@/lib/openrouter";
-import { enhancedOpenRouterAPI, EnhancedChatMessage, RoleplayContext } from "@/lib/openrouter-enhanced";
-import { supabase, createOrUpdateUser, getDefaultPersona, getChatSettings, getDefaultChatSettings, ChatSettings, incrementUserCoins, canClaimDailyReward, markDailyRewardClaimed, getUserCoins, deductUserCoins } from "@/lib/supabase";
+import { supabase, createOrUpdateUser, getDefaultPersona, incrementUserCoins, canClaimDailyReward, markDailyRewardClaimed, getUserCoins, deductUserCoins } from "@/lib/supabase";
+import { deepSeekAPI, ChatMessage as DeepSeekMessage } from "@/lib/deepseek-api";
 import { toast } from "sonner";
 
 interface Message {
@@ -58,11 +54,19 @@ const Chat = () => {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [isIntroExpanded, setIsIntroExpanded] = useState(true);
-  const [isModelsModalOpen, setIsModelsModalOpen] = useState(false);
   const [isPersonaModalOpen, setIsPersonaModalOpen] = useState(false);
-  const [isSuggestModalOpen, setIsSuggestModalOpen] = useState(false);
-  const [isChatSettingsModalOpen, setIsChatSettingsModalOpen] = useState(false);
+  const [isModelsModalOpen, setIsModelsModalOpen] = useState(false);
   const [isChatPageSettingsModalOpen, setIsChatPageSettingsModalOpen] = useState(false);
+  const [selectedModel, setSelectedModel] = useState<Model>({
+    id: "free-model",
+    name: "deepseek/deepseek-chat-v3.1:free",
+    title: "Free Model",
+    description: "Character roleplay with DeepSeek AI",
+    features: [
+      "Powered by DeepSeek Chat v3.1",
+      "Character-focused roleplay conversations"
+    ]
+  });
   const [chatPageSettings, setChatPageSettings] = useState<ChatPageSettings>(() => {
     try {
       const saved = localStorage.getItem('chat_page_settings');
@@ -80,36 +84,12 @@ const Chat = () => {
   });
   const [currentPersona, setCurrentPersona] = useState<any>(null);
   const [sceneBackground, setSceneBackground] = useState<string>("");
-  const [selectedModel, setSelectedModel] = useState<Model | null>({
-    id: "mistral-main",
-    name: "mistralai/mistral-7b-instruct:free",
-    author: "Mistral AI",
-    description: "Excellent for creative roleplay scenarios",
-    price: 0,
-    responseTime: "1s",
-    memory: "7B",
-    rating: 8.0,
-    tags: ["Main", "Roleplay", "Creative", "Free"],
-    isActive: true,
-    isPremium: false,
-    isMain: true,
-    provider: 'mistral',
-    tier: 'free'
-  });
   const [isLoading, setIsLoading] = useState(false);
-  const hasApiKey = Boolean((import.meta as any).env?.VITE_OPENROUTER_API_KEY);
 
   // State for current character and messages loaded from Supabase
   const [currentCharacter, setCurrentCharacter] = useState<Character | null>(null);
   const [isLoadingCharacter, setIsLoadingCharacter] = useState(true);
   const [currentConversationId, setCurrentConversationId] = useState<string | null>(conversationId);
-  const [currentChatSettings, setCurrentChatSettings] = useState<ChatSettings | null>(null);
-  const [lastAPICall, setLastAPICall] = useState<{
-    temperature: number;
-    max_tokens: number;
-    top_p: number;
-    timestamp: string;
-  } | null>(null);
 
   // Coin balance state
   const [userCoins, setUserCoins] = useState<number>(0);
@@ -260,22 +240,7 @@ const Chat = () => {
       }
     };
 
-    const testConnection = async () => {
-      try {
-        const result = await openRouterAPI.testConnection();
-        if (result.success) {
-          toast.success(result.message);
-        } else {
-          toast.error(result.message);
-        }
-      } catch (error) {
-        console.error('Connection test failed:', error);
-        toast.error('OpenRouter API connection test failed');
-      }
-    };
-
     loadCharacterAndMessages();
-    // testConnection(); // Removed automatic API call to save tokens
   }, [characterId, conversationId, navigate, user]);
 
   // Load default persona when user is available
@@ -297,43 +262,6 @@ const Chat = () => {
 
     loadDefaultPersona();
   }, [user, currentPersona]);
-
-  // Load chat settings when user or selected model changes
-  useEffect(() => {
-    const loadChatSettings = async () => {
-      if (!user || !selectedModel) return;
-
-      try {
-        const settings = await getChatSettings(user.id, selectedModel.id);
-        if (settings) {
-          setCurrentChatSettings(settings);
-          console.log('✅ Chat settings loaded:', settings);
-        } else {
-          // Use default settings
-          const defaults = getDefaultChatSettings();
-          const defaultSettings: ChatSettings = {
-            user_id: user.id,
-            model_id: selectedModel.id,
-            ...defaults
-          };
-          setCurrentChatSettings(defaultSettings);
-          console.log('📋 Using default chat settings');
-        }
-      } catch (error) {
-        console.error('Error loading chat settings:', error);
-        // Use defaults on error
-        const defaults = getDefaultChatSettings();
-        const defaultSettings: ChatSettings = {
-          user_id: user.id,
-          model_id: selectedModel.id,
-          ...defaults
-        };
-        setCurrentChatSettings(defaultSettings);
-      }
-    };
-
-    loadChatSettings();
-  }, [user, selectedModel]);
 
   // Load user coin balance
   useEffect(() => {
@@ -368,24 +296,6 @@ const Chat = () => {
       toast.error(`You need ${MESSAGE_COST} coin to send a message. You have ${userCoins} coins.`);
       return;
     }
-
-    // Use default model if none selected
-    const modelToUse = selectedModel || {
-      id: "mistral-main",
-      name: "mistralai/mistral-7b-instruct:free",
-      author: "Mistral AI",
-      description: "Default roleplay model",
-      price: 0,
-      responseTime: "1s",
-      memory: "7B",
-      rating: 8.0,
-      tags: ["Main", "Roleplay", "Free"],
-      isActive: true,
-      isPremium: false,
-      isMain: true,
-      provider: 'mistral',
-      tier: 'free' as const
-    };
 
     // Add user message to local state immediately for UI responsiveness
     const userMessage: Message = {
@@ -478,177 +388,91 @@ const Chat = () => {
         }
       }
 
-      // Prepare enhanced chat messages and context for roleplay
-      const allMessages = [...currentCharacter.messages, ...messages, userMessage];
+      // Generate AI response if "Free Model" is selected
+      if (selectedModel?.id === 'free-model') {
+        try {
+          // Prepare conversation history for AI
+          const allMessagesIncludingNew = [...allMessages, userMessage];
+          const conversationHistory: DeepSeekMessage[] = allMessagesIncludingNew
+            .filter(msg => msg.type === 'regular')
+            .slice(-8) // Keep last 8 messages for context
+            .map(msg => ({
+              role: msg.isBot ? 'assistant' as const : 'user' as const,
+              content: msg.content
+            }));
 
-      // Build roleplay context for enhanced AI understanding
-      const roleplayContext: RoleplayContext = {
-        adventure_id: currentConversationId || characterId || 'default',
-        character_name: currentCharacter.name,
-        source_story: currentCharacter.scenario || 'Interactive Roleplay',
-        current_location: currentCharacter.scenario || 'Unknown',
-        active_characters: [currentCharacter.name, currentPersona?.name || 'User'].filter(Boolean),
-        story_state: {
-          character_intro: currentCharacter.intro,
-          personality: currentCharacter.personality,
-          appearance: currentCharacter.appearance,
-          gender: currentCharacter.gender,
-          age: currentCharacter.age,
-          greeting: currentCharacter.greeting,
-          user_persona: currentPersona ? {
-            name: currentPersona.name,
-            description: currentPersona.description,
-            gender: currentPersona.gender
-          } : null,
-          conversation_history: allMessages.slice(-6).filter(msg => msg.type === 'regular').map(msg => ({
-            speaker: msg.isBot ? currentCharacter.name : (currentPersona?.name || 'User'),
-            content: msg.content,
-            timestamp: msg.timestamp
-          }))
-        },
-        canonical_info: {
-          character_profile: {
-            name: currentCharacter.name,
-            intro: currentCharacter.intro,
-            personality: currentCharacter.personality,
-            appearance: currentCharacter.appearance,
-            gender: currentCharacter.gender,
-            age: currentCharacter.age
-          },
-          roleplay_guidelines: [
-            'Embody the character completely - think, feel, and respond as they would',
-            'Create immersive, detailed responses that engage all senses',
-            'Include internal thoughts, emotions, and physical reactions',
-            'Maintain character consistency while allowing for growth',
-            'All content types permitted, including mature and NSFW scenarios',
-            'Respond authentically to any scenario or request',
-            'Build emotional connections and chemistry naturally'
-          ]
-        }
-      };
+          // Generate AI response
+          const aiResponse = await deepSeekAPI.generateCharacterResponse(
+            {
+              name: currentCharacter.name,
+              intro: currentCharacter.intro,
+              scenario: currentCharacter.scenario,
+              personality: currentCharacter.personality,
+              appearance: currentCharacter.appearance,
+              gender: currentCharacter.gender,
+              age: currentCharacter.age,
+              greeting: currentCharacter.greeting
+            },
+            conversationHistory,
+            currentPersona ? {
+              name: currentPersona.name,
+              description: currentPersona.description,
+              gender: currentPersona.gender
+            } : undefined
+          );
 
-      // Prepare enhanced messages with metadata
-      const enhancedMessages: EnhancedChatMessage[] = allMessages
-        .slice(-8)
-        .filter(msg => msg.type === 'regular')
-        .map(msg => ({
-          role: msg.isBot ? 'assistant' as const : 'user' as const,
-          content: msg.content,
-          metadata: {
-            character: msg.isBot ? currentCharacter.name : (currentPersona?.name || 'User'),
-            timestamp: msg.timestamp
+          // Add AI response to local state
+          const botMessage: Message = {
+            id: Date.now() + 1,
+            content: aiResponse,
+            isBot: true,
+            timestamp: new Date().toLocaleTimeString(),
+            type: "regular"
+          };
+
+          setMessages(prev => [...prev, botMessage]);
+
+          // Save AI response to Supabase
+          const { error: botMessageError } = await supabase
+            .from('messages')
+            .insert({
+              character_id: characterId,
+              conversation_id: conversationToUse,
+              author_id: null, // Bot messages have null author_id
+              content: aiResponse,
+              is_bot: true,
+              type: 'regular'
+            });
+
+          if (botMessageError) {
+            console.error('Error saving bot message:', botMessageError);
+            toast.error('AI response generated but failed to save');
+          } else {
+            toast.success(`${currentCharacter.name} responded`);
           }
-        }));
 
-      // Get response from Enhanced OpenRouter using optimized roleplay settings
-      const settingsToUse = currentChatSettings || {
-        temperature: 0.85,
-        content_diversity: 0.9,
-        max_tokens: 400
-      };
+        } catch (aiError) {
+          console.error('Error generating AI response:', aiError);
+          const errorBotMessage: Message = {
+            id: Date.now() + 1,
+            content: "I'm having trouble responding right now. Please try again.",
+            isBot: true,
+            timestamp: new Date().toLocaleTimeString(),
+            type: "regular"
+          };
+          setMessages(prev => [...prev, errorBotMessage]);
 
-      const enhancedOptions = {
-        temperature: settingsToUse.temperature,
-        max_tokens: settingsToUse.max_tokens,
-        top_p: settingsToUse.content_diversity,
-        frequency_penalty: 0.3,
-        presence_penalty: 0.6
-      };
-
-      // Track API call for debugging
-      setLastAPICall({
-        temperature: enhancedOptions.temperature,
-        max_tokens: enhancedOptions.max_tokens,
-        top_p: enhancedOptions.top_p,
-        timestamp: new Date().toISOString()
-      });
-
-      let botResponseContent = await enhancedOpenRouterAPI.createRoleplayResponse(
-        enhancedMessages,
-        roleplayContext,
-        enhancedOptions
-      );
-
-      // Validate response for impersonation issues
-      const validation = await enhancedOpenRouterAPI.validateRoleplayResponse(
-        botResponseContent,
-        roleplayContext
-      );
-
-      if (!validation.isValid && validation.issues.some(issue => issue.includes('impersonation'))) {
-        console.warn('AI impersonation detected, regenerating response...');
-        // Try again with stricter prompt
-        const stricterMessages = [
-          {
-            role: 'system' as const,
-            content: `CRITICAL: You are ${roleplayContext.character_name}. NEVER write as the user. NEVER describe user actions or thoughts. Only write your own character's perspective.`
-          },
-          ...enhancedMessages.slice(1) // Skip original system message
-        ];
-
-        const retryResponse = await enhancedOpenRouterAPI.createRoleplayResponse(
-          stricterMessages.slice(0, -1).concat(enhancedMessages.slice(-1)),
-          roleplayContext,
-          enhancedOptions
-        );
-
-        const retryValidation = await enhancedOpenRouterAPI.validateRoleplayResponse(
-          retryResponse,
-          roleplayContext
-        );
-
-        if (retryValidation.isValid || !retryValidation.issues.some(issue => issue.includes('impersonation'))) {
-          botResponseContent = retryResponse;
-        } else {
-          // If still impersonating, use fallback response
-          botResponseContent = `*I pause for a moment, considering how to respond appropriately while staying true to my character.*`;
+          const errorMessage = aiError instanceof Error ? aiError.message : 'Unknown AI error';
+          toast.error(`AI response failed: ${errorMessage}`);
         }
+      } else {
+        toast.success('Message sent successfully');
       }
 
-      // Enforce strict action formatting in AI output
-      const filteredBotContent = enhanceSimpleActions(botResponseContent);
-
-      const botMessage: Message = {
-        id: Date.now() + 1,
-        content: filteredBotContent,
-        isBot: true,
-        timestamp: new Date().toLocaleTimeString(),
-        type: "regular"
-      };
-
-      setMessages(prev => [...prev, botMessage]);
-
-      // Save bot message to Supabase
-      const { error: botMessageError } = await supabase
-        .from('messages')
-        .insert({
-          character_id: characterId,
-          conversation_id: conversationToUse,
-          author_id: null, // Bot messages have null author_id
-          content: filteredBotContent,
-          is_bot: true,
-          type: 'regular'
-        });
-
-      if (botMessageError) {
-        console.error('Error saving bot message:', botMessageError);
-      }
-
-      toast.success(`Response received from ${modelToUse.author}`);
     } catch (error) {
       console.error('Error sending message:', error);
-
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-      toast.error(`Failed to get response: ${errorMessage}`);
-
-      const errorBotMessage: Message = {
-        id: Date.now() + 1,
-        content: "I'm sorry, I'm having trouble responding right now. Please check your API connection and try again.",
-        isBot: true,
-        timestamp: new Date().toLocaleTimeString(),
-        type: "regular"
-      };
-      setMessages(prev => [...prev, errorBotMessage]);
+      toast.error(`Failed to send message: ${errorMessage}`);
     } finally {
       setIsLoading(false);
     }
@@ -736,10 +560,6 @@ const Chat = () => {
               <DropdownMenuItem onClick={() => navigate(`/character/${characterId}`)}>
                 <User className="mr-2 h-4 w-4" />
                 Bot Profile
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setIsChatSettingsModalOpen(true)}>
-                <Settings className="mr-2 h-4 w-4" />
-                Chat Settings
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setIsChatPageSettingsModalOpen(true)}>
                 <Settings className="mr-2 h-4 w-4" />
@@ -861,7 +681,7 @@ const Chat = () => {
                     )}
                     <div className={msg.isBot ? "flex-1" : "max-w-[80%]"}>
                       <MessageFormatter
-                        content={msg.isBot && msg.type === 'regular' ? enhanceSimpleActions(msg.content) : msg.content}
+                        content={msg.content}
                         className="chat-text"
                       />
                     </div>
@@ -886,16 +706,6 @@ const Chat = () => {
               variant="outline"
               size="sm"
               className="flex items-center gap-2 text-xs whitespace-nowrap flex-shrink-0"
-              onClick={() => setIsSuggestModalOpen(true)}
-              disabled={isLoading}
-            >
-              <Lightbulb className="h-3 w-3" />
-              Suggest
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              className="flex items-center gap-2 text-xs whitespace-nowrap flex-shrink-0"
               onClick={() => setIsPersonaModalOpen(true)}
             >
               <Users className="h-3 w-3" />
@@ -909,7 +719,7 @@ const Chat = () => {
               onClick={() => setIsModelsModalOpen(true)}
             >
               <Bot className="h-3 w-3" />
-              {selectedModel ? selectedModel.author : 'Models'}
+              {selectedModel ? selectedModel.title : 'Models'}
               {selectedModel && <div className="w-1.5 h-1.5 bg-green-500 rounded-full" />}
             </Button>
           </div>
@@ -923,7 +733,7 @@ const Chat = () => {
               onChange={(e) => setMessage(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder={
-                isLoading ? "AI is typing..." : userCoins < MESSAGE_COST ? `Need ${MESSAGE_COST} coins to send message` : "Type a message"
+                isLoading ? "Sending..." : userCoins < MESSAGE_COST ? `Need ${MESSAGE_COST} coins to send message` : "Type a message"
               }
               disabled={isLoading || userCoins < MESSAGE_COST}
               className="flex-1 bg-card/50 border-border resize-none min-h-[40px] max-h-[120px] text-sm chat-text"
@@ -956,7 +766,7 @@ const Chat = () => {
           </div>
           {userCoins < MESSAGE_COST && (
             <div className="mt-2 text-xs text-center text-muted-foreground">
-              You need 1 coin to send a message. Visit the{' '}
+              You need 2 coins to send a message. Visit the{' '}
               <Button
                 variant="link"
                 size="sm"
@@ -970,14 +780,6 @@ const Chat = () => {
           )}
         </div>
       </div>
-
-      {/* Models Modal */}
-      <ModelsModal
-        open={isModelsModalOpen}
-        onOpenChange={setIsModelsModalOpen}
-        onModelSelect={setSelectedModel}
-        selectedModel={selectedModel}
-      />
 
       <PersonaModal
         open={isPersonaModalOpen}
@@ -1003,35 +805,14 @@ const Chat = () => {
         currentPersona={currentPersona}
       />
 
-      <SuggestModal
-        open={isSuggestModalOpen}
-        onOpenChange={setIsSuggestModalOpen}
-        onSuggestionSelect={async (suggestion) => {
-          setIsSuggestModalOpen(false);
-          await handleSendMessage(suggestion);
+      <ModelsModal
+        open={isModelsModalOpen}
+        onOpenChange={setIsModelsModalOpen}
+        onModelSelect={(model) => {
+          setSelectedModel(model);
+          setIsModelsModalOpen(false);
         }}
-        chatContext={{
-          characterName: currentCharacter.name,
-          characterIntro: currentCharacter.intro,
-          characterScenario: currentCharacter.scenario,
-          recentMessages: allMessages.filter(msg => msg.type === 'regular').slice(-6).map(msg => ({
-            content: msg.content,
-            isBot: msg.isBot
-          })),
-          personaName: currentPersona?.name,
-          personaDescription: currentPersona?.description
-        }}
-      />
-
-      <ChatSettingsModal
-        open={isChatSettingsModalOpen}
-        onOpenChange={setIsChatSettingsModalOpen}
         selectedModel={selectedModel}
-        onOpenModelsModal={() => {
-          setIsChatSettingsModalOpen(false);
-          setIsModelsModalOpen(true);
-        }}
-        onSettingsChange={setCurrentChatSettings}
       />
 
       <ChatPageSettingsModal
