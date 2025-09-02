@@ -37,33 +37,33 @@ const mockModels: Model[] = [
   },
   {
     id: "roleplay",
-    name: "Roleplay",
+    name: "deepseek/deepseek-r1-0528",
     title: "Roleplay",
-    description: "Great for acting out specific scenarios",
+    description: "DeepSeek R1 0528 via OpenRouter",
     features: [
-      "Great for acting out specific scenarios",
-      "Unlock your imagination"
+      "Deep reasoning for immersive roleplay",
+      "Character-consistent, expressive replies"
     ],
     isLimitedFree: true,
     backgroundImage: "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=400&h=200&fit=crop"
   },
   {
     id: "storystream",
-    name: "StoryStream",
+    name: "deepseek/deepseek-chat-v3-0324",
     title: "StoryStream",
-    description: "Step into deeper roleplay",
+    description: "DeepSeek Chat v3 0324 via OpenRouter",
     features: [
-      "Step into deeper roleplay",
-      "Let characters and plots grow"
+      "Coherent long-form story continuation",
+      "Rich, evolving plots and scenes"
     ],
     isLimitedFree: true,
     backgroundImage: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=200&fit=crop"
   },
   {
     id: "lifelike",
-    name: "Lifelike",
+    name: "cognitivecomputations/dolphin-mistral-24b-venice-edition:free",
     title: "Lifelike",
-    description: "Human-like, lifelike interactions",
+    description: "Dolphin Mistral 24B Venice (free) via OpenRouter",
     features: [
       "Human-like, lifelike interactions",
       "Responses flow naturally"
