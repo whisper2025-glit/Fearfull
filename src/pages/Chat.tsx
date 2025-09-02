@@ -94,7 +94,7 @@ const Chat = () => {
     tier: 'free'
   });
   const [isLoading, setIsLoading] = useState(false);
-  const hasApiKey = Boolean((import.meta as any).env?.VITE_OPENROUTER_AI_API_KEY && (import.meta as any).env?.VITE_OPENROUTER_AI_API_KEY.startsWith('sk-or-v1-'));
+  const hasApiKey = Boolean((import.meta as any).env?.VITE_OPENROUTER_AI_API_KEY);
 
   // State for current character and messages loaded from Supabase
   const [currentCharacter, setCurrentCharacter] = useState<Character | null>(null);
@@ -360,10 +360,10 @@ const Chat = () => {
     const messageToSend = messageContent || message;
     if (!messageToSend.trim() || isLoading || !currentCharacter || !user) return;
 
-    // Check if user has enough coins (2 coins per message)
-    const MESSAGE_COST = 2;
+    // Check if user has enough coins (1 coin per message)
+    const MESSAGE_COST = 1;
     if (userCoins < MESSAGE_COST) {
-      toast.error(`You need ${MESSAGE_COST} coins to send a message. You have ${userCoins} coins.`);
+      toast.error(`You need ${MESSAGE_COST} coin to send a message. You have ${userCoins} coins.`);
       return;
     }
 
@@ -443,7 +443,7 @@ const Chat = () => {
         try {
           const newBalance = await deductUserCoins(user.id, MESSAGE_COST, 'message_sent');
           setUserCoins(newBalance);
-          console.log(`💸 ${MESSAGE_COST} coins deducted. New balance: ${newBalance}`);
+          console.log(`💸 ${MESSAGE_COST} coin deducted. New balance: ${newBalance}`);
         } catch (error) {
           console.error('Error deducting coins:', error);
           toast.error('Failed to process coin payment. Message may not have been sent.');
@@ -849,7 +849,7 @@ const Chat = () => {
               size="sm"
               className="flex items-center gap-2 text-xs whitespace-nowrap flex-shrink-0"
               onClick={() => setIsSuggestModalOpen(true)}
-              disabled={!hasApiKey}
+              disabled={isLoading}
             >
               <Lightbulb className="h-3 w-3" />
               Suggest
@@ -885,42 +885,40 @@ const Chat = () => {
               onChange={(e) => setMessage(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder={
-                isLoading ? "AI is typing..." : !hasApiKey ? "Configure OpenRouter API key to chat" : userCoins < 2 ? "Need 2 coins to send message" : "Type a message"
+                isLoading ? "AI is typing..." : userCoins < 1 ? "Need 1 coin to send message" : "Type a message"
               }
-              disabled={isLoading || userCoins < 2 || !hasApiKey}
+              disabled={isLoading || userCoins < 1}
               className="flex-1 bg-card/50 border-border resize-none min-h-[40px] max-h-[120px] text-sm chat-text"
               rows={1}
             />
             <Button
               onClick={handleSendMessage}
-              disabled={!message.trim() || isLoading || userCoins < 2 || !hasApiKey}
+              disabled={!message.trim() || isLoading || userCoins < 1}
               className="px-4 self-end"
               size="sm"
-              variant={!hasApiKey || userCoins < 2 ? "secondary" : "default"}
+              variant={userCoins < 1 ? "secondary" : "default"}
             >
               {isLoading ? (
                 <>
                   <Loader2 className="h-3 w-3 mr-1 animate-spin" />
                   Sending
                 </>
-              ) : !hasApiKey ? (
-                <>API Key</>
-              ) : userCoins < 2 ? (
+              ) : userCoins < 1 ? (
                 <>
                   <Coins className="h-3 w-3 mr-1" />
-                  Need 2
+                  Need 1
                 </>
               ) : (
                 <>
                   <Coins className="h-3 w-3 mr-1" />
-                  Send (2)
+                  Send (1)
                 </>
               )}
             </Button>
           </div>
-          {userCoins < 2 && (
+          {userCoins < 1 && (
             <div className="mt-2 text-xs text-center text-muted-foreground">
-              You need 2 coins to send a message. Visit the{' '}
+              You need 1 coin to send a message. Visit the{' '}
               <Button
                 variant="link"
                 size="sm"
