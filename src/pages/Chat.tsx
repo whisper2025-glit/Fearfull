@@ -715,6 +715,16 @@ const Chat = () => {
         currentPersona={currentPersona}
       />
 
+      <ModelsModal
+        open={isModelsModalOpen}
+        onOpenChange={setIsModelsModalOpen}
+        onModelSelect={(model) => {
+          setSelectedModel(model);
+          setIsModelsModalOpen(false);
+        }}
+        selectedModel={selectedModel}
+      />
+
       <ChatPageSettingsModal
         open={isChatPageSettingsModalOpen}
         onOpenChange={setIsChatPageSettingsModalOpen}
