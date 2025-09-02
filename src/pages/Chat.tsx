@@ -94,7 +94,7 @@ const Chat = () => {
     tier: 'free'
   });
   const [isLoading, setIsLoading] = useState(false);
-  const hasApiKey = Boolean((import.meta as any).env?.VITE_OPENROUTER_AI_API_KEY);
+  const hasApiKey = Boolean((import.meta as any).env?.VITE_OPENROUTER_API_KEY);
 
   // State for current character and messages loaded from Supabase
   const [currentCharacter, setCurrentCharacter] = useState<Character | null>(null);
