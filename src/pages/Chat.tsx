@@ -16,7 +16,6 @@ import { PersonaModal } from "@/components/PersonaModal";
 import { SuggestModal } from "@/components/SuggestModal";
 import { ChatSettingsModal } from "@/components/ChatSettingsModal";
 import { ChatPageSettingsModal, ChatPageSettings } from "@/components/ChatPageSettingsModal";
-import { DebugMenu } from "@/components/DebugMenu";
 import { MessageFormatter } from "@/components/MessageFormatter";
 import { enhanceSimpleActions } from "@/lib/actionValidator";
 import { openRouterAPI, ChatMessage } from "@/lib/openrouter";
@@ -844,11 +843,6 @@ const Chat = () => {
 
         {/* Action Buttons */}
         <div className="pb-2 bg-background/20 backdrop-blur-sm">
-          {!hasApiKey && (
-            <div className="mx-4 my-2 rounded-lg border border-yellow-500/40 bg-yellow-500/10 text-yellow-200 px-3 py-2 text-xs">
-              OpenRouter API key not configured. Add VITE_OPENROUTER_AI_API_KEY to enable AI responses.
-            </div>
-          )}
           <div className="flex gap-2 mb-3 overflow-x-auto px-4 scrollbar-hide">
             <Button
               variant="outline"
@@ -1011,12 +1005,6 @@ const Chat = () => {
         onSave={(v) => setChatPageSettings(v)}
       />
 
-      {/* Debug Menu */}
-      <DebugMenu
-        selectedModel={selectedModel}
-        currentChatSettings={currentChatSettings}
-        lastAPICall={lastAPICall}
-      />
     </div>
   );
 };
