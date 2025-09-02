@@ -463,7 +463,7 @@ export default function CharacterProfile() {
           >
             <h1 className="text-base font-bold text-white leading-tight">{character.name}</h1>
             <div className="flex items-center gap-2 text-xs text-white/80">
-              <span>@{character.users?.username || character.users?.full_name || 'Unknown'}</span>
+              <span>@{character.users?.full_name || character.users?.username || 'Unknown'}</span>
               <div className="flex items-center gap-1">
                 <MessageCircle className="h-3 w-3" />
                 <span>{comments.length}</span>

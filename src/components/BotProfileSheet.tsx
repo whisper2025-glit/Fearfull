@@ -62,7 +62,7 @@ export function BotProfileSheet({
       }
       if (data) {
         setCreatorId(data.owner_id);
-        const name = data.users?.username || data.users?.full_name || '';
+        const name = data.users?.full_name || data.users?.username || '';
         setCreatorName(name);
         setDbTags(Array.isArray(data.tags) ? data.tags : null);
         setDbIntro(data.intro || null);
