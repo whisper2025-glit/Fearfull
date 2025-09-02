@@ -360,10 +360,10 @@ const Chat = () => {
     const messageToSend = messageContent || message;
     if (!messageToSend.trim() || isLoading || !currentCharacter || !user) return;
 
-    // Check if user has enough coins (2 coins per message)
-    const MESSAGE_COST = 2;
+    // Check if user has enough coins (1 coin per message)
+    const MESSAGE_COST = 1;
     if (userCoins < MESSAGE_COST) {
-      toast.error(`You need ${MESSAGE_COST} coins to send a message. You have ${userCoins} coins.`);
+      toast.error(`You need ${MESSAGE_COST} coin to send a message. You have ${userCoins} coins.`);
       return;
     }
 
