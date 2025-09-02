@@ -237,7 +237,7 @@ const Search = () => {
             ...character,
             message_count: messageCount || 0,
             conversation_count: 0, // Skip for performance in search
-            creator_username: character.owner?.username || 'Unknown',
+            creator_username: character.owner?.full_name || character.owner?.username || 'Unknown',
             description: character.intro, // Use intro as description
             likes_count: 0 // You can add likes functionality later
           };
