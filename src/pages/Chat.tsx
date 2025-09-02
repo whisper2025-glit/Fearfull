@@ -563,7 +563,7 @@ const Chat = () => {
         timestamp: new Date().toISOString()
       });
 
-      const botResponseContent = await enhancedOpenRouterAPI.createRoleplayResponse(
+      let botResponseContent = await enhancedOpenRouterAPI.createRoleplayResponse(
         enhancedMessages,
         roleplayContext,
         enhancedOptions
@@ -598,15 +598,15 @@ const Chat = () => {
         );
 
         if (retryValidation.isValid || !retryValidation.issues.some(issue => issue.includes('impersonation'))) {
-          const filteredBotContent = enhanceSimpleActions(retryResponse);
+          botResponseContent = retryResponse;
         } else {
           // If still impersonating, use fallback response
-          const filteredBotContent = enhanceSimpleActions(`*I pause for a moment, considering how to respond appropriately while staying true to my character.*`);
+          botResponseContent = `*I pause for a moment, considering how to respond appropriately while staying true to my character.*`;
         }
-      } else {
-        // Enforce strict action formatting in AI output
-        const filteredBotContent = enhanceSimpleActions(botResponseContent);
       }
+
+      // Enforce strict action formatting in AI output
+      const filteredBotContent = enhanceSimpleActions(botResponseContent);
 
       const botMessage: Message = {
         id: Date.now() + 1,
