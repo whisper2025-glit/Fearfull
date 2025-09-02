@@ -48,6 +48,9 @@ interface Character {
 }
 
 const Chat = () => {
+  // Message cost configuration
+  const MESSAGE_COST = 2;
+
   const { characterId } = useParams();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
