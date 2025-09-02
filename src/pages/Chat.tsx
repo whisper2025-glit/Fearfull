@@ -57,7 +57,16 @@ const Chat = () => {
   const [isPersonaModalOpen, setIsPersonaModalOpen] = useState(false);
   const [isModelsModalOpen, setIsModelsModalOpen] = useState(false);
   const [isChatPageSettingsModalOpen, setIsChatPageSettingsModalOpen] = useState(false);
-  const [selectedModel, setSelectedModel] = useState<Model | null>(null);
+  const [selectedModel, setSelectedModel] = useState<Model>({
+    id: "free-model",
+    name: "deepseek/deepseek-chat-v3.1:free",
+    title: "Free Model",
+    description: "Character roleplay with DeepSeek AI",
+    features: [
+      "Powered by DeepSeek Chat v3.1",
+      "Character-focused roleplay conversations"
+    ]
+  });
   const [chatPageSettings, setChatPageSettings] = useState<ChatPageSettings>(() => {
     try {
       const saved = localStorage.getItem('chat_page_settings');
