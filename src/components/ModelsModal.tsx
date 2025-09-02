@@ -61,9 +61,9 @@ const mockModels: Model[] = [
   },
   {
     id: "lifelike",
-    name: "Lifelike",
+    name: "cognitivecomputations/dolphin-mistral-24b-venice-edition:free",
     title: "Lifelike",
-    description: "Human-like, lifelike interactions",
+    description: "Dolphin Mistral 24B Venice (free) via OpenRouter",
     features: [
       "Human-like, lifelike interactions",
       "Responses flow naturally"
