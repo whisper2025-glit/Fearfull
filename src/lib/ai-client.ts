@@ -6,7 +6,7 @@ export interface ChatMessage {
 class OpenRouterClient {
   private readonly apiKey: string;
   private readonly baseURL = 'https://openrouter.ai/api/v1';
-  private readonly model: string;
+  private model: string;
 
   constructor() {
     this.apiKey = import.meta.env.VITE_OPENROUTER_API_KEY || '';
@@ -44,6 +44,10 @@ class OpenRouterClient {
     if (persona?.name) parts.push(`You are talking to ${persona.name}${persona.gender ? ` (${persona.gender})` : ''}${persona.description ? ` – ${persona.description}` : ''}. Never speak as the user.`);
     parts.push('Keep responses immersive and natural (2-3 short paragraphs). Avoid OOC or meta commentary.');
     return parts.join(' ');
+  }
+
+  public setModel(model: string): void {
+    this.model = model;
   }
 
   async generateCharacterResponse(
