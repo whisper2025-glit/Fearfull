@@ -187,7 +187,7 @@ const Search = () => {
         .from('characters')
         .select(`
           *,
-          owner:users!characters_owner_id_fkey(username, avatar_url)
+          owner:users!characters_owner_id_fkey(username, full_name, avatar_url)
         `)
         .eq('visibility', 'public');
 
