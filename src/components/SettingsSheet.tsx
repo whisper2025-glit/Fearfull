@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { useUser, useClerk } from "@clerk/clerk-react";
 import { supabase } from "@/lib/supabase";
+import { useHistoryBackClose } from "@/hooks/useHistoryBackClose";
 
 // Custom Discord Icon
 const DiscordIcon = ({ className }: { className?: string }) => (
