@@ -336,11 +336,12 @@ class AIClient {
       throw new Error('No response from OpenRouter');
     }
 
-    // Validate and enhance asterisk actions in the AI response
-    const enhancedResponse = this.validateAndEnhanceAsterisks(response);
+    // Validate roleplay consistency and enhance asterisk actions
+    const consistencyValidatedResponse = this.validateRoleplayConsistency(response, character);
+    const enhancedResponse = this.validateAndEnhanceAsterisks(consistencyValidatedResponse);
 
     if (enhancedResponse !== response) {
-      console.log('AI response enhanced for better asterisk compliance');
+      console.log('AI response enhanced for better asterisk compliance and roleplay consistency');
     }
     return enhancedResponse;
   }
