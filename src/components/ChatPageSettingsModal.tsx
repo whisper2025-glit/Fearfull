@@ -4,6 +4,7 @@ import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
 import { RotateCcw, Save, ChevronRight } from "lucide-react";
 import { ChatBubbleThemeModal, ChatBubbleTheme } from "@/components/ChatBubbleThemeModal";
+import { ConnectionStatus } from "@/components/ConnectionStatus";
 
 export type ChatPageSettings = {
   sceneCardOpacity: number; // 0..1
