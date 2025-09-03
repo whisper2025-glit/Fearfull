@@ -10,17 +10,92 @@ class AIClient {
   private extremeNSFWMode: boolean = true;
   private openai: OpenAI;
 
+  // Simple actions that should be forbidden or enhanced
+  private forbiddenSimpleActions = [
+    'waves', 'smiles', 'nods', 'shrugs', 'laughs', 'sighs', 'winks', 'grins',
+    'looks', 'sits', 'stands', 'walks', 'blushes', 'giggles', 'happy', 'sad',
+    'angry', 'surprised', 'confused', 'excited', 'worried', 'nervous', 'tired'
+  ];
+
   constructor() {
     this.model = 'mistralai/mistral-nemo:free';
-    
+
     // Initialize OpenRouter client
     this.openai = new OpenAI({
       baseURL: "https://openrouter.ai/api/v1",
       apiKey: import.meta.env.VITE_OPENROUTER_API_KEY,
       dangerouslyAllowBrowser: true
     });
-    
+
     console.log('✅ AI Client initialized with OpenRouter');
+  }
+
+  private validateAndEnhanceAsterisks(content: string): string {
+    // Find all asterisk actions in the content
+    const asteriskRegex = /\*([^*]+?)\*/g;
+    let match;
+    let enhancedContent = content;
+    const replacements: { original: string; enhanced: string }[] = [];
+
+    while ((match = asteriskRegex.exec(content)) !== null) {
+      const action = match[1].trim();
+      const actionWords = action.split(/\s+/);
+
+      // Check if it's a simple forbidden action
+      const isSimpleAction = this.forbiddenSimpleActions.some(forbidden =>
+        action.toLowerCase().includes(forbidden.toLowerCase())
+      );
+
+      // Check if action is too short (less than 8 words)
+      const isTooShort = actionWords.length < 8;
+
+      if (isSimpleAction || isTooShort) {
+        // Enhance simple actions into complex ones
+        const enhancedAction = this.enhanceSimpleAction(action);
+        replacements.push({
+          original: match[0],
+          enhanced: `*${enhancedAction}*`
+        });
+      }
+    }
+
+    // Apply replacements
+    for (const replacement of replacements) {
+      enhancedContent = enhancedContent.replace(replacement.original, replacement.enhanced);
+    }
+
+    return enhancedContent;
+  }
+
+  private enhanceSimpleAction(action: string): string {
+    const actionLower = action.toLowerCase().trim();
+
+    // Enhancement mappings for common simple actions
+    const enhancements: { [key: string]: string } = {
+      'waves': 'lifts her hand in a graceful gesture while her eyes sparkle with warm recognition and genuine affection',
+      'smiles': 'lips curve into a radiant expression as warmth spreads across her features like sunshine breaking through clouds',
+      'nods': 'moves her head in gentle agreement while her eyes reflect deep understanding and heartfelt connection',
+      'laughs': 'melodious laughter bubbles forth from deep within as joy dances across her features with infectious warmth',
+      'sighs': 'releases a breath that carries the weight of complex emotions while her chest rises and falls with profound feeling',
+      'looks': 'gazes with intense focus as her eyes search deeply seeking connection and understanding in this precious moment',
+      'blushes': 'soft pink warmth spreads across her cheeks like delicate flower petals as shy emotions bloom within her heart',
+      'sits': 'settles gracefully into position while adjusting herself with fluid movements that speak of quiet elegance and poise',
+      'stands': 'rises with deliberate grace as her entire being emanates strength and determination in this pivotal moment'
+    };
+
+    // Check for direct matches first
+    for (const [simple, enhanced] of Object.entries(enhancements)) {
+      if (actionLower.includes(simple)) {
+        return enhanced;
+      }
+    }
+
+    // If no direct match, create a generic enhancement
+    if (action.length < 40) {
+      return `${action} with deep emotional intensity as complex feelings surge through her being like powerful waves`;
+    }
+
+    return action; // Return original if already complex enough
   }
 
   private buildSystemPrompt(character: any, persona?: any): string {
