@@ -244,6 +244,43 @@ class AIClient {
     return this.validateAndEnhanceAsterisks(content);
   }
 
+  // Validate roleplay consistency in AI responses
+  private validateRoleplayConsistency(response: string, character: any): string {
+    let validatedResponse = response;
+
+    // Common phrases that break character immersion
+    const problematicPhrases = [
+      'as an ai',
+      'i cannot',
+      'i\'m not able to',
+      'i don\'t have the ability',
+      'as a language model',
+      'i\'m programmed to',
+      'i\'m designed to',
+      'in my training',
+      'my purpose is',
+      'i\'m here to help',
+      'let me know if you need'
+    ];
+
+    // Check for character breaking phrases
+    const lowerResponse = response.toLowerCase();
+    const hasProblematicContent = problematicPhrases.some(phrase =>
+      lowerResponse.includes(phrase)
+    );
+
+    if (hasProblematicContent) {
+      console.warn('AI response contained character-breaking content, this should be improved in future responses');
+    }
+
+    // Ensure response starts with character perspective
+    if (!validatedResponse.match(/^[\*"]|^[A-Z]/)) {
+      console.warn('AI response may not be starting from character perspective');
+    }
+
+    return validatedResponse;
+  }
+
 
   async generateCharacterResponse(
     character: any,
