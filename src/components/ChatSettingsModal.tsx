@@ -36,6 +36,13 @@ export function ChatSettingsModal({ open, onOpenChange, onSettingsChange }: Chat
         setTemperature([defaults.temperature]);
         setContentDiversity([defaults.content_diversity]);
         setMaxMessageLength([defaults.max_tokens]);
+
+        // Load NSFW mode setting
+        const savedNSFWMode = localStorage.getItem('extreme_nsfw_mode');
+        const nsfwModeEnabled = savedNSFWMode ? JSON.parse(savedNSFWMode) : true;
+        setExtremeNSFWMode(nsfwModeEnabled);
+        openRouterAI.enableExtremeNSFWMode(nsfwModeEnabled);
+
         console.log('📋 Using default chat settings');
       } catch (error) {
         console.error('❌ Error loading chat settings:', error);
