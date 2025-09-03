@@ -12,6 +12,13 @@ class OpenRouterClient {
   constructor() {
     this.apiKey = import.meta.env.VITE_OPENROUTER_API_KEY || '';
     this.model = import.meta.env.VITE_OPENROUTER_MODEL || 'mistralai/mistral-nemo:free';
+
+    // Log configuration status for debugging
+    if (!this.apiKey) {
+      console.warn('⚠️ OpenRouter API key not configured. Set VITE_OPENROUTER_API_KEY environment variable.');
+    } else {
+      console.log('✅ OpenRouter API key configured');
+    }
   }
 
   private getHeaders(): Record<string, string> {
@@ -33,10 +40,10 @@ class OpenRouterClient {
 
   private validateApiKey(): void {
     if (!this.apiKey) {
-      throw new Error('OpenRouter API key is not configured. Set VITE_OPENROUTER_API_KEY.');
+      throw new Error('OpenRouter API key is not configured. Please set VITE_OPENROUTER_API_KEY environment variable with your API key from https://openrouter.ai/keys');
     }
     if (!this.apiKey.startsWith('sk-or-v1-')) {
-      throw new Error('Invalid OpenRouter API key format. It should start with "sk-or-v1-"');
+      throw new Error('Invalid OpenRouter API key format. It should start with "sk-or-v1-". Get your key from https://openrouter.ai/keys');
     }
   }
 
@@ -180,17 +187,34 @@ class OpenRouterClient {
       safety_settings: 'BLOCK_NONE'
     };
 
-    const response = await fetch(`${this.baseURL}/chat/completions`, {
-      method: 'POST',
-      headers: this.getHeaders(),
-      body: JSON.stringify(requestBody),
-    });
+    let response: Response;
+    try {
+      response = await fetch(`${this.baseURL}/chat/completions`, {
+        method: 'POST',
+        headers: this.getHeaders(),
+        body: JSON.stringify(requestBody),
+      });
+    } catch (error) {
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        throw new Error('Network error: Unable to connect to OpenRouter API. Check your internet connection.');
+      }
+      throw new Error(`Request failed: ${error instanceof Error ? error.message : 'Unknown network error'}`);
+    }
 
     if (!response.ok) {
       let msg = `HTTP ${response.status}: ${response.statusText}`;
       try {
         const err = await response.json();
         msg = err?.error?.message || err?.message || msg;
+
+        // Handle specific error cases
+        if (response.status === 401) {
+          msg = 'Invalid API key. Please check your OpenRouter API key.';
+        } else if (response.status === 429) {
+          msg = 'Rate limit exceeded. Please try again later.';
+        } else if (response.status === 402) {
+          msg = 'Insufficient credits. Please add credits to your OpenRouter account.';
+        }
       } catch {}
       throw new Error(`OpenRouter API Error (${response.status}): ${msg}`);
     }

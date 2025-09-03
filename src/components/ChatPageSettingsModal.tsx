@@ -4,6 +4,7 @@ import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
 import { RotateCcw, Save, ChevronRight } from "lucide-react";
 import { ChatBubbleThemeModal, ChatBubbleTheme } from "@/components/ChatBubbleThemeModal";
+import { ConnectionStatus } from "@/components/ConnectionStatus";
 
 export type ChatPageSettings = {
   sceneCardOpacity: number; // 0..1
@@ -59,6 +60,11 @@ export function ChatPageSettingsModal({ open, onOpenChange, value, onSave }: Cha
           </DialogHeader>
 
           <div className="px-4 pb-4 space-y-4 flex-1 overflow-y-auto">
+            {/* AI Connection Status */}
+            <div className="rounded-xl border border-[#2d2e3e] bg-[#232438] p-4">
+              <ConnectionStatus />
+            </div>
+
             <div className="rounded-xl border border-[#2d2e3e] bg-[#232438] p-4">
               <div className="flex items-center justify-between mb-2">
                 <div className="text-white font-medium">Scene Card Opacity</div>
