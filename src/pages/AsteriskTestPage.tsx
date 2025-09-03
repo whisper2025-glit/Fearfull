@@ -4,6 +4,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
+import AsteriskValidationTest from '@/components/AsteriskValidationTest';
 
 const AsteriskTestPage = () => {
   const navigate = useNavigate();
