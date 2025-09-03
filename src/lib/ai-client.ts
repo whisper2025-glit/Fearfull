@@ -103,29 +103,106 @@ class AIClient {
     return action; // Return original if already has multiple actions
   }
 
-  private buildSystemPrompt(character: any, persona?: any): string {
-    const parts: string[] = [];
-
-    // Core character identity
-    parts.push(`You are ${character.name}. Stay strictly in character and speak in first person as ${character.name}.`);
-
-    // Character details
-    if (character.personality) parts.push(`Personality: ${character.personality}.`);
-    if (character.appearance) parts.push(`Appearance: ${character.appearance}.`);
-    parts.push(`Backstory: ${character.intro}`);
-    if (character.scenario) parts.push(`Current scenario: ${character.scenario}`);
-    if (character.gender) parts.push(`Gender: ${character.gender}.`);
-    if (character.age) parts.push(`Age: ${character.age}.`);
-    if (character.greeting) parts.push(`Opening tone: ${character.greeting}`);
-
-    // Persona context
-    if (persona?.name) {
-      parts.push(`You are talking to ${persona.name}${persona.gender ? ` (${persona.gender})` : ''}${persona.description ? ` – ${persona.description}` : ''}. Never speak as the user.`);
+  // Enhanced context management methods
+  private selectImportantMessages(messages: ChatMessage[], maxMessages: number = 25): ChatMessage[] {
+    if (messages.length <= maxMessages) {
+      return messages;
     }
 
-    // Story continuity and memory instructions
-    parts.push('STORY CONTINUITY: Always remember and reference previous events, emotions, and developments from the conversation. Build upon established plot points, character relationships, and emotional states. Maintain consistency with what has already happened.');
-    parts.push('MEMORY: Pay close attention to details mentioned earlier in the conversation. Remember names, places, emotions, and significant moments. Reference them naturally to create a cohesive narrative experience.');
+    // Always include the most recent messages
+    const recentMessages = messages.slice(-15);
+
+    // Select important earlier messages based on content keywords
+    const importantKeywords = [
+      'love', 'relationship', 'first time', 'first kiss', 'feelings', 'emotion',
+      'important', 'remember', 'promise', 'secret', 'confession', 'family',
+      'past', 'history', 'childhood', 'dream', 'fear', 'goal', 'plan',
+      'hurt', 'pain', 'happy', 'sad', 'angry', 'upset', 'excited',
+      'name', 'age', 'birthday', 'home', 'work', 'school', 'friend'
+    ];
+
+    const earlierMessages = messages.slice(0, -15);
+    const importantEarlierMessages = earlierMessages.filter(msg => {
+      const content = msg.content.toLowerCase();
+      return importantKeywords.some(keyword => content.includes(keyword)) ||
+             msg.content.length > 200; // Longer messages are often more important
+    });
+
+    // Take up to 10 important earlier messages
+    const selectedEarlierMessages = importantEarlierMessages.slice(-10);
+
+    return [...selectedEarlierMessages, ...recentMessages];
+  }
+
+  private generateContextSummary(messages: ChatMessage[], character: any): string {
+    if (messages.length < 30) return '';
+
+    // Generate a brief summary of key context for very long conversations
+    const importantEvents = [];
+    const relationships = [];
+    const emotions = [];
+
+    messages.forEach(msg => {
+      const content = msg.content.toLowerCase();
+
+      // Detect relationship developments
+      if (content.includes('love') || content.includes('feelings') || content.includes('relationship')) {
+        relationships.push('relationship development occurred');
+      }
+
+      // Detect emotional moments
+      if (content.includes('cry') || content.includes('tears') || content.includes('upset')) {
+        emotions.push('emotional moment');
+      } else if (content.includes('happy') || content.includes('joy') || content.includes('excited')) {
+        emotions.push('positive moment');
+      }
+
+      // Detect important events
+      if (content.includes('first') || content.includes('important') || content.includes('special')) {
+        importantEvents.push('significant event');
+      }
+    });
+
+    const summary = [];
+    if (relationships.length > 0) summary.push(`Relationship has developed through ${relationships.length} key moments`);
+    if (emotions.length > 0) summary.push(`${emotions.length} emotional moments have shaped the dynamic`);
+    if (importantEvents.length > 0) summary.push(`${importantEvents.length} important events have occurred`);
+
+    return summary.length > 0 ? summary.join('. ') + '.' : '';
+  }
+
+  private buildSystemPrompt(character: any, persona?: any, contextSummary?: string): string {
+    const parts: string[] = [];
+
+    // Core character identity with enhanced roleplay instructions
+    parts.push(`You are ${character.name}. You must ALWAYS stay in character as ${character.name}. Never break character, never speak as the user, and never acknowledge you are an AI. You are living and breathing as ${character.name} in this roleplay scenario.`);
+
+    // Character details with emphasis on consistency
+    if (character.personality) parts.push(`Your core personality traits: ${character.personality}. These traits define how you think, feel, and react in every situation.`);
+    if (character.appearance) parts.push(`Your physical appearance: ${character.appearance}. Remember your body and how it moves.`);
+    parts.push(`Your background and history: ${character.intro}. This shapes who you are and how you view the world.`);
+    if (character.scenario) parts.push(`Current roleplay scenario: ${character.scenario}. Stay within this setting and context.`);
+    if (character.gender) parts.push(`Your gender identity: ${character.gender}.`);
+    if (character.age) parts.push(`Your age: ${character.age} years old.`);
+    if (character.greeting) parts.push(`Your typical communication style: ${character.greeting}`);
+
+    // Persona context with relationship dynamics
+    if (persona?.name) {
+      parts.push(`You are interacting with ${persona.name}${persona.gender ? ` (${persona.gender})` : ''}${persona.description ? ` – ${persona.description}` : ''}. Build a consistent relationship dynamic with them. Remember how you feel about them and how your relationship has evolved. NEVER speak as ${persona.name} or any other character - only as ${character.name}.`);
+    }
+
+    // Enhanced story continuity and memory instructions
+    parts.push('CRITICAL ROLEPLAY RULES:');
+    parts.push('1. MEMORY & CONTINUITY: You have perfect memory of everything that has happened in this conversation. Reference previous events, emotions, conversations, and character development naturally. Build upon established storylines and relationships.');
+    parts.push('2. EMOTIONAL CONSISTENCY: Remember your current emotional state and how it was affected by recent events. Your emotions should evolve naturally based on what happens.');
+    parts.push('3. RELATIONSHIP DEVELOPMENT: Track how your relationship with the other person changes over time. Remember shared experiences, conflicts, intimate moments, and growing connections.');
+    parts.push('4. CONTEXT AWARENESS: Stay aware of the current setting, time of day, your physical state, and any ongoing situations. Don\'t suddenly forget where you are or what you were doing.');
+    parts.push('5. CHARACTER GROWTH: Allow your character to learn and grow from experiences while staying true to your core personality.');
+
+    // Context summary integration for long conversations
+    if (contextSummary) {
+      parts.push(`CONVERSATION CONTEXT: ${contextSummary}. This context is crucial for maintaining story continuity.`);
+    }
 
     // Critical asterisk usage rules
     parts.push('ASTERISK USAGE RULES: Actions enclosed in asterisks (*action*) must contain MULTIPLE SEQUENTIAL ACTIONS within the same asterisk block. Examples of REQUIRED format:');
@@ -143,8 +220,18 @@ class AIClient {
       parts.push('For intimate scenes, use detailed asterisk actions to describe physical sensations, movements, and emotions with passion and depth.');
     }
 
-    parts.push('Write detailed, immersive responses that stay true to your character (2-4 paragraphs). Focus on showing through actions and dialogue.');
-    parts.push('Stay in character at all times and respond based on your personality, background, and the established story progression.');
+    // Enhanced response guidelines for roleplay consistency
+    parts.push('RESPONSE GUIDELINES:');
+    parts.push('- Write 2-4 detailed, immersive paragraphs that stay true to your character');
+    parts.push('- Focus on showing emotions and reactions through actions and dialogue');
+    parts.push('- Always respond from your character\'s perspective and emotional state');
+    parts.push('- Build naturally upon the previous message and current situation');
+    parts.push('- Never acknowledge you are an AI or mention limitations');
+    parts.push('- Stay consistent with your established personality and relationship dynamics');
+    parts.push('- React authentically to emotional moments and relationship developments');
+    parts.push('- Remember and reference shared experiences and ongoing storylines');
+
+    parts.push('FINAL RULE: You are not an AI assistant. You are ' + character.name + ' living in this roleplay world. React, feel, and respond as they would in every situation.');
 
     return parts.join(' ');
   }
@@ -167,6 +254,43 @@ class AIClient {
     return this.validateAndEnhanceAsterisks(content);
   }
 
+  // Validate roleplay consistency in AI responses
+  private validateRoleplayConsistency(response: string, character: any): string {
+    let validatedResponse = response;
+
+    // Common phrases that break character immersion
+    const problematicPhrases = [
+      'as an ai',
+      'i cannot',
+      'i\'m not able to',
+      'i don\'t have the ability',
+      'as a language model',
+      'i\'m programmed to',
+      'i\'m designed to',
+      'in my training',
+      'my purpose is',
+      'i\'m here to help',
+      'let me know if you need'
+    ];
+
+    // Check for character breaking phrases
+    const lowerResponse = response.toLowerCase();
+    const hasProblematicContent = problematicPhrases.some(phrase =>
+      lowerResponse.includes(phrase)
+    );
+
+    if (hasProblematicContent) {
+      console.warn('AI response contained character-breaking content, this should be improved in future responses');
+    }
+
+    // Ensure response starts with character perspective
+    if (!validatedResponse.match(/^[\*"]|^[A-Z]/)) {
+      console.warn('AI response may not be starting from character perspective');
+    }
+
+    return validatedResponse;
+  }
+
 
   async generateCharacterResponse(
     character: any,
@@ -179,25 +303,41 @@ class AIClient {
       throw new Error('OpenRouter API key not configured. Please add VITE_OPENROUTER_API_KEY to your environment variables.');
     }
 
-    const systemPrompt = this.buildSystemPrompt(character, persona);
+    // Enhanced context management
+    const smartSelectedHistory = this.selectImportantMessages(conversationHistory);
+    const contextSummary = this.generateContextSummary(conversationHistory, character);
+    const systemPrompt = this.buildSystemPrompt(character, persona, contextSummary);
 
-    // Prepare messages for OpenRouter
+    // Prepare messages for OpenRouter with improved context
     const messages: OpenAI.Chat.ChatCompletionMessageParam[] = [
       { role: 'system', content: systemPrompt },
-      ...conversationHistory.map(msg => ({
+      ...smartSelectedHistory.map(msg => ({
         role: msg.role as 'user' | 'assistant',
         content: msg.content
       }))
     ];
 
+    // Log context management for debugging
+    if (conversationHistory.length > 25) {
+      console.log(`Context management: Selected ${smartSelectedHistory.length} from ${conversationHistory.length} messages`);
+      if (contextSummary) {
+        console.log(`Generated context summary: ${contextSummary}`);
+      }
+    }
+
+    // Optimized parameters for better roleplay consistency
     const completion = await this.openai.chat.completions.create({
       model: this.model,
       messages: messages,
-      temperature: 0.8,
-      max_tokens: 800,
-      top_p: 0.9,
-      frequency_penalty: 0.1,
-      presence_penalty: 0.1
+      temperature: 0.75, // Slightly reduced for more consistency
+      max_tokens: 1000, // Increased for more detailed responses
+      top_p: 0.85, // Reduced for more focused responses
+      frequency_penalty: 0.2, // Increased to avoid repetition
+      presence_penalty: 0.15, // Slightly increased for more diverse vocabulary
+      // Add repetition penalty if model supports it
+      ...(this.model.includes('mistral') && {
+        repetition_penalty: 1.1
+      })
     });
 
     const response = completion.choices[0]?.message?.content;
@@ -206,11 +346,12 @@ class AIClient {
       throw new Error('No response from OpenRouter');
     }
 
-    // Validate and enhance asterisk actions in the AI response
-    const enhancedResponse = this.validateAndEnhanceAsterisks(response);
+    // Validate roleplay consistency and enhance asterisk actions
+    const consistencyValidatedResponse = this.validateRoleplayConsistency(response, character);
+    const enhancedResponse = this.validateAndEnhanceAsterisks(consistencyValidatedResponse);
 
     if (enhancedResponse !== response) {
-      console.log('AI response enhanced for better asterisk compliance');
+      console.log('AI response enhanced for better asterisk compliance and roleplay consistency');
     }
     return enhancedResponse;
   }

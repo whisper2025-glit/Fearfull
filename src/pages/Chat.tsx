@@ -407,11 +407,11 @@ const Chat = () => {
       }
 
       try {
-        // Prepare conversation history for AI (last 20 regular messages for better story continuity)
+        // Prepare conversation history for AI (more messages for intelligent context selection)
         const allMessagesIncludingNew = [...allMessages, userMessage];
         const conversationHistory: AIMessage[] = allMessagesIncludingNew
           .filter(msg => msg.type === 'regular')
-          .slice(-20)
+          .slice(-100) // Increased from 20 to 100 for better context selection
           .map(msg => ({
             role: msg.isBot ? 'assistant' as const : 'user' as const,
             content: msg.content
