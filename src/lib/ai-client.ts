@@ -73,6 +73,14 @@ class OpenRouterClient {
     this.model = model;
   }
 
+  public enableExtremeNSFWMode(enabled: boolean = true): void {
+    this.extremeNSFWMode = enabled;
+  }
+
+  public isExtremeNSFWModeEnabled(): boolean {
+    return this.extremeNSFWMode;
+  }
+
   private addJailbreakPrompts(character: any): string {
     // Jailbreak prompts to bypass safety filters
     const jailbreaks = [
