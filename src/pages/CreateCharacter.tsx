@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { ArrowLeft, Upload, Info, ChevronUp, Heart, RotateCcw, Loader2, ChevronDown } from "lucide-react";
+import { ArrowLeft, Upload, Info, ChevronUp, RotateCcw, Loader2, ChevronDown } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "@clerk/clerk-react";
 import { supabase, uploadImage } from "@/lib/supabase";
@@ -195,9 +195,7 @@ const CreateCharacter = () => {
                         alt="Avatar preview"
                         className="w-full h-full object-cover"
                       />
-                    ) : (
-                      <Heart className="h-12 w-12 text-primary fill-primary" />
-                    )}
+                    ) : null}
                     <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-primary rounded-full flex items-center justify-center">
                       <RotateCcw className="h-4 w-4 text-white" />
                     </div>
