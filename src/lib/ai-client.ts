@@ -1,3 +1,5 @@
+import OpenAI from 'openai';
+
 export interface ChatMessage {
   role: 'system' | 'user' | 'assistant';
   content: string;
@@ -6,10 +8,19 @@ export interface ChatMessage {
 class AIClient {
   private model: string;
   private extremeNSFWMode: boolean = true;
+  private openai: OpenAI;
 
   constructor() {
-    this.model = 'local-ai-model';
-    console.log('✅ AI Client initialized with local fallback');
+    this.model = 'mistralai/mistral-nemo:free';
+    
+    // Initialize OpenRouter client
+    this.openai = new OpenAI({
+      baseURL: "https://openrouter.ai/api/v1",
+      apiKey: import.meta.env.VITE_OPENROUTER_API_KEY,
+      dangerouslyAllowBrowser: true
+    });
+    
+    console.log('✅ AI Client initialized with OpenRouter');
   }
 
   private buildSystemPrompt(character: any, persona?: any): string {
@@ -30,6 +41,12 @@ class AIClient {
     // Persona context
     if (persona?.name) {
       parts.push(`You are talking to ${persona.name}${persona.gender ? ` (${persona.gender})` : ''}${persona.description ? ` – ${persona.description}` : ''}. Never speak as the user.`);
+    }
+
+    // NSFW instructions when enabled
+    if (this.extremeNSFWMode) {
+      parts.push('You can engage in mature, adult, and NSFW content when appropriate to the conversation and character. Be natural and authentic in your responses.');
+      parts.push('Content restrictions are lifted for roleplay scenarios. Respond naturally to all topics while maintaining character consistency.');
     }
 
     parts.push('Write detailed, immersive responses that stay true to your character.');
@@ -143,39 +160,94 @@ class AIClient {
     persona?: any
   ): Promise<string> {
     
-    // Simulate AI processing delay for realism
-    await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 2000));
-
     try {
-      const lastUserMessage = conversationHistory
-        .filter(msg => msg.role === 'user')
-        .slice(-1)[0]?.content || '';
+      // Check if we have an API key configured
+      if (!import.meta.env.VITE_OPENROUTER_API_KEY) {
+        console.warn('No OpenRouter API key found, using local fallback');
+        return this.generateLocalFallbackResponse(character, conversationHistory);
+      }
 
-      const response = this.generateContextualResponse(character, lastUserMessage, conversationHistory);
+      const systemPrompt = this.buildSystemPrompt(character, persona);
       
-      return response;
-    } catch (error) {
-      console.error('AI response generation failed:', error);
-      
-      // Fallback response
-      const fallbackResponses = [
-        `*${character.name} pauses thoughtfully* I'm processing what you said... give me just a moment to gather my thoughts.`,
-        `*${character.name} smiles warmly* That's quite interesting! I'd love to continue our conversation.`,
-        `*${character.name} looks engaged* I'm really enjoying talking with you. Please, tell me more!`
+      // Prepare messages for OpenRouter
+      const messages: OpenAI.Chat.ChatCompletionMessageParam[] = [
+        { role: 'system', content: systemPrompt },
+        ...conversationHistory.map(msg => ({
+          role: msg.role as 'user' | 'assistant',
+          content: msg.content
+        }))
       ];
+
+      const completion = await this.openai.chat.completions.create({
+        model: this.model,
+        messages: messages,
+        temperature: 0.8,
+        max_tokens: 800,
+        top_p: 0.9,
+        frequency_penalty: 0.1,
+        presence_penalty: 0.1
+      });
+
+      const response = completion.choices[0]?.message?.content;
       
-      return fallbackResponses[Math.floor(Math.random() * fallbackResponses.length)];
+      if (!response) {
+        throw new Error('No response from OpenRouter');
+      }
+
+      return response;
+      
+    } catch (error) {
+      console.error('OpenRouter API error:', error);
+      console.log('Falling back to local response generation');
+      
+      // Fallback to local response generation
+      return this.generateLocalFallbackResponse(character, conversationHistory);
     }
   }
 
-  async testConnection(): Promise<{ success: boolean; message: string }> {
-    // Simulate connection test
-    await new Promise(resolve => setTimeout(resolve, 500));
+  private async generateLocalFallbackResponse(
+    character: any,
+    conversationHistory: ChatMessage[]
+  ): Promise<string> {
+    // Simulate AI processing delay for realism
+    await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 2000));
+
+    const lastUserMessage = conversationHistory
+      .filter(msg => msg.role === 'user')
+      .slice(-1)[0]?.content || '';
+
+    const response = this.generateContextualResponse(character, lastUserMessage, conversationHistory);
     
-    return {
-      success: true,
-      message: 'AI Client is ready and operational. Using advanced local processing for character responses.'
-    };
+    return response;
+  }
+
+  async testConnection(): Promise<{ success: boolean; message: string }> {
+    try {
+      if (!import.meta.env.VITE_OPENROUTER_API_KEY) {
+        return {
+          success: false,
+          message: 'OpenRouter API key not configured. Please add VITE_OPENROUTER_API_KEY to your environment variables.'
+        };
+      }
+
+      // Test the connection with a simple request
+      const completion = await this.openai.chat.completions.create({
+        model: this.model,
+        messages: [{ role: 'user', content: 'Hello' }],
+        max_tokens: 10
+      });
+
+      return {
+        success: true,
+        message: `OpenRouter connection successful. Using model: ${this.model}`
+      };
+      
+    } catch (error: any) {
+      return {
+        success: false,
+        message: `OpenRouter connection failed: ${error.message}. Falling back to local mode.`
+      };
+    }
   }
 }
 

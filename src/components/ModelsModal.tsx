@@ -26,11 +26,12 @@ interface ModelsModalProps {
 const mockModels: Model[] = [
   {
     id: "mistral-nemo-free",
-    name: "local-ai-balanced",
-    title: "Balanced",
-    description: "Balanced AI model for general conversations",
+    name: "mistralai/mistral-nemo:free",
+    title: "Mistral Nemo (NSFW)",
+    description: "Advanced Mistral Nemo model with NSFW capabilities",
     features: [
-      "Well-rounded conversational AI",
+      "OpenRouter AI-powered responses",
+      "NSFW content enabled",
       "Character-aware roleplay"
     ],
     isSelected: true
