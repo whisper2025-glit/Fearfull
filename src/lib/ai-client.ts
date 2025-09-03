@@ -159,11 +159,25 @@ class OpenRouterClient {
       stream: false,
       // Additional parameters for uncensored content
       stop: [],
+      // Model-specific uncensored optimizations
       ...(this.model.includes('dolphin') && {
-        // Dolphin-specific uncensored parameters
         system_prompt_override: true,
-        uncensored: true
-      })
+        uncensored: true,
+        allow_nsfw: true
+      }),
+      ...(this.model.includes('deepseek') && {
+        do_sample: true,
+        temperature: 1.0,
+        top_k: 50
+      }),
+      ...(this.model.includes('mistral') && {
+        safe_prompt: false,
+        guidance_scale: 1.0
+      }),
+      // Global uncensored parameters
+      allow_nsfw: true,
+      content_filter: false,
+      safety_settings: 'BLOCK_NONE'
     };
 
     const response = await fetch(`${this.baseURL}/chat/completions`, {
