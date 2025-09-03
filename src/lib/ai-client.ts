@@ -11,7 +11,7 @@ class AIClient {
   private openai: OpenAI;
 
   constructor() {
-    this.model = 'deepseek/deepseek-chat-v3.1:free';
+    this.model = 'mistralai/mistral-nemo:free';
     
     // Initialize OpenRouter client
     this.openai = new OpenAI({
