@@ -48,6 +48,11 @@ This project requires certain environment variables to function properly. These 
   - Get your publishable key from: https://clerk.com/
   - This key enables user authentication and account management
 
+- `VITE_OPENROUTER_API_KEY`: Your OpenRouter API key for AI model access
+  - Get your API key from: https://openrouter.ai/
+  - This key enables access to AI models like Mistral Nemo for character conversations
+  - Required for NSFW-enabled AI responses
+
 ### Setup Options
 
 **Option 1: Using .env file (Local Development)**
