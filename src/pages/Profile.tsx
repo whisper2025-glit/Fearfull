@@ -20,6 +20,7 @@ import SettingsSheet from "@/components/SettingsSheet";
 import { CreateModal } from "@/components/CreateModal";
 import { supabase, uploadImage, getFavoriteCharacters, checkIsFavorited, getMessageCountsForCharacters, getFavoriteCountsForCharacters } from "@/lib/supabase";
 import { toast } from "sonner";
+import { useHistoryBackClose } from "@/hooks/useHistoryBackClose";
 
 const Profile = () => {
   const navigate = useNavigate();
