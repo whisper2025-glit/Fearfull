@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Layout } from "@/components/Layout";
+import { useHistoryBackClose } from "@/hooks/useHistoryBackClose";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -48,6 +49,7 @@ const Search = () => {
   const [filterGender, setFilterGender] = useState('Gender All');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [isTagsSheetOpen, setIsTagsSheetOpen] = useState(false);
+  useHistoryBackClose(isTagsSheetOpen, setIsTagsSheetOpen, "search-tags");
 
   const sortOptions = ['Recommend', 'Popular', 'Latest'];
   const genderOptions = ['Gender All', 'Male', 'Female', 'Non-binary', 'Other'];
