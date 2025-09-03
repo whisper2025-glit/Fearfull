@@ -16,6 +16,7 @@ import { PersonaModal } from "@/components/PersonaModal";
 import { ModelsModal, Model } from "@/components/ModelsModal";
 import { ChatPageSettingsModal, ChatPageSettings } from "@/components/ChatPageSettingsModal";
 import { MessageFormatter } from "@/components/MessageFormatter";
+import { useHistoryBackClose } from "@/hooks/useHistoryBackClose";
 import { supabase, createOrUpdateUser, getDefaultPersona, incrementUserCoins, canClaimDailyReward, markDailyRewardClaimed, getUserCoins, deductUserCoins } from "@/lib/supabase";
 import { openRouterAI, ChatMessage as AIMessage } from "@/lib/ai-client";
 import { toast } from "sonner";
