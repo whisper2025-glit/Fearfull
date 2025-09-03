@@ -177,6 +177,35 @@ export function ChatSettingsModal({ open, onOpenChange, onSettingsChange }: Chat
               </div>
             </div>
 
+            {/* NSFW Settings */}
+            <div>
+              <h3 className="text-red-400 font-semibold mb-4" style={{ fontSize: '14px' }}>
+                🔞 Adult Content Settings
+              </h3>
+
+              {/* Extreme NSFW Mode Toggle */}
+              <div className="mb-6 p-4 bg-red-900/20 border border-red-500/30 rounded-lg">
+                <div className="flex items-center justify-between mb-2">
+                  <div>
+                    <h4 className="text-white font-medium" style={{ fontSize: '14px' }}>
+                      Extreme NSFW Mode
+                    </h4>
+                    <p className="text-gray-400 text-xs mt-1">
+                      Enables completely uncensored, explicit adult content with no restrictions
+                    </p>
+                  </div>
+                  <Switch
+                    checked={extremeNSFWMode}
+                    onCheckedChange={setExtremeNSFWMode}
+                    disabled={isLoading}
+                  />
+                </div>
+                <div className="text-xs text-yellow-400 mt-2">
+                  ⚠️ This mode removes all content filters and enables explicit sexual content
+                </div>
+              </div>
+            </div>
+
             {/* General Settings */}
             <div>
               <h3 className="text-cyan-400 font-semibold mb-4" style={{ fontSize: '14px' }}>
