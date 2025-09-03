@@ -35,7 +35,7 @@ class OpenRouterClient {
   }
 
   private validateApiKey(): void {
-    if (!this.apiKey) {
+    if (!this.apiKey || this.apiKey === 'sk-or-v1-your-api-key-here') {
       throw new Error('OpenRouter API key is not configured. Please set VITE_OPENROUTER_API_KEY environment variable with your API key from https://openrouter.ai/keys');
     }
     if (!this.apiKey.startsWith('sk-or-v1-')) {
