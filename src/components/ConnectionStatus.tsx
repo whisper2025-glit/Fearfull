@@ -67,14 +67,6 @@ export const ConnectionStatus = () => {
         </Alert>
       )}
 
-      {!import.meta.env.VITE_OPENROUTER_API_KEY && (
-        <Alert variant="destructive">
-          <XCircle className="h-4 w-4" />
-          <AlertDescription>
-            OpenRouter API key is not configured. Add VITE_OPENROUTER_API_KEY to your environment variables.
-          </AlertDescription>
-        </Alert>
-      )}
     </div>
   );
 };
