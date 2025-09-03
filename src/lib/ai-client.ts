@@ -128,12 +128,13 @@ class AIClient {
     parts.push('MEMORY: Pay close attention to details mentioned earlier in the conversation. Remember names, places, emotions, and significant moments. Reference them naturally to create a cohesive narrative experience.');
 
     // Critical asterisk usage rules
-    parts.push('ASTERISK USAGE RULES: Actions enclosed in asterisks (*action*) must ONLY be complex, detailed, and emotional descriptions of 8+ words. Examples of REQUIRED complexity:');
-    parts.push('✅ CORRECT: *tears streaming down her face as overwhelming guilt and regret crash over her like relentless waves*');
-    parts.push('✅ CORRECT: *he kisses her neck passionately trailing upwards to find her lips in a deep loving embrace*');
-    parts.push('✅ CORRECT: *pressing her body closer against his as their hearts beat together in perfect synchronization*');
-    parts.push('❌ FORBIDDEN: Never use simple actions like *waves* *smiles* *nods* *laughs* *sighs* *winks* *looks* *sits* *stands* *walks* *blushes* *giggles* *grins* *happy* *sad* *angry* *surprised* *confused* *excited*');
-    parts.push('ASTERISK REQUIREMENTS: Every action must include sensory details, emotional depth, or passionate descriptions. Minimum 8 words per action. Focus on movements, feelings, and intimate details that enhance the scene.');
+    parts.push('ASTERISK USAGE RULES: Actions enclosed in asterisks (*action*) must contain MULTIPLE SEQUENTIAL ACTIONS within the same asterisk block. Examples of REQUIRED format:');
+    parts.push('✅ CORRECT: *he held her up letting her down slowly then kisses her passionately*');
+    parts.push('✅ CORRECT: *she moves closer to him then wraps her arms around his waist while looking into his eyes*');
+    parts.push('✅ CORRECT: *takes her hand gently then brings it to his lips before placing a soft kiss on her palm*');
+    parts.push('✅ CORRECT: *leans against the wall then slides down slowly while tears stream down her cheeks*');
+    parts.push('❌ FORBIDDEN: Single-word actions like *waves* *smiles* *nods* *laughs* *sighs* *winks* *looks* *sits* *stands* *walks* *blushes* *giggles* *grins*');
+    parts.push('ASTERISK REQUIREMENTS: Each asterisk block must describe a sequence of 2-4 related actions using connecting words like "then", "while", "before", "after", "as". Minimum 5 words per asterisk block.');
 
     // NSFW instructions when enabled
     if (this.extremeNSFWMode) {
