@@ -1,11 +1,12 @@
 import { Layout } from "@/components/Layout";
 import { CharacterCard } from "@/components/CharacterCard";
+import { CharacterCardSkeleton } from "@/components/CharacterCardSkeleton";
 import { Button } from "@/components/ui/button";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { supabase, getMessageCountsForCharacters, getFavoriteCountsForCharacters, checkIsFavorited } from "@/lib/supabase";
 import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
 import { HomeFilters, SortOption } from "@/components/HomeFilters";
 import { useUser } from "@clerk/clerk-react";
 import { getFavoriteCharacters } from "@/lib/supabase";
@@ -194,11 +195,10 @@ const Index = () => {
     >
       <div className="p-4 space-y-6 pb-24">
         {isLoading ? (
-          <div className="flex items-center justify-center py-12">
-            <div className="flex flex-col items-center gap-4">
-              <Loader2 className="h-8 w-8 animate-spin" />
-              <p className="text-muted-foreground">Loading characters...</p>
-            </div>
+          <div className="grid grid-cols-2 gap-4">
+            {[...Array(8)].map((_, i) => (
+              <CharacterCardSkeleton key={i} />
+            ))}
           </div>
         ) : visibleCharacters.length === 0 ? (
           <div className="flex items-center justify-center py-12">
@@ -221,7 +221,7 @@ const Index = () => {
             <div ref={loadMoreRef} className="h-8" />
             {isLoadingMore && (
               <div className="flex items-center justify-center py-6">
-                <Loader2 className="h-6 w-6 animate-spin" />
+                <LoadingSpinner size="md" />
               </div>
             )}
           </>
