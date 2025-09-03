@@ -38,11 +38,11 @@ const mockModels: Model[] = [
   },
   {
     id: "roleplay",
-    name: "deepseek/deepseek-chat-v3.1:free",
+    name: "google/gemma-3-27b-it:free",
     title: "Roleplay",
-    description: "DeepSeek-powered immersive roleplay model",
+    description: "Google Gemma 3-27B powered immersive roleplay model",
     features: [
-      "Deep reasoning for immersive roleplay",
+      "Advanced reasoning for immersive roleplay",
       "Character-consistent, expressive replies",
       "NSFW content enabled"
     ],
@@ -64,9 +64,9 @@ const mockModels: Model[] = [
   },
   {
     id: "lifelike",
-    name: "deepseek/deepseek-r1-0528-qwen3-8b:free",
+    name: "deepseek/deepseek-chat-v3-0324:free",
     title: "Lifelike",
-    description: "DeepSeek-powered natural and human-like conversation AI",
+    description: "DeepSeek Chat v3 powered natural and human-like conversation AI",
     features: [
       "Human-like, lifelike interactions",
       "Responses flow naturally",
