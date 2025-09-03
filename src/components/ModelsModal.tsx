@@ -64,7 +64,7 @@ const mockModels: Model[] = [
   },
   {
     id: "lifelike",
-    name: "deepseek/deepseek-r1-0528-qwen3-8b:free",
+    name: "deepseek/deepseek-chat-v3-0324:free",
     title: "Lifelike",
     description: "DeepSeek-powered natural and human-like conversation AI",
     features: [
