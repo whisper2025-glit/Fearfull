@@ -2,7 +2,9 @@ import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
+import { Switch } from "@/components/ui/switch";
 import { getDefaultChatSettings, ChatSettings } from "@/lib/supabase";
+import { openRouterAI } from "@/lib/ai-client";
 import { useUser } from "@clerk/clerk-react";
 import { toast } from "sonner";
 import { Save } from "lucide-react";
@@ -18,6 +20,7 @@ export function ChatSettingsModal({ open, onOpenChange, onSettingsChange }: Chat
   const [temperature, setTemperature] = useState([0.70]);
   const [contentDiversity, setContentDiversity] = useState([0.05]);
   const [maxMessageLength, setMaxMessageLength] = useState([195]);
+  const [extremeNSFWMode, setExtremeNSFWMode] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -33,6 +36,13 @@ export function ChatSettingsModal({ open, onOpenChange, onSettingsChange }: Chat
         setTemperature([defaults.temperature]);
         setContentDiversity([defaults.content_diversity]);
         setMaxMessageLength([defaults.max_tokens]);
+
+        // Load NSFW mode setting
+        const savedNSFWMode = localStorage.getItem('extreme_nsfw_mode');
+        const nsfwModeEnabled = savedNSFWMode ? JSON.parse(savedNSFWMode) : true;
+        setExtremeNSFWMode(nsfwModeEnabled);
+        openRouterAI.enableExtremeNSFWMode(nsfwModeEnabled);
+
         console.log('📋 Using default chat settings');
       } catch (error) {
         console.error('❌ Error loading chat settings:', error);
@@ -61,8 +71,13 @@ export function ChatSettingsModal({ open, onOpenChange, onSettingsChange }: Chat
         max_tokens: maxMessageLength[0]
       };
 
+      // Save NSFW mode setting
+      localStorage.setItem('extreme_nsfw_mode', JSON.stringify(extremeNSFWMode));
+      openRouterAI.enableExtremeNSFWMode(extremeNSFWMode);
+
       console.log('✅ Chat settings updated:', settings);
-      toast.success('Chat settings updated successfully!');
+      console.log('🔞 Extreme NSFW mode:', extremeNSFWMode ? 'ENABLED' : 'DISABLED');
+      toast.success(`Chat settings updated! Extreme NSFW mode ${extremeNSFWMode ? 'ENABLED' : 'DISABLED'}`);
       onSettingsChange?.(settings);
       onOpenChange(false);
     } catch (error) {
@@ -158,6 +173,35 @@ export function ChatSettingsModal({ open, onOpenChange, onSettingsChange }: Chat
                 <div className="flex justify-between text-xs text-gray-400" style={{ fontSize: '11px' }}>
                   <span>Repetitive</span>
                   <span>Diverse</span>
+                </div>
+              </div>
+            </div>
+
+            {/* NSFW Settings */}
+            <div>
+              <h3 className="text-red-400 font-semibold mb-4" style={{ fontSize: '14px' }}>
+                🔞 Adult Content Settings
+              </h3>
+
+              {/* Extreme NSFW Mode Toggle */}
+              <div className="mb-6 p-4 bg-red-900/20 border border-red-500/30 rounded-lg">
+                <div className="flex items-center justify-between mb-2">
+                  <div>
+                    <h4 className="text-white font-medium" style={{ fontSize: '14px' }}>
+                      Extreme NSFW Mode
+                    </h4>
+                    <p className="text-gray-400 text-xs mt-1">
+                      Enables completely uncensored, explicit adult content with no restrictions
+                    </p>
+                  </div>
+                  <Switch
+                    checked={extremeNSFWMode}
+                    onCheckedChange={setExtremeNSFWMode}
+                    disabled={isLoading}
+                  />
+                </div>
+                <div className="text-xs text-yellow-400 mt-2">
+                  ⚠️ This mode removes all content filters and enables explicit sexual content
                 </div>
               </div>
             </div>
