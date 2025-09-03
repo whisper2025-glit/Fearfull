@@ -59,11 +59,11 @@ const Chat = () => {
   const [isChatPageSettingsModalOpen, setIsChatPageSettingsModalOpen] = useState(false);
   const [selectedModel, setSelectedModel] = useState<Model>({
     id: "mistral-nemo-free",
-    name: "mistralai/mistral-nemo:free",
-    title: "Free Model",
-    description: "Mistral Nemo (free) via OpenRouter",
+    name: "local-ai-balanced",
+    title: "Balanced AI",
+    description: "Balanced AI model for general conversations",
     features: [
-      "Mistral Nemo free on OpenRouter",
+      "Well-rounded conversational AI",
       "Character-aware roleplay"
     ]
   });
@@ -455,24 +455,10 @@ const Chat = () => {
 
         // Provide more helpful error messages
         let userFriendlyMessage = "I'm having trouble responding right now. Please try again.";
-        if (errorMessage.includes('API key is not configured')) {
-          userFriendlyMessage = "AI service is not configured. Please contact the administrator to set up the OpenRouter API key.";
-        } else if (errorMessage.includes('Invalid API key')) {
-          userFriendlyMessage = "AI service authentication failed. Please check your OpenRouter API key.";
-        } else if (errorMessage.includes('Network error') || errorMessage.includes('Unable to connect')) {
-          if (errorMessage.includes('CORS') || errorMessage.includes('cors')) {
-            userFriendlyMessage = "Connection blocked by browser security. The AI service needs to be configured to allow cross-origin requests.";
-          } else {
-            userFriendlyMessage = "I'm having trouble connecting to the AI service. Please check your internet connection and try again.";
-          }
+        if (errorMessage.includes('Network error') || errorMessage.includes('Unable to connect')) {
+          userFriendlyMessage = "I'm having trouble connecting right now. Please try again in a moment.";
         } else if (errorMessage.includes('Rate limit') || errorMessage.includes('429')) {
           userFriendlyMessage = "Too many requests. Please wait a moment and try again.";
-        } else if (errorMessage.includes('Insufficient credits') || errorMessage.includes('402')) {
-          userFriendlyMessage = "AI service credits are low. Please contact the administrator.";
-        } else if (errorMessage.includes('401')) {
-          userFriendlyMessage = "Authentication failed. Please check your OpenRouter API key configuration.";
-        } else if (errorMessage.includes('403')) {
-          userFriendlyMessage = "Access forbidden. Your API key may not have permission for this operation.";
         } else if (errorMessage.includes('500') || errorMessage.includes('502') || errorMessage.includes('503')) {
           userFriendlyMessage = "AI service is temporarily unavailable. Please try again in a few moments.";
         }
