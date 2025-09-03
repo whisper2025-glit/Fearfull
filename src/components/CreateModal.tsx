@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { User } from "lucide-react";
+import { useHistoryBackClose } from "@/hooks/useHistoryBackClose";
 
 interface CreateModalProps {
   open: boolean;
@@ -17,11 +18,12 @@ interface CreateModalProps {
 export function CreateModal({ open, onOpenChange }: CreateModalProps) {
   const navigate = useNavigate();
 
+  useHistoryBackClose(open, onOpenChange, "create-modal");
+
   const handleCreateCharacter = () => {
     onOpenChange(false);
     navigate('/create');
   };
-
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -31,9 +33,8 @@ export function CreateModal({ open, onOpenChange }: CreateModalProps) {
             Create
           </DialogTitle>
         </DialogHeader>
-        
+
         <div className="p-6 space-y-4">
-          {/* Create Character Option */}
           <Button
             onClick={handleCreateCharacter}
             variant="ghost"
