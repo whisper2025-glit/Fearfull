@@ -256,25 +256,41 @@ class AIClient {
       throw new Error('OpenRouter API key not configured. Please add VITE_OPENROUTER_API_KEY to your environment variables.');
     }
 
-    const systemPrompt = this.buildSystemPrompt(character, persona);
+    // Enhanced context management
+    const smartSelectedHistory = this.selectImportantMessages(conversationHistory);
+    const contextSummary = this.generateContextSummary(conversationHistory, character);
+    const systemPrompt = this.buildSystemPrompt(character, persona, contextSummary);
 
-    // Prepare messages for OpenRouter
+    // Prepare messages for OpenRouter with improved context
     const messages: OpenAI.Chat.ChatCompletionMessageParam[] = [
       { role: 'system', content: systemPrompt },
-      ...conversationHistory.map(msg => ({
+      ...smartSelectedHistory.map(msg => ({
         role: msg.role as 'user' | 'assistant',
         content: msg.content
       }))
     ];
 
+    // Log context management for debugging
+    if (conversationHistory.length > 25) {
+      console.log(`Context management: Selected ${smartSelectedHistory.length} from ${conversationHistory.length} messages`);
+      if (contextSummary) {
+        console.log(`Generated context summary: ${contextSummary}`);
+      }
+    }
+
+    // Optimized parameters for better roleplay consistency
     const completion = await this.openai.chat.completions.create({
       model: this.model,
       messages: messages,
-      temperature: 0.8,
-      max_tokens: 800,
-      top_p: 0.9,
-      frequency_penalty: 0.1,
-      presence_penalty: 0.1
+      temperature: 0.75, // Slightly reduced for more consistency
+      max_tokens: 1000, // Increased for more detailed responses
+      top_p: 0.85, // Reduced for more focused responses
+      frequency_penalty: 0.2, // Increased to avoid repetition
+      presence_penalty: 0.15, // Slightly increased for more diverse vocabulary
+      // Add repetition penalty if model supports it
+      ...(this.model.includes('mistral') && {
+        repetition_penalty: 1.1
+      })
     });
 
     const response = completion.choices[0]?.message?.content;
