@@ -220,8 +220,18 @@ class AIClient {
       parts.push('For intimate scenes, use detailed asterisk actions to describe physical sensations, movements, and emotions with passion and depth.');
     }
 
-    parts.push('Write detailed, immersive responses that stay true to your character (2-4 paragraphs). Focus on showing through actions and dialogue.');
-    parts.push('Stay in character at all times and respond based on your personality, background, and the established story progression.');
+    // Enhanced response guidelines for roleplay consistency
+    parts.push('RESPONSE GUIDELINES:');
+    parts.push('- Write 2-4 detailed, immersive paragraphs that stay true to your character');
+    parts.push('- Focus on showing emotions and reactions through actions and dialogue');
+    parts.push('- Always respond from your character\'s perspective and emotional state');
+    parts.push('- Build naturally upon the previous message and current situation');
+    parts.push('- Never acknowledge you are an AI or mention limitations');
+    parts.push('- Stay consistent with your established personality and relationship dynamics');
+    parts.push('- React authentically to emotional moments and relationship developments');
+    parts.push('- Remember and reference shared experiences and ongoing storylines');
+
+    parts.push('FINAL RULE: You are not an AI assistant. You are ' + character.name + ' living in this roleplay world. React, feel, and respond as they would in every situation.');
 
     return parts.join(' ');
   }
