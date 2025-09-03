@@ -26,49 +26,49 @@ interface ModelsModalProps {
 const mockModels: Model[] = [
   {
     id: "mistral-nemo-free",
-    name: "mistralai/mistral-nemo:free",
-    title: "Free Model",
-    description: "Mistral Nemo (free) via OpenRouter",
+    name: "local-ai-balanced",
+    title: "Balanced",
+    description: "Balanced AI model for general conversations",
     features: [
-      "Mistral Nemo free on OpenRouter",
+      "Well-rounded conversational AI",
       "Character-aware roleplay"
     ],
     isSelected: true
   },
   {
     id: "roleplay",
-    name: "deepseek/deepseek-r1-0528",
+    name: "local-ai-roleplay",
     title: "Roleplay",
-    description: "DeepSeek R1 0528 via OpenRouter",
+    description: "Specialized model for immersive roleplay",
     features: [
       "Deep reasoning for immersive roleplay",
       "Character-consistent, expressive replies"
     ],
-    isLimitedFree: true,
+    isLimitedFree: false,
     backgroundImage: "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=400&h=200&fit=crop"
   },
   {
     id: "storystream",
-    name: "deepseek/deepseek-chat-v3-0324",
+    name: "local-ai-storytelling",
     title: "StoryStream",
-    description: "DeepSeek Chat v3 0324 via OpenRouter",
+    description: "Advanced storytelling and narrative AI",
     features: [
       "Coherent long-form story continuation",
       "Rich, evolving plots and scenes"
     ],
-    isLimitedFree: true,
+    isLimitedFree: false,
     backgroundImage: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=200&fit=crop"
   },
   {
     id: "lifelike",
-    name: "cognitivecomputations/dolphin-mistral-24b-venice-edition:free",
+    name: "local-ai-natural",
     title: "Lifelike",
-    description: "Dolphin Mistral 24B Venice (free) via OpenRouter",
+    description: "Natural and human-like conversation AI",
     features: [
       "Human-like, lifelike interactions",
       "Responses flow naturally"
     ],
-    isLimitedFree: true,
+    isLimitedFree: false,
     backgroundImage: "https://images.unsplash.com/photo-1534126416832-7c3162ba2ee9?w=400&h=200&fit=crop"
   }
 ];
