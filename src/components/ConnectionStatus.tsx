@@ -30,18 +30,18 @@ export const ConnectionStatus = () => {
   };
 
   return (
-    <Card className="p-4 space-y-3">
+    <div className="space-y-3">
       <div className="flex items-center gap-2">
-        <Wifi className="h-4 w-4" />
-        <h3 className="font-medium">AI Service Connection</h3>
+        <Wifi className="h-4 w-4 text-cyan-400" />
+        <h3 className="font-medium text-white">AI Service Connection</h3>
       </div>
       
-      <Button 
-        onClick={testConnection} 
+      <Button
+        onClick={testConnection}
         disabled={isTestingConnection}
         variant="outline"
         size="sm"
-        className="w-full"
+        className="w-full bg-transparent border-cyan-600 text-cyan-400 hover:bg-cyan-900/20"
       >
         {isTestingConnection ? (
           <>
@@ -76,6 +76,6 @@ export const ConnectionStatus = () => {
           </AlertDescription>
         </Alert>
       )}
-    </Card>
+    </div>
   );
 };
