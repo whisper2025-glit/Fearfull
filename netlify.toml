@@ -1,0 +1,23 @@
+[build]
+  # Build command
+  command = "npm run build"
+  
+  # Directory to publish (Vite builds to 'dist' by default)
+  publish = "dist"
+
+# Redirect all requests to index.html for client-side routing
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Optimize build performance
+[build.environment]
+  NODE_VERSION = "18"
+
+# Enable split testing and analytics
+[template.environment]
+  VITE_CLERK_PUBLISHABLE_KEY = "Required - Add your Clerk publishable key"
+  VITE_SUPABASE_URL = "Required - Add your Supabase URL"
+  VITE_SUPABASE_ANON_KEY = "Required - Add your Supabase anon key"
+  VITE_OPENROUTER_API_KEY = "Required - Add your OpenRouter API key"
