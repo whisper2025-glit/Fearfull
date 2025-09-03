@@ -124,7 +124,7 @@ const SettingsSheet = ({ children }: SettingsSheetProps) => {
   };
 
   return (
-    <Sheet>
+    <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
         {children}
       </SheetTrigger>
