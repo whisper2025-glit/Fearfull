@@ -6,7 +6,7 @@ import { MessageFormatter } from '@/components/MessageFormatter';
 import { openRouterAI } from '@/lib/ai-client';
 
 const AsteriskValidationTest = () => {
-  const [testInput, setTestInput] = useState("Hello *waves* how are you *smiles* today?");
+  const [testInput, setTestInput] = useState("Hello *waves* how are you *smiles* today? *hugs* you tightly.");
   const [enhancedOutput, setEnhancedOutput] = useState("");
 
   const handleTest = () => {
