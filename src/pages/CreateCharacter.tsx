@@ -14,6 +14,7 @@ import { useUser } from "@clerk/clerk-react";
 import { supabase, uploadImage } from "@/lib/supabase";
 import { toast } from "sonner";
 import { MessageFormatter } from "@/components/MessageFormatter";
+import { useHistoryBackClose } from "@/hooks/useHistoryBackClose";
 
 const CreateCharacter = () => {
   const navigate = useNavigate();
