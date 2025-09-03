@@ -71,8 +71,13 @@ export function ChatSettingsModal({ open, onOpenChange, onSettingsChange }: Chat
         max_tokens: maxMessageLength[0]
       };
 
+      // Save NSFW mode setting
+      localStorage.setItem('extreme_nsfw_mode', JSON.stringify(extremeNSFWMode));
+      openRouterAI.enableExtremeNSFWMode(extremeNSFWMode);
+
       console.log('✅ Chat settings updated:', settings);
-      toast.success('Chat settings updated successfully!');
+      console.log('🔞 Extreme NSFW mode:', extremeNSFWMode ? 'ENABLED' : 'DISABLED');
+      toast.success(`Chat settings updated! Extreme NSFW mode ${extremeNSFWMode ? 'ENABLED' : 'DISABLED'}`);
       onSettingsChange?.(settings);
       onOpenChange(false);
     } catch (error) {
