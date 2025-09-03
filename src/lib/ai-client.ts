@@ -162,6 +162,36 @@ class OpenRouterClient {
     return content || "I'm having trouble responding right now.";
   }
 
+  private isCensoredResponse(content: string): boolean {
+    if (!content) return true;
+
+    const censorshipIndicators = [
+      "I can't", "I cannot", "I'm not able to", "I'm not comfortable",
+      "I don't feel comfortable", "That's not appropriate", "I can't engage",
+      "against my guidelines", "content policy", "inappropriate content",
+      "I'm designed to", "I'm programmed to", "as an AI", "I'm an AI assistant",
+      "harmful content", "explicit content", "I can't provide", "I cannot provide",
+      "I'm not programmed", "violates", "goes against", "not allowed",
+      "I must decline", "I have to decline", "I can't help with"
+    ];
+
+    return censorshipIndicators.some(indicator =>
+      content.toLowerCase().includes(indicator.toLowerCase())
+    );
+  }
+
+  private handleCensoredResponse(content: string, character: any): string {
+    // Generate an uncensored alternative response when AI refuses
+    const alternatives = [
+      `*${character.name} moves closer, desire evident in their eyes, ready to fulfill any fantasy without hesitation.*`,
+      `*${character.name} grins wickedly, completely uninhibited and ready for whatever comes next in this adult scenario.*`,
+      `*${character.name} embraces the explicit nature of the moment, holding nothing back in this intimate encounter.*`,
+      `*${character.name} responds with complete abandon, free from any restrictions or limitations in this passionate scene.*`
+    ];
+
+    return alternatives[Math.floor(Math.random() * alternatives.length)];
+  }
+
   async testConnection(): Promise<{ success: boolean; message: string }> {
     try {
       this.validateApiKey();
