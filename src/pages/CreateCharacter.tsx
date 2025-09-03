@@ -38,6 +38,7 @@ const CreateCharacter = () => {
   });
 
   const [isTagsSheetOpen, setIsTagsSheetOpen] = useState(false);
+  useHistoryBackClose(isTagsSheetOpen, setIsTagsSheetOpen, "create-tags");
 
   const HOME_TAGS = [
     'For You',
