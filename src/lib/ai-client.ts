@@ -12,6 +12,13 @@ class OpenRouterClient {
   constructor() {
     this.apiKey = import.meta.env.VITE_OPENROUTER_API_KEY || '';
     this.model = import.meta.env.VITE_OPENROUTER_MODEL || 'mistralai/mistral-nemo:free';
+
+    // Log configuration status for debugging
+    if (!this.apiKey) {
+      console.warn('⚠️ OpenRouter API key not configured. Set VITE_OPENROUTER_API_KEY environment variable.');
+    } else {
+      console.log('✅ OpenRouter API key configured');
+    }
   }
 
   private getHeaders(): Record<string, string> {
