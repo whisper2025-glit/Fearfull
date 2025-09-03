@@ -196,7 +196,11 @@ class AIClient {
       throw new Error('No response from OpenRouter');
     }
 
-    return response;
+    // Validate and enhance asterisk actions in the AI response
+    const enhancedResponse = this.validateAndEnhanceAsterisks(response);
+
+    console.log('AI response generated and enhanced for asterisk compliance');
+    return enhancedResponse;
   }
 
 
