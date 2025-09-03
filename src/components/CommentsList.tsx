@@ -4,6 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Send } from "lucide-react";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { CommentItem } from "./CommentItem";
 import { CommentWithAuthor } from "@/lib/supabase";
 
@@ -95,7 +96,7 @@ export function CommentsList({
         {isLoading ? (
           <div className="flex items-center justify-center h-full">
             <div className="text-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto mb-4"></div>
+              <LoadingSpinner size="md" className="mx-auto mb-4" />
               <p className="text-white/60">Loading comments...</p>
             </div>
           </div>

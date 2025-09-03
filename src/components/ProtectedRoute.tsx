@@ -1,6 +1,7 @@
 import { useUser } from "@clerk/clerk-react";
 import { Navigate } from "react-router-dom";
 import { ReactNode } from "react";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -24,7 +25,7 @@ const ProtectedRoute = ({ children, redirectTo = "/auth" }: ProtectedRouteProps)
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary mx-auto"></div>
+          <LoadingSpinner size="lg" className="mx-auto" />
           <p className="mt-4 text-muted-foreground">Loading...</p>
         </div>
       </div>

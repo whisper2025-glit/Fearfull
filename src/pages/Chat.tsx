@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { useUser } from "@clerk/clerk-react";
-import { ArrowLeft, Home, MoreHorizontal, Clock, Users, Bot, ChevronDown, Loader2, User, Settings, Coins, Send } from "lucide-react";
+import { ArrowLeft, Home, MoreHorizontal, Clock, Users, Bot, ChevronDown, User, Settings, Coins, Send } from "lucide-react";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
@@ -510,7 +511,7 @@ const Chat = () => {
     return (
       <div className="min-h-screen bg-background text-foreground flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
-          <Loader2 className="h-8 w-8 animate-spin" />
+          <LoadingSpinner size="lg" />
           <p className="text-muted-foreground">Loading character...</p>
         </div>
       </div>
@@ -770,7 +771,7 @@ const Chat = () => {
                 aria-label="Send message"
               >
                 {isLoading ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <LoadingSpinner size="sm" />
                 ) : (
                   <Send className="h-4 w-4" />
                 )}

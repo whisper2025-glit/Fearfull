@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { Loader2 } from "lucide-react";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { toast } from "sonner";
 
 const AuthPage = () => {
@@ -67,7 +67,7 @@ const AuthPage = () => {
               disabled={!isLoaded || loading === "google"}
               onClick={() => onOAuth("oauth_google")}
             >
-              {loading === "google" && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {loading === "google" && <LoadingSpinner size="sm" className="mr-2" />}
               Continue with Google
             </Button>
             <Button
@@ -75,7 +75,7 @@ const AuthPage = () => {
               disabled={!isLoaded || loading === "discord"}
               onClick={() => onOAuth("oauth_discord")}
             >
-              {loading === "discord" && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {loading === "discord" && <LoadingSpinner size="sm" className="mr-2" />}
               Continue with Discord
             </Button>
           </div>
@@ -113,7 +113,7 @@ const AuthPage = () => {
               />
             </div>
             <Button type="submit" disabled={!isLoaded || loading === "email"}>
-              {loading === "email" && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {loading === "email" && <LoadingSpinner size="sm" className="mr-2" />}
               Sign in
             </Button>
           </form>
