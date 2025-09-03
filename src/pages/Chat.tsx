@@ -450,16 +450,32 @@ const Chat = () => {
         }
       } catch (aiError) {
         console.error('Error generating AI response:', aiError);
+
+        const errorMessage = aiError instanceof Error ? aiError.message : 'Unknown AI error';
+
+        // Provide more helpful error messages
+        let userFriendlyMessage = "I'm having trouble responding right now. Please try again.";
+        if (errorMessage.includes('API key is not configured')) {
+          userFriendlyMessage = "AI service is not configured. Please contact the administrator to set up the OpenRouter API key.";
+        } else if (errorMessage.includes('Invalid API key')) {
+          userFriendlyMessage = "AI service authentication failed. Please contact the administrator.";
+        } else if (errorMessage.includes('Network error')) {
+          userFriendlyMessage = "I'm having trouble connecting to the AI service. Please check your internet connection and try again.";
+        } else if (errorMessage.includes('Rate limit')) {
+          userFriendlyMessage = "Too many requests. Please wait a moment and try again.";
+        } else if (errorMessage.includes('Insufficient credits')) {
+          userFriendlyMessage = "AI service credits are low. Please contact the administrator.";
+        }
+
         const errorBotMessage: Message = {
           id: Date.now() + 1,
-          content: "I'm having trouble responding right now. Please try again.",
+          content: userFriendlyMessage,
           isBot: true,
           timestamp: new Date().toLocaleTimeString(),
           type: "regular"
         };
         setMessages(prev => [...prev, errorBotMessage]);
 
-        const errorMessage = aiError instanceof Error ? aiError.message : 'Unknown AI error';
         toast.error(`AI response failed: ${errorMessage}`);
       }
 
