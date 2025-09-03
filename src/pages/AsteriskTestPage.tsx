@@ -11,39 +11,39 @@ const AsteriskTestPage = () => {
 
   const asteriskTestCases = [
     {
-      title: "Complex Emotional Action",
-      input: "*he held her hand as she passed away in his arms*",
-      description: "Long, complex emotional action description (ALLOWED)"
+      title: "Multi-Action Sequence (CORRECT)",
+      input: "*he held her up letting her down slowly then kisses her passionately*",
+      description: "Multiple sequential actions within one asterisk block (REQUIRED FORMAT)"
     },
     {
-      title: "Passionate/Intimate Action",
-      input: "*he kisses her neck passionately trailing upwards to find her lips in a passionate kiss*",
-      description: "Detailed passionate action with multiple movements (ALLOWED)"
+      title: "Romantic Multi-Action",
+      input: "*she moves closer to him then wraps her arms around his waist while looking into his eyes*",
+      description: "Sequential actions connected with transition words (CORRECT)"
     },
     {
-      title: "Simple Actions (FILTERED OUT)",
+      title: "Simple Actions (WILL BE ENHANCED)",
       input: "Hello *waves* how are you *smiles* today *nods*",
-      description: "Simple actions that get enhanced or removed by the system"
+      description: "Simple single-word actions that get converted to multi-action sequences"
     },
     {
-      title: "Enhanced Simple Actions",
-      input: "She looked at him *smiles* then *laughs* at his joke",
-      description: "Shows how simple actions get enhanced into complex ones"
+      title: "Intimate Multi-Action",
+      input: "*takes her hand gently then brings it to his lips before placing a soft kiss on her palm*",
+      description: "Romantic sequence with connecting words (CORRECT FORMAT)"
     },
     {
-      title: "Mixed Complex Actions",
-      input: "She whispered his name*running her fingers through his hair as their eyes met in profound connection*then pulled him closer*their hearts beating as one in perfect synchronization*",
-      description: "Multiple complex actions in sequence (ALLOWED)"
+      title: "Emotional Multi-Action",
+      input: "*leans against the wall then slides down slowly while tears stream down her cheeks*",
+      description: "Emotional sequence showing multiple connected actions (CORRECT)"
     },
     {
-      title: "NSFW Detailed Scene",
-      input: "She moaned softly*pressing her body closer against his as he caressed her curves with reverent touch*their passion growing*breathing heavily as they moved together in perfect harmony of desire*",
-      description: "Adult content with detailed action formatting (ALLOWED)"
+      title: "Complex Scene Sequence",
+      input: "*pulls her close against his chest then whispers softly in her ear while stroking her hair*",
+      description: "Intimate multi-action sequence (CORRECT FORMAT)"
     },
     {
-      title: "Emotional Complexity",
-      input: "I'm sorry*tears streaming down her face as overwhelming guilt and regret crash over her like relentless waves*I never meant for this to happen*voice breaking with raw emotion and desperate vulnerability*",
-      description: "Complex emotional expressions and physical reactions (ALLOWED)"
+      title: "Action with Dialogue",
+      input: "I love you *caresses her face gently then leans in closer while maintaining eye contact* more than anything",
+      description: "Multi-action sequence embedded in dialogue (CORRECT)"
     }
   ];
 
