@@ -157,6 +157,10 @@ class AIClient {
     return this.extremeNSFWMode;
   }
 
+  public validateUserAsterisks(content: string): string {
+    return this.validateAndEnhanceAsterisks(content);
+  }
+
 
   async generateCharacterResponse(
     character: any,
@@ -199,7 +203,9 @@ class AIClient {
     // Validate and enhance asterisk actions in the AI response
     const enhancedResponse = this.validateAndEnhanceAsterisks(response);
 
-    console.log('AI response generated and enhanced for asterisk compliance');
+    if (enhancedResponse !== response) {
+      console.log('AI response enhanced for better asterisk compliance');
+    }
     return enhancedResponse;
   }
 
