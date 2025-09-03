@@ -1,14 +1,20 @@
 import { createClient } from '@supabase/supabase-js';
 import { createOrUpdateUser as createOrUpdateUserImpl } from './createOrUpdateUser';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Missing Supabase environment variables');
+export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey);
+
+if (!isSupabaseConfigured) {
+  // Do not crash the app on import; log and use a harmless fallback client.
+  console.error('Missing Supabase env vars: VITE_SUPABASE_URL and/or VITE_SUPABASE_ANON_KEY. The app will run but data features are disabled until configured.');
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// Create a client regardless, to avoid import-time crashes. If not configured, uses a harmless fallback.
+const FALLBACK_URL = 'https://example.supabase.co';
+const FALLBACK_KEY = 'public-anon-key';
+export const supabase = createClient(supabaseUrl || FALLBACK_URL, supabaseAnonKey || FALLBACK_KEY);
 
 // Function to create Supabase client with Clerk authentication
 export const createSupabaseClientWithClerkAuth = (getToken: () => Promise<string | null>) => {
