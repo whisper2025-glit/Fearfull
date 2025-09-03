@@ -511,7 +511,7 @@ const Chat = () => {
     return (
       <div className="min-h-screen bg-background text-foreground flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
-          <Loader2 className="h-8 w-8 animate-spin" />
+          <LoadingSpinner size="lg" />
           <p className="text-muted-foreground">Loading character...</p>
         </div>
       </div>
@@ -771,7 +771,7 @@ const Chat = () => {
                 aria-label="Send message"
               >
                 {isLoading ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <LoadingSpinner size="sm" />
                 ) : (
                   <Send className="h-4 w-4" />
                 )}
