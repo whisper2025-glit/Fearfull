@@ -85,9 +85,15 @@ const AsteriskTestPage = () => {
         </div>
 
         <div className="space-y-8">
+          {/* Interactive Validation Test */}
+          <div className="space-y-6">
+            <h2 className="text-xl font-semibold border-b border-border pb-2">Interactive Asterisk Validation Test</h2>
+            <AsteriskValidationTest />
+          </div>
+
           {/* Asterisk Formatting Section */}
           <div className="space-y-6">
-            <h2 className="text-xl font-semibold border-b border-border pb-2">Asterisk Action Formatting</h2>
+            <h2 className="text-xl font-semibold border-b border-border pb-2">Asterisk Action Formatting Examples</h2>
             {asteriskTestCases.map((testCase, index) => (
             <Card key={index} className="p-6">
               <h3 className="font-semibold text-lg mb-2">{testCase.title}</h3>
