@@ -4,6 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Send } from "lucide-react";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { CommentItem } from "./CommentItem";
 import { CommentWithAuthor } from "@/lib/supabase";
 
