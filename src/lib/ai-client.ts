@@ -152,7 +152,14 @@ class OpenRouterClient {
     }
 
     const data = await response.json();
-    return data.choices?.[0]?.message?.content || "I'm having trouble responding right now.";
+    let content = data.choices?.[0]?.message?.content;
+
+    // If response seems censored or refused, try to extract useful content
+    if (!content || this.isCensoredResponse(content)) {
+      content = this.handleCensoredResponse(content, character);
+    }
+
+    return content || "I'm having trouble responding right now.";
   }
 
   async testConnection(): Promise<{ success: boolean; message: string }> {
