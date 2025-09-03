@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { useUser, useClerk } from "@clerk/clerk-react";
 import { supabase } from "@/lib/supabase";
+import { useHistoryBackClose } from "@/hooks/useHistoryBackClose";
 
 // Custom Discord Icon
 const DiscordIcon = ({ className }: { className?: string }) => (
@@ -45,6 +46,9 @@ const SettingsSheet = ({ children }: SettingsSheetProps) => {
   const [allowFollowers, setAllowFollowers] = useState(true);
   const { user } = useUser();
   const { signOut } = useClerk();
+
+  const [open, setOpen] = useState(false);
+  useHistoryBackClose(open, setOpen, "settings-sheet");
 
   const [account, setAccount] = useState({
     uid: "",
@@ -120,7 +124,7 @@ const SettingsSheet = ({ children }: SettingsSheetProps) => {
   };
 
   return (
-    <Sheet>
+    <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
         {children}
       </SheetTrigger>

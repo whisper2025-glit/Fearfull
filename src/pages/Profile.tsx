@@ -20,6 +20,7 @@ import SettingsSheet from "@/components/SettingsSheet";
 import { CreateModal } from "@/components/CreateModal";
 import { supabase, uploadImage, getFavoriteCharacters, checkIsFavorited, getMessageCountsForCharacters, getFavoriteCountsForCharacters } from "@/lib/supabase";
 import { toast } from "sonner";
+import { useHistoryBackClose } from "@/hooks/useHistoryBackClose";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -34,6 +35,7 @@ const Profile = () => {
   const [favoritedCharacterIds, setFavoritedCharacterIds] = useState<string[]>([]);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [characterStatsMap, setCharacterStatsMap] = useState<Record<string, { messages: number; likes: number }>>({});
+  useHistoryBackClose(editModalOpen, setEditModalOpen, "profile-edit");
 
   // User profile state with Supabase data
   const [userProfile, setUserProfile] = useState({

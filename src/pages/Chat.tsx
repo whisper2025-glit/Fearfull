@@ -16,6 +16,7 @@ import { PersonaModal } from "@/components/PersonaModal";
 import { ModelsModal, Model } from "@/components/ModelsModal";
 import { ChatPageSettingsModal, ChatPageSettings } from "@/components/ChatPageSettingsModal";
 import { MessageFormatter } from "@/components/MessageFormatter";
+import { useHistoryBackClose } from "@/hooks/useHistoryBackClose";
 import { supabase, createOrUpdateUser, getDefaultPersona, incrementUserCoins, canClaimDailyReward, markDailyRewardClaimed, getUserCoins, deductUserCoins } from "@/lib/supabase";
 import { openRouterAI, ChatMessage as AIMessage } from "@/lib/ai-client";
 import { toast } from "sonner";
@@ -58,6 +59,10 @@ const Chat = () => {
   const [isPersonaModalOpen, setIsPersonaModalOpen] = useState(false);
   const [isModelsModalOpen, setIsModelsModalOpen] = useState(false);
   const [isChatPageSettingsModalOpen, setIsChatPageSettingsModalOpen] = useState(false);
+
+  useHistoryBackClose(isPersonaModalOpen, setIsPersonaModalOpen, "persona-modal");
+  useHistoryBackClose(isModelsModalOpen, setIsModelsModalOpen, "models-modal");
+  useHistoryBackClose(isChatPageSettingsModalOpen, setIsChatPageSettingsModalOpen, "chat-settings-modal");
   const [selectedModel, setSelectedModel] = useState<Model>({
     id: "mistral-nemo-free",
     name: "mistralai/mistral-nemo:free",

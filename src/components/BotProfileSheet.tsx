@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { useComments } from "@/hooks/useComments";
 import { supabase } from "@/lib/supabase";
 import { useNavigate } from "react-router-dom";
+import { useHistoryBackClose } from "@/hooks/useHistoryBackClose";
 
 const HERO_IMAGE = "https://cdn.builder.io/api/v1/image/assets%2F420adf53974e411387df983f01823d73%2F4635cc3157e045f592ade58eeea4af3b?format=webp&width=800";
 
@@ -28,6 +29,8 @@ export function BotProfileSheet({
   const navigate = useNavigate();
   const [scrollY, setScrollY] = useState(0);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
+  const [open, setOpen] = useState(false);
+  useHistoryBackClose(open, setOpen, "bot-profile-sheet");
   const [creatorName, setCreatorName] = useState<string>('');
   const [creatorId, setCreatorId] = useState<string>('');
   const [dbTags, setDbTags] = useState<string[] | null>(null);
@@ -84,7 +87,7 @@ export function BotProfileSheet({
   const titleOpacity = Math.min(Math.max(scrollY - headerActivationPoint - 50, 0) / 100, 1);
 
   return (
-    <Drawer>
+    <Drawer open={open} onOpenChange={setOpen}>
       <DrawerTrigger asChild>
         {trigger || (
           <Button variant="ghost">
