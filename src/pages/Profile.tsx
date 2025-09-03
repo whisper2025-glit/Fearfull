@@ -35,6 +35,7 @@ const Profile = () => {
   const [favoritedCharacterIds, setFavoritedCharacterIds] = useState<string[]>([]);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [characterStatsMap, setCharacterStatsMap] = useState<Record<string, { messages: number; likes: number }>>({});
+  useHistoryBackClose(editModalOpen, setEditModalOpen, "profile-edit");
 
   // User profile state with Supabase data
   const [userProfile, setUserProfile] = useState({
