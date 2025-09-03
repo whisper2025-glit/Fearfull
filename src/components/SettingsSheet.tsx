@@ -47,6 +47,9 @@ const SettingsSheet = ({ children }: SettingsSheetProps) => {
   const { user } = useUser();
   const { signOut } = useClerk();
 
+  const [open, setOpen] = useState(false);
+  useHistoryBackClose(open, setOpen, "settings-sheet");
+
   const [account, setAccount] = useState({
     uid: "",
     email: "",
