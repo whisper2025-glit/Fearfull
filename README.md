@@ -44,10 +44,6 @@ This project requires certain environment variables to function properly. These 
 
 ### Required Variables
 
-- `VITE_OPENROUTER_API_KEY`: Your OpenRouter API key for AI model access
-  - Get your API key from: https://openrouter.ai/keys
-  - This key enables the AI chat functionality
-
 - `VITE_CLERK_PUBLISHABLE_KEY`: Your Clerk publishable key for authentication
   - Get your publishable key from: https://clerk.com/
   - This key enables user authentication and account management
