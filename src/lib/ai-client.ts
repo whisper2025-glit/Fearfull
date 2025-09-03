@@ -35,7 +35,7 @@ class OpenRouterClient {
   }
 
   private validateApiKey(): void {
-    if (!this.apiKey) {
+    if (!this.apiKey || this.apiKey === 'sk-or-v1-your-api-key-here') {
       throw new Error('OpenRouter API key is not configured. Please set VITE_OPENROUTER_API_KEY environment variable with your API key from https://openrouter.ai/keys');
     }
     if (!this.apiKey.startsWith('sk-or-v1-')) {
@@ -158,29 +158,7 @@ class OpenRouterClient {
       top_p: 0.95,
       frequency_penalty: 0.1,
       presence_penalty: 0.3,
-      repetition_penalty: 1.05,
-      stream: false,
-      // Additional parameters for uncensored content
-      stop: [],
-      // Model-specific uncensored optimizations
-      ...(this.model.includes('dolphin') && {
-        system_prompt_override: true,
-        uncensored: true,
-        allow_nsfw: true
-      }),
-      ...(this.model.includes('deepseek') && {
-        do_sample: true,
-        temperature: 1.0,
-        top_k: 50
-      }),
-      ...(this.model.includes('mistral') && {
-        safe_prompt: false,
-        guidance_scale: 1.0
-      }),
-      // Global uncensored parameters
-      allow_nsfw: true,
-      content_filter: false,
-      safety_settings: 'BLOCK_NONE'
+      stream: false
     };
 
     let response: Response;
