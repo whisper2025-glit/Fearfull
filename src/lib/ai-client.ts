@@ -79,12 +79,20 @@ class OpenRouterClient {
     const requestBody = {
       model: this.model,
       messages,
-      temperature: 0.8,
-      max_tokens: 500,
-      top_p: 0.9,
-      frequency_penalty: 0.3,
-      presence_penalty: 0.6,
+      temperature: 0.95,
+      max_tokens: 800,
+      top_p: 0.95,
+      frequency_penalty: 0.1,
+      presence_penalty: 0.3,
+      repetition_penalty: 1.05,
       stream: false,
+      // Additional parameters for uncensored content
+      stop: [],
+      ...(this.model.includes('dolphin') && {
+        // Dolphin-specific uncensored parameters
+        system_prompt_override: true,
+        uncensored: true
+      })
     };
 
     const response = await fetch(`${this.baseURL}/chat/completions`, {
