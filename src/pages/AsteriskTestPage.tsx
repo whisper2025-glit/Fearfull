@@ -153,17 +153,17 @@ const AsteriskTestPage = () => {
 
           <div className="grid md:grid-cols-2 gap-6">
             <Card className="p-6 bg-primary/5 border-primary/20">
-              <h3 className="font-semibold text-lg mb-3">✨ Complex Action Requirements</h3>
+              <h3 className="font-semibold text-lg mb-3">✨ Multi-Action Sequence Requirements</h3>
               <div className="space-y-2 text-sm">
-                <p>• <strong>ONLY COMPLEX ACTIONS ALLOWED:</strong> Text between asterisks (*action*) must be detailed and passionate</p>
-                <p>• <span className="text-red-400">❌ FORBIDDEN:</span> Simple actions like <span className="line-through">*waves* *smiles* *nods* *laughs*</span></p>
-                <p>• <span className="text-green-400">✅ REQUIRED:</span> <span className="action-text">*tears streaming down her face as overwhelming emotion crashes over her*</span></p>
-                <p>• <span className="text-green-400">✅ REQUIRED:</span> <span className="action-text">*he kisses her neck passionately trailing upwards to find her lips*</span></p>
-                <p>• Minimum 8 words per action with emotional depth or sensory details</p>
-                <p>• System automatically enhances or removes simple actions</p>
-                <p>• Perfect for passionate, intimate, and NSFW roleplay scenarios</p>
-                <p>• Works in chat messages, suggestions modal, and all roleplay responses</p>
-                <p>• AI models trained to generate only complex actions</p>
+                <p>• <strong>MULTI-ACTION FORMAT:</strong> Text between asterisks (*action*) must contain multiple sequential actions</p>
+                <p>• <span className="text-red-400">❌ FORBIDDEN:</span> Single actions like <span className="line-through">*waves* *smiles* *nods* *laughs*</span></p>
+                <p>• <span className="text-green-400">✅ REQUIRED:</span> <span className="action-text">*he held her up letting her down slowly then kisses her passionately*</span></p>
+                <p>• <span className="text-green-400">✅ REQUIRED:</span> <span className="action-text">*moves closer to him then wraps her arms around his waist while looking into his eyes*</span></p>
+                <p>• Use connecting words: "then", "while", "before", "after", "as" to link actions</p>
+                <p>• Minimum 5 words per asterisk block with 2-4 related actions</p>
+                <p>• System automatically converts simple actions into multi-action sequences</p>
+                <p>• Perfect for romantic, intimate, and detailed roleplay scenarios</p>
+                <p>• Each asterisk block tells a mini-story of connected movements</p>
               </div>
             </Card>
 
