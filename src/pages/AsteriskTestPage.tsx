@@ -184,13 +184,19 @@ const AsteriskTestPage = () => {
           </div>
 
           <Card className="p-6 bg-red-900/20 border-red-500/20">
-            <h3 className="font-semibold text-lg mb-3 text-red-400">🚫 Forbidden Simple Actions</h3>
+            <h3 className="font-semibold text-lg mb-3 text-red-400">🚫 Forbidden Single Actions</h3>
             <div className="text-sm space-y-1 text-red-300">
-              <p>These actions are completely banned and will be enhanced or removed:</p>
+              <p>These single-word actions will be converted to multi-action sequences:</p>
               <div className="bg-red-950/50 p-3 rounded mt-2 font-mono text-xs">
                 *waves* *smiles* *nods* *shrugs* *laughs* *sighs* *winks*<br/>
                 *looks* *sits* *stands* *walks* *blushes* *giggles* *grins*<br/>
                 *happy* *sad* *angry* *surprised* *confused* *excited*
+              </div>
+              <p className="mt-2">↓ <strong>These become:</strong> ↓</p>
+              <div className="bg-green-950/50 p-3 rounded mt-2 font-mono text-xs">
+                *raises her hand gracefully then moves it in a gentle wave while maintaining eye contact*<br/>
+                *feels her lips curve upward then lets the warmth spread across her entire face*<br/>
+                *tilts her head down slowly then brings it back up while maintaining steady eye contact*
               </div>
             </div>
           </Card>
