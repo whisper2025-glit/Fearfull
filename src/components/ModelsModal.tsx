@@ -25,17 +25,53 @@ interface ModelsModalProps {
 
 const mockModels: Model[] = [
   {
-    id: "deepseek-chat-v3-free",
-    name: "deepseek/deepseek-chat-v3.1:free",
-    title: "DeepSeek Chat v3.1 (NSFW)",
-    description: "Advanced DeepSeek model with NSFW capabilities for roleplay",
+    id: "mistral-nemo-free",
+    name: "mistralai/mistral-nemo:free",
+    title: "Mistral Nemo (NSFW)",
+    description: "Advanced Mistral Nemo model with NSFW capabilities",
     features: [
       "OpenRouter AI-powered responses",
       "NSFW content enabled",
-      "Character-aware roleplay",
-      "Advanced reasoning capabilities"
+      "Character-aware roleplay"
     ],
     isSelected: true
+  },
+  {
+    id: "roleplay",
+    name: "deepseek/deepseek-chat-v3.1:free",
+    title: "Roleplay",
+    description: "DeepSeek-powered immersive roleplay model",
+    features: [
+      "Deep reasoning for immersive roleplay",
+      "Character-consistent, expressive replies",
+      "NSFW content enabled"
+    ],
+    isLimitedFree: false,
+    backgroundImage: "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=400&h=200&fit=crop"
+  },
+  {
+    id: "storystream",
+    name: "local-ai-storytelling",
+    title: "StoryStream",
+    description: "Advanced storytelling and narrative AI",
+    features: [
+      "Coherent long-form story continuation",
+      "Rich, evolving plots and scenes"
+    ],
+    isLimitedFree: false,
+    backgroundImage: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=200&fit=crop"
+  },
+  {
+    id: "lifelike",
+    name: "local-ai-natural",
+    title: "Lifelike",
+    description: "Natural and human-like conversation AI",
+    features: [
+      "Human-like, lifelike interactions",
+      "Responses flow naturally"
+    ],
+    isLimitedFree: false,
+    backgroundImage: "https://images.unsplash.com/photo-1534126416832-7c3162ba2ee9?w=400&h=200&fit=crop"
   }
 ];
 
@@ -125,7 +161,7 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
                   </div>
 
                   {/* Selection indicator */}
-                  {currentSelectedModel.id === model.id && (
+                  {currentSelectedModel.id === model.id && model.id === 'mistral-nemo-free' && (
                     <div className="absolute top-4 right-4">
                       <div className="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center">
                         <div className="w-2 h-2 bg-white rounded-full" />
