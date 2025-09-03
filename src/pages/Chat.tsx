@@ -290,7 +290,18 @@ const Chat = () => {
 
   const handleSendMessage = async (messageContent?: string) => {
     const messageToSend = messageContent || message;
-    if (!messageToSend.trim() || isLoading || !currentCharacter || !user) return;
+    if (!messageToSend.trim() || isLoading || !currentCharacter || !user) {
+      console.log('Send message blocked:', { messageEmpty: !messageToSend.trim(), isLoading, noCharacter: !currentCharacter, noUser: !user });
+      return;
+    }
+
+    // Validate and enhance user's asterisk usage
+    const enhancedUserMessage = openRouterAI.validateUserAsterisks(messageToSend);
+
+    // Notify user if their message was enhanced
+    if (enhancedUserMessage !== messageToSend) {
+      console.log('User message enhanced for better asterisk formatting');
+    }
 
     // Check if user has enough coins (2 coins per message)
     if (userCoins < MESSAGE_COST) {
@@ -301,14 +312,14 @@ const Chat = () => {
     // Add user message to local state immediately for UI responsiveness
     const userMessage: Message = {
       id: Date.now(),
-      content: messageToSend,
+      content: enhancedUserMessage,
       isBot: false,
       timestamp: new Date().toLocaleTimeString(),
       type: "regular"
     };
 
     setMessages(prev => [...prev, userMessage]);
-    const currentMessage = messageToSend;
+    const currentMessage = enhancedUserMessage;
     // Only clear input if we're sending the current message (not a suggestion)
     if (!messageContent) {
       setMessage("");
@@ -333,7 +344,7 @@ const Chat = () => {
       const userMessagePayload: any = {
         character_id: characterId,
         author_id: user.id,
-        content: currentMessage,
+        content: enhancedUserMessage,
         is_bot: false,
         type: 'regular'
       };
@@ -390,11 +401,11 @@ const Chat = () => {
       }
 
       try {
-        // Prepare conversation history for AI (last 8 regular messages)
+        // Prepare conversation history for AI (last 20 regular messages for better story continuity)
         const allMessagesIncludingNew = [...allMessages, userMessage];
         const conversationHistory: AIMessage[] = allMessagesIncludingNew
           .filter(msg => msg.type === 'regular')
-          .slice(-8)
+          .slice(-20)
           .map(msg => ({
             role: msg.isBot ? 'assistant' as const : 'user' as const,
             content: msg.content
@@ -748,7 +759,10 @@ const Chat = () => {
                 rows={1}
               />
               <Button
-                onClick={handleSendMessage}
+                onClick={() => {
+                  console.log('Send button clicked:', { message: message.trim(), isLoading, userCoins, MESSAGE_COST });
+                  handleSendMessage();
+                }}
                 disabled={!message.trim() || isLoading || userCoins < MESSAGE_COST}
                 size="icon"
                 className="absolute right-2 bottom-2 h-8 w-8"

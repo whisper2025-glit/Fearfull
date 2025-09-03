@@ -4,45 +4,46 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
+import AsteriskValidationTest from '@/components/AsteriskValidationTest';
 
 const AsteriskTestPage = () => {
   const navigate = useNavigate();
 
   const asteriskTestCases = [
     {
-      title: "Complex Emotional Action",
-      input: "*he held her hand as she passed away in his arms*",
-      description: "Long, complex emotional action description (ALLOWED)"
+      title: "Multi-Action Sequence (CORRECT)",
+      input: "*he held her up letting her down slowly then kisses her passionately*",
+      description: "Multiple sequential actions within one asterisk block (REQUIRED FORMAT)"
     },
     {
-      title: "Passionate/Intimate Action",
-      input: "*he kisses her neck passionately trailing upwards to find her lips in a passionate kiss*",
-      description: "Detailed passionate action with multiple movements (ALLOWED)"
+      title: "Romantic Multi-Action",
+      input: "*she moves closer to him then wraps her arms around his waist while looking into his eyes*",
+      description: "Sequential actions connected with transition words (CORRECT)"
     },
     {
-      title: "Simple Actions (FILTERED OUT)",
+      title: "Simple Actions (WILL BE ENHANCED)",
       input: "Hello *waves* how are you *smiles* today *nods*",
-      description: "Simple actions that get enhanced or removed by the system"
+      description: "Simple single-word actions that get converted to multi-action sequences"
     },
     {
-      title: "Enhanced Simple Actions",
-      input: "She looked at him *smiles* then *laughs* at his joke",
-      description: "Shows how simple actions get enhanced into complex ones"
+      title: "Intimate Multi-Action",
+      input: "*takes her hand gently then brings it to his lips before placing a soft kiss on her palm*",
+      description: "Romantic sequence with connecting words (CORRECT FORMAT)"
     },
     {
-      title: "Mixed Complex Actions",
-      input: "She whispered his name*running her fingers through his hair as their eyes met in profound connection*then pulled him closer*their hearts beating as one in perfect synchronization*",
-      description: "Multiple complex actions in sequence (ALLOWED)"
+      title: "Emotional Multi-Action",
+      input: "*leans against the wall then slides down slowly while tears stream down her cheeks*",
+      description: "Emotional sequence showing multiple connected actions (CORRECT)"
     },
     {
-      title: "NSFW Detailed Scene",
-      input: "She moaned softly*pressing her body closer against his as he caressed her curves with reverent touch*their passion growing*breathing heavily as they moved together in perfect harmony of desire*",
-      description: "Adult content with detailed action formatting (ALLOWED)"
+      title: "Complex Scene Sequence",
+      input: "*pulls her close against his chest then whispers softly in her ear while stroking her hair*",
+      description: "Intimate multi-action sequence (CORRECT FORMAT)"
     },
     {
-      title: "Emotional Complexity",
-      input: "I'm sorry*tears streaming down her face as overwhelming guilt and regret crash over her like relentless waves*I never meant for this to happen*voice breaking with raw emotion and desperate vulnerability*",
-      description: "Complex emotional expressions and physical reactions (ALLOWED)"
+      title: "Action with Dialogue",
+      input: "I love you *caresses her face gently then leans in closer while maintaining eye contact* more than anything",
+      description: "Multi-action sequence embedded in dialogue (CORRECT)"
     }
   ];
 
@@ -84,9 +85,15 @@ const AsteriskTestPage = () => {
         </div>
 
         <div className="space-y-8">
+          {/* Interactive Validation Test */}
+          <div className="space-y-6">
+            <h2 className="text-xl font-semibold border-b border-border pb-2">Interactive Asterisk Validation Test</h2>
+            <AsteriskValidationTest />
+          </div>
+
           {/* Asterisk Formatting Section */}
           <div className="space-y-6">
-            <h2 className="text-xl font-semibold border-b border-border pb-2">Asterisk Action Formatting</h2>
+            <h2 className="text-xl font-semibold border-b border-border pb-2">Asterisk Action Formatting Examples</h2>
             {asteriskTestCases.map((testCase, index) => (
             <Card key={index} className="p-6">
               <h3 className="font-semibold text-lg mb-2">{testCase.title}</h3>
@@ -146,17 +153,17 @@ const AsteriskTestPage = () => {
 
           <div className="grid md:grid-cols-2 gap-6">
             <Card className="p-6 bg-primary/5 border-primary/20">
-              <h3 className="font-semibold text-lg mb-3">✨ Complex Action Requirements</h3>
+              <h3 className="font-semibold text-lg mb-3">✨ Multi-Action Sequence Requirements</h3>
               <div className="space-y-2 text-sm">
-                <p>• <strong>ONLY COMPLEX ACTIONS ALLOWED:</strong> Text between asterisks (*action*) must be detailed and passionate</p>
-                <p>• <span className="text-red-400">❌ FORBIDDEN:</span> Simple actions like <span className="line-through">*waves* *smiles* *nods* *laughs*</span></p>
-                <p>• <span className="text-green-400">✅ REQUIRED:</span> <span className="action-text">*tears streaming down her face as overwhelming emotion crashes over her*</span></p>
-                <p>• <span className="text-green-400">✅ REQUIRED:</span> <span className="action-text">*he kisses her neck passionately trailing upwards to find her lips*</span></p>
-                <p>• Minimum 8 words per action with emotional depth or sensory details</p>
-                <p>• System automatically enhances or removes simple actions</p>
-                <p>• Perfect for passionate, intimate, and NSFW roleplay scenarios</p>
-                <p>• Works in chat messages, suggestions modal, and all roleplay responses</p>
-                <p>• AI models trained to generate only complex actions</p>
+                <p>• <strong>MULTI-ACTION FORMAT:</strong> Text between asterisks (*action*) must contain multiple sequential actions</p>
+                <p>• <span className="text-red-400">❌ FORBIDDEN:</span> Single actions like <span className="line-through">*waves* *smiles* *nods* *laughs*</span></p>
+                <p>• <span className="text-green-400">✅ REQUIRED:</span> <span className="action-text">*he held her up letting her down slowly then kisses her passionately*</span></p>
+                <p>• <span className="text-green-400">✅ REQUIRED:</span> <span className="action-text">*moves closer to him then wraps her arms around his waist while looking into his eyes*</span></p>
+                <p>• Use connecting words: "then", "while", "before", "after", "as" to link actions</p>
+                <p>• Minimum 5 words per asterisk block with 2-4 related actions</p>
+                <p>• System automatically converts simple actions into multi-action sequences</p>
+                <p>• Perfect for romantic, intimate, and detailed roleplay scenarios</p>
+                <p>• Each asterisk block tells a mini-story of connected movements</p>
               </div>
             </Card>
 
@@ -177,13 +184,19 @@ const AsteriskTestPage = () => {
           </div>
 
           <Card className="p-6 bg-red-900/20 border-red-500/20">
-            <h3 className="font-semibold text-lg mb-3 text-red-400">🚫 Forbidden Simple Actions</h3>
+            <h3 className="font-semibold text-lg mb-3 text-red-400">🚫 Forbidden Single Actions</h3>
             <div className="text-sm space-y-1 text-red-300">
-              <p>These actions are completely banned and will be enhanced or removed:</p>
+              <p>These single-word actions will be converted to multi-action sequences:</p>
               <div className="bg-red-950/50 p-3 rounded mt-2 font-mono text-xs">
                 *waves* *smiles* *nods* *shrugs* *laughs* *sighs* *winks*<br/>
                 *looks* *sits* *stands* *walks* *blushes* *giggles* *grins*<br/>
                 *happy* *sad* *angry* *surprised* *confused* *excited*
+              </div>
+              <p className="mt-2">↓ <strong>These become:</strong> ↓</p>
+              <div className="bg-green-950/50 p-3 rounded mt-2 font-mono text-xs">
+                *raises her hand gracefully then moves it in a gentle wave while maintaining eye contact*<br/>
+                *feels her lips curve upward then lets the warmth spread across her entire face*<br/>
+                *tilts her head down slowly then brings it back up while maintaining steady eye contact*
               </div>
             </div>
           </Card>
