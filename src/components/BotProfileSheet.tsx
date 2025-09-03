@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { useComments } from "@/hooks/useComments";
 import { supabase } from "@/lib/supabase";
 import { useNavigate } from "react-router-dom";
+import { useHistoryBackClose } from "@/hooks/useHistoryBackClose";
 
 const HERO_IMAGE = "https://cdn.builder.io/api/v1/image/assets%2F420adf53974e411387df983f01823d73%2F4635cc3157e045f592ade58eeea4af3b?format=webp&width=800";
 
