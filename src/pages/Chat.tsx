@@ -393,11 +393,11 @@ const Chat = () => {
       }
 
       try {
-        // Prepare conversation history for AI (last 8 regular messages)
+        // Prepare conversation history for AI (last 20 regular messages for better story continuity)
         const allMessagesIncludingNew = [...allMessages, userMessage];
         const conversationHistory: AIMessage[] = allMessagesIncludingNew
           .filter(msg => msg.type === 'regular')
-          .slice(-8)
+          .slice(-20)
           .map(msg => ({
             role: msg.isBot ? 'assistant' as const : 'user' as const,
             content: msg.content
