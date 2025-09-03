@@ -58,9 +58,9 @@ const AsteriskValidationTest = () => {
 
       <div className="text-xs text-muted-foreground space-y-1">
         <p><strong>Test Examples:</strong></p>
-        <p>• "*waves*" → Enhanced to complex action</p>
-        <p>• "*smiles*" → Enhanced to complex action</p>
-        <p>• "*he kisses her neck passionately...*" → Already complex</p>
+        <p>• "*waves*" → "*raises her hand gracefully then moves it in a gentle wave while maintaining eye contact*"</p>
+        <p>• "*smiles*" → "*feels her lips curve upward then lets the warmth spread across her entire face*"</p>
+        <p>• "*he held her up letting her down slowly then kisses her passionately*" → Already correct format</p>
       </div>
     </Card>
   );
