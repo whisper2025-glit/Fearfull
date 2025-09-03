@@ -103,6 +103,74 @@ class AIClient {
     return action; // Return original if already has multiple actions
   }
 
+  // Enhanced context management methods
+  private selectImportantMessages(messages: ChatMessage[], maxMessages: number = 25): ChatMessage[] {
+    if (messages.length <= maxMessages) {
+      return messages;
+    }
+
+    // Always include the most recent messages
+    const recentMessages = messages.slice(-15);
+
+    // Select important earlier messages based on content keywords
+    const importantKeywords = [
+      'love', 'relationship', 'first time', 'first kiss', 'feelings', 'emotion',
+      'important', 'remember', 'promise', 'secret', 'confession', 'family',
+      'past', 'history', 'childhood', 'dream', 'fear', 'goal', 'plan',
+      'hurt', 'pain', 'happy', 'sad', 'angry', 'upset', 'excited',
+      'name', 'age', 'birthday', 'home', 'work', 'school', 'friend'
+    ];
+
+    const earlierMessages = messages.slice(0, -15);
+    const importantEarlierMessages = earlierMessages.filter(msg => {
+      const content = msg.content.toLowerCase();
+      return importantKeywords.some(keyword => content.includes(keyword)) ||
+             msg.content.length > 200; // Longer messages are often more important
+    });
+
+    // Take up to 10 important earlier messages
+    const selectedEarlierMessages = importantEarlierMessages.slice(-10);
+
+    return [...selectedEarlierMessages, ...recentMessages];
+  }
+
+  private generateContextSummary(messages: ChatMessage[], character: any): string {
+    if (messages.length < 30) return '';
+
+    // Generate a brief summary of key context for very long conversations
+    const importantEvents = [];
+    const relationships = [];
+    const emotions = [];
+
+    messages.forEach(msg => {
+      const content = msg.content.toLowerCase();
+
+      // Detect relationship developments
+      if (content.includes('love') || content.includes('feelings') || content.includes('relationship')) {
+        relationships.push('relationship development occurred');
+      }
+
+      // Detect emotional moments
+      if (content.includes('cry') || content.includes('tears') || content.includes('upset')) {
+        emotions.push('emotional moment');
+      } else if (content.includes('happy') || content.includes('joy') || content.includes('excited')) {
+        emotions.push('positive moment');
+      }
+
+      // Detect important events
+      if (content.includes('first') || content.includes('important') || content.includes('special')) {
+        importantEvents.push('significant event');
+      }
+    });
+
+    const summary = [];
+    if (relationships.length > 0) summary.push(`Relationship has developed through ${relationships.length} key moments`);
+    if (emotions.length > 0) summary.push(`${emotions.length} emotional moments have shaped the dynamic`);
+    if (importantEvents.length > 0) summary.push(`${importantEvents.length} important events have occurred`);
+
+    return summary.length > 0 ? summary.join('. ') + '.' : '';
+  }
+
   private buildSystemPrompt(character: any, persona?: any, contextSummary?: string): string {
     const parts: string[] = [];
 
