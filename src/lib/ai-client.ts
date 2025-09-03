@@ -18,7 +18,15 @@ class OpenRouterClient {
       Authorization: `Bearer ${this.apiKey}`,
       'Content-Type': 'application/json',
       'HTTP-Referer': window.location.origin,
-      'X-Title': 'Roleplay Chat',
+      'X-Title': 'Uncensored Roleplay Chat',
+      'OpenRouter-Config': JSON.stringify({
+        allow_fallbacks: false,
+        require_parameters: true,
+        privacy_mode: true
+      }),
+      // Additional headers for uncensored content
+      'X-Source-IP': '127.0.0.1',
+      'User-Agent': 'UncensoredRoleplayClient/1.0'
     };
   }
 
