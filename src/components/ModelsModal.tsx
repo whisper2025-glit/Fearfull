@@ -38,36 +38,39 @@ const mockModels: Model[] = [
   },
   {
     id: "roleplay",
-    name: "local-ai-roleplay",
+    name: "deepseek/deepseek-chat-v3.1:free",
     title: "Roleplay",
-    description: "Specialized model for immersive roleplay",
+    description: "DeepSeek-powered immersive roleplay model",
     features: [
       "Deep reasoning for immersive roleplay",
-      "Character-consistent, expressive replies"
+      "Character-consistent, expressive replies",
+      "NSFW content enabled"
     ],
     isLimitedFree: false,
     backgroundImage: "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=400&h=200&fit=crop"
   },
   {
     id: "storystream",
-    name: "local-ai-storytelling",
+    name: "cognitivecomputations/dolphin-mistral-24b-venice-edition:free",
     title: "StoryStream",
-    description: "Advanced storytelling and narrative AI",
+    description: "Dolphin Mistral-powered storytelling and narrative AI",
     features: [
       "Coherent long-form story continuation",
-      "Rich, evolving plots and scenes"
+      "Rich, evolving plots and scenes",
+      "NSFW content enabled"
     ],
     isLimitedFree: false,
     backgroundImage: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=200&fit=crop"
   },
   {
     id: "lifelike",
-    name: "local-ai-natural",
+    name: "deepseek/deepseek-r1-0528-qwen3-8b:free",
     title: "Lifelike",
-    description: "Natural and human-like conversation AI",
+    description: "DeepSeek-powered natural and human-like conversation AI",
     features: [
       "Human-like, lifelike interactions",
-      "Responses flow naturally"
+      "Responses flow naturally",
+      "NSFW content enabled"
     ],
     isLimitedFree: false,
     backgroundImage: "https://images.unsplash.com/photo-1534126416832-7c3162ba2ee9?w=400&h=200&fit=crop"
