@@ -290,7 +290,10 @@ const Chat = () => {
 
   const handleSendMessage = async (messageContent?: string) => {
     const messageToSend = messageContent || message;
-    if (!messageToSend.trim() || isLoading || !currentCharacter || !user) return;
+    if (!messageToSend.trim() || isLoading || !currentCharacter || !user) {
+      console.log('Send message blocked:', { messageEmpty: !messageToSend.trim(), isLoading, noCharacter: !currentCharacter, noUser: !user });
+      return;
+    }
 
     // Check if user has enough coins (2 coins per message)
     if (userCoins < MESSAGE_COST) {
@@ -748,7 +751,10 @@ const Chat = () => {
                 rows={1}
               />
               <Button
-                onClick={handleSendMessage}
+                onClick={() => {
+                  console.log('Send button clicked:', { message: message.trim(), isLoading, userCoins, MESSAGE_COST });
+                  handleSendMessage();
+                }}
                 disabled={!message.trim() || isLoading || userCoins < MESSAGE_COST}
                 size="icon"
                 className="absolute right-2 bottom-2 h-8 w-8"
