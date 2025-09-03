@@ -59,11 +59,12 @@ const Chat = () => {
   const [isChatPageSettingsModalOpen, setIsChatPageSettingsModalOpen] = useState(false);
   const [selectedModel, setSelectedModel] = useState<Model>({
     id: "mistral-nemo-free",
-    name: "local-ai-balanced",
-    title: "Balanced AI",
-    description: "Balanced AI model for general conversations",
+    name: "mistralai/mistral-nemo:free",
+    title: "Mistral Nemo (NSFW)",
+    description: "Advanced Mistral Nemo model with NSFW capabilities",
     features: [
-      "Well-rounded conversational AI",
+      "OpenRouter AI-powered responses",
+      "NSFW content enabled",
       "Character-aware roleplay"
     ]
   });
