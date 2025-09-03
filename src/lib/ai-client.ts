@@ -7,6 +7,7 @@ class OpenRouterClient {
   private readonly apiKey: string;
   private readonly baseURL = 'https://openrouter.ai/api/v1';
   private model: string;
+  private extremeNSFWMode: boolean = true; // Always enabled for maximum explicitness
 
   constructor() {
     this.apiKey = import.meta.env.VITE_OPENROUTER_API_KEY || '';
