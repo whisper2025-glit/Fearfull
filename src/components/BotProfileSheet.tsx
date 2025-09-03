@@ -87,7 +87,7 @@ export function BotProfileSheet({
   const titleOpacity = Math.min(Math.max(scrollY - headerActivationPoint - 50, 0) / 100, 1);
 
   return (
-    <Drawer>
+    <Drawer open={open} onOpenChange={setOpen}>
       <DrawerTrigger asChild>
         {trigger || (
           <Button variant="ghost">
