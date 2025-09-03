@@ -296,7 +296,12 @@ const Chat = () => {
     }
 
     // Validate and enhance user's asterisk usage
-    const enhancedUserMessage = openRouterAI.validateUserAsterisks ? openRouterAI.validateUserAsterisks(messageToSend) : messageToSend;
+    const enhancedUserMessage = openRouterAI.validateUserAsterisks(messageToSend);
+
+    // Notify user if their message was enhanced
+    if (enhancedUserMessage !== messageToSend) {
+      console.log('User message enhanced for better asterisk formatting');
+    }
 
     // Check if user has enough coins (2 coins per message)
     if (userCoins < MESSAGE_COST) {
@@ -307,14 +312,14 @@ const Chat = () => {
     // Add user message to local state immediately for UI responsiveness
     const userMessage: Message = {
       id: Date.now(),
-      content: messageToSend,
+      content: enhancedUserMessage,
       isBot: false,
       timestamp: new Date().toLocaleTimeString(),
       type: "regular"
     };
 
     setMessages(prev => [...prev, userMessage]);
-    const currentMessage = messageToSend;
+    const currentMessage = enhancedUserMessage;
     // Only clear input if we're sending the current message (not a suggestion)
     if (!messageContent) {
       setMessage("");
@@ -339,7 +344,7 @@ const Chat = () => {
       const userMessagePayload: any = {
         character_id: characterId,
         author_id: user.id,
-        content: currentMessage,
+        content: enhancedUserMessage,
         is_bot: false,
         type: 'regular'
       };
