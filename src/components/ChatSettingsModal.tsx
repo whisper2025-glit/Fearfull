@@ -20,6 +20,7 @@ export function ChatSettingsModal({ open, onOpenChange, onSettingsChange }: Chat
   const [temperature, setTemperature] = useState([0.70]);
   const [contentDiversity, setContentDiversity] = useState([0.05]);
   const [maxMessageLength, setMaxMessageLength] = useState([195]);
+  const [extremeNSFWMode, setExtremeNSFWMode] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
