@@ -25,16 +25,12 @@ class OpenRouterClient {
     return {
       Authorization: `Bearer ${this.apiKey}`,
       'Content-Type': 'application/json',
-      'HTTP-Referer': window.location.origin,
       'X-Title': 'Uncensored Roleplay Chat',
       'OpenRouter-Config': JSON.stringify({
         allow_fallbacks: false,
         require_parameters: true,
         privacy_mode: true
-      }),
-      // Additional headers for uncensored content
-      'X-Source-IP': '127.0.0.1',
-      'User-Agent': 'UncensoredRoleplayClient/1.0'
+      })
     };
   }
 
@@ -193,11 +189,21 @@ class OpenRouterClient {
         method: 'POST',
         headers: this.getHeaders(),
         body: JSON.stringify(requestBody),
+        mode: 'cors',
+        credentials: 'omit'
       });
     } catch (error) {
-      if (error instanceof TypeError && error.message.includes('fetch')) {
-        throw new Error('Network error: Unable to connect to OpenRouter API. Check your internet connection.');
+      console.error('OpenRouter API request failed:', error);
+
+      if (error instanceof TypeError) {
+        if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+          throw new Error('Network error: Unable to connect to OpenRouter API. This might be due to CORS restrictions or network connectivity issues. Check your internet connection and browser console for more details.');
+        }
+        if (error.message.includes('fetch')) {
+          throw new Error(`Network error: ${error.message}`);
+        }
       }
+
       throw new Error(`Request failed: ${error instanceof Error ? error.message : 'Unknown network error'}`);
     }
 
@@ -265,11 +271,38 @@ class OpenRouterClient {
       this.validateApiKey();
       const res = await fetch(`${this.baseURL}/models`, {
         method: 'GET',
-        headers: { Authorization: `Bearer ${this.apiKey}` },
+        headers: {
+          Authorization: `Bearer ${this.apiKey}`,
+          'Content-Type': 'application/json'
+        },
+        mode: 'cors',
+        credentials: 'omit'
       });
-      if (res.ok) return { success: true, message: 'OpenRouter connection successful' };
-      return { success: false, message: `API connection failed: ${res.status} ${res.statusText}` };
+
+      if (res.ok) {
+        const data = await res.json();
+        return { success: true, message: `OpenRouter connection successful. ${data.data?.length || 0} models available.` };
+      }
+
+      let errorMessage = `API connection failed: ${res.status} ${res.statusText}`;
+      try {
+        const errorData = await res.json();
+        if (errorData.error?.message) {
+          errorMessage = `API Error: ${errorData.error.message}`;
+        }
+      } catch {}
+
+      return { success: false, message: errorMessage };
     } catch (e) {
+      console.error('OpenRouter test connection failed:', e);
+
+      if (e instanceof TypeError && (e.message.includes('Failed to fetch') || e.message.includes('NetworkError'))) {
+        return {
+          success: false,
+          message: 'Network error: Unable to reach OpenRouter API. This might be due to CORS restrictions, network connectivity, or browser security policies. Check browser console for detailed error information.'
+        };
+      }
+
       return { success: false, message: e instanceof Error ? e.message : 'Unknown error' };
     }
   }

@@ -458,13 +458,23 @@ const Chat = () => {
         if (errorMessage.includes('API key is not configured')) {
           userFriendlyMessage = "AI service is not configured. Please contact the administrator to set up the OpenRouter API key.";
         } else if (errorMessage.includes('Invalid API key')) {
-          userFriendlyMessage = "AI service authentication failed. Please contact the administrator.";
-        } else if (errorMessage.includes('Network error')) {
-          userFriendlyMessage = "I'm having trouble connecting to the AI service. Please check your internet connection and try again.";
-        } else if (errorMessage.includes('Rate limit')) {
+          userFriendlyMessage = "AI service authentication failed. Please check your OpenRouter API key.";
+        } else if (errorMessage.includes('Network error') || errorMessage.includes('Unable to connect')) {
+          if (errorMessage.includes('CORS') || errorMessage.includes('cors')) {
+            userFriendlyMessage = "Connection blocked by browser security. The AI service needs to be configured to allow cross-origin requests.";
+          } else {
+            userFriendlyMessage = "I'm having trouble connecting to the AI service. Please check your internet connection and try again.";
+          }
+        } else if (errorMessage.includes('Rate limit') || errorMessage.includes('429')) {
           userFriendlyMessage = "Too many requests. Please wait a moment and try again.";
-        } else if (errorMessage.includes('Insufficient credits')) {
+        } else if (errorMessage.includes('Insufficient credits') || errorMessage.includes('402')) {
           userFriendlyMessage = "AI service credits are low. Please contact the administrator.";
+        } else if (errorMessage.includes('401')) {
+          userFriendlyMessage = "Authentication failed. Please check your OpenRouter API key configuration.";
+        } else if (errorMessage.includes('403')) {
+          userFriendlyMessage = "Access forbidden. Your API key may not have permission for this operation.";
+        } else if (errorMessage.includes('500') || errorMessage.includes('502') || errorMessage.includes('503')) {
+          userFriendlyMessage = "AI service is temporarily unavailable. Please try again in a few moments.";
         }
 
         const errorBotMessage: Message = {
