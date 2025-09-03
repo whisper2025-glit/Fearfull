@@ -29,6 +29,8 @@ export function BotProfileSheet({
   const navigate = useNavigate();
   const [scrollY, setScrollY] = useState(0);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
+  const [open, setOpen] = useState(false);
+  useHistoryBackClose(open, setOpen, "bot-profile-sheet");
   const [creatorName, setCreatorName] = useState<string>('');
   const [creatorId, setCreatorId] = useState<string>('');
   const [dbTags, setDbTags] = useState<string[] | null>(null);
