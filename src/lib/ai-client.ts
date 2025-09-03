@@ -41,17 +41,19 @@ class AIClient {
       const action = match[1].trim();
       const actionWords = action.split(/\s+/);
 
-      // Check if it's a simple forbidden action
-      const isSimpleAction = this.forbiddenSimpleActions.some(forbidden =>
-        action.toLowerCase().includes(forbidden.toLowerCase())
-      );
+      // Check if it's a single simple action (1-2 words)
+      const isSingleSimpleAction = actionWords.length <= 2 &&
+        this.forbiddenSimpleActions.some(forbidden =>
+          action.toLowerCase() === forbidden.toLowerCase() ||
+          action.toLowerCase().includes(forbidden.toLowerCase())
+        );
 
-      // Check if action is too short (less than 8 words)
-      const isTooShort = actionWords.length < 8;
+      // Check if action is too short for multi-action sequence (less than 5 words)
+      const isTooShort = actionWords.length < 5;
 
-      if (isSimpleAction || isTooShort) {
-        // Enhance simple actions into complex ones
-        const enhancedAction = this.enhanceSimpleAction(action);
+      if (isSingleSimpleAction || isTooShort) {
+        // Convert simple actions into multi-action sequences
+        const enhancedAction = this.createMultiActionSequence(action);
         replacements.push({
           original: match[0],
           enhanced: `*${enhancedAction}*`
@@ -67,35 +69,38 @@ class AIClient {
     return enhancedContent;
   }
 
-  private enhanceSimpleAction(action: string): string {
+  private createMultiActionSequence(action: string): string {
     const actionLower = action.toLowerCase().trim();
 
-    // Enhancement mappings for common simple actions
-    const enhancements: { [key: string]: string } = {
-      'waves': 'lifts her hand in a graceful gesture while her eyes sparkle with warm recognition and genuine affection',
-      'smiles': 'lips curve into a radiant expression as warmth spreads across her features like sunshine breaking through clouds',
-      'nods': 'moves her head in gentle agreement while her eyes reflect deep understanding and heartfelt connection',
-      'laughs': 'melodious laughter bubbles forth from deep within as joy dances across her features with infectious warmth',
-      'sighs': 'releases a breath that carries the weight of complex emotions while her chest rises and falls with profound feeling',
-      'looks': 'gazes with intense focus as her eyes search deeply seeking connection and understanding in this precious moment',
-      'blushes': 'soft pink warmth spreads across her cheeks like delicate flower petals as shy emotions bloom within her heart',
-      'sits': 'settles gracefully into position while adjusting herself with fluid movements that speak of quiet elegance and poise',
-      'stands': 'rises with deliberate grace as her entire being emanates strength and determination in this pivotal moment'
+    // Multi-action sequence mappings for simple actions
+    const multiActionSequences: { [key: string]: string } = {
+      'waves': 'raises her hand gracefully then moves it in a gentle wave while maintaining eye contact',
+      'smiles': 'feels her lips curve upward then lets the warmth spread across her entire face',
+      'nods': 'tilts her head down slowly then brings it back up while maintaining steady eye contact',
+      'laughs': 'feels the joy bubble up inside then releases it in melodious laughter while her eyes sparkle',
+      'sighs': 'takes a deep breath then releases it slowly while her shoulders relax',
+      'looks': 'turns her gaze toward him then studies his features with growing interest',
+      'blushes': 'feels the warmth rise to her cheeks then tries to hide it behind a shy smile',
+      'sits': 'moves toward the seat then settles down gracefully while adjusting her posture',
+      'stands': 'places her hands on the armrests then rises slowly to her full height',
+      'walks': 'takes her first step forward then continues with confident strides across the room',
+      'hugs': 'reaches out with both arms then pulls him close against her chest warmly',
+      'kisses': 'leans in closer then presses her lips gently against his in a tender kiss'
     };
 
     // Check for direct matches first
-    for (const [simple, enhanced] of Object.entries(enhancements)) {
+    for (const [simple, sequence] of Object.entries(multiActionSequences)) {
       if (actionLower.includes(simple)) {
-        return enhanced;
+        return sequence;
       }
     }
 
-    // If no direct match, create a generic enhancement
-    if (action.length < 40) {
-      return `${action} with deep emotional intensity as complex feelings surge through her being like powerful waves`;
+    // If no direct match and it's very short, create a generic multi-action sequence
+    if (action.split(/\s+/).length <= 2) {
+      return `${action} slowly then pauses for a moment while taking in the surrounding atmosphere`;
     }
 
-    return action; // Return original if already complex enough
+    return action; // Return original if already has multiple actions
   }
 
   private buildSystemPrompt(character: any, persona?: any): string {
