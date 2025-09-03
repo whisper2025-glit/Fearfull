@@ -295,6 +295,9 @@ const Chat = () => {
       return;
     }
 
+    // Validate and enhance user's asterisk usage
+    const enhancedUserMessage = openRouterAI.validateUserAsterisks ? openRouterAI.validateUserAsterisks(messageToSend) : messageToSend;
+
     // Check if user has enough coins (2 coins per message)
     if (userCoins < MESSAGE_COST) {
       toast.error(`You need ${MESSAGE_COST} coin to send a message. You have ${userCoins} coins.`);
