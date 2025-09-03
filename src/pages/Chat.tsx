@@ -59,6 +59,10 @@ const Chat = () => {
   const [isPersonaModalOpen, setIsPersonaModalOpen] = useState(false);
   const [isModelsModalOpen, setIsModelsModalOpen] = useState(false);
   const [isChatPageSettingsModalOpen, setIsChatPageSettingsModalOpen] = useState(false);
+
+  useHistoryBackClose(isPersonaModalOpen, setIsPersonaModalOpen, "persona-modal");
+  useHistoryBackClose(isModelsModalOpen, setIsModelsModalOpen, "models-modal");
+  useHistoryBackClose(isChatPageSettingsModalOpen, setIsChatPageSettingsModalOpen, "chat-settings-modal");
   const [selectedModel, setSelectedModel] = useState<Model>({
     id: "mistral-nemo-free",
     name: "mistralai/mistral-nemo:free",
