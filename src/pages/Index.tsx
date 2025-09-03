@@ -63,7 +63,7 @@ const Index = () => {
         id: char.id,
         name: char.name,
         description: char.intro,
-        image: char.avatar_url || '/lovable-uploads/3eab3055-d06f-48a5-9790-123de7769f97.png',
+        image: char.avatar_url || '/placeholder.svg',
         category: char.tags?.[0] || 'General',
         tags: Array.isArray(char.tags) ? char.tags : [],
         created_at: char.created_at,

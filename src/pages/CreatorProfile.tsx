@@ -387,7 +387,7 @@ const CreatorProfile = () => {
                     id: character.id,
                     name: character.name,
                     description: character.intro,
-                    image: character.avatar_url || '/lovable-uploads/3eab3055-d06f-48a5-9790-123de7769f97.png',
+                    image: character.avatar_url || '/placeholder.svg',
                     category: character.tags?.[0] || 'General',
                     stats: {
                       messages: characterStatsMap[character.id]?.messages ?? 0,
