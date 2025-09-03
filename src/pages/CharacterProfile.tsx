@@ -246,7 +246,7 @@ export default function CharacterProfile() {
       {/* Character Image Background - Fixed */}
       <div className="absolute inset-0 z-0">
         <img
-          src={character.avatar_url || "/lovable-uploads/3eab3055-d06f-48a5-9790-123de7769f97.png"}
+          src={character.avatar_url || "/placeholder.svg"}
           alt="Character"
           className="w-full h-full object-cover"
         />
