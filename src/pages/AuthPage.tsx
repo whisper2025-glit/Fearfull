@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useSignIn } from "@clerk/clerk-react";
+import { useSignIn, useSignUp } from "@clerk/clerk-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,15 +10,19 @@ import { toast } from "sonner";
 
 const AuthPage = () => {
   const navigate = useNavigate();
-  const { isLoaded, signIn, setActive } = useSignIn();
+  const { isLoaded: signInLoaded, signIn, setActive } = useSignIn();
+  const { isLoaded: signUpLoaded, signUp, setActive: setActiveSignUp } = useSignUp();
 
+  const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState<null | "email" | "google" | "discord">(null);
 
+  const isLoaded = signInLoaded && signUpLoaded;
+
   const onEmailSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!isLoaded) return;
+    if (!isLoaded || !signIn) return;
     setLoading("email");
     try {
       const result = await signIn.create({ identifier: email, password });
@@ -36,15 +40,53 @@ const AuthPage = () => {
     }
   };
 
+  const onEmailSignUp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!isLoaded || !signUp) return;
+    setLoading("email");
+    try {
+      const result = await signUp.create({
+        emailAddress: email,
+        password: password,
+      });
+
+      if (result.status === "complete") {
+        await setActiveSignUp({ session: result.createdSessionId });
+        navigate("/");
+      } else if (result.status === "missing_requirements") {
+        // Email verification required
+        await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
+        toast.success("Please check your email for verification code.");
+        // You could navigate to a verification page here
+        // For now, we'll just show the success message
+      } else {
+        toast.error("Sign up process incomplete. Please try again.");
+      }
+    } catch (err: any) {
+      const message = err?.errors?.[0]?.longMessage || err?.errors?.[0]?.message || "Unable to sign up";
+      toast.error(message);
+    } finally {
+      setLoading(null);
+    }
+  };
+
   const onOAuth = async (strategy: "oauth_google" | "oauth_discord") => {
     if (!isLoaded) return;
     setLoading(strategy === "oauth_google" ? "google" : "discord");
     try {
-      await signIn.authenticateWithRedirect({
-        strategy,
-        redirectUrl: "/",
-        redirectUrlComplete: "/",
-      });
+      if (mode === "signin" && signIn) {
+        await signIn.authenticateWithRedirect({
+          strategy,
+          redirectUrl: "/",
+          redirectUrlComplete: "/",
+        });
+      } else if (mode === "signup" && signUp) {
+        await signUp.authenticateWithRedirect({
+          strategy,
+          redirectUrl: "/",
+          redirectUrlComplete: "/",
+        });
+      }
     } catch (err: any) {
       const message = err?.errors?.[0]?.longMessage || err?.errors?.[0]?.message || "OAuth error";
       toast.error(message);
@@ -52,13 +94,24 @@ const AuthPage = () => {
     }
   };
 
+  const toggleMode = () => {
+    setMode(mode === "signin" ? "signup" : "signin");
+    setEmail("");
+    setPassword("");
+    setLoading(null);
+  };
+
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="rounded-lg border bg-card text-card-foreground shadow-sm p-6">
           <div className="space-y-1 text-center mb-6">
-            <h1 className="text-2xl font-semibold">Welcome back</h1>
-            <p className="text-sm text-muted-foreground">Sign in to your account</p>
+            <h1 className="text-2xl font-semibold">
+              {mode === "signin" ? "Welcome back" : "Create account"}
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              {mode === "signin" ? "Sign in to your account" : "Sign up for a new account"}
+            </p>
           </div>
 
           <div className="grid gap-3">
@@ -82,10 +135,12 @@ const AuthPage = () => {
 
           <div className="relative my-6">
             <Separator />
-            <span className="absolute inset-0 -top-3 mx-auto w-fit bg-card px-2 text-xs text-muted-foreground">or continue with email</span>
+            <span className="absolute inset-0 -top-3 mx-auto w-fit bg-card px-2 text-xs text-muted-foreground">
+              or continue with email
+            </span>
           </div>
 
-          <form onSubmit={onEmailSignIn} className="grid gap-4">
+          <form onSubmit={mode === "signin" ? onEmailSignIn : onEmailSignUp} className="grid gap-4">
             <div className="grid gap-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -104,7 +159,7 @@ const AuthPage = () => {
               <Input
                 id="password"
                 type="password"
-                autoComplete="current-password"
+                autoComplete={mode === "signin" ? "current-password" : "new-password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Your password"
@@ -114,9 +169,23 @@ const AuthPage = () => {
             </div>
             <Button type="submit" disabled={!isLoaded || loading === "email"}>
               {loading === "email" && <LoadingSpinner size="sm" className="mr-2" />}
-              Sign in
+              {mode === "signin" ? "Sign in" : "Sign up"}
             </Button>
           </form>
+
+          <div className="mt-6 text-center">
+            <button
+              type="button"
+              onClick={toggleMode}
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              disabled={!!loading}
+            >
+              {mode === "signin" 
+                ? "Don't have an account? Sign up" 
+                : "Already have an account? Sign in"
+              }
+            </button>
+          </div>
         </div>
       </div>
     </div>
