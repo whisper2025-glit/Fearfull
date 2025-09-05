@@ -6,43 +6,57 @@ interface BrandLogoProps {
   className?: string;
 }
 
-export function BrandLogo({ size = 32, className }: BrandLogoProps) {
-  const strokeWidth = Math.max(1.5, Math.round(size / 16));
-  const dotR = Math.max(1, Math.round(size / 24));
+// Vector logo reconstructed from the supplied PNG (blue drawing only)
+// Stroke-only glyphs with a cyan→blue gradient, transparent background
+export default function BrandLogo({ size = 36, className }: BrandLogoProps) {
+  const stroke = "url(#brand-stroke)";
+  const strokeWidth = Math.max(2, Math.round(size / 12));
+
   return (
     <svg
       width={size}
       height={size}
-      viewBox="0 0 48 48"
-      fill="none"
+      viewBox="0 0 96 96"
       xmlns="http://www.w3.org/2000/svg"
+      fill="none"
       className={cn(className)}
-      aria-label="Whisperchat logo"
+      aria-label="Brand logo"
     >
       <defs>
-        <linearGradient id="brandGrad" x1="0" y1="48" x2="48" y2="0" gradientUnits="userSpaceOnUse">
-          <stop stopColor="#06b6d4" />
+        <linearGradient id="brand-stroke" x1="12" y1="84" x2="84" y2="12" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stopColor="#2dd4bf" />
           <stop offset="1" stopColor="#60a5fa" />
         </linearGradient>
       </defs>
-      {/* Outer circular chat bubble with tail */}
+
+      {/* Outer chat circle with tail (single continuous stroke) */}
       <path
-        d="M24 4c11.046 0 20 8.065 20 18.001C44 31.937 35.046 40 24 40c-1.66 0-3.27-.186-4.8-.54-2.06 2.09-4.62 3.88-7.39 4.96 2.02-2.74 3.28-5.38 3.93-7.52C10.08 34.43 6 28.72 6 22.001 6 12.065 12.954 4 24 4Z"
-        stroke="url(#brandGrad)"
+        d="M48 12c19.33 0 35 14.62 35 32.66 0 18.05-15.67 32.67-35 32.67-3.18 0-6.28-.34-9.22-1-3.77 3.82-8.37 6.99-13.42 9 3.47-4.72 5.61-9.17 6.87-13.03C21.9 67.53 13 56.34 13 44.66 13 26.62 28.67 12 48 12Z"
+        stroke={stroke}
         strokeWidth={strokeWidth}
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      {/* Face - closed eyes and smile */}
-      <path d="M17 23c1.2-1.6 3.8-1.6 5 0" stroke="url(#brandGrad)" strokeWidth={strokeWidth} strokeLinecap="round" />
-      <path d="M26 23c1.2-1.6 3.8-1.6 5 0" stroke="url(#brandGrad)" strokeWidth={strokeWidth} strokeLinecap="round" />
-      <path d="M18 28c2.2 2.6 9.8 2.6 12 0" stroke="url(#brandGrad)" strokeWidth={strokeWidth} strokeLinecap="round" />
-      {/* Chat dots at top right */}
-      <circle cx="30.5" cy="12.5" r={dotR} fill="url(#brandGrad)" />
-      <circle cx="35.5" cy="12.5" r={dotR} fill="url(#brandGrad)" />
-      <circle cx="40.5" cy="12.5" r={dotR} fill="url(#brandGrad)" />
+
+      {/* Hair curve dividing the face (top-right sweep) */}
+      <path
+        d="M60.5 20.5c-8.5 3.2-14.7 10.7-16.2 19.7"
+        stroke={stroke}
+        strokeWidth={strokeWidth}
+        strokeLinecap="round"
+      />
+
+      {/* Eyes (closed) */}
+      <path d="M36 48c2.8-3.2 7.2-3.2 10 0" stroke={stroke} strokeWidth={strokeWidth} strokeLinecap="round" />
+      <path d="M57 48c2.8-3.2 7.2-3.2 10 0" stroke={stroke} strokeWidth={strokeWidth} strokeLinecap="round" />
+
+      {/* Smile */}
+      <path d="M38 60c4.8 5.6 15.2 5.6 20 0" stroke={stroke} strokeWidth={strokeWidth} strokeLinecap="round" />
+
+      {/* Three chat dots */}
+      <circle cx="63" cy="27" r={strokeWidth / 2 + 2} fill={"#2dd4bf"} />
+      <circle cx="71" cy="27" r={strokeWidth / 2 + 2} fill={"#44c7f5"} />
+      <circle cx="79" cy="27" r={strokeWidth / 2 + 2} fill={"#60a5fa"} />
     </svg>
   );
 }
-
-export default BrandLogo;
