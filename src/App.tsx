@@ -19,9 +19,9 @@ import AsteriskTestPage from "./pages/AsteriskTestPage";
 import ImageTest from "./pages/ImageTest";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
-import HealthCheck from "./components/HealthCheck";
 
 const queryClient = new QueryClient();
+
 
 const AppContent = () => {
   // Sync user with Supabase when authenticated
@@ -100,7 +100,6 @@ const App = () => (
       <Toaster />
       <Sonner />
       <AppContent />
-      <HealthCheck />
     </TooltipProvider>
   </QueryClientProvider>
 );

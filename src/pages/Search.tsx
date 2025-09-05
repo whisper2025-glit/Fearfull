@@ -33,6 +33,8 @@ import {
 } from "@/components/ui/sheet";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
+import { getFollowersCount } from "@/lib/follow";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 const Search = () => {
   const navigate = useNavigate();
@@ -111,14 +113,26 @@ const Search = () => {
             .select('*, characters!inner(*)', { count: 'exact', head: true })
             .eq('characters.owner_id', creator.id);
 
+          const followersCount = await getFollowersCount(creator.id);
           return {
             ...creator,
             characters_count: charactersCount || 0,
             messages_count: messagesCount || 0,
-            followers_count: 0 // You can add followers functionality later
+            followers_count: followersCount || 0
           };
         }));
-        setTrendingCreators(processedCreators);
+        const sortedCreators = [...processedCreators].sort((a, b) => {
+          const fa = a.followers_count || 0;
+          const fb = b.followers_count || 0;
+          if (fb !== fa) return fb - fa; // Desc by followers
+          const ca = a.characters_count || 0;
+          const cb = b.characters_count || 0;
+          if (cb !== ca) return cb - ca; // Tie-breaker: characters
+          const ma = a.messages_count || 0;
+          const mb = b.messages_count || 0;
+          return mb - ma; // Tie-breaker: messages
+        });
+        setTrendingCreators(sortedCreators);
       }
 
       // Load trending characters (by recent activity)
@@ -629,8 +643,12 @@ const Search = () => {
                     {/* Character Results Grid */}
                     {isSearching ? (
                       <div className="text-center py-8">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-                        <p className="mt-4 text-muted-foreground">Searching...</p>
+                        <div className="flex items-center justify-center">
+                          <div className="flex flex-col items-center gap-4">
+                            <LoadingSpinner size="lg" />
+                            <p className="text-muted-foreground">Searching...</p>
+                          </div>
+                        </div>
                       </div>
                     ) : searchResults.length > 0 ? (
                       <div className="grid grid-cols-2 gap-4">

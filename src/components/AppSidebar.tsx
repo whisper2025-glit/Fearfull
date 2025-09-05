@@ -29,6 +29,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import BrandLogo from "@/components/BrandLogo";
 
 const menuItems = [
   { title: "Create a bot", url: "/create", icon: Plus, isCreateModal: true },
@@ -74,9 +75,7 @@ export function AppSidebar() {
       <SidebarContent className="p-4 space-y-6">
         {/* Logo */}
         <div className="flex items-center gap-3 px-2">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-gray-500 to-cyan-500 flex items-center justify-center">
-            <div className="w-4 h-4 bg-white rounded-sm transform rotate-12"></div>
-          </div>
+          <BrandLogo size={56} className="flex-shrink-0" />
           {!collapsed && (
             <span className="text-xl font-bold text-white">
               Whisperchat
