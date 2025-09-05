@@ -33,6 +33,7 @@ import {
 } from "@/components/ui/sheet";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 const Search = () => {
   const navigate = useNavigate();
@@ -629,8 +630,12 @@ const Search = () => {
                     {/* Character Results Grid */}
                     {isSearching ? (
                       <div className="text-center py-8">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-                        <p className="mt-4 text-muted-foreground">Searching...</p>
+                        <div className="flex items-center justify-center">
+                          <div className="flex flex-col items-center gap-4">
+                            <LoadingSpinner size="lg" />
+                            <p className="text-muted-foreground">Searching...</p>
+                          </div>
+                        </div>
                       </div>
                     ) : searchResults.length > 0 ? (
                       <div className="grid grid-cols-2 gap-4">
