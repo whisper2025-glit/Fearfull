@@ -121,7 +121,18 @@ const Search = () => {
             followers_count: followersCount || 0
           };
         }));
-        setTrendingCreators(processedCreators);
+        const sortedCreators = [...processedCreators].sort((a, b) => {
+          const fa = a.followers_count || 0;
+          const fb = b.followers_count || 0;
+          if (fb !== fa) return fb - fa; // Desc by followers
+          const ca = a.characters_count || 0;
+          const cb = b.characters_count || 0;
+          if (cb !== ca) return cb - ca; // Tie-breaker: characters
+          const ma = a.messages_count || 0;
+          const mb = b.messages_count || 0;
+          return mb - ma; // Tie-breaker: messages
+        });
+        setTrendingCreators(sortedCreators);
       }
 
       // Load trending characters (by recent activity)
