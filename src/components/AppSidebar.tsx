@@ -75,7 +75,7 @@ export function AppSidebar() {
       <SidebarContent className="p-4 space-y-6">
         {/* Logo */}
         <div className="flex items-center gap-3 px-2">
-          <BrandLogo size={32} className="flex-shrink-0" />
+          <BrandLogo size={56} className="flex-shrink-0" />
           {!collapsed && (
             <span className="text-xl font-bold text-white">
               Whisperchat
