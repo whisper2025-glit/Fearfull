@@ -12,6 +12,7 @@ const AuthPage = () => {
   const navigate = useNavigate();
   const { isLoaded: signInLoaded, signIn, setActive } = useSignIn();
   const { isLoaded: signUpLoaded, signUp, setActive: setActiveSignUp } = useSignUp();
+  const { isLoaded: userLoaded, isSignedIn } = useUser();
 
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
@@ -19,6 +20,12 @@ const AuthPage = () => {
   const [loading, setLoading] = useState<null | "email" | "google" | "discord">(null);
 
   const isLoaded = signInLoaded && signUpLoaded;
+
+  useEffect(() => {
+    if (userLoaded && isSignedIn) {
+      navigate("/", { replace: true });
+    }
+  }, [userLoaded, isSignedIn, navigate]);
 
   const onEmailSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
