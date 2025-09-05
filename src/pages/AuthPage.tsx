@@ -59,7 +59,7 @@ const AuthPage = () => {
 
       if (result.status === "complete") {
         await setActiveSignUp({ session: result.createdSessionId });
-        navigate("/");
+        navigate("/", { replace: true });
       } else if (result.status === "missing_requirements") {
         // Email verification required
         await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
