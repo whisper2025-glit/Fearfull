@@ -42,6 +42,10 @@ const CreatorProfile = () => {
   const [viewerFavoritedIds, setViewerFavoritedIds] = useState<string[]>([]);
   const [characterStatsMap, setCharacterStatsMap] = useState<Record<string, { messages: number; likes: number }>>({});
 
+  // Follow state
+  const [isFollowingUser, setIsFollowingUser] = useState(false);
+  const [isFollowLoading, setIsFollowLoading] = useState(false);
+
   // Stats state
   const [stats, setStats] = useState({
     followers: 0,
