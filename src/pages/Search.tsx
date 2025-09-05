@@ -33,6 +33,7 @@ import {
 } from "@/components/ui/sheet";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
+import { getFollowersCount } from "@/lib/follow";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 const Search = () => {
@@ -112,11 +113,12 @@ const Search = () => {
             .select('*, characters!inner(*)', { count: 'exact', head: true })
             .eq('characters.owner_id', creator.id);
 
+          const followersCount = await getFollowersCount(creator.id);
           return {
             ...creator,
             characters_count: charactersCount || 0,
             messages_count: messagesCount || 0,
-            followers_count: 0 // You can add followers functionality later
+            followers_count: followersCount || 0
           };
         }));
         setTrendingCreators(processedCreators);
