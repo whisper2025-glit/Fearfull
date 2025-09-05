@@ -19,6 +19,7 @@ import AsteriskTestPage from "./pages/AsteriskTestPage";
 import ImageTest from "./pages/ImageTest";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
+import SsoCallback from "./pages/SsoCallback";
 
 const queryClient = new QueryClient();
 
@@ -32,6 +33,7 @@ const AppContent = () => {
     <BrowserRouter>
       <Routes>
         <Route path="/auth" element={<AuthPage />} />
+        <Route path="/sso-callback" element={<SsoCallback />} />
         <Route path="/" element={
           <ProtectedRoute>
             <Index />
