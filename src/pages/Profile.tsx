@@ -15,7 +15,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { ChevronLeft, Settings, Gift, MoreHorizontal, X, Camera, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { FullscreenSpinner, LoadingSpinner } from "@/components/ui/loading-spinner";
+import { FullscreenSpinner } from "@/components/ui/loading-spinner";
 import { CharacterCard } from "@/components/CharacterCard";
 import SettingsSheet from "@/components/SettingsSheet";
 import { CreateModal } from "@/components/CreateModal";
