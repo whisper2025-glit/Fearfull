@@ -138,13 +138,17 @@ export default function CharacterProfile() {
 
       const totalLikes = (likesData || []).reduce((sum, comment) => sum + (comment.likes_count || 0), 0);
 
-      // TODO: Implement followers system when available
-      // For now, we'll use placeholder data or calculate based on available metrics
-      const followersCount = Math.floor(totalLikes / 10) + (userCharacters?.length || 0) * 5; // Estimated followers
+      // Followers count from DB if available (fallback to 0)
+      let followersCount = 0;
+      try {
+        followersCount = await getFollowersCount(userId);
+      } catch (e) {
+        console.warn('Followers count unavailable:', e);
+      }
 
       setUserStats({
         charactersCount: userCharacters?.length || 0,
-        followersCount: followersCount,
+        followersCount,
         likesCount: totalLikes
       });
     } catch (error) {
