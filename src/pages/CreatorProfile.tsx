@@ -304,20 +304,52 @@ const CreatorProfile = () => {
                 </div>
               </div>
 
-              {/* Stats */}
-              <div className="flex items-center gap-6">
-                <div className="text-center">
-                  <div className="text-lg font-bold text-white">{stats.followers}</div>
-                  <div className="text-xs text-white/70">Followers</div>
+              {/* Stats and Follow Button */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-6">
+                  <div className="text-center">
+                    <div className="text-lg font-bold text-white">{stats.followers}</div>
+                    <div className="text-xs text-white/70">Followers</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-lg font-bold text-white">{stats.following}</div>
+                    <div className="text-xs text-white/70">Following</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-lg font-bold text-white">{stats.likes}</div>
+                    <div className="text-xs text-white/70">Likes</div>
+                  </div>
                 </div>
-                <div className="text-center">
-                  <div className="text-lg font-bold text-white">{stats.following}</div>
-                  <div className="text-xs text-white/70">Following</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-lg font-bold text-white">{stats.likes}</div>
-                  <div className="text-xs text-white/70">Likes</div>
-                </div>
+
+                {user && userId && user.id !== userId && (
+                  <Button
+                    className={`${isFollowingUser ? 'bg-cyan-600 hover:bg-cyan-500' : 'bg-gray-700/80 hover:bg-gray-600/80'} text-white px-6`}
+                    disabled={isFollowLoading}
+                    onClick={async () => {
+                      if (isFollowLoading) return;
+                      setIsFollowLoading(true);
+                      try {
+                        const nowFollowing = await toggleFollowUser(user.id, userId);
+                        setIsFollowingUser(nowFollowing);
+                        setStats((prev) => ({
+                          ...prev,
+                          followers: prev.followers + (nowFollowing ? 1 : -1)
+                        }));
+                        toast.success(nowFollowing ? 'Followed' : 'Unfollowed');
+                      } catch (e: any) {
+                        toast.error('Unable to update follow status');
+                      } finally {
+                        setIsFollowLoading(false);
+                      }
+                    }}
+                  >
+                    {isFollowLoading ? (
+                      <span className="inline-flex items-center gap-2"><Loader2 className="h-4 w-4 animate-spin" /> Processing</span>
+                    ) : (
+                      isFollowingUser ? 'Following' : 'Follow'
+                    )}
+                  </Button>
+                )}
               </div>
             </div>
           </div>
