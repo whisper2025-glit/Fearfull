@@ -15,6 +15,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { ChevronLeft, Settings, Gift, MoreHorizontal, X, Camera, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { FullscreenSpinner, LoadingSpinner } from "@/components/ui/loading-spinner";
 import { CharacterCard } from "@/components/CharacterCard";
 import SettingsSheet from "@/components/SettingsSheet";
 import { CreateModal } from "@/components/CreateModal";
@@ -336,12 +337,7 @@ const Profile = () => {
   if (!user) {
     return (
       <Layout>
-        <div className="flex-1 flex items-center justify-center">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary mx-auto"></div>
-            <p className="mt-4 text-muted-foreground">Loading profile...</p>
-          </div>
-        </div>
+        <FullscreenSpinner label="Loading profile..." />
       </Layout>
     );
   }
@@ -594,12 +590,7 @@ const Profile = () => {
 
           {/* Content Area */}
           {isLoading ? (
-            <div className="flex items-center justify-center py-16">
-              <div className="flex flex-col items-center gap-4">
-                <Loader2 className="h-8 w-8 animate-spin" />
-                <p className="text-muted-foreground">Loading...</p>
-              </div>
-            </div>
+            <FullscreenSpinner label="Loading..." />
           ) : displayCharacters.length > 0 ? (
             <div className="grid grid-cols-2 gap-4">
               {getSortedCharacters(displayCharacters).map((character) => (

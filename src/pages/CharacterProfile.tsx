@@ -8,6 +8,7 @@ import { Share2, MessageCircle, Heart, ChevronLeft } from "lucide-react";
 import { supabase, favoriteCharacter, checkIsFavorited } from "@/lib/supabase";
 import { getFollowersCount } from "@/lib/follow";
 import { toast } from "sonner";
+import { FullscreenSpinner } from "@/components/ui/loading-spinner";
 import { CommentsList } from "@/components/CommentsList";
 import { useComments } from "@/hooks/useComments";
 
@@ -198,14 +199,7 @@ export default function CharacterProfile() {
   };
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen bg-[#111216] text-white flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto mb-4"></div>
-          <p>Loading character...</p>
-        </div>
-      </div>
-    );
+    return <FullscreenSpinner label="Loading character..." />;
   }
 
   if (!character) {
