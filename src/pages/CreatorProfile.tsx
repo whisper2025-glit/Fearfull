@@ -137,12 +137,33 @@ const CreatorProfile = () => {
         setViewerFavoritedIds(viewerFavorites);
       }
 
-      // Estimate followers based on engagement
-      const followersCount = Math.floor(totalLikes / 10) + publicBotsCount * 5;
+      // Followers/following counts from DB (fallback to 0 if unsupported)
+      let followersCount = 0;
+      let followingCount = 0;
+      try {
+        const [fc, fgc] = await Promise.all([
+          getFollowersCount(userId),
+          getFollowingCount(userId)
+        ]);
+        followersCount = fc;
+        followingCount = fgc;
+      } catch (e) {
+        console.warn('Follower counts unavailable:', e);
+      }
+
+      // Determine viewer follow state
+      if (user && user.id !== userId) {
+        try {
+          const followingState = await isFollowing(user.id, userId);
+          setIsFollowingUser(followingState);
+        } catch (e) {
+          console.warn('isFollowing unavailable:', e);
+        }
+      }
 
       setStats({
         followers: followersCount,
-        following: 0,
+        following: followingCount,
         likes: totalLikes,
         publicBots: publicBotsCount,
         favorites: favoriteChars.length,
