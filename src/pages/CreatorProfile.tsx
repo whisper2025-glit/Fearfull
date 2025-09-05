@@ -12,6 +12,7 @@ import {
 import { ChevronLeft, MoreHorizontal, Star, Loader2 } from "lucide-react";
 import { CharacterCard } from "@/components/CharacterCard";
 import { supabase, getFavoriteCharacters, checkIsFavorited, getMessageCountsForCharacters, getFavoriteCountsForCharacters } from "@/lib/supabase";
+import { isFollowing, toggleFollowUser, getFollowersCount, getFollowingCount } from "@/lib/follow";
 import { useUser } from "@clerk/clerk-react";
 import { toast } from "sonner";
 
