@@ -19,8 +19,8 @@ export default function BrandLogo({ size = 36, className }: BrandLogoProps) {
     >
       <defs>
         <linearGradient id="logoGrad" x1="0" y1="243" x2="243" y2="0" gradientUnits="userSpaceOnUse">
-          <stop offset="0" stopColor="#2dd4bf" />
-          <stop offset="1" stopColor="#60a5fa" />
+          <stop offset="0" stopColor="#06b6d4" />
+          <stop offset="1" stopColor="#06b6d4" />
         </linearGradient>
       </defs>
       <g transform="translate(0,243) scale(0.1,-0.1)" fill="url(#logoGrad)" stroke="none">
