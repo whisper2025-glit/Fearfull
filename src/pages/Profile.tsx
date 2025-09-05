@@ -19,6 +19,7 @@ import { CharacterCard } from "@/components/CharacterCard";
 import SettingsSheet from "@/components/SettingsSheet";
 import { CreateModal } from "@/components/CreateModal";
 import { supabase, uploadImage, getFavoriteCharacters, checkIsFavorited, getMessageCountsForCharacters, getFavoriteCountsForCharacters } from "@/lib/supabase";
+import { getFollowersCount, getFollowingCount } from "@/lib/follow";
 import { toast } from "sonner";
 import { useHistoryBackClose } from "@/hooks/useHistoryBackClose";
 
