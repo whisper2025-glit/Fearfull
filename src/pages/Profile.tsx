@@ -121,10 +121,24 @@ const Profile = () => {
       const favoriteChars = await getFavoriteCharacters(user.id);
       setFavoriteCharacters(favoriteChars);
 
-      setStats(prev => ({
-        ...prev,
-        favorites: favoriteChars.length
-      }));
+      // Followers / Following counts
+      try {
+        const [followersCount, followingCount] = await Promise.all([
+          getFollowersCount(user.id),
+          getFollowingCount(user.id)
+        ]);
+        setStats(prev => ({
+          ...prev,
+          followers: followersCount,
+          following: followingCount,
+          favorites: favoriteChars.length
+        }));
+      } catch {
+        setStats(prev => ({
+          ...prev,
+          favorites: favoriteChars.length
+        }));
+      }
 
       // Build stats map for both own and favorite characters
       const allCharacterIds = [
