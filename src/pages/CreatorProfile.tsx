@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ChevronLeft, MoreHorizontal, Star, Loader2 } from "lucide-react";
 import { CharacterCard } from "@/components/CharacterCard";
+import { LoadingSpinner, FullscreenSpinner } from "@/components/ui/loading-spinner";
 import { supabase, getFavoriteCharacters, checkIsFavorited, getMessageCountsForCharacters, getFavoriteCountsForCharacters } from "@/lib/supabase";
 import { isFollowing, toggleFollowUser, getFollowersCount, getFollowingCount } from "@/lib/follow";
 import { useUser } from "@clerk/clerk-react";
@@ -240,12 +241,7 @@ const CreatorProfile = () => {
   if (isLoading) {
     return (
       <Layout>
-        <div className="flex-1 flex items-center justify-center">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary mx-auto"></div>
-            <p className="mt-4 text-muted-foreground">Loading creator profile...</p>
-          </div>
-        </div>
+        <FullscreenSpinner label="Loading creator profile..." />
       </Layout>
     );
   }
