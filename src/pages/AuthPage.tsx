@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useSignIn, useSignUp } from "@clerk/clerk-react";
+import { useSignIn, useSignUp, useUser } from "@clerk/clerk-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,6 +12,7 @@ const AuthPage = () => {
   const navigate = useNavigate();
   const { isLoaded: signInLoaded, signIn, setActive } = useSignIn();
   const { isLoaded: signUpLoaded, signUp, setActive: setActiveSignUp } = useSignUp();
+  const { isSignedIn, isLoaded: userLoaded } = useUser();
 
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
@@ -19,6 +20,13 @@ const AuthPage = () => {
   const [loading, setLoading] = useState<null | "email" | "google" | "discord">(null);
 
   const isLoaded = signInLoaded && signUpLoaded;
+
+  // If the user is already signed in, redirect away from auth and replace history
+  useEffect(() => {
+    if (userLoaded && isSignedIn) {
+      navigate("/", { replace: true });
+    }
+  }, [userLoaded, isSignedIn, navigate]);
 
   const onEmailSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,7 +36,7 @@ const AuthPage = () => {
       const result = await signIn.create({ identifier: email, password });
       if (result.status === "complete" && result.createdSessionId) {
         await setActive({ session: result.createdSessionId });
-        navigate("/");
+        navigate("/", { replace: true });
       } else {
         toast.error("Additional verification is required to sign in.");
       }
@@ -52,13 +60,10 @@ const AuthPage = () => {
 
       if (result.status === "complete") {
         await setActiveSignUp({ session: result.createdSessionId });
-        navigate("/");
+        navigate("/", { replace: true });
       } else if (result.status === "missing_requirements") {
-        // Email verification required
         await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
         toast.success("Please check your email for verification code.");
-        // You could navigate to a verification page here
-        // For now, we'll just show the success message
       } else {
         toast.error("Sign up process incomplete. Please try again.");
       }
@@ -180,8 +185,8 @@ const AuthPage = () => {
               className="text-sm text-muted-foreground hover:text-foreground transition-colors"
               disabled={!!loading}
             >
-              {mode === "signin" 
-                ? "Don't have an account? Sign up" 
+              {mode === "signin"
+                ? "Don't have an account? Sign up"
                 : "Already have an account? Sign in"
               }
             </button>
