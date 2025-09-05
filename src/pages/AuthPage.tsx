@@ -35,7 +35,7 @@ const AuthPage = () => {
       const result = await signIn.create({ identifier: email, password });
       if (result.status === "complete" && result.createdSessionId) {
         await setActive({ session: result.createdSessionId });
-        navigate("/");
+        navigate("/", { replace: true });
       } else {
         toast.error("Additional verification is required to sign in.");
       }
