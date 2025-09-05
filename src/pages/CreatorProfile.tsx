@@ -12,6 +12,7 @@ import {
 import { ChevronLeft, MoreHorizontal, Star, Loader2 } from "lucide-react";
 import { CharacterCard } from "@/components/CharacterCard";
 import { supabase, getFavoriteCharacters, checkIsFavorited, getMessageCountsForCharacters, getFavoriteCountsForCharacters } from "@/lib/supabase";
+import { isFollowing, toggleFollowUser, getFollowersCount, getFollowingCount } from "@/lib/follow";
 import { useUser } from "@clerk/clerk-react";
 import { toast } from "sonner";
 
@@ -40,6 +41,10 @@ const CreatorProfile = () => {
   const [favoriteCharacters, setFavoriteCharacters] = useState<any[]>([]);
   const [viewerFavoritedIds, setViewerFavoritedIds] = useState<string[]>([]);
   const [characterStatsMap, setCharacterStatsMap] = useState<Record<string, { messages: number; likes: number }>>({});
+
+  // Follow state
+  const [isFollowingUser, setIsFollowingUser] = useState(false);
+  const [isFollowLoading, setIsFollowLoading] = useState(false);
 
   // Stats state
   const [stats, setStats] = useState({
@@ -132,12 +137,33 @@ const CreatorProfile = () => {
         setViewerFavoritedIds(viewerFavorites);
       }
 
-      // Estimate followers based on engagement
-      const followersCount = Math.floor(totalLikes / 10) + publicBotsCount * 5;
+      // Followers/following counts from DB (fallback to 0 if unsupported)
+      let followersCount = 0;
+      let followingCount = 0;
+      try {
+        const [fc, fgc] = await Promise.all([
+          getFollowersCount(userId),
+          getFollowingCount(userId)
+        ]);
+        followersCount = fc;
+        followingCount = fgc;
+      } catch (e) {
+        console.warn('Follower counts unavailable:', e);
+      }
+
+      // Determine viewer follow state
+      if (user && user.id !== userId) {
+        try {
+          const followingState = await isFollowing(user.id, userId);
+          setIsFollowingUser(followingState);
+        } catch (e) {
+          console.warn('isFollowing unavailable:', e);
+        }
+      }
 
       setStats({
         followers: followersCount,
-        following: 0,
+        following: followingCount,
         likes: totalLikes,
         publicBots: publicBotsCount,
         favorites: favoriteChars.length,
@@ -278,20 +304,52 @@ const CreatorProfile = () => {
                 </div>
               </div>
 
-              {/* Stats */}
-              <div className="flex items-center gap-6">
-                <div className="text-center">
-                  <div className="text-lg font-bold text-white">{stats.followers}</div>
-                  <div className="text-xs text-white/70">Followers</div>
+              {/* Stats and Follow Button */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-6">
+                  <div className="text-center">
+                    <div className="text-lg font-bold text-white">{stats.followers}</div>
+                    <div className="text-xs text-white/70">Followers</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-lg font-bold text-white">{stats.following}</div>
+                    <div className="text-xs text-white/70">Following</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-lg font-bold text-white">{stats.likes}</div>
+                    <div className="text-xs text-white/70">Likes</div>
+                  </div>
                 </div>
-                <div className="text-center">
-                  <div className="text-lg font-bold text-white">{stats.following}</div>
-                  <div className="text-xs text-white/70">Following</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-lg font-bold text-white">{stats.likes}</div>
-                  <div className="text-xs text-white/70">Likes</div>
-                </div>
+
+                {user && userId && user.id !== userId && (
+                  <Button
+                    className={`${isFollowingUser ? 'bg-cyan-600 hover:bg-cyan-500' : 'bg-gray-700/80 hover:bg-gray-600/80'} text-white px-6`}
+                    disabled={isFollowLoading}
+                    onClick={async () => {
+                      if (isFollowLoading) return;
+                      setIsFollowLoading(true);
+                      try {
+                        const nowFollowing = await toggleFollowUser(user.id, userId);
+                        setIsFollowingUser(nowFollowing);
+                        setStats((prev) => ({
+                          ...prev,
+                          followers: prev.followers + (nowFollowing ? 1 : -1)
+                        }));
+                        toast.success(nowFollowing ? 'Followed' : 'Unfollowed');
+                      } catch (e: any) {
+                        toast.error('Unable to update follow status');
+                      } finally {
+                        setIsFollowLoading(false);
+                      }
+                    }}
+                  >
+                    {isFollowLoading ? (
+                      <span className="inline-flex items-center gap-2"><Loader2 className="h-4 w-4 animate-spin" /> Processing</span>
+                    ) : (
+                      isFollowingUser ? 'Following' : 'Follow'
+                    )}
+                  </Button>
+                )}
               </div>
             </div>
           </div>
