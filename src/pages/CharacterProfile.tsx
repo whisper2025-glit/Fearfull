@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Share2, MessageCircle, Heart, ChevronLeft } from "lucide-react";
 import { supabase, favoriteCharacter, checkIsFavorited } from "@/lib/supabase";
+import { getFollowersCount } from "@/lib/follow";
 import { toast } from "sonner";
 import { CommentsList } from "@/components/CommentsList";
 import { useComments } from "@/hooks/useComments";
