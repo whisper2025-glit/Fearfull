@@ -105,13 +105,13 @@ const AuthPage = () => {
       if (mode === "signin" && signIn) {
         await signIn.authenticateWithRedirect({
           strategy,
-          redirectUrl: "/",
+          redirectUrl: "/sso-callback",
           redirectUrlComplete: "/",
         });
       } else if (mode === "signup" && signUp) {
         await signUp.authenticateWithRedirect({
           strategy,
-          redirectUrl: "/",
+          redirectUrl: "/sso-callback",
           redirectUrlComplete: "/",
         });
       }
