@@ -101,6 +101,23 @@ export default function CharacterProfile() {
 
         setCharacter(characterData);
 
+        // Set document title and OG meta
+        document.title = `${characterData.name} • WhisperChat`;
+        const setMeta = (property: string, content: string) => {
+          let el = document.querySelector(`meta[property=\"${property}\"]`) as HTMLMetaElement | null;
+          if (!el) {
+            el = document.createElement('meta');
+            el.setAttribute('property', property);
+            document.head.appendChild(el);
+          }
+          el.setAttribute('content', content);
+        };
+        setMeta('og:title', characterData.name);
+        setMeta('og:description', characterData.intro || 'Chat with this character on WhisperChat');
+        setMeta('og:image', characterData.avatar_url || `${window.location.origin}/placeholder.svg`);
+        setMeta('og:type', 'website');
+        setMeta('og:url', window.location.href);
+
         // Add meta noindex for unlisted/private
         if (characterData.visibility !== 'public') {
           const meta = document.createElement('meta');
