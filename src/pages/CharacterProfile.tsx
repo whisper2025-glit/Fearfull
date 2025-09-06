@@ -101,17 +101,15 @@ export default function CharacterProfile() {
 
         setCharacter(characterData);
 
-        // Add meta noindex for unlisted
-        if (characterData.visibility === 'unlisted') {
+        // Add meta noindex for unlisted/private
+        if (characterData.visibility !== 'public') {
           const meta = document.createElement('meta');
           meta.name = 'robots';
           meta.content = 'noindex, nofollow';
           document.head.appendChild(meta);
-          // cleanup on unmount
           const cleanup = () => {
             try { document.head.removeChild(meta); } catch {}
           };
-          // store cleanup
           (window as any).__unlisted_meta_cleanup__ = cleanup;
         } else if ((window as any).__unlisted_meta_cleanup__) {
           (window as any).__unlisted_meta_cleanup__();
