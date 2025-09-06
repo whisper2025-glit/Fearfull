@@ -3,7 +3,7 @@ import { CharacterCard } from "@/components/CharacterCard";
 import { CharacterCardSkeleton } from "@/components/CharacterCardSkeleton";
 import { Button } from "@/components/ui/button";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { supabase, getMessageCountsForCharacters, getFavoriteCountsForCharacters, checkIsFavorited } from "@/lib/supabase";
 import { toast } from "sonner";
