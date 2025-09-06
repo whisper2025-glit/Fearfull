@@ -523,7 +523,10 @@ const CreateCharacter = () => {
             </>
           ) : (
             // Simple Chat Preview
-            <div className="space-y-4">
+            <div className="space-y-4 relative">
+              {formData.sceneImage && (
+                <div className="absolute inset-0 -z-10 bg-cover bg-center opacity-30" style={{ backgroundImage: `url(${formData.sceneImage})` }} />
+              )}
               {/* Header */}
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-muted overflow-hidden">
