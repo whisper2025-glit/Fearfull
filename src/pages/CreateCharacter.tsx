@@ -95,29 +95,31 @@ const CreateCharacter = () => {
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex bg-background">
-          <Button
-            variant="ghost"
-            className={`flex-1 rounded-none h-12 text-xs font-medium ${
-              activeTab === 'create'
-                ? 'bg-primary text-white shadow-lg'
-                : 'bg-black text-white hover:bg-secondary/30'
-            }`}
-            onClick={() => setActiveTab('create')}
-          >
-            Create
-          </Button>
-          <Button
-            variant="ghost"
-            className={`flex-1 rounded-none h-12 text-xs font-medium ${
-              activeTab === 'preview'
-                ? 'bg-primary text-white shadow-lg'
-                : 'bg-black text-white hover:bg-secondary/30'
-            }`}
-            onClick={() => setActiveTab('preview')}
-          >
-            Preview
-          </Button>
+        <div className="flex justify-center bg-background border-b border-border py-3">
+          <div className="inline-flex items-center gap-1 bg-black rounded-full p-1">
+            <Button
+              variant="ghost"
+              className={`rounded-full h-9 px-6 text-sm font-medium transition-colors ${
+                activeTab === 'create'
+                  ? 'bg-primary text-white shadow'
+                  : 'bg-transparent text-white hover:bg-white/10'
+              }`}
+              onClick={() => setActiveTab('create')}
+            >
+              Create
+            </Button>
+            <Button
+              variant="ghost"
+              className={`rounded-full h-9 px-6 text-sm font-medium transition-colors ${
+                activeTab === 'preview'
+                  ? 'bg-primary text-white shadow'
+                  : 'bg-transparent text-white hover:bg-white/10'
+              }`}
+              onClick={() => setActiveTab('preview')}
+            >
+              Preview
+            </Button>
+          </div>
         </div>
 
         {/* Form Content */}
