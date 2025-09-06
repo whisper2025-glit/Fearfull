@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { FullscreenSpinner } from "@/components/ui/loading-spinner";
 import { CommentsList } from "@/components/CommentsList";
 import { useComments } from "@/hooks/useComments";
+import { trackEvent } from "@/lib/analytics";
 
 interface Character {
   id: string;
@@ -212,6 +213,7 @@ export default function CharacterProfile() {
     try {
       const newFavoriteStatus = await favoriteCharacter(user.id, characterId);
       setIsFavorited(newFavoriteStatus);
+      trackEvent('favorite_toggle', { character_id: characterId, is_favorited: newFavoriteStatus });
       toast.success(newFavoriteStatus ? 'Added to favorites' : 'Removed from favorites');
     } catch (error) {
       console.error('Error favoriting character:', error);
@@ -226,6 +228,7 @@ export default function CharacterProfile() {
   };
 
   const handleStartChat = () => {
+    trackEvent('start_chat', { character_id: characterId });
     navigate(`/chat/${characterId}`);
   };
 
@@ -236,6 +239,7 @@ export default function CharacterProfile() {
   const handleShare = () => {
     // Copy URL to clipboard
     navigator.clipboard.writeText(window.location.href);
+    trackEvent('character_share', { character_id: characterId, visibility: character?.visibility });
     toast.success('Profile link copied to clipboard');
   };
 
