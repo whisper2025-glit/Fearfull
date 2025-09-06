@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { ChevronLeft, Settings, Gift, MoreHorizontal, X, Camera, Loader2 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { FullscreenSpinner } from "@/components/ui/loading-spinner";
 import { CharacterCard } from "@/components/CharacterCard";
 import SettingsSheet from "@/components/SettingsSheet";
@@ -28,6 +28,7 @@ const Profile = () => {
   const navigate = useNavigate();
   const { user } = useUser();
   const [activeTab, setActiveTab] = useState('bots');
+  const [searchParams, setSearchParams] = useSearchParams();
   const [sortBy, setSortBy] = useState('newest');
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -179,6 +180,14 @@ const Profile = () => {
   useEffect(() => {
     loadUserData();
   }, [user]);
+
+  // Initialize tab from URL ?tab=
+  useEffect(() => {
+    const tab = searchParams.get('tab');
+    if (tab && ['bots','private','unlisted','favorites','posts'].includes(tab)) {
+      setActiveTab(tab);
+    }
+  }, [searchParams]);
 
   // Filter characters based on active tab
   const getCharactersForTab = () => {
@@ -566,7 +575,7 @@ const Profile = () => {
               {tabs.map((tab) => (
                 <button
                   key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
+                  onClick={() => { setActiveTab(tab.id); setSearchParams({ tab: tab.id }); }}
                   className={`text-sm font-medium pb-2 border-b-2 transition-colors ${
                     activeTab === tab.id 
                       ? 'text-cyan-400 border-cyan-400' 
@@ -606,6 +615,7 @@ const Profile = () => {
               {getSortedCharacters(displayCharacters).map((character) => (
                 <CharacterCard
                   key={character.id}
+                  showShareButton={activeTab === 'unlisted'}
                   character={{
                     id: character.id,
                     name: character.name,
