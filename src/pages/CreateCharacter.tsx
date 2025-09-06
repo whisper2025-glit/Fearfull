@@ -95,7 +95,7 @@ const CreateCharacter = () => {
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex justify-center bg-background border-b border-border py-3">
+        <div className="flex justify-center bg-background py-3">
           <div className="inline-flex items-center gap-1 bg-black rounded-full p-1">
             <Button
               variant="ghost"
