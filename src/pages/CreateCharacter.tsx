@@ -190,7 +190,7 @@ const CreateCharacter = () => {
                       }}
                     />
                   </div>
-                  <div className="w-24 h-24 bg-black rounded-full flex items-center justify-center relative overflow-hidden">
+                  <div className="w-24 h-24 bg-muted rounded-full flex items-center justify-center relative overflow-hidden">
                     {formData.characterImage ? (
                       <img
                         src={formData.characterImage}
@@ -510,7 +510,7 @@ const CreateCharacter = () => {
             /* Preview Tab Content */
             <div className="text-center py-12 space-y-6">
               <div className="w-24 h-24 bg-muted rounded-full mx-auto flex items-center justify-center">
-                <span className="text-3xl">��</span>
+                <span className="text-3xl">👤</span>
               </div>
               <h2 className="text-sm font-medium">{formData.name || "Your OC's Name"}</h2>
               <div className="border-t border-border pt-6">
