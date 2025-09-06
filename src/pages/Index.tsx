@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { HomeFilters, SortOption } from "@/components/HomeFilters";
 import { useUser } from "@clerk/clerk-react";
 import { getFavoriteCharacters } from "@/lib/supabase";
+import { trackEvent } from "@/lib/analytics";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -92,6 +93,9 @@ const Index = () => {
       setCharacters(prev => pageToLoad === 0 ? withStats : [...prev, ...withStats]);
       setHasMore((charactersData || []).length === PAGE_SIZE);
       setPage(pageToLoad);
+      if (pageToLoad > 0) {
+        trackEvent('load_more', { page: pageToLoad, page_size: PAGE_SIZE });
+      }
     } catch (error) {
       console.error('Error loading content:', error);
       toast.error('Failed to load content');
@@ -120,6 +124,7 @@ const Index = () => {
     setCharacters([]);
     setHasMore(true);
     setPage(0);
+    trackEvent('filter_change', { tag: activeTag, sort: sortBy, gender });
     // Persist to URL
     const params: any = {};
     if (activeTag) params.tag = activeTag;
@@ -229,7 +234,7 @@ const Index = () => {
                 <CharacterCard
                   key={character.id}
                   character={character}
-                  onClick={() => navigate(`/character/${character.id}`)}
+                  onClick={() => { trackEvent('open_character', { character_id: character.id }); navigate(`/character/${character.id}`); }}
                 />
               ))}
             </div>
