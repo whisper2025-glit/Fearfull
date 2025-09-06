@@ -3,6 +3,7 @@ import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuIte
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ChevronDown } from "lucide-react";
 import clsx from "clsx";
+import { useState } from "react";
 
 export type SortOption =
   | "Popular"
@@ -52,6 +53,7 @@ const SORT_OPTIONS: SortOption[] = [
 const GENDER_OPTIONS = ["Gender All", "Male", "Female", "Non-binary"] as const;
 
 export function HomeFilters({ activeTag, onTagChange, sortBy, onSortChange, gender, onGenderChange }: HomeFiltersProps) {
+  const [allTagsOpen, setAllTagsOpen] = useState(false);
   return (
     <div className="w-full space-y-3">
       {/* Top controls row */}
@@ -105,9 +107,9 @@ export function HomeFilters({ activeTag, onTagChange, sortBy, onSortChange, gend
             {t}
           </button>
         ))}
-        <Popover>
+        <Popover open={allTagsOpen} onOpenChange={setAllTagsOpen}>
           <PopoverTrigger asChild>
-            <Button variant="secondary" className="h-8 rounded-full px-3 text-[12px] font-medium border border-primary/60">
+            <Button variant="secondary" className="h-8 rounded-full px-3 text-[12px] font-medium border border-primary/60" aria-haspopup="menu" aria-expanded={allTagsOpen}>
               All Tags
               <ChevronDown className="ml-1 h-4 w-4" />
             </Button>
@@ -117,7 +119,7 @@ export function HomeFilters({ activeTag, onTagChange, sortBy, onSortChange, gend
               {TAGS.map((t) => (
                 <button
                   key={t}
-                  onClick={() => onTagChange(t)}
+                  onClick={() => { onTagChange(t); setAllTagsOpen(false); }}
                   className={clsx(
                     "h-8 rounded-full border border-border/60 bg-secondary/70 px-3 text-[12px] font-medium text-left truncate",
                     activeTag === t ? "bg-primary text-primary-foreground border-primary/60" : "hover:bg-secondary"
