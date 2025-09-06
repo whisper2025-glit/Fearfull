@@ -380,7 +380,14 @@ export default function CharacterProfile() {
             >
               <ChevronLeft className="h-4 w-4" />
             </Button>
-            <h2 className="text-lg font-semibold text-white">{character.name}</h2>
+            <div className="flex items-center gap-2">
+              <h2 className="text-lg font-semibold text-white">{character.name}</h2>
+              {character.visibility && character.visibility !== 'public' && (
+                <Badge variant="secondary" className="text-xs">
+                  {character.visibility === 'private' ? 'Private' : 'Unlisted'}
+                </Badge>
+              )}
+            </div>
           </div>
           <div className="flex items-center gap-2">
             <Button
