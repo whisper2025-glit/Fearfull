@@ -12,6 +12,7 @@ import { ArrowLeft, Upload, Info, ChevronUp, RotateCcw, Loader2, ChevronDown, Se
 import { useNavigate } from "react-router-dom";
 import { useUser } from "@clerk/clerk-react";
 import { supabase, uploadImage } from "@/lib/supabase";
+import { compressAndCropImage } from "@/lib/image";
 import { toast } from "sonner";
 import { MessageFormatter } from "@/components/MessageFormatter";
 import { Card } from "@/components/ui/card";
@@ -62,21 +63,26 @@ const CreateCharacter = () => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleImageUpload = (field: 'characterImage' | 'sceneImage', file: File) => {
+  const handleImageUpload = async (field: 'characterImage' | 'sceneImage', file: File) => {
     if (!file.type.startsWith('image/')) {
       toast.error('Only image files are allowed');
       return;
     }
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error('Image must be less than 5MB');
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error('Image must be less than 10MB');
       return;
     }
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const result = e.target?.result as string;
-      setFormData(prev => ({ ...prev, [field]: result }));
-    };
-    reader.readAsDataURL(file);
+    try {
+      const { dataUrl } = await compressAndCropImage(file, {
+        maxDimension: field === 'characterImage' ? 512 : 1920,
+        quality: 0.9,
+        outputType: 'image/webp',
+        squareCrop: field === 'characterImage',
+      });
+      setFormData(prev => ({ ...prev, [field]: dataUrl }));
+    } catch (e) {
+      toast.error('Failed to process image');
+    }
   };
 
   const getCharacterCount = (text: string) => {
@@ -193,9 +199,9 @@ const CreateCharacter = () => {
                       type="file"
                       accept="image/*"
                       className="hidden"
-                      onChange={(e) => {
+                      onChange={async (e) => {
                         const file = e.target.files?.[0];
-                        if (file) handleImageUpload('characterImage', file);
+                        if (file) await handleImageUpload('characterImage', file);
                       }}
                     />
                   </div>
@@ -262,9 +268,9 @@ const CreateCharacter = () => {
                     type="file"
                     accept="image/*"
                     className="hidden"
-                    onChange={(e) => {
+                    onChange={async (e) => {
                       const file = e.target.files?.[0];
-                      if (file) handleImageUpload('sceneImage', file);
+                      if (file) await handleImageUpload('sceneImage', file);
                     }}
                   />
                 </div>
