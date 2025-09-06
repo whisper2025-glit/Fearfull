@@ -54,6 +54,7 @@ const Profile = () => {
     following: 0,
     likes: 0,
     publicBots: 0,
+    privateBots: 0,
     favorites: 0,
     posts: 0
   });
@@ -114,7 +115,8 @@ const Profile = () => {
         setUserCharacters(charactersData || []);
         setStats(prev => ({
           ...prev,
-          publicBots: (charactersData || []).filter(char => char.visibility === 'public').length
+          publicBots: (charactersData || []).filter(char => char.visibility === 'public').length,
+          privateBots: (charactersData || []).filter(char => char.visibility === 'private').length
         }));
       }
 
@@ -181,6 +183,8 @@ const Profile = () => {
     switch (activeTab) {
       case 'bots':
         return userCharacters.filter(char => char.visibility === 'public');
+      case 'private':
+        return userCharacters.filter(char => char.visibility === 'private');
       case 'favorites':
         return favoriteCharacters;
       case 'posts':
@@ -226,6 +230,7 @@ const Profile = () => {
 
   const tabs = [
     { id: 'bots', label: 'Public Bots', count: stats.publicBots },
+    { id: 'private', label: 'Private', count: stats.privateBots },
     { id: 'favorites', label: 'Favorites', count: stats.favorites },
     { id: 'posts', label: 'Post', count: stats.posts }
   ];
@@ -610,7 +615,7 @@ const Profile = () => {
                   }}
                   onClick={() => navigate(`/character/${character.id}`)}
                   onFavoriteChange={handleFavoriteChange}
-                  showEditButton={activeTab === 'bots' && character.owner_id === user?.id}
+                  showEditButton={(activeTab === 'bots' || activeTab === 'private') && character.owner_id === user?.id}
                   onEditClick={(characterId) => navigate(`/edit/${characterId}`)}
                 />
               ))}
@@ -622,10 +627,11 @@ const Profile = () => {
               </div>
               <p className="text-muted-foreground text-sm">
                 {activeTab === 'bots' ? 'No bot yet, try to create one.' :
+                 activeTab === 'private' ? 'No private bots yet.' :
                  activeTab === 'favorites' ? 'No favorite characters yet.' :
                  'No posts yet.'}
               </p>
-              {activeTab === 'bots' && (
+              {(activeTab === 'bots' || activeTab === 'private') && (
                 <Button
                   onClick={() => setIsCreateModalOpen(true)}
                   className="bg-cyan-600 hover:bg-cyan-700 text-white px-6"
