@@ -63,6 +63,14 @@ const CreateCharacter = () => {
   };
 
   const handleImageUpload = (field: 'characterImage' | 'sceneImage', file: File) => {
+    if (!file.type.startsWith('image/')) {
+      toast.error('Only image files are allowed');
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Image must be less than 5MB');
+      return;
+    }
     const reader = new FileReader();
     reader.onload = (e) => {
       const result = e.target?.result as string;
@@ -580,8 +588,21 @@ const CreateCharacter = () => {
               className="w-full bg-primary hover:bg-primary/90 text-white h-14 text-xs font-medium rounded-full shadow-lg"
               disabled={isCreating || !user}
               onClick={async () => {
-                if (!user || !formData.name || !formData.intro) {
-                  toast.error('Please fill in required fields');
+                // Basic validation
+                if (!user) {
+                  toast.error('Please sign in');
+                  return;
+                }
+                if (!formData.name || formData.name.trim().length < 2) {
+                  toast.error('Name must be at least 2 characters');
+                  return;
+                }
+                if (!formData.intro || formData.intro.trim().length < 10) {
+                  toast.error('Intro must be at least 10 characters');
+                  return;
+                }
+                if (formData.age && !/^\d+$/.test(formData.age.trim())) {
+                  toast.error('Age must be a number');
                   return;
                 }
 
