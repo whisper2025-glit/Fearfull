@@ -652,8 +652,16 @@ const CreateCharacter = () => {
                     return;
                   }
 
-                  toast.success('Character created successfully!');
-                  navigate(`/chat/${characterData.id}`);
+                  // Share link behavior for unlisted
+                  if (formData.visibility === 'unlisted') {
+                    const shareUrl = `${window.location.origin}/character/${characterData.id}`;
+                    try { await navigator.clipboard.writeText(shareUrl); } catch {}
+                    toast.success('Unlisted link copied. You can share it now.');
+                    navigate(`/profile?tab=unlisted`);
+                  } else {
+                    toast.success('Character created successfully!');
+                    navigate(`/chat/${characterData.id}`);
+                  }
                 } catch (error) {
                   console.error('Error creating character:', error);
                   toast.error('Failed to create character');
