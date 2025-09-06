@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { useUserSync } from "@/hooks/useUserSync";
 import Index from "./pages/Index";
 import Chat from "./pages/Chat";
@@ -20,9 +20,19 @@ import ImageTest from "./pages/ImageTest";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
 import SsoCallback from "./pages/SsoCallback";
+import { useEffect } from "react";
+import { trackPageview } from "./lib/analytics";
 
 const queryClient = new QueryClient();
 
+
+const RouteChangeTracker = () => {
+  const location = useLocation();
+  useEffect(() => {
+    trackPageview(location.pathname);
+  }, [location.pathname]);
+  return null;
+};
 
 const AppContent = () => {
   // Sync user with Supabase when authenticated
@@ -31,6 +41,7 @@ const AppContent = () => {
 
   return (
     <BrowserRouter>
+      <RouteChangeTracker />
       <Routes>
         <Route path="/auth" element={<AuthPage />} />
         <Route path="/sso-callback" element={<SsoCallback />} />

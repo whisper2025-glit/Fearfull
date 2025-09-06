@@ -1,8 +1,35 @@
+User-agent: *
+Allow: /
+Disallow: /auth
+Disallow: /sso-callback
+Disallow: /profile
+Disallow: /creator
+Disallow: /create
+Disallow: /edit
+Disallow: /chat
+Disallow: /chats
+
 User-agent: Googlebot
 Allow: /
+Disallow: /auth
+Disallow: /sso-callback
+Disallow: /profile
+Disallow: /creator
+Disallow: /create
+Disallow: /edit
+Disallow: /chat
+Disallow: /chats
 
 User-agent: Bingbot
 Allow: /
+Disallow: /auth
+Disallow: /sso-callback
+Disallow: /profile
+Disallow: /creator
+Disallow: /create
+Disallow: /edit
+Disallow: /chat
+Disallow: /chats
 
 User-agent: Twitterbot
 Allow: /
@@ -10,5 +37,4 @@ Allow: /
 User-agent: facebookexternalhit
 Allow: /
 
-User-agent: *
-Allow: /
+Sitemap: /sitemap.xml

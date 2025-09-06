@@ -14,6 +14,7 @@ import { useUser } from "@clerk/clerk-react";
 import { supabase, uploadImage } from "@/lib/supabase";
 import { compressAndCropImage } from "@/lib/image";
 import { toast } from "sonner";
+import { trackEvent } from "@/lib/analytics";
 import { MessageFormatter } from "@/components/MessageFormatter";
 import { Card } from "@/components/ui/card";
 import { useHistoryBackClose } from "@/hooks/useHistoryBackClose";
@@ -687,9 +688,18 @@ const CreateCharacter = () => {
                     const shareUrl = `${window.location.origin}/character/${characterData.id}`;
                     try { await navigator.clipboard.writeText(shareUrl); } catch {}
                     toast.success('Unlisted link copied. You can share it now.');
+                    trackEvent('unlisted_share_link_copied', { character_id: characterData.id });
                     navigate(`/profile?tab=unlisted`);
                   } else {
                     toast.success('Character created successfully!');
+                    trackEvent('character_created', {
+                      character_id: characterData.id,
+                      visibility: formData.visibility,
+                      rating: formData.rating,
+                      has_avatar: !!avatarUrl,
+                      has_scene: !!sceneUrl,
+                      tags_count: formData.tags?.length || 0,
+                    });
                     navigate(`/chat/${characterData.id}`);
                   }
                 } catch (error) {
