@@ -12,6 +12,7 @@ import { ArrowLeft, Upload, Info, ChevronUp, Heart, RotateCcw, Loader2, ChevronD
 import { useNavigate, useParams } from "react-router-dom";
 import { useUser } from "@clerk/clerk-react";
 import { supabase, uploadImage } from "@/lib/supabase";
+import { compressAndCropImage } from "@/lib/image";
 import { toast } from "sonner";
 import { MessageFormatter } from "@/components/MessageFormatter";
 
@@ -105,21 +106,26 @@ const EditCharacter = () => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleImageUpload = (field: 'characterImage' | 'sceneImage', file: File) => {
+  const handleImageUpload = async (field: 'characterImage' | 'sceneImage', file: File) => {
     if (!file.type.startsWith('image/')) {
       toast.error('Only image files are allowed');
       return;
     }
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error('Image must be less than 5MB');
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error('Image must be less than 10MB');
       return;
     }
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const result = e.target?.result as string;
-      setFormData(prev => ({ ...prev, [field]: result }));
-    };
-    reader.readAsDataURL(file);
+    try {
+      const { dataUrl } = await compressAndCropImage(file, {
+        maxDimension: field === 'characterImage' ? 512 : 1920,
+        quality: 0.9,
+        outputType: 'image/webp',
+        squareCrop: field === 'characterImage',
+      });
+      setFormData(prev => ({ ...prev, [field]: dataUrl }));
+    } catch (e) {
+      toast.error('Failed to process image');
+    }
   };
 
   const getCharacterCount = (text: string) => text.length;
