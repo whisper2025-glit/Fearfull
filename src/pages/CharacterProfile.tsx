@@ -18,6 +18,8 @@ interface Character {
   intro: string;
   scenario: string;
   avatar_url: string;
+  visibility: 'public' | 'unlisted' | 'private';
+  owner_id?: string;
   tags?: string[] | null;
   personality?: string | null;
   appearance?: string | null;
@@ -90,7 +92,31 @@ export default function CharacterProfile() {
           return;
         }
 
+        // Guard: block private characters for non-owners
+        if (characterData.visibility === 'private' && user?.id !== characterData.owner_id) {
+          toast.error('This character is private');
+          navigate('/');
+          return;
+        }
+
         setCharacter(characterData);
+
+        // Add meta noindex for unlisted
+        if (characterData.visibility === 'unlisted') {
+          const meta = document.createElement('meta');
+          meta.name = 'robots';
+          meta.content = 'noindex, nofollow';
+          document.head.appendChild(meta);
+          // cleanup on unmount
+          const cleanup = () => {
+            try { document.head.removeChild(meta); } catch {}
+          };
+          // store cleanup
+          (window as any).__unlisted_meta_cleanup__ = cleanup;
+        } else if ((window as any).__unlisted_meta_cleanup__) {
+          (window as any).__unlisted_meta_cleanup__();
+          (window as any).__unlisted_meta_cleanup__ = null;
+        }
 
         // Fetch user stats if we have the owner ID
         if (characterData.owner_id) {
