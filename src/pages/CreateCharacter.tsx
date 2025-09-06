@@ -190,7 +190,7 @@ const CreateCharacter = () => {
                       }}
                     />
                   </div>
-                  <div className="w-24 h-24 bg-black rounded-full flex items-center justify-center relative overflow-hidden">
+                  <div className="w-24 h-24 rounded-full flex items-center justify-center relative overflow-hidden bg-transparent">
                     {formData.characterImage ? (
                       <img
                         src={formData.characterImage}
@@ -198,9 +198,11 @@ const CreateCharacter = () => {
                         className="w-full h-full object-cover"
                       />
                     ) : null}
-                    <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-                      <RotateCcw className="h-4 w-4 text-white" />
-                    </div>
+                    {formData.characterImage && (
+                      <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+                        <RotateCcw className="h-4 w-4 text-white" />
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div className="bg-secondary/30 rounded-lg p-4 space-y-2">
