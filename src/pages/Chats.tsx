@@ -131,7 +131,7 @@ const Chats = () => {
     return (
       <Layout>
         <div className="flex items-center justify-center h-full">
-          <p className="text-gray-400">Please sign in to view your chat history.</p>
+          <p className="text-muted-foreground">Please sign in to view your chat history.</p>
         </div>
       </Layout>
     );
@@ -139,18 +139,18 @@ const Chats = () => {
 
   return (
     <Layout>
-      <div className="bg-gray-900 text-white min-h-full">
+      <div className="bg-background text-foreground min-h-full">
         <div className="px-4 pb-4 pt-6 space-y-2">
           {isLoading ? (
             <div className="space-y-4">
               {[...Array(3)].map((_, i) => (
-                <Card key={i} className="bg-gray-800 border-gray-700 animate-pulse">
+                <Card key={i} className="bg-card border-border animate-pulse">
                   <CardContent className="p-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 bg-gray-600 rounded-full"></div>
+                      <div className="w-12 h-12 bg-muted rounded-full"></div>
                       <div className="flex-1 space-y-2">
-                        <div className="h-4 bg-gray-600 rounded w-1/3"></div>
-                        <div className="h-3 bg-gray-600 rounded w-1/2"></div>
+                        <div className="h-4 bg-muted rounded w-1/3"></div>
+                        <div className="h-3 bg-muted rounded w-1/2"></div>
                       </div>
                     </div>
                   </CardContent>
@@ -159,14 +159,14 @@ const Chats = () => {
             </div>
           ) : characterHistory.length === 0 ? (
             <div className="text-center py-12">
-              <MessageCircle className="h-16 w-16 text-gray-500 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-300 mb-2">No character chats yet</h3>
-              <p className="text-gray-500 mb-6">
+              <MessageCircle className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-foreground mb-2">No character chats yet</h3>
+              <p className="text-muted-foreground mb-6">
                 Start chatting with characters to see them here
               </p>
               <button
                 onClick={() => navigate('/')}
-                className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg transition-colors"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-3 rounded-lg transition-colors"
               >
                 Explore Characters
               </button>
@@ -175,7 +175,7 @@ const Chats = () => {
             characterHistory.map((character) => (
               <Card
                 key={character.id}
-                className="bg-gray-800 border-gray-700 hover:bg-gray-750 transition-colors cursor-pointer"
+                className="bg-card border-border hover:bg-card/80 transition-colors cursor-pointer"
                 onClick={() => startNewChat(character.id)}
               >
                 <CardContent className="p-2">
@@ -183,7 +183,7 @@ const Chats = () => {
                     {/* Character Avatar */}
                     <Avatar className="w-10 h-10 flex-shrink-0">
                       <AvatarImage src={character.avatar_url} alt={character.name} />
-                      <AvatarFallback className="bg-gray-600 text-white text-sm">
+                      <AvatarFallback className="bg-muted text-foreground text-sm">
                         {character.name.charAt(0)}
                       </AvatarFallback>
                     </Avatar>
@@ -201,16 +201,16 @@ const Chats = () => {
                         )}
                       </div>
                       
-                      <div className="flex items-center gap-1 text-gray-400 text-xs">
+                      <div className="flex items-center gap-1 text-muted-foreground text-xs">
                         <User className="h-3 w-3" />
                         <span>by {character.author}</span>
                       </div>
 
-                      <p className="text-gray-300 text-xs truncate">
+                      <p className="text-muted-foreground text-xs truncate">
                         "{character.lastMessage}"
                       </p>
                       
-                      <div className="flex items-center justify-between text-xs text-gray-500">
+                      <div className="flex items-center justify-between text-xs text-muted-foreground">
                         <div className="flex items-center gap-2">
                           <div className="flex items-center gap-1">
                             <MessageCircle className="h-3 w-3" />
