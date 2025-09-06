@@ -14,6 +14,7 @@ import { getFavoriteCharacters } from "@/lib/supabase";
 const Index = () => {
   const navigate = useNavigate();
   const { isSignedIn, user } = useUser();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [activeTag, setActiveTag] = useState<string>('For You');
   const [sortBy, setSortBy] = useState<SortOption>('Recent Hits');
   const [gender, setGender] = useState<string>('Gender All');
@@ -101,6 +102,14 @@ const Index = () => {
   }, [PAGE_SIZE, isLoadingMore, isSignedIn, user, gender, activeTag]);
 
   useEffect(() => {
+    // Initialize from URL
+    const tag = searchParams.get('tag');
+    const sort = searchParams.get('sort') as SortOption | null;
+    const g = searchParams.get('gender');
+    if (tag) setActiveTag(tag);
+    if (sort && ['Popular','Recent Hits','Trending','New','Daily Ranking','Editor Choice','Following'].includes(sort)) setSortBy(sort);
+    if (g) setGender(g);
+
     // Initial load
     setCharacters([]);
     setHasMore(true);
@@ -111,8 +120,14 @@ const Index = () => {
     setCharacters([]);
     setHasMore(true);
     setPage(0);
+    // Persist to URL
+    const params: any = {};
+    if (activeTag) params.tag = activeTag;
+    if (sortBy) params.sort = sortBy;
+    if (gender) params.gender = gender;
+    setSearchParams(params);
     fetchPage(0);
-  }, [activeTag, gender]);
+  }, [activeTag, gender, sortBy]);
 
   useEffect(() => {
     const loadFavorites = async () => {
