@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { FullscreenSpinner } from "@/components/ui/loading-spinner";
 import { CommentsList } from "@/components/CommentsList";
 import { useComments } from "@/hooks/useComments";
+import { trackEvent } from "@/lib/analytics";
 
 interface Character {
   id: string;
@@ -18,6 +19,8 @@ interface Character {
   intro: string;
   scenario: string;
   avatar_url: string;
+  visibility: 'public' | 'unlisted' | 'private';
+  owner_id?: string;
   tags?: string[] | null;
   personality?: string | null;
   appearance?: string | null;
@@ -90,7 +93,46 @@ export default function CharacterProfile() {
           return;
         }
 
+        // Guard: block private characters for non-owners
+        if (characterData.visibility === 'private' && user?.id !== characterData.owner_id) {
+          toast.error('This character is private');
+          navigate('/');
+          return;
+        }
+
         setCharacter(characterData);
+
+        // Set document title and OG meta
+        document.title = `${characterData.name} • WhisperChat`;
+        const setMeta = (property: string, content: string) => {
+          let el = document.querySelector(`meta[property=\"${property}\"]`) as HTMLMetaElement | null;
+          if (!el) {
+            el = document.createElement('meta');
+            el.setAttribute('property', property);
+            document.head.appendChild(el);
+          }
+          el.setAttribute('content', content);
+        };
+        setMeta('og:title', characterData.name);
+        setMeta('og:description', characterData.intro || 'Chat with this character on WhisperChat');
+        setMeta('og:image', characterData.avatar_url || `${window.location.origin}/placeholder.svg`);
+        setMeta('og:type', 'website');
+        setMeta('og:url', window.location.href);
+
+        // Add meta noindex for unlisted/private
+        if (characterData.visibility !== 'public') {
+          const meta = document.createElement('meta');
+          meta.name = 'robots';
+          meta.content = 'noindex, nofollow';
+          document.head.appendChild(meta);
+          const cleanup = () => {
+            try { document.head.removeChild(meta); } catch {}
+          };
+          (window as any).__unlisted_meta_cleanup__ = cleanup;
+        } else if ((window as any).__unlisted_meta_cleanup__) {
+          (window as any).__unlisted_meta_cleanup__();
+          (window as any).__unlisted_meta_cleanup__ = null;
+        }
 
         // Fetch user stats if we have the owner ID
         if (characterData.owner_id) {
@@ -171,6 +213,7 @@ export default function CharacterProfile() {
     try {
       const newFavoriteStatus = await favoriteCharacter(user.id, characterId);
       setIsFavorited(newFavoriteStatus);
+      trackEvent('favorite_toggle', { character_id: characterId, is_favorited: newFavoriteStatus });
       toast.success(newFavoriteStatus ? 'Added to favorites' : 'Removed from favorites');
     } catch (error) {
       console.error('Error favoriting character:', error);
@@ -185,6 +228,7 @@ export default function CharacterProfile() {
   };
 
   const handleStartChat = () => {
+    trackEvent('start_chat', { character_id: characterId });
     navigate(`/chat/${characterId}`);
   };
 
@@ -195,6 +239,7 @@ export default function CharacterProfile() {
   const handleShare = () => {
     // Copy URL to clipboard
     navigator.clipboard.writeText(window.location.href);
+    trackEvent('character_share', { character_id: characterId, visibility: character?.visibility });
     toast.success('Profile link copied to clipboard');
   };
 
@@ -380,7 +425,14 @@ export default function CharacterProfile() {
             >
               <ChevronLeft className="h-4 w-4" />
             </Button>
-            <h2 className="text-lg font-semibold text-white">{character.name}</h2>
+            <div className="flex items-center gap-2">
+              <h2 className="text-lg font-semibold text-white">{character.name}</h2>
+              {character.visibility && character.visibility !== 'public' && (
+                <Badge variant="secondary" className="text-xs">
+                  {character.visibility === 'private' ? 'Private' : 'Unlisted'}
+                </Badge>
+              )}
+            </div>
           </div>
           <div className="flex items-center gap-2">
             <Button

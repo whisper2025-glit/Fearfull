@@ -8,12 +8,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { ArrowLeft, Upload, Info, ChevronUp, RotateCcw, Loader2, ChevronDown } from "lucide-react";
+import { ArrowLeft, Upload, Info, ChevronUp, RotateCcw, Loader2, ChevronDown, Send } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "@clerk/clerk-react";
 import { supabase, uploadImage } from "@/lib/supabase";
+import { compressAndCropImage } from "@/lib/image";
 import { toast } from "sonner";
+import { trackEvent } from "@/lib/analytics";
 import { MessageFormatter } from "@/components/MessageFormatter";
+import { Card } from "@/components/ui/card";
 import { useHistoryBackClose } from "@/hooks/useHistoryBackClose";
 
 const CreateCharacter = () => {
@@ -61,13 +64,26 @@ const CreateCharacter = () => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleImageUpload = (field: 'characterImage' | 'sceneImage', file: File) => {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const result = e.target?.result as string;
-      setFormData(prev => ({ ...prev, [field]: result }));
-    };
-    reader.readAsDataURL(file);
+  const handleImageUpload = async (field: 'characterImage' | 'sceneImage', file: File) => {
+    if (!file.type.startsWith('image/')) {
+      toast.error('Only image files are allowed');
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error('Image must be less than 10MB');
+      return;
+    }
+    try {
+      const { dataUrl } = await compressAndCropImage(file, {
+        maxDimension: field === 'characterImage' ? 512 : 1920,
+        quality: 0.9,
+        outputType: 'image/webp',
+        squareCrop: field === 'characterImage',
+      });
+      setFormData(prev => ({ ...prev, [field]: dataUrl }));
+    } catch (e) {
+      toast.error('Failed to process image');
+    }
   };
 
   const getCharacterCount = (text: string) => {
@@ -78,7 +94,7 @@ const CreateCharacter = () => {
     <Layout headerPosition="fixed">
       <div className="min-h-screen bg-background">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-border">
+        <div className="flex items-center justify-between p-4">
           <div className="flex items-center gap-3">
             <Button 
               variant="ghost" 
@@ -95,29 +111,31 @@ const CreateCharacter = () => {
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex bg-background">
-          <Button
-            variant="ghost"
-            className={`flex-1 rounded-none h-12 text-xs font-medium ${
-              activeTab === 'create'
-                ? 'bg-primary text-white shadow-lg'
-                : 'bg-black text-white hover:bg-secondary/30'
-            }`}
-            onClick={() => setActiveTab('create')}
-          >
-            Create
-          </Button>
-          <Button
-            variant="ghost"
-            className={`flex-1 rounded-none h-12 text-xs font-medium ${
-              activeTab === 'preview'
-                ? 'bg-primary text-white shadow-lg'
-                : 'bg-black text-white hover:bg-secondary/30'
-            }`}
-            onClick={() => setActiveTab('preview')}
-          >
-            Preview
-          </Button>
+        <div className="flex justify-center bg-background py-3">
+          <div className="inline-flex items-center gap-1 bg-black rounded-full p-1">
+            <Button
+              variant="ghost"
+              className={`rounded-full h-9 px-6 text-sm font-medium transition-colors ${
+                activeTab === 'create'
+                  ? 'bg-primary text-white shadow'
+                  : 'bg-transparent text-white hover:bg-white/10'
+              }`}
+              onClick={() => setActiveTab('create')}
+            >
+              Create
+            </Button>
+            <Button
+              variant="ghost"
+              className={`rounded-full h-9 px-6 text-sm font-medium transition-colors ${
+                activeTab === 'preview'
+                  ? 'bg-primary text-white shadow'
+                  : 'bg-transparent text-white hover:bg-white/10'
+              }`}
+              onClick={() => setActiveTab('preview')}
+            >
+              Preview
+            </Button>
+          </div>
         </div>
 
         {/* Form Content */}
@@ -182,13 +200,13 @@ const CreateCharacter = () => {
                       type="file"
                       accept="image/*"
                       className="hidden"
-                      onChange={(e) => {
+                      onChange={async (e) => {
                         const file = e.target.files?.[0];
-                        if (file) handleImageUpload('characterImage', file);
+                        if (file) await handleImageUpload('characterImage', file);
                       }}
                     />
                   </div>
-                  <div className="w-24 h-24 bg-black rounded-full flex items-center justify-center relative overflow-hidden">
+                  <div className="w-24 h-24 bg-muted rounded-full flex items-center justify-center relative overflow-hidden">
                     {formData.characterImage ? (
                       <img
                         src={formData.characterImage}
@@ -196,9 +214,6 @@ const CreateCharacter = () => {
                         className="w-full h-full object-cover"
                       />
                     ) : null}
-                    <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-                      <RotateCcw className="h-4 w-4 text-white" />
-                    </div>
                   </div>
                 </div>
                 <div className="bg-secondary/30 rounded-lg p-4 space-y-2">
@@ -254,9 +269,9 @@ const CreateCharacter = () => {
                     type="file"
                     accept="image/*"
                     className="hidden"
-                    onChange={(e) => {
+                    onChange={async (e) => {
                       const file = e.target.files?.[0];
-                      if (file) handleImageUpload('sceneImage', file);
+                      if (file) await handleImageUpload('sceneImage', file);
                     }}
                   />
                 </div>
@@ -508,68 +523,72 @@ const CreateCharacter = () => {
               </div>
             </>
           ) : (
-            /* Preview Tab Content */
-            <div className="text-center py-12 space-y-6">
-              <div className="w-24 h-24 bg-muted rounded-full mx-auto flex items-center justify-center">
-                <span className="text-3xl">👤</span>
-              </div>
-              <h2 className="text-sm font-medium">{formData.name || "Your OC's Name"}</h2>
-              <div className="border-t border-border pt-6">
-                <h3 className="text-sm font-medium mb-3">Intro</h3>
-                <div className="text-xs text-muted-foreground leading-relaxed">
-                  <MessageFormatter
-                    content={formData.intro || "Your OC's introduction"}
-                    className="text-xs leading-relaxed"
-                  />
+            // Simple Chat Preview
+            <div className="space-y-4 relative">
+              {formData.sceneImage && (
+                <div className="absolute inset-0 -z-10 bg-cover bg-center opacity-30" style={{ backgroundImage: `url(${formData.sceneImage})` }} />
+              )}
+              {/* Header */}
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-muted overflow-hidden">
+                  {formData.characterImage && (
+                    <img src={formData.characterImage} alt="avatar" className="w-full h-full object-cover" />
+                  )}
                 </div>
-              </div>
-              <div className="border-t border-border pt-6">
-                <h3 className="text-sm font-medium mb-3">Greeting</h3>
-                <div className="bg-secondary/50 rounded-lg p-4 text-left">
-                  <div className="text-xs text-muted-foreground leading-relaxed">
-                    <MessageFormatter
-                      content={formData.greeting || "Please fill in the greetings column on the left"}
-                      className="text-xs leading-relaxed chat-text"
-                    />
-                  </div>
+                <div>
+                  <h2 className="text-sm font-semibold">{formData.name || "Your OC's Name"}</h2>
+                  <p className="text-xs text-muted-foreground">Preview chat</p>
                 </div>
               </div>
 
-              {formData.personality && (
-                <div className="border-t border-border pt-6">
-                  <h3 className="text-sm font-medium mb-3">Personality</h3>
-                  <div className="text-xs text-muted-foreground leading-relaxed">
-                    <MessageFormatter
-                      content={formData.personality}
-                      className="text-xs leading-relaxed chat-text"
-                    />
+              {/* Messages */}
+              <div className="space-y-3">
+                {/* Bot greeting */}
+                <Card className="p-3">
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 rounded-full bg-muted overflow-hidden flex-shrink-0">
+                      {formData.characterImage && (
+                        <img src={formData.characterImage} alt="avatar" className="w-full h-full object-cover" />
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <MessageFormatter
+                        content={formData.greeting || "Please fill in the greetings column on the left"}
+                        className="chat-text"
+                      />
+                    </div>
                   </div>
-                </div>
-              )}
+                </Card>
 
-              {formData.appearance && (
-                <div className="border-t border-border pt-6">
-                  <h3 className="text-sm font-medium mb-3">Appearance</h3>
-                  <div className="text-xs text-muted-foreground leading-relaxed">
-                    <MessageFormatter
-                      content={formData.appearance}
-                      className="text-xs leading-relaxed chat-text"
-                    />
-                  </div>
-                </div>
-              )}
+                {/* Optional intro as system info */}
+                {formData.intro && (
+                  <Card className="p-3 bg-secondary/50">
+                    <div className="text-xs text-muted-foreground">
+                      <MessageFormatter content={formData.intro} className="chat-text" />
+                    </div>
+                  </Card>
+                )}
 
-              {formData.scenario && (
-                <div className="border-t border-border pt-6">
-                  <h3 className="text-sm font-medium mb-3">Scenario</h3>
-                  <div className="text-xs text-muted-foreground leading-relaxed">
-                    <MessageFormatter
-                      content={formData.scenario}
-                      className="text-xs leading-relaxed chat-text"
-                    />
-                  </div>
+                {/* Sample user reply */}
+                <div className="flex justify-end">
+                  <Card className="p-3 bg-primary text-primary-foreground max-w-[80%]">
+                    <div className="text-xs chat-text">Hi!</div>
+                  </Card>
                 </div>
-              )}
+              </div>
+
+              {/* Input (disabled) */}
+              <div className="flex items-end gap-2">
+                <Textarea
+                  disabled
+                  placeholder="Type a message (preview only)"
+                  className="flex-1 resize-none min-h-[44px] bg-secondary/50 border-border text-sm"
+                  rows={1}
+                />
+                <Button disabled size="icon" className="h-10 w-10">
+                  <Send className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
           )}
 
@@ -579,8 +598,21 @@ const CreateCharacter = () => {
               className="w-full bg-primary hover:bg-primary/90 text-white h-14 text-xs font-medium rounded-full shadow-lg"
               disabled={isCreating || !user}
               onClick={async () => {
-                if (!user || !formData.name || !formData.intro) {
-                  toast.error('Please fill in required fields');
+                // Basic validation
+                if (!user) {
+                  toast.error('Please sign in');
+                  return;
+                }
+                if (!formData.name || formData.name.trim().length < 2) {
+                  toast.error('Name must be at least 2 characters');
+                  return;
+                }
+                if (!formData.intro || formData.intro.trim().length < 10) {
+                  toast.error('Intro must be at least 10 characters');
+                  return;
+                }
+                if (formData.age && !/^\d+$/.test(formData.age.trim())) {
+                  toast.error('Age must be a number');
                   return;
                 }
 
@@ -651,8 +683,25 @@ const CreateCharacter = () => {
                     return;
                   }
 
-                  toast.success('Character created successfully!');
-                  navigate(`/chat/${characterData.id}`);
+                  // Share link behavior for unlisted
+                  if (formData.visibility === 'unlisted') {
+                    const shareUrl = `${window.location.origin}/character/${characterData.id}`;
+                    try { await navigator.clipboard.writeText(shareUrl); } catch {}
+                    toast.success('Unlisted link copied. You can share it now.');
+                    trackEvent('unlisted_share_link_copied', { character_id: characterData.id });
+                    navigate(`/profile?tab=unlisted`);
+                  } else {
+                    toast.success('Character created successfully!');
+                    trackEvent('character_created', {
+                      character_id: characterData.id,
+                      visibility: formData.visibility,
+                      rating: formData.rating,
+                      has_avatar: !!avatarUrl,
+                      has_scene: !!sceneUrl,
+                      tags_count: formData.tags?.length || 0,
+                    });
+                    navigate(`/chat/${characterData.id}`);
+                  }
                 } catch (error) {
                   console.error('Error creating character:', error);
                   toast.error('Failed to create character');

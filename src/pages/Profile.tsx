@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { ChevronLeft, Settings, Gift, MoreHorizontal, X, Camera, Loader2 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { FullscreenSpinner } from "@/components/ui/loading-spinner";
 import { CharacterCard } from "@/components/CharacterCard";
 import SettingsSheet from "@/components/SettingsSheet";
@@ -28,6 +28,7 @@ const Profile = () => {
   const navigate = useNavigate();
   const { user } = useUser();
   const [activeTab, setActiveTab] = useState('bots');
+  const [searchParams, setSearchParams] = useSearchParams();
   const [sortBy, setSortBy] = useState('newest');
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -54,6 +55,8 @@ const Profile = () => {
     following: 0,
     likes: 0,
     publicBots: 0,
+    privateBots: 0,
+    unlistedBots: 0,
     favorites: 0,
     posts: 0
   });
@@ -114,7 +117,9 @@ const Profile = () => {
         setUserCharacters(charactersData || []);
         setStats(prev => ({
           ...prev,
-          publicBots: (charactersData || []).filter(char => char.visibility === 'public').length
+          publicBots: (charactersData || []).filter(char => char.visibility === 'public').length,
+          privateBots: (charactersData || []).filter(char => char.visibility === 'private').length,
+          unlistedBots: (charactersData || []).filter(char => char.visibility === 'unlisted').length
         }));
       }
 
@@ -176,11 +181,23 @@ const Profile = () => {
     loadUserData();
   }, [user]);
 
+  // Initialize tab from URL ?tab=
+  useEffect(() => {
+    const tab = searchParams.get('tab');
+    if (tab && ['bots','private','unlisted','favorites','posts'].includes(tab)) {
+      setActiveTab(tab);
+    }
+  }, [searchParams]);
+
   // Filter characters based on active tab
   const getCharactersForTab = () => {
     switch (activeTab) {
       case 'bots':
         return userCharacters.filter(char => char.visibility === 'public');
+      case 'private':
+        return userCharacters.filter(char => char.visibility === 'private');
+      case 'unlisted':
+        return userCharacters.filter(char => char.visibility === 'unlisted');
       case 'favorites':
         return favoriteCharacters;
       case 'posts':
@@ -226,6 +243,8 @@ const Profile = () => {
 
   const tabs = [
     { id: 'bots', label: 'Public Bots', count: stats.publicBots },
+    { id: 'private', label: 'Private', count: stats.privateBots },
+    { id: 'unlisted', label: 'Unlisted', count: stats.unlistedBots },
     { id: 'favorites', label: 'Favorites', count: stats.favorites },
     { id: 'posts', label: 'Post', count: stats.posts }
   ];
@@ -556,7 +575,7 @@ const Profile = () => {
               {tabs.map((tab) => (
                 <button
                   key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
+                  onClick={() => { setActiveTab(tab.id); setSearchParams({ tab: tab.id }); }}
                   className={`text-sm font-medium pb-2 border-b-2 transition-colors ${
                     activeTab === tab.id 
                       ? 'text-cyan-400 border-cyan-400' 
@@ -596,6 +615,7 @@ const Profile = () => {
               {getSortedCharacters(displayCharacters).map((character) => (
                 <CharacterCard
                   key={character.id}
+                  showShareButton={activeTab === 'unlisted'}
                   character={{
                     id: character.id,
                     name: character.name,
@@ -610,7 +630,7 @@ const Profile = () => {
                   }}
                   onClick={() => navigate(`/character/${character.id}`)}
                   onFavoriteChange={handleFavoriteChange}
-                  showEditButton={activeTab === 'bots' && character.owner_id === user?.id}
+                  showEditButton={(activeTab === 'bots' || activeTab === 'private' || activeTab === 'unlisted') && character.owner_id === user?.id}
                   onEditClick={(characterId) => navigate(`/edit/${characterId}`)}
                 />
               ))}
@@ -622,10 +642,12 @@ const Profile = () => {
               </div>
               <p className="text-muted-foreground text-sm">
                 {activeTab === 'bots' ? 'No bot yet, try to create one.' :
+                 activeTab === 'private' ? 'No private bots yet.' :
+                 activeTab === 'unlisted' ? 'No unlisted bots yet.' :
                  activeTab === 'favorites' ? 'No favorite characters yet.' :
                  'No posts yet.'}
               </p>
-              {activeTab === 'bots' && (
+              {(activeTab === 'bots' || activeTab === 'private' || activeTab === 'unlisted') && (
                 <Button
                   onClick={() => setIsCreateModalOpen(true)}
                   className="bg-cyan-600 hover:bg-cyan-700 text-white px-6"

@@ -3,17 +3,19 @@ import { CharacterCard } from "@/components/CharacterCard";
 import { CharacterCardSkeleton } from "@/components/CharacterCardSkeleton";
 import { Button } from "@/components/ui/button";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { supabase, getMessageCountsForCharacters, getFavoriteCountsForCharacters, checkIsFavorited } from "@/lib/supabase";
 import { toast } from "sonner";
 import { HomeFilters, SortOption } from "@/components/HomeFilters";
 import { useUser } from "@clerk/clerk-react";
 import { getFavoriteCharacters } from "@/lib/supabase";
+import { trackEvent } from "@/lib/analytics";
 
 const Index = () => {
   const navigate = useNavigate();
   const { isSignedIn, user } = useUser();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [activeTag, setActiveTag] = useState<string>('For You');
   const [sortBy, setSortBy] = useState<SortOption>('Recent Hits');
   const [gender, setGender] = useState<string>('Gender All');
@@ -91,6 +93,9 @@ const Index = () => {
       setCharacters(prev => pageToLoad === 0 ? withStats : [...prev, ...withStats]);
       setHasMore((charactersData || []).length === PAGE_SIZE);
       setPage(pageToLoad);
+      if (pageToLoad > 0) {
+        trackEvent('load_more', { page: pageToLoad, page_size: PAGE_SIZE });
+      }
     } catch (error) {
       console.error('Error loading content:', error);
       toast.error('Failed to load content');
@@ -101,6 +106,14 @@ const Index = () => {
   }, [PAGE_SIZE, isLoadingMore, isSignedIn, user, gender, activeTag]);
 
   useEffect(() => {
+    // Initialize from URL
+    const tag = searchParams.get('tag');
+    const sort = searchParams.get('sort') as SortOption | null;
+    const g = searchParams.get('gender');
+    if (tag) setActiveTag(tag);
+    if (sort && ['Popular','Recent Hits','Trending','New','Daily Ranking','Editor Choice','Following'].includes(sort)) setSortBy(sort);
+    if (g) setGender(g);
+
     // Initial load
     setCharacters([]);
     setHasMore(true);
@@ -111,8 +124,15 @@ const Index = () => {
     setCharacters([]);
     setHasMore(true);
     setPage(0);
+    trackEvent('filter_change', { tag: activeTag, sort: sortBy, gender });
+    // Persist to URL
+    const params: any = {};
+    if (activeTag) params.tag = activeTag;
+    if (sortBy) params.sort = sortBy;
+    if (gender) params.gender = gender;
+    setSearchParams(params);
     fetchPage(0);
-  }, [activeTag, gender]);
+  }, [activeTag, gender, sortBy]);
 
   useEffect(() => {
     const loadFavorites = async () => {
@@ -214,7 +234,7 @@ const Index = () => {
                 <CharacterCard
                   key={character.id}
                   character={character}
-                  onClick={() => navigate(`/character/${character.id}`)}
+                  onClick={() => { trackEvent('open_character', { character_id: character.id }); navigate(`/character/${character.id}`); }}
                 />
               ))}
             </div>

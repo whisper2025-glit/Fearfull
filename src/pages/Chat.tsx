@@ -126,6 +126,13 @@ const Chat = () => {
           return;
         }
 
+        // Guard: block private characters for non-owners
+        if (characterData.visibility === 'private' && user?.id !== characterData.owner_id) {
+          toast.error('This character is private');
+          navigate('/');
+          return;
+        }
+
         // Load messages for this character/conversation
         let messagesQuery = supabase
           .from('messages')
