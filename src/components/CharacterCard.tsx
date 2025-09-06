@@ -1,4 +1,4 @@
-import { Heart, MessageCircle, Edit } from "lucide-react";
+import { Heart, MessageCircle, Edit, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "@clerk/clerk-react";
@@ -25,9 +25,10 @@ interface CharacterCardProps {
   onFavoriteChange?: (characterId: string, isFavorited: boolean) => void;
   showEditButton?: boolean;
   onEditClick?: (characterId: string) => void;
+  showShareButton?: boolean;
 }
 
-export function CharacterCard({ character, onClick, onFavoriteChange, showEditButton = false, onEditClick }: CharacterCardProps) {
+export function CharacterCard({ character, onClick, onFavoriteChange, showEditButton = false, onEditClick, showShareButton = false }: CharacterCardProps) {
   const { user } = useUser();
   const [isFavorited, setIsFavorited] = useState(character.isFavorited || false);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -93,6 +94,23 @@ export function CharacterCard({ character, onClick, onFavoriteChange, showEditBu
               title="Edit Character"
             >
               <Edit className="h-4 w-4" />
+            </Button>
+          )}
+
+          {showShareButton && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 w-8 p-0 rounded-full backdrop-blur-sm bg-black/20 hover:bg-black/40 text-white/70 hover:text-white"
+              onClick={(e) => {
+                e.stopPropagation();
+                const url = `${window.location.origin}/character/${character.id}`;
+                navigator.clipboard.writeText(url);
+                toast.success('Share link copied');
+              }}
+              title="Copy share link"
+            >
+              <Share2 className="h-4 w-4" />
             </Button>
           )}
 
