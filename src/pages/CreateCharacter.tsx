@@ -8,12 +8,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { ArrowLeft, Upload, Info, ChevronUp, RotateCcw, Loader2, ChevronDown } from "lucide-react";
+import { ArrowLeft, Upload, Info, ChevronUp, RotateCcw, Loader2, ChevronDown, Send } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "@clerk/clerk-react";
 import { supabase, uploadImage } from "@/lib/supabase";
 import { toast } from "sonner";
 import { MessageFormatter } from "@/components/MessageFormatter";
+import { Card } from "@/components/ui/card";
 import { useHistoryBackClose } from "@/hooks/useHistoryBackClose";
 
 const CreateCharacter = () => {
@@ -507,68 +508,69 @@ const CreateCharacter = () => {
               </div>
             </>
           ) : (
-            /* Preview Tab Content */
-            <div className="text-center py-12 space-y-6">
-              <div className="w-24 h-24 bg-muted rounded-full mx-auto flex items-center justify-center">
-                <span className="text-3xl">👤</span>
-              </div>
-              <h2 className="text-sm font-medium">{formData.name || "Your OC's Name"}</h2>
-              <div className="border-t border-border pt-6">
-                <h3 className="text-sm font-medium mb-3">Intro</h3>
-                <div className="text-xs text-muted-foreground leading-relaxed">
-                  <MessageFormatter
-                    content={formData.intro || "Your OC's introduction"}
-                    className="text-xs leading-relaxed"
-                  />
+            // Simple Chat Preview
+            <div className="space-y-4">
+              {/* Header */}
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-muted overflow-hidden">
+                  {formData.characterImage && (
+                    <img src={formData.characterImage} alt="avatar" className="w-full h-full object-cover" />
+                  )}
                 </div>
-              </div>
-              <div className="border-t border-border pt-6">
-                <h3 className="text-sm font-medium mb-3">Greeting</h3>
-                <div className="bg-secondary/50 rounded-lg p-4 text-left">
-                  <div className="text-xs text-muted-foreground leading-relaxed">
-                    <MessageFormatter
-                      content={formData.greeting || "Please fill in the greetings column on the left"}
-                      className="text-xs leading-relaxed chat-text"
-                    />
-                  </div>
+                <div>
+                  <h2 className="text-sm font-semibold">{formData.name || "Your OC's Name"}</h2>
+                  <p className="text-xs text-muted-foreground">Preview chat</p>
                 </div>
               </div>
 
-              {formData.personality && (
-                <div className="border-t border-border pt-6">
-                  <h3 className="text-sm font-medium mb-3">Personality</h3>
-                  <div className="text-xs text-muted-foreground leading-relaxed">
-                    <MessageFormatter
-                      content={formData.personality}
-                      className="text-xs leading-relaxed chat-text"
-                    />
+              {/* Messages */}
+              <div className="space-y-3">
+                {/* Bot greeting */}
+                <Card className="p-3">
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 rounded-full bg-muted overflow-hidden flex-shrink-0">
+                      {formData.characterImage && (
+                        <img src={formData.characterImage} alt="avatar" className="w-full h-full object-cover" />
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <MessageFormatter
+                        content={formData.greeting || "Please fill in the greetings column on the left"}
+                        className="chat-text"
+                      />
+                    </div>
                   </div>
-                </div>
-              )}
+                </Card>
 
-              {formData.appearance && (
-                <div className="border-t border-border pt-6">
-                  <h3 className="text-sm font-medium mb-3">Appearance</h3>
-                  <div className="text-xs text-muted-foreground leading-relaxed">
-                    <MessageFormatter
-                      content={formData.appearance}
-                      className="text-xs leading-relaxed chat-text"
-                    />
-                  </div>
-                </div>
-              )}
+                {/* Optional intro as system info */}
+                {formData.intro && (
+                  <Card className="p-3 bg-secondary/50">
+                    <div className="text-xs text-muted-foreground">
+                      <MessageFormatter content={formData.intro} className="chat-text" />
+                    </div>
+                  </Card>
+                )}
 
-              {formData.scenario && (
-                <div className="border-t border-border pt-6">
-                  <h3 className="text-sm font-medium mb-3">Scenario</h3>
-                  <div className="text-xs text-muted-foreground leading-relaxed">
-                    <MessageFormatter
-                      content={formData.scenario}
-                      className="text-xs leading-relaxed chat-text"
-                    />
-                  </div>
+                {/* Sample user reply */}
+                <div className="flex justify-end">
+                  <Card className="p-3 bg-primary text-primary-foreground max-w-[80%]">
+                    <div className="text-xs chat-text">Hi!</div>
+                  </Card>
                 </div>
-              )}
+              </div>
+
+              {/* Input (disabled) */}
+              <div className="flex items-end gap-2">
+                <Textarea
+                  disabled
+                  placeholder="Type a message (preview only)"
+                  className="flex-1 resize-none min-h-[44px] bg-secondary/50 border-border text-sm"
+                  rows={1}
+                />
+                <Button disabled size="icon" className="h-10 w-10">
+                  <Send className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
           )}
 
