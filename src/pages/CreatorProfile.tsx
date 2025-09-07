@@ -132,9 +132,9 @@ const CreatorProfile = () => {
         setCharacterStatsMap(map);
       }
 
-      // If current user is viewing, get their favorited status for creator's characters
-      if (user && characterIds.length > 0) {
-        const viewerFavorites = await checkIsFavorited(user.id, characterIds);
+      // If current user is viewing, get their favorited status for displayed characters (creator's and favorites)
+      if (user && allCharacterIds.length > 0) {
+        const viewerFavorites = await checkIsFavorited(user.id, allCharacterIds);
         setViewerFavoritedIds(viewerFavorites);
       }
 
@@ -394,34 +394,25 @@ const CreatorProfile = () => {
           {/* Content Area */}
           {activeTab === 'favorites' ? (
             favoriteCharacters.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-4">
                 {favoriteCharacters.map((character) => (
-                  <div key={character.id} className="character-card group cursor-pointer w-full bg-card rounded-2xl overflow-hidden">
-                    <div className="relative aspect-[4/5] overflow-hidden">
-                      <img
-                        src={character.image}
-                        alt={character.name}
-                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                      />
-                      <div className="absolute top-3 right-3">
-                        <div className="w-8 h-8 bg-cyan-600 rounded-full flex items-center justify-center">
-                          <Star className="h-4 w-4 text-white fill-white" />
-                        </div>
-                      </div>
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent" />
-                      <div className="absolute bottom-0 left-0 right-0 p-4">
-                        <h3 className="text-lg font-bold text-white mb-1">{character.name}</h3>
-                        <p className="text-sm text-gray-300 mb-3 line-clamp-2">{character.description}</p>
-                        <div className="flex flex-wrap gap-2">
-                          {character.tags.map((tag: string, index: number) => (
-                            <span key={index} className="px-2 py-1 bg-gray-700/80 text-white text-xs rounded-full">
-                              {tag}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                  <CharacterCard
+                    key={character.id}
+                    character={{
+                      id: character.id,
+                      name: character.name,
+                      description: character.intro,
+                      image: character.avatar_url || '/placeholder.svg',
+                      category: Array.isArray(character.tags) && character.tags.length > 0 ? character.tags[0] : 'General',
+                      stats: {
+                        messages: characterStatsMap[character.id]?.messages ?? 0,
+                        likes: characterStatsMap[character.id]?.likes ?? 0,
+                      },
+                      isFavorited: viewerFavoritedIds.includes(character.id),
+                    }}
+                    onClick={() => navigate(`/character/${character.id}`)}
+                    onFavoriteChange={handleFavoriteChange}
+                  />
                 ))}
               </div>
             ) : (
