@@ -88,7 +88,8 @@ const AuthPage = () => {
       const result = await signUp.attemptEmailAddressVerification({ code: verificationCode });
       if (result.status === "complete") {
         await setActiveSignUp({ session: result.createdSessionId });
-        navigate("/", { replace: true });
+        // Do not navigate immediately; wait for Clerk state to propagate
+        // The effect that watches isSignedIn will handle redirect
       } else {
         toast.error("Verification failed. Please check the code and try again.");
       }
