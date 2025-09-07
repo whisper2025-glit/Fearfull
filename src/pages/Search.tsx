@@ -252,13 +252,28 @@ const Search = () => {
           return {
             ...character,
             message_count: messageCount || 0,
-            conversation_count: 0, // Skip for performance in search
+            conversation_count: 0,
             creator_username: character.owner?.full_name || character.owner?.username || 'Unknown',
-            description: character.intro, // Use intro as description
-            likes_count: 0 // You can add likes functionality later
+            description: character.intro,
+            likes_count: 0
           };
         }));
-        setSearchResults(processedResults);
+
+        // Transform to CharacterCard props shape for consistent UI with home page
+        const transformedResults = processedResults.map((char: any) => ({
+          id: char.id,
+          name: char.name,
+          description: char.description || char.intro || '',
+          image: char.avatar_url || '/placeholder.svg',
+          category: Array.isArray(char.tags) && char.tags.length > 0 ? char.tags[0] : 'General',
+          stats: {
+            messages: char.message_count || 0,
+            likes: char.likes_count || 0,
+          },
+          isFavorited: false,
+        }));
+
+        setSearchResults(transformedResults);
       }
     } catch (error) {
       console.error('Search error:', error);
@@ -653,72 +668,11 @@ const Search = () => {
                     ) : searchResults.length > 0 ? (
                       <div className="grid grid-cols-2 gap-4">
                         {searchResults.map((character) => (
-                        <div
-                          key={character.id}
-                          className="bg-card rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-transform duration-200"
-                          onClick={() => handleCharacterClick(character.id)}
-                        >
-                          <div className="relative aspect-[4/5]">
-                            <img
-                              src={character.avatar_url || '/placeholder.svg'}
-                              alt={character.name}
-                              className="w-full h-full object-cover"
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-
-                            {/* Stats overlay */}
-                            <div className="absolute bottom-2 left-2 right-2">
-                              <div className="flex justify-between items-end mb-2">
-                                <div className="flex items-center gap-1 text-white text-xs">
-                                  <MessageCircle className="h-3 w-3" />
-                                  {character.message_count || 0}
-                                </div>
-                                {character.likes_count && character.likes_count > 0 && (
-                                  <div className="flex items-center gap-1 text-white text-xs">
-                                    ❤️ {character.likes_count}
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-
-                          <div className="p-3">
-                            <h3 className="text-sm font-semibold text-white mb-1">{character.name}</h3>
-                            {character.description && (
-                              <p className="text-xs text-muted-foreground mb-2 line-clamp-2">
-                                {character.description}
-                              </p>
-                            )}
-
-                            {/* Tags */}
-                            {character.tags && Array.isArray(character.tags) && character.tags.length > 0 && (
-                              <div className="flex flex-wrap gap-1 mb-2">
-                                {character.tags.map((tag: string, index: number) => (
-                                  <Badge
-                                    key={index}
-                                    variant="secondary"
-                                    className="text-xs px-2 py-0"
-                                  >
-                                    {tag}
-                                  </Badge>
-                                ))}
-                              </div>
-                            )}
-
-                            {/* Creator info */}
-                            {character.creator_username && (
-                              <div className="flex items-center justify-between">
-                                <span className="text-xs text-muted-foreground">{character.creator_username}</span>
-                                {character.rating && (
-                                  <div className="flex items-center gap-1">
-                                    <span className="text-xs">⭐</span>
-                                    <span className="text-xs">{character.rating}</span>
-                                  </div>
-                                )}
-                              </div>
-                            )}
-                          </div>
-                        </div>
+                          <CharacterCard
+                            key={character.id}
+                            character={character}
+                            onClick={() => handleCharacterClick(character.id)}
+                          />
                         ))}
                       </div>
                     ) : (
