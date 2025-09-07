@@ -52,16 +52,23 @@ export function AppSidebar() {
   const { isSignedIn, user } = useUser();
   const { signOut } = useClerk();
 
-  // Set display name from Clerk user data (simple approach)
+  // Prefer DB-backed display name to keep user-chosen name stable across providers
   useEffect(() => {
-    if (!user) {
-      setUserDisplayName('');
-      return;
-    }
-
-    // Use the best available name from Clerk
-    const displayName = user.fullName || user.firstName || user.username || 'User';
-    setUserDisplayName(displayName);
+    const loadName = async () => {
+      if (!user) {
+        setUserDisplayName('');
+        return;
+      }
+      try {
+        const { getUserDisplayName } = await import('@/lib/supabase');
+        const displayName = await getUserDisplayName(user);
+        setUserDisplayName(displayName);
+      } catch {
+        const fallback = user.fullName || user.firstName || user.username || 'User';
+        setUserDisplayName(fallback);
+      }
+    };
+    loadName();
   }, [user]);
 
   const isActive = (path: string) => currentPath === path;
