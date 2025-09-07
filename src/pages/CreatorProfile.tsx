@@ -9,7 +9,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ChevronLeft, MoreHorizontal, Star, Loader2 } from "lucide-react";
+import { ChevronLeft, MoreHorizontal, Loader2 } from "lucide-react";
 import { CharacterCard } from "@/components/CharacterCard";
 import { LoadingSpinner, FullscreenSpinner } from "@/components/ui/loading-spinner";
 import { supabase, getFavoriteCharacters, checkIsFavorited, getMessageCountsForCharacters, getFavoriteCountsForCharacters } from "@/lib/supabase";
