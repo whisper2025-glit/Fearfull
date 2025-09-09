@@ -666,13 +666,13 @@ const Chat = () => {
                 </Card>
               ) : (
                 <>
-                  {msg.isBot && (
-                    <div className="text-base font-semibold text-foreground/70 mb-1 text-center w-full">
-                      {currentCharacter.name}
-                    </div>
-                  )}
                   <div className="w-full flex justify-center">
                     <div className="relative w-[280px] sm:w-[320px]">
+                      {msg.isBot && (
+                        <div className="text-base font-semibold text-foreground/70 mb-1 text-left">
+                          {currentCharacter.name}
+                        </div>
+                      )}
                       <Card className={`${msg.isBot ? 'bg-black/80 text-white' : 'bg-cyan-500 text-white'} p-4 rounded-xl w-full shadow-md`}>
                         <div className="w-full">
                           <MessageFormatter content={msg.content} className="chat-text" />
