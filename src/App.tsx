@@ -43,7 +43,6 @@ const AppContent = () => {
     <BrowserRouter>
       <RouteChangeTracker />
       <Routes>
-        <Route path="/auth" element={<AuthPage />} />
         <Route path="/sso-callback" element={<SsoCallback />} />
         <Route path="/" element={<Index />} />
         <Route path="/chats" element={
