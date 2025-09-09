@@ -667,15 +667,15 @@ const Chat = () => {
               ) : (
                 <>
                   {msg.isBot && (
-                    <div className="text-base font-semibold text-foreground/70 mb-1 ml-14">
+                    <div className="text-base font-semibold text-foreground/70 mb-1 ml-16">
                       {currentCharacter.name}
                     </div>
                   )}
                   <div className={`flex items-start gap-3 ${msg.isBot ? '' : 'justify-end flex-row-reverse'}`}>
                     {msg.isBot ? (
-                      <img src={currentCharacter.avatar} alt={currentCharacter.name} className="w-8 h-8 rounded-full object-cover flex-shrink-0" />
+                      <img src={currentCharacter.avatar} alt={currentCharacter.name} className="w-12 h-12 rounded-full object-cover flex-shrink-0" />
                     ) : (
-                      <img src={user?.imageUrl || '/placeholder.svg'} alt={user?.fullName || user?.username || 'You'} className="w-8 h-8 rounded-full object-cover flex-shrink-0" />
+                      <img src={user?.imageUrl || '/placeholder.svg'} alt={user?.fullName || user?.username || 'You'} className="w-12 h-12 rounded-full object-cover flex-shrink-0" />
                     )}
                     <Card
                   className={`${(() => {
