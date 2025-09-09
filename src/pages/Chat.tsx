@@ -667,7 +667,7 @@ const Chat = () => {
               ) : (
                 <>
                   <div className="w-full flex justify-center">
-                    <div className="relative w-[235px] sm:w-[300px]">
+                    <div className="relative w-[225px] sm:w-[225px]">
                       {msg.isBot && (
                         <div className="text-base font-semibold text-white mb-1 text-left">
                           {currentCharacter.name}
@@ -679,9 +679,9 @@ const Chat = () => {
                         </div>
                       </Card>
                       {msg.isBot ? (
-                        <img src={currentCharacter.avatar} alt={currentCharacter.name} className="w-[50px] h-[50px] rounded-full object-cover absolute top-2 left-[-60px]" />
+                        <img src={currentCharacter.avatar} alt={currentCharacter.name} className="w-[40px] h-[40px] rounded-full object-cover absolute top-2 left-[-50px]" />
                       ) : (
-                        <img src={user?.imageUrl || '/placeholder.svg'} alt={user?.fullName || user?.username || 'You'} className="w-[50px] h-[50px] rounded-full object-cover absolute top-2 right-[-60px]" />
+                        <img src={user?.imageUrl || '/placeholder.svg'} alt={user?.fullName || user?.username || 'You'} className="w-[40px] h-[40px] rounded-full object-cover absolute top-2 right-[-50px]" />
                       )}
                     </div>
                   </div>
