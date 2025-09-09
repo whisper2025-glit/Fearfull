@@ -711,6 +711,11 @@ const Chat = () => {
                       />
                     )}
                     <div className={msg.isBot ? "flex-1" : "max-w-[80%]"}>
+                      {msg.isBot && (
+                        <div className="text-xs font-semibold text-foreground/70 mb-1">
+                          {currentCharacter.name}
+                        </div>
+                      )}
                       <MessageFormatter
                         content={msg.content}
                         className="chat-text"
