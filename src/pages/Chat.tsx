@@ -667,11 +667,11 @@ const Chat = () => {
               ) : (
                 <>
                   {msg.isBot && (
-                    <div className="text-base font-semibold text-foreground/70 mb-1 ml-16">
+                    <div className="text-base font-semibold text-foreground/70 mb-1 text-center w-full">
                       {currentCharacter.name}
                     </div>
                   )}
-                  <div className={`flex items-start gap-3 ${msg.isBot ? '' : 'justify-end flex-row-reverse'}`}>
+                  <div className={`w-full flex items-start justify-center gap-3 ${msg.isBot ? '' : 'flex-row-reverse'}`}>
                     {msg.isBot ? (
                       <img src={currentCharacter.avatar} alt={currentCharacter.name} className="w-[50px] h-[50px] rounded-full object-cover flex-shrink-0" />
                     ) : (
@@ -679,7 +679,7 @@ const Chat = () => {
                     )}
                     <Card
                   className={`${(() => {
-                    const base = 'p-3 backdrop-blur-sm';
+                    const base = 'p-3 backdrop-blur-sm rounded-2xl w-full max-w-2xl';
                     const a = chatPageSettings.chatBubbleOpacity;
                     const theme = chatPageSettings.chatBubblesTheme;
                     if (theme === 'dark') return `${base} text-white`;
