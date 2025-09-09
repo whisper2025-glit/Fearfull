@@ -667,7 +667,7 @@ const Chat = () => {
               ) : (
                 <>
                   <div className="w-full flex justify-center">
-                    <div className="relative w-[250px] sm:w-[300px]">
+                    <div className="relative w-[235px] sm:w-[300px]">
                       {msg.isBot && (
                         <div className="text-base font-semibold text-white mb-1 text-left">
                           {currentCharacter.name}
