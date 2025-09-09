@@ -665,7 +665,13 @@ const Chat = () => {
                   </div>
                 </Card>
               ) : (
-                <Card
+                <>
+                  {msg.isBot && (
+                    <div className="text-xs font-semibold text-foreground/70 mb-1 ml-14">
+                      {currentCharacter.name}
+                    </div>
+                  )}
+                  <Card
                   className={`${(() => {
                     const base = 'p-3 backdrop-blur-sm';
                     const align = msg.isBot ? '' : 'ml-8';
@@ -711,11 +717,6 @@ const Chat = () => {
                       />
                     )}
                     <div className={msg.isBot ? "flex-1" : "max-w-[80%]"}>
-                      {msg.isBot && (
-                        <div className="text-xs font-semibold text-foreground/70 mb-1">
-                          {currentCharacter.name}
-                        </div>
-                      )}
                       <MessageFormatter
                         content={msg.content}
                         className="chat-text"
@@ -730,6 +731,7 @@ const Chat = () => {
                     )}
                   </div>
                 </Card>
+                </>
               )}
             </div>
           ))}
