@@ -14,7 +14,6 @@ import CharacterProfile from "./pages/CharacterProfile";
 import CreatorProfile from "./pages/CreatorProfile";
 import Search from "./pages/Search";
 import Bonus from "./pages/Bonus";
-import AuthPage from "./pages/AuthPage";
 import AsteriskTestPage from "./pages/AsteriskTestPage";
 import ImageTest from "./pages/ImageTest";
 import NotFound from "./pages/NotFound";
