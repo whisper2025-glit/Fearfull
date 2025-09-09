@@ -15,6 +15,7 @@ import CreatorProfile from "./pages/CreatorProfile";
 import Search from "./pages/Search";
 import Bonus from "./pages/Bonus";
 import AsteriskTestPage from "./pages/AsteriskTestPage";
+import AuthPage from "./pages/AuthPage";
 import ImageTest from "./pages/ImageTest";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -43,6 +44,7 @@ const AppContent = () => {
       <RouteChangeTracker />
       <Routes>
         <Route path="/sso-callback" element={<SsoCallback />} />
+        <Route path="/auth" element={<AuthPage />} />
         <Route path="/" element={<Index />} />
         <Route path="/chats" element={
           <ProtectedRoute>

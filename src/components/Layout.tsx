@@ -46,9 +46,9 @@ export function Layout({ children, headerBottom, mainOverflow = 'auto', headerPo
                   </Button>
 
                   <button
-                    onClick={() => navigate('/profile')}
+                    onClick={() => navigate(user ? '/profile' : '/auth')}
                     className="rounded-full focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background"
-                    aria-label="Open profile"
+                    aria-label={user ? "Open profile" : "Sign in"}
                   >
                     <Avatar className="h-8 w-8">
                       <AvatarImage src={user?.imageUrl || ''} alt={user?.fullName || 'User'} />
