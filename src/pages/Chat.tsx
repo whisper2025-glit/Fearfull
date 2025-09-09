@@ -667,7 +667,7 @@ const Chat = () => {
               ) : (
                 <>
                   {msg.isBot && (
-                    <div className="text-xs font-semibold text-foreground/70 mb-1 ml-14">
+                    <div className="text-base font-semibold text-foreground/70 mb-1 ml-14">
                       {currentCharacter.name}
                     </div>
                   )}
