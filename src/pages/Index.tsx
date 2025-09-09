@@ -106,7 +106,7 @@ const Index = () => {
   }, [PAGE_SIZE, isLoadingMore, isSignedIn, user, gender, activeTag]);
 
   useEffect(() => {
-    // Initialize from URL
+    // Initialize from URL once on mount
     const tag = searchParams.get('tag');
     const sort = searchParams.get('sort') as SortOption | null;
     const g = searchParams.get('gender');
@@ -114,23 +114,26 @@ const Index = () => {
     if (sort && ['Popular','Recent Hits','Trending','New','Daily Ranking','Editor Choice','Following'].includes(sort)) setSortBy(sort);
     if (g) setGender(g);
 
-    // Initial load
+    // Reset list state; actual fetching is handled by the filter-change effect below
     setCharacters([]);
     setHasMore(true);
-    fetchPage(0);
-  }, [fetchPage]);
+    setPage(0);
+  }, []);
 
   useEffect(() => {
     setCharacters([]);
     setHasMore(true);
     setPage(0);
     trackEvent('filter_change', { tag: activeTag, sort: sortBy, gender });
-    // Persist to URL
+    // Persist to URL only when it actually changes to avoid navigation loops
     const params: any = {};
     if (activeTag) params.tag = activeTag;
     if (sortBy) params.sort = sortBy;
     if (gender) params.gender = gender;
-    setSearchParams(params);
+    const next = new URLSearchParams(params).toString();
+    if (searchParams.toString() !== next) {
+      setSearchParams(params);
+    }
     fetchPage(0);
   }, [activeTag, gender, sortBy]);
 
