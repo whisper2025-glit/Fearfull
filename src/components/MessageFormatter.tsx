@@ -89,11 +89,11 @@ export const MessageFormatter: React.FC<MessageFormatterProps> = ({
   const formattedContent = formatMessage(content);
 
   return (
-    <p className={`text-foreground whitespace-pre-wrap ${className}`}>
+    <div role="article" className={`text-foreground whitespace-pre-wrap ${className}`}>
       {formattedContent.map((part, index) => (
         <React.Fragment key={index}>{part}</React.Fragment>
       ))}
-    </p>
+    </div>
   );
 };
 

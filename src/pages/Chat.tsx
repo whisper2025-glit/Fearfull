@@ -665,66 +665,27 @@ const Chat = () => {
                   </div>
                 </Card>
               ) : (
-                <Card
-                  className={`${(() => {
-                    const base = 'p-3 backdrop-blur-sm';
-                    const align = msg.isBot ? '' : 'ml-8';
-                    const a = chatPageSettings.chatBubbleOpacity;
-                    const theme = chatPageSettings.chatBubblesTheme;
-                    if (theme === 'dark') return `${base} ${align} text-white`;
-                    if (theme === 'blackPink') return `${base} ${align} text-white`;
-                    if (theme === 'seaSaltCheese') return `${base} ${align} text-black`;
-                    if (theme === 'glass') return `${base} ${align} ${a > 0 ? 'border border-white/10' : ''} backdrop-blur-md`;
-                    if (theme === 'rounded') return `${base} ${align} rounded-2xl`;
-                    return `${base} ${align}`;
-                  })()}`}
-                  style={{
-                    backgroundColor: (() => {
-                      const a = chatPageSettings.chatBubbleOpacity;
-                      const theme = chatPageSettings.chatBubblesTheme;
-                      if (a <= 0) return 'rgba(0,0,0,0)';
-                      if (theme === 'default' || theme === 'rounded') {
-                        return msg.isBot ? `hsl(var(--card) / ${a})` : `hsl(var(--primary) / ${a})`;
-                      }
-                      if (theme === 'dark') {
-                        return msg.isBot ? `rgba(0,0,0,${a})` : `rgba(31,41,55,${a})`;
-                      }
-                      if (theme === 'blackPink') {
-                        return msg.isBot ? `rgba(55,65,81,${a})` : `rgba(236,72,153,${a})`;
-                      }
-                      if (theme === 'seaSaltCheese') {
-                        return msg.isBot ? `rgba(56,189,248,${a})` : `rgba(253,230,138,${a})`;
-                      }
-                      if (theme === 'glass') {
-                        return `rgba(255,255,255,${Math.min(1, a * 0.2)})`;
-                      }
-                      return msg.isBot ? `hsl(var(--card) / ${a})` : `hsl(var(--primary) / ${a})`;
-                    })()
-                  }}
-                >
-                  <div className={`flex items-start gap-3 ${msg.isBot ? '' : 'justify-end'}`}>
-                    {msg.isBot && (
-                      <img
-                        src={currentCharacter.avatar}
-                        alt={currentCharacter.name}
-                        className="w-8 h-8 rounded-full object-cover flex-shrink-0"
-                      />
-                    )}
-                    <div className={msg.isBot ? "flex-1" : "max-w-[80%]"}>
-                      <MessageFormatter
-                        content={msg.content}
-                        className="chat-text"
-                      />
+                <>
+                  <div className="w-full flex justify-center">
+                    <div className="relative w-[295px] sm:w-[335px]">
+                      {msg.isBot && (
+                        <div className="text-base font-semibold text-white mb-1 text-left">
+                          {currentCharacter.name}
+                        </div>
+                      )}
+                      <Card className={`${msg.isBot ? 'bg-black/80 text-white' : 'bg-cyan-500 text-white'} p-4 rounded-xl w-full shadow-md`}>
+                        <div className="w-full">
+                          <MessageFormatter content={msg.content} className="chat-text" />
+                        </div>
+                      </Card>
+                      {msg.isBot ? (
+                        <img src={currentCharacter.avatar} alt={currentCharacter.name} className="w-[50px] h-[50px] rounded-full object-cover absolute top-2 left-[-60px]" />
+                      ) : (
+                        <img src={user?.imageUrl || '/placeholder.svg'} alt={user?.fullName || user?.username || 'You'} className="w-[50px] h-[50px] rounded-full object-cover absolute top-2 right-[-60px]" />
+                      )}
                     </div>
-                    {!msg.isBot && (
-                      <img
-                        src={user?.imageUrl || '/placeholder.svg'}
-                        alt={user?.fullName || user?.username || 'You'}
-                        className="w-8 h-8 rounded-full object-cover flex-shrink-0"
-                      />
-                    )}
                   </div>
-                </Card>
+                </>
               )}
             </div>
           ))}
