@@ -30,6 +30,25 @@ const AuthPage = () => {
     }
   }, [userLoaded, isSignedIn, navigate]);
 
+  // If we navigated here from inside the app, ensure hardware/back button returns to the previous route or home
+  useEffect(() => {
+    let handler: ((this: Window, ev: PopStateEvent) => any) | null = null;
+    try {
+      const returnTo = sessionStorage.getItem('authReturnTo');
+      if (returnTo) {
+        handler = () => {
+          const target = sessionStorage.getItem('authReturnTo') || '/';
+          try { sessionStorage.removeItem('authReturnTo'); } catch {}
+          navigate(target, { replace: true });
+        };
+        window.addEventListener('popstate', handler);
+      }
+    } catch {}
+    return () => {
+      if (handler) window.removeEventListener('popstate', handler);
+    };
+  }, [navigate]);
+
   const onEmailSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!isLoaded || !signIn) return;
