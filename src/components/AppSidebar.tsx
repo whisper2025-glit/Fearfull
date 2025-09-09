@@ -7,7 +7,7 @@ import {
   Gift
 } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useUser, useClerk, SignInButton } from "@clerk/clerk-react";
+import { useUser, useClerk } from "@clerk/clerk-react";
 import { CreateModal } from "@/components/CreateModal";
 import { supabase } from "@/lib/supabase";
 import {
@@ -158,16 +158,7 @@ export function AppSidebar() {
               </DropdownMenuContent>
             </DropdownMenu>
           </>
-        ) : (
-          <SignInButton mode="modal" fallbackRedirectUrl="/" signUpFallbackRedirectUrl="/">
-            <Button
-              className="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-medium rounded-full h-12"
-              size="default"
-            >
-              {!collapsed ? "Log in / Sign up" : "Login"}
-            </Button>
-          </SignInButton>
-        )}
+        ) : null}
       </SidebarFooter>
 
       <CreateModal
