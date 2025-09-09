@@ -45,11 +45,7 @@ const AppContent = () => {
       <Routes>
         <Route path="/auth" element={<AuthPage />} />
         <Route path="/sso-callback" element={<SsoCallback />} />
-        <Route path="/" element={
-          <ProtectedRoute>
-            <Index />
-          </ProtectedRoute>
-        } />
+        <Route path="/" element={<Index />} />
         <Route path="/chats" element={
           <ProtectedRoute>
             <Chats />
