@@ -45,18 +45,28 @@ export function Layout({ children, headerBottom, mainOverflow = 'auto', headerPo
                     <Search className="h-4 w-4" />
                   </Button>
 
-                  <button
-                    onClick={() => navigate('/profile')}
-                    className="rounded-full focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background"
-                    aria-label="Open profile"
-                  >
-                    <Avatar className="h-8 w-8">
-                      <AvatarImage src={user?.imageUrl || ''} alt={user?.fullName || 'User'} />
-                      <AvatarFallback className="text-xs">
-                        {(user?.firstName?.[0] || user?.username?.[0] || 'U').toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
-                  </button>
+                  {user ? (
+                    <button
+                      onClick={() => navigate('/profile')}
+                      className="rounded-full focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background"
+                      aria-label="Open profile"
+                    >
+                      <Avatar className="h-8 w-8">
+                        <AvatarImage src={user?.imageUrl || ''} alt={user?.fullName || 'User'} />
+                        <AvatarFallback className="text-xs">
+                          {(user?.firstName?.[0] || user?.username?.[0] || 'U').toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                    </button>
+                  ) : (
+                    <Button
+                      onClick={() => navigate('/auth')}
+                      className="h-8 px-4 rounded-full"
+                      size="sm"
+                    >
+                      Sign in
+                    </Button>
+                  )}
                 </div>
               </div>
               {headerBottom ? (

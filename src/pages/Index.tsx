@@ -16,7 +16,7 @@ const Index = () => {
   const navigate = useNavigate();
   const { isSignedIn, user } = useUser();
   const [searchParams, setSearchParams] = useSearchParams();
-  const [activeTag, setActiveTag] = useState<string>('For You');
+  const [activeTag, setActiveTag] = useState<string>('');
   const [sortBy, setSortBy] = useState<SortOption>('Recent Hits');
   const [gender, setGender] = useState<string>('Gender All');
   const [characters, setCharacters] = useState<any[]>([]);
@@ -47,7 +47,7 @@ const Index = () => {
         query = query.eq('gender', g);
       }
 
-      if (activeTag && activeTag !== 'For You') {
+      if (activeTag) {
         query = query.contains('tags', [activeTag]);
       }
 
@@ -154,7 +154,7 @@ const Index = () => {
       list = list.filter((c) => (c.gender ? c.gender === g : true));
     }
 
-    if (activeTag && activeTag !== 'For You') {
+    if (activeTag) {
       list = list.filter((c) => (c.tags || []).includes(activeTag) || c.category === activeTag);
     }
 

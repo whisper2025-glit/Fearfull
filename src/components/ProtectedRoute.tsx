@@ -8,7 +8,7 @@ interface ProtectedRouteProps {
   redirectTo?: string;
 }
 
-const ProtectedRoute = ({ children, redirectTo = "/auth" }: ProtectedRouteProps) => {
+const ProtectedRoute = ({ children, redirectTo = "/" }: ProtectedRouteProps) => {
   const { isSignedIn, isLoaded, user } = useUser();
 
   console.log('🛡️ ProtectedRoute check:', {

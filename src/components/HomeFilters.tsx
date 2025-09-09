@@ -24,7 +24,6 @@ interface HomeFiltersProps {
 }
 
 const TAGS = [
-  "For You",
   "Anime",
   "Romance",
   "OC",
