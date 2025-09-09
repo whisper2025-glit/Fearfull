@@ -3,7 +3,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { X } from "lucide-react";
 
 export interface Model {
   id: string;
@@ -93,18 +92,10 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg h-[80vh] bg-[#1a1b2e] border-[#2d2e3e] p-0 rounded-2xl w-[95vw] sm:w-auto sm:max-w-lg !gap-0 !grid-cols-1 !grid-rows-1 flex flex-col overflow-hidden text-xs">
+      <DialogContent className="max-w-lg h-[80vh] bg-black border-cyan-700/40 p-0 rounded-2xl w-[95vw] sm:w-auto sm:max-w-lg !gap-0 !grid-cols-1 !grid-rows-1 flex flex-col overflow-hidden text-xs">
         <div className="flex flex-col h-full overflow-hidden">
           {/* Header */}
           <DialogHeader className="px-6 py-6 flex-shrink-0 text-center relative">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="absolute top-4 right-4 text-gray-400 hover:text-white"
-              onClick={() => onOpenChange(false)}
-            >
-              <X className="h-5 w-5" />
-            </Button>
             <DialogTitle className="text-sm font-bold text-white leading-tight">
               Choose the model<br />that suits you best
             </DialogTitle>
@@ -117,8 +108,8 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
                 key={model.id}
                 className={`relative overflow-hidden cursor-pointer transition-all duration-200 ${
                   currentSelectedModel.id === model.id
-                    ? 'ring-2 ring-blue-500 bg-blue-500/10'
-                    : 'bg-[#2d2e3e] border-[#3d3e4e] hover:bg-[#34354a]'
+                    ? 'ring-2 ring-cyan-500 bg-cyan-500/10'
+                    : 'bg-black/60 border-cyan-500/20 hover:bg-black/70'
                 }`}
                 onClick={() => handleModelSelect(model)}
               >
@@ -140,7 +131,7 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
                   <div className="flex items-center justify-between">
                     <h3 className="text-sm font-bold text-white">{model.title}</h3>
                     {model.isLimitedFree && (
-                      <Badge className="bg-yellow-500 text-black text-xs px-2 py-1 rounded-full font-medium">
+                      <Badge className="bg-cyan-500 text-black text-xs px-2 py-1 rounded-full font-medium">
                         Limited Time Free
                       </Badge>
                     )}
@@ -165,7 +156,7 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
                   {/* Selection indicator */}
                   {currentSelectedModel.id === model.id && model.id === 'mistral-nemo-free' && (
                     <div className="absolute top-4 right-4">
-                      <div className="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center">
+                      <div className="w-5 h-5 bg-cyan-500 rounded-full flex items-center justify-center">
                         <div className="w-2 h-2 bg-white rounded-full" />
                       </div>
                     </div>
@@ -180,7 +171,7 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
             <Button
               size="sm"
               onClick={handleUseModel}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-md text-xs font-semibold"
+              className="w-full bg-cyan-600 hover:bg-cyan-700 text-white rounded-md text-xs font-semibold"
             >
               Use it
             </Button>
