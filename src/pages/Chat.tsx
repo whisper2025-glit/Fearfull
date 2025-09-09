@@ -678,17 +678,7 @@ const Chat = () => {
                       <img src={user?.imageUrl || '/placeholder.svg'} alt={user?.fullName || user?.username || 'You'} className="w-[50px] h-[50px] rounded-full object-cover flex-shrink-0" />
                     )}
                     <Card
-                  className={`${(() => {
-                    const base = 'p-3 backdrop-blur-sm rounded-2xl w-full max-w-2xl';
-                    const a = chatPageSettings.chatBubbleOpacity;
-                    const theme = chatPageSettings.chatBubblesTheme;
-                    if (theme === 'dark') return `${base} text-white`;
-                    if (theme === 'blackPink') return `${base} text-white`;
-                    if (theme === 'seaSaltCheese') return `${base} text-black`;
-                    if (theme === 'glass') return `${base} ${a > 0 ? 'border border-white/10' : ''} backdrop-blur-md`;
-                    if (theme === 'rounded') return `${base} rounded-2xl`;
-                    return `${base}`;
-                  })()}`}
+                  className={`${msg.isBot ? 'bg-black/80 text-white' : 'bg-cyan-500 text-white'} p-4 rounded-2xl w-full max-w-xl shadow-md`}
                   style={{
                     backgroundColor: (() => {
                       const a = chatPageSettings.chatBubbleOpacity;
