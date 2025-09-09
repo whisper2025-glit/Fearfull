@@ -671,22 +671,19 @@ const Chat = () => {
                       {currentCharacter.name}
                     </div>
                   )}
-                  <div className={`w-full flex items-start justify-center gap-3 ${msg.isBot ? '' : 'flex-row-reverse'}`}>
-                    {msg.isBot ? (
-                      <img src={currentCharacter.avatar} alt={currentCharacter.name} className="w-[50px] h-[50px] rounded-full object-cover flex-shrink-0" />
-                    ) : (
-                      <img src={user?.imageUrl || '/placeholder.svg'} alt={user?.fullName || user?.username || 'You'} className="w-[50px] h-[50px] rounded-full object-cover flex-shrink-0" />
-                    )}
-                    <Card
-                  className={`${msg.isBot ? 'bg-black/80 text-white' : 'bg-cyan-500 text-white'} p-4 rounded-xl w-[280px] sm:w-[320px] shadow-md`}
-                >
-                    <div className="w-full">
-                      <MessageFormatter
-                        content={msg.content}
-                        className="chat-text"
-                      />
+                  <div className="w-full flex justify-center">
+                    <div className="relative w-[280px] sm:w-[320px]">
+                      <Card className={`${msg.isBot ? 'bg-black/80 text-white' : 'bg-cyan-500 text-white'} p-4 rounded-xl w-full shadow-md`}>
+                        <div className="w-full">
+                          <MessageFormatter content={msg.content} className="chat-text" />
+                        </div>
+                      </Card>
+                      {msg.isBot ? (
+                        <img src={currentCharacter.avatar} alt={currentCharacter.name} className="w-[50px] h-[50px] rounded-full object-cover absolute top-1/2 -translate-y-1/2 left-[-34px]" />
+                      ) : (
+                        <img src={user?.imageUrl || '/placeholder.svg'} alt={user?.fullName || user?.username || 'You'} className="w-[50px] h-[50px] rounded-full object-cover absolute top-1/2 -translate-y-1/2 right-[-34px]" />
+                      )}
                     </div>
-                </Card>
                   </div>
                 </>
               )}
