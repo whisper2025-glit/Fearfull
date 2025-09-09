@@ -3,7 +3,7 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useUser } from "@clerk/clerk-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
@@ -19,6 +19,7 @@ interface LayoutProps {
 
 export function Layout({ children, headerBottom, mainOverflow = 'auto', headerPosition = 'sticky', hideHeader = false, headerBorder = true, headerBottomBorder = true }: LayoutProps) {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useUser();
 
   return (
@@ -60,7 +61,12 @@ export function Layout({ children, headerBottom, mainOverflow = 'auto', headerPo
                     </button>
                   ) : (
                     <Button
-                      onClick={() => navigate('/auth')}
+                      onClick={() => {
+                        try {
+                          sessionStorage.setItem('authReturnTo', location.pathname + (location.search || ''));
+                        } catch {}
+                        navigate('/auth');
+                      }}
                       className="h-8 px-4 rounded-full"
                       size="sm"
                     >
