@@ -678,7 +678,7 @@ const Chat = () => {
                       <img src={user?.imageUrl || '/placeholder.svg'} alt={user?.fullName || user?.username || 'You'} className="w-[50px] h-[50px] rounded-full object-cover flex-shrink-0" />
                     )}
                     <Card
-                  className={`${msg.isBot ? 'bg-black/80 text-white' : 'bg-cyan-500 text-white'} p-4 rounded-xl w-[260px] sm:w-[300px] shadow-md`}
+                  className={`${msg.isBot ? 'bg-black/80 text-white' : 'bg-cyan-500 text-white'} p-4 rounded-xl w-[280px] sm:w-[320px] shadow-md`}
                 >
                     <div className="w-full">
                       <MessageFormatter
