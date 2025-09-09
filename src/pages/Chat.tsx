@@ -679,29 +679,6 @@ const Chat = () => {
                     )}
                     <Card
                   className={`${msg.isBot ? 'bg-black/80 text-white' : 'bg-cyan-500 text-white'} p-4 rounded-2xl w-full max-w-xl shadow-md`}
-                  style={{
-                    backgroundColor: (() => {
-                      const a = chatPageSettings.chatBubbleOpacity;
-                      const theme = chatPageSettings.chatBubblesTheme;
-                      if (a <= 0) return 'rgba(0,0,0,0)';
-                      if (theme === 'default' || theme === 'rounded') {
-                        return msg.isBot ? `hsl(var(--card) / ${a})` : `hsl(var(--primary) / ${a})`;
-                      }
-                      if (theme === 'dark') {
-                        return msg.isBot ? `rgba(0,0,0,${a})` : `rgba(31,41,55,${a})`;
-                      }
-                      if (theme === 'blackPink') {
-                        return msg.isBot ? `rgba(55,65,81,${a})` : `rgba(236,72,153,${a})`;
-                      }
-                      if (theme === 'seaSaltCheese') {
-                        return msg.isBot ? `rgba(56,189,248,${a})` : `rgba(253,230,138,${a})`;
-                      }
-                      if (theme === 'glass') {
-                        return `rgba(255,255,255,${Math.min(1, a * 0.2)})`;
-                      }
-                      return msg.isBot ? `hsl(var(--card) / ${a})` : `hsl(var(--primary) / ${a})`;
-                    })()
-                  }}
                 >
                     <div className="w-full">
                       <MessageFormatter
