@@ -672,16 +672,16 @@ const Chat = () => {
                     </div>
                   )}
                   <div className="w-full flex justify-center">
-                    <div className="relative w-[300px] sm:w-[340px]">
+                    <div className="relative w-[280px] sm:w-[320px]">
                       <Card className={`${msg.isBot ? 'bg-black/80 text-white' : 'bg-cyan-500 text-white'} p-4 rounded-xl w-full shadow-md`}>
                         <div className="w-full">
                           <MessageFormatter content={msg.content} className="chat-text" />
                         </div>
                       </Card>
                       {msg.isBot ? (
-                        <img src={currentCharacter.avatar} alt={currentCharacter.name} className="w-[50px] h-[50px] rounded-full object-cover absolute top-1/2 -translate-y-1/2 left-[-26px]" />
+                        <img src={currentCharacter.avatar} alt={currentCharacter.name} className="w-[50px] h-[50px] rounded-full object-cover absolute top-1/2 -translate-y-1/2 left-[-20px]" />
                       ) : (
-                        <img src={user?.imageUrl || '/placeholder.svg'} alt={user?.fullName || user?.username || 'You'} className="w-[50px] h-[50px] rounded-full object-cover absolute top-1/2 -translate-y-1/2 right-[-26px]" />
+                        <img src={user?.imageUrl || '/placeholder.svg'} alt={user?.fullName || user?.username || 'You'} className="w-[50px] h-[50px] rounded-full object-cover absolute top-1/2 -translate-y-1/2 right-[-20px]" />
                       )}
                     </div>
                   </div>
