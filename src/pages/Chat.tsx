@@ -679,9 +679,9 @@ const Chat = () => {
                         </div>
                       </Card>
                       {msg.isBot ? (
-                        <img src={currentCharacter.avatar} alt={currentCharacter.name} className="w-[50px] h-[50px] rounded-full object-cover absolute top-1/2 -translate-y-1/2 left-[-60px]" />
+                        <img src={currentCharacter.avatar} alt={currentCharacter.name} className="w-[50px] h-[50px] rounded-full object-cover absolute top-2 left-[-60px]" />
                       ) : (
-                        <img src={user?.imageUrl || '/placeholder.svg'} alt={user?.fullName || user?.username || 'You'} className="w-[50px] h-[50px] rounded-full object-cover absolute top-1/2 -translate-y-1/2 right-[-60px]" />
+                        <img src={user?.imageUrl || '/placeholder.svg'} alt={user?.fullName || user?.username || 'You'} className="w-[50px] h-[50px] rounded-full object-cover absolute top-2 right-[-60px]" />
                       )}
                     </div>
                   </div>
