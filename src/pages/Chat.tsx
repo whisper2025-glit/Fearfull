@@ -671,18 +671,23 @@ const Chat = () => {
                       {currentCharacter.name}
                     </div>
                   )}
-                  <Card
+                  <div className={`flex items-start gap-3 ${msg.isBot ? '' : 'justify-end flex-row-reverse'}`}>
+                    {msg.isBot ? (
+                      <img src={currentCharacter.avatar} alt={currentCharacter.name} className="w-8 h-8 rounded-full object-cover flex-shrink-0" />
+                    ) : (
+                      <img src={user?.imageUrl || '/placeholder.svg'} alt={user?.fullName || user?.username || 'You'} className="w-8 h-8 rounded-full object-cover flex-shrink-0" />
+                    )}
+                    <Card
                   className={`${(() => {
                     const base = 'p-3 backdrop-blur-sm';
-                    const align = msg.isBot ? '' : 'ml-8';
                     const a = chatPageSettings.chatBubbleOpacity;
                     const theme = chatPageSettings.chatBubblesTheme;
-                    if (theme === 'dark') return `${base} ${align} text-white`;
-                    if (theme === 'blackPink') return `${base} ${align} text-white`;
-                    if (theme === 'seaSaltCheese') return `${base} ${align} text-black`;
-                    if (theme === 'glass') return `${base} ${align} ${a > 0 ? 'border border-white/10' : ''} backdrop-blur-md`;
-                    if (theme === 'rounded') return `${base} ${align} rounded-2xl`;
-                    return `${base} ${align}`;
+                    if (theme === 'dark') return `${base} text-white`;
+                    if (theme === 'blackPink') return `${base} text-white`;
+                    if (theme === 'seaSaltCheese') return `${base} text-black`;
+                    if (theme === 'glass') return `${base} ${a > 0 ? 'border border-white/10' : ''} backdrop-blur-md`;
+                    if (theme === 'rounded') return `${base} rounded-2xl`;
+                    return `${base}`;
                   })()}`}
                   style={{
                     backgroundColor: (() => {
@@ -708,29 +713,14 @@ const Chat = () => {
                     })()
                   }}
                 >
-                  <div className={`flex items-start gap-3 ${msg.isBot ? '' : 'justify-end'}`}>
-                    {msg.isBot && (
-                      <img
-                        src={currentCharacter.avatar}
-                        alt={currentCharacter.name}
-                        className="w-8 h-8 rounded-full object-cover flex-shrink-0"
-                      />
-                    )}
                     <div className={msg.isBot ? "flex-1" : "max-w-[80%]"}>
                       <MessageFormatter
                         content={msg.content}
                         className="chat-text"
                       />
                     </div>
-                    {!msg.isBot && (
-                      <img
-                        src={user?.imageUrl || '/placeholder.svg'}
-                        alt={user?.fullName || user?.username || 'You'}
-                        className="w-8 h-8 rounded-full object-cover flex-shrink-0"
-                      />
-                    )}
-                  </div>
                 </Card>
+                  </div>
                 </>
               )}
             </div>
