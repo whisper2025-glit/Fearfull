@@ -138,7 +138,7 @@ const Chats = () => {
   }
 
   return (
-    <Layout>
+    <Layout headerPosition="fixed" contentUnderHeader>
       <div className="bg-background text-foreground min-h-full">
         <div className="px-4 pb-4 pt-6 space-y-2">
           {isLoading ? (
@@ -200,7 +200,7 @@ const Chats = () => {
                           </Badge>
                         )}
                       </div>
-                      
+
                       <div className="flex items-center gap-1 text-muted-foreground text-xs">
                         <User className="h-3 w-3" />
                         <span>by {character.author}</span>
@@ -209,7 +209,7 @@ const Chats = () => {
                       <p className="text-muted-foreground text-xs truncate">
                         "{character.lastMessage}"
                       </p>
-                      
+
                       <div className="flex items-center justify-between text-xs text-muted-foreground">
                         <div className="flex items-center gap-2">
                           <div className="flex items-center gap-1">
