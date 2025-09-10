@@ -29,7 +29,13 @@ export function Layout({ children, headerBottom, mainOverflow = 'auto', headerPo
 
   // Measure header height for fixed positioning so main can offset correctly
   const headerRef = useRef<HTMLElement | null>(null);
-  const [headerHeight, setHeaderHeight] = useState(0);
+  const DEFAULT_TOPBAR_H = 56; // h-14
+  const [headerHeight, setHeaderHeight] = useState<number>(() => {
+    if (hideHeader) return 0;
+    const topBarH = hideTopBar ? 0 : DEFAULT_TOPBAR_H;
+    const bottomApprox = headerBottom ? 40 : 0; // approximate until measured
+    return topBarH + bottomApprox;
+  });
 
   useEffect(() => {
     const el = headerRef.current;
@@ -45,7 +51,7 @@ export function Layout({ children, headerBottom, mainOverflow = 'auto', headerPo
       ro.disconnect();
       window.removeEventListener('resize', update);
     };
-  }, [headerBottom, hideTopBar]);
+  }, [headerBottom, hideTopBar, hideHeader]);
 
   const headerClass = useMemo(() => {
     const base = 'z-40 bg-background/95 backdrop-blur-sm ' + (headerBorder ? 'border-b border-border' : '');
