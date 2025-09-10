@@ -26,7 +26,7 @@ const mockModels: Model[] = [
   {
     id: "mistral-nemo-free",
     name: "mistralai/mistral-nemo:free",
-    title: "Mistral Nemo (NSFW)",
+    title: "Free mode",
     description: "Advanced Mistral Nemo model with NSFW capabilities",
     features: [
       "OpenRouter AI-powered responses",
