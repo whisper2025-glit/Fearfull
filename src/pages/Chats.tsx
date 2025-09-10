@@ -138,8 +138,8 @@ const Chats = () => {
   }
 
   return (
-    <Layout headerPosition="fixed" hideSearchIcon hideUserAvatar>
-      <div className="bg-background text-foreground min-h-full">
+    <Layout headerPosition="fixed" hideSearchIcon hideUserAvatar mainOverflow="hidden">
+      <div className="bg-background text-foreground h-full overflow-y-auto overscroll-y-auto touch-pan-y" style={{ WebkitOverflowScrolling: 'touch', overscrollBehavior: 'contain' }}>
         <div className="p-4 space-y-2">
           {isLoading ? (
             <div className="space-y-4">
