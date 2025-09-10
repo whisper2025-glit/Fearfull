@@ -138,9 +138,9 @@ const Chats = () => {
   }
 
   return (
-    <Layout headerPosition="fixed" hideSearchIcon hideUserAvatar mainOverflow="hidden">
-      <div className="bg-background text-foreground h-full overflow-y-auto overscroll-y-auto touch-pan-y" style={{ WebkitOverflowScrolling: 'touch', overscrollBehavior: 'contain' }}>
-        <div className="p-4 space-y-2">
+    <Layout headerPosition="fixed" hideSearchIcon hideUserAvatar>
+      <div className="bg-background text-foreground">
+        <div className="p-4 space-y-2 pb-24">
           {isLoading ? (
             <div className="space-y-4">
               {[...Array(3)].map((_, i) => (
@@ -180,7 +180,6 @@ const Chats = () => {
               >
                 <CardContent className="p-2">
                   <div className="flex items-center gap-2">
-                    {/* Character Avatar */}
                     <Avatar className="w-10 h-10 flex-shrink-0">
                       <AvatarImage src={character.avatar_url} alt={character.name} />
                       <AvatarFallback className="bg-muted text-foreground text-sm">
@@ -188,7 +187,6 @@ const Chats = () => {
                       </AvatarFallback>
                     </Avatar>
 
-                    {/* Character Info */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
                         <h3 className="font-semibold text-white truncate text-sm">
