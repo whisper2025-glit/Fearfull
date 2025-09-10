@@ -138,7 +138,7 @@ const Chats = () => {
   }
 
   return (
-    <Layout headerPosition="fixed" contentUnderHeader>
+    <Layout headerPosition="fixed" contentUnderHeader hideSearchIcon hideUserAvatar>
       <div className="bg-background text-foreground min-h-full">
         <div className="px-4 pb-4 pt-6 space-y-2">
           {isLoading ? (
