@@ -533,7 +533,8 @@ const Search = () => {
               <div className="space-y-4">
 
                 {/* Filter Controls */}
-                    <div className="flex items-center gap-2 flex-wrap">
+                    <div className="sticky top-0 z-50 -mx-4 px-4 py-2 bg-background/95 backdrop-blur-sm border-b border-border">
+                      <div className="flex items-center gap-2 flex-wrap">
                       {/* Sort Dropdown */}
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -650,8 +651,8 @@ const Search = () => {
                           ))}
                         </DropdownMenuContent>
                       </DropdownMenu>
+                      </div>
                     </div>
-
 
                     {/* Character Results Grid */}
                     {isSearching ? (
