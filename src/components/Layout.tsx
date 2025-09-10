@@ -10,17 +10,25 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 interface LayoutProps {
   children: ReactNode;
   headerBottom?: ReactNode;
+  headerRight?: ReactNode;
+  headerLeft?: ReactNode;
+  headerCenter?: ReactNode;
   mainOverflow?: 'auto' | 'hidden';
   headerPosition?: 'sticky' | 'fixed';
   hideHeader?: boolean;
   headerBorder?: boolean;
   headerBottomBorder?: boolean;
+  headerZIndex?: 'default' | 'overlay';
+  showHeaderSearchButton?: boolean;
+  showHeaderProfile?: boolean;
 }
 
-export function Layout({ children, headerBottom, mainOverflow = 'auto', headerPosition = 'sticky', hideHeader = false, headerBorder = true, headerBottomBorder = true }: LayoutProps) {
+export function Layout({ children, headerBottom, headerRight, headerLeft, headerCenter, mainOverflow = 'auto', headerPosition = 'sticky', hideHeader = false, headerBorder = true, headerBottomBorder = true, headerZIndex = 'default', showHeaderSearchButton = true, showHeaderProfile = true }: LayoutProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useUser();
+
+  const zIndexClass = headerZIndex === 'overlay' ? 'z-[60]' : 'z-40';
 
   return (
     <SidebarProvider>
@@ -30,48 +38,66 @@ export function Layout({ children, headerBottom, mainOverflow = 'auto', headerPo
         <div className="flex-1 flex flex-col min-w-0">
           {/* Header */}
           {!hideHeader && (
-            <header className={(headerPosition === 'fixed' ? 'fixed top-0 left-0 right-0 ' : 'sticky top-0 ') + 'z-40 bg-background/95 backdrop-blur-sm ' + (headerBorder ? 'border-b border-border' : '')}>
-              <div className="h-14 flex items-center justify-between px-4">
+            <header className={(headerPosition === 'fixed' ? 'fixed top-0 left-0 right-0 ' : 'sticky top-0 ') + zIndexClass + ' bg-background/95 backdrop-blur-sm ' + (headerBorder ? 'border-b border-border' : '')}>
+              <div className="h-14 flex items-center px-4">
                 <div className="flex items-center gap-3">
-                  <SidebarTrigger className="text-foreground hover:text-primary" />
+                  {headerLeft ? (
+                    headerLeft
+                  ) : (
+                    <SidebarTrigger className="text-foreground hover:text-primary" />
+                  )}
+                </div>
+
+                <div className="flex-1 flex justify-center px-4">
+                  {headerCenter ? headerCenter : null}
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="text-muted-foreground hover:text-foreground"
-                    onClick={() => navigate('/search')}
-                  >
-                    <Search className="h-4 w-4" />
-                  </Button>
-
-                  {user ? (
-                    <button
-                      onClick={() => navigate('/profile')}
-                      className="rounded-full focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background"
-                      aria-label="Open profile"
-                    >
-                      <Avatar className="h-8 w-8">
-                        <AvatarImage src={user?.imageUrl || ''} alt={user?.fullName || 'User'} />
-                        <AvatarFallback className="text-xs">
-                          {(user?.firstName?.[0] || user?.username?.[0] || 'U').toUpperCase()}
-                        </AvatarFallback>
-                      </Avatar>
-                    </button>
+                  {headerRight ? (
+                    headerRight
                   ) : (
-                    <Button
-                      onClick={() => {
-                        try {
-                          sessionStorage.setItem('authReturnTo', location.pathname + (location.search || ''));
-                        } catch {}
-                        navigate('/auth');
-                      }}
-                      className="h-8 px-4 rounded-full"
-                      size="sm"
-                    >
-                      Sign in
-                    </Button>
+                    <>
+                      {showHeaderSearchButton && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="text-muted-foreground hover:text-foreground"
+                          onClick={() => navigate('/search')}
+                        >
+                          <Search className="h-4 w-4" />
+                        </Button>
+                      )}
+
+                      {showHeaderProfile && (
+                        user ? (
+                          <button
+                            onClick={() => navigate('/profile')}
+                            className="rounded-full focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background"
+                            aria-label="Open profile"
+                          >
+                            <Avatar className="h-8 w-8">
+                              <AvatarImage src={user?.imageUrl || ''} alt={user?.fullName || 'User'} />
+                              <AvatarFallback className="text-xs">
+                                {(user?.firstName?.[0] || user?.username?.[0] || 'U').toUpperCase()}
+                              </AvatarFallback>
+                            </Avatar>
+                          </button>
+                        ) : (
+                          <Button
+                            onClick={() => {
+                              try {
+                                sessionStorage.setItem('authReturnTo', location.pathname + (location.search || ''));
+                              } catch {}
+                              navigate('/auth');
+                            }}
+                            className="h-8 px-4 rounded-full"
+                            size="sm"
+                          >
+                            Sign in
+                          </Button>
+                        )
+                      )}
+                    </>
                   )}
                 </div>
               </div>
