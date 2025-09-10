@@ -92,11 +92,11 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg h-[80vh] bg-black border-cyan-700/40 p-0 rounded-2xl w-[95vw] sm:w-auto sm:max-w-lg !gap-0 !grid-cols-1 !grid-rows-1 flex flex-col overflow-hidden text-xs">
+      <DialogContent className="max-w-lg h-[80vh] bg-background border-border p-0 rounded-2xl w-[95vw] sm:w-auto sm:max-w-lg !gap-0 !grid-cols-1 !grid-rows-1 flex flex-col overflow-hidden text-xs">
         <div className="flex flex-col h-full overflow-hidden">
           {/* Header */}
           <DialogHeader className="px-6 py-6 flex-shrink-0 text-center relative">
-            <DialogTitle className="text-sm font-bold text-white leading-tight">
+            <DialogTitle className="text-sm font-bold text-foreground leading-tight">
               Choose the model<br />that suits you best
             </DialogTitle>
           </DialogHeader>
@@ -108,8 +108,8 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
                 key={model.id}
                 className={`relative overflow-hidden cursor-pointer transition-all duration-200 ${
                   currentSelectedModel.id === model.id
-                    ? 'ring-2 ring-cyan-500 bg-cyan-500/10'
-                    : 'bg-black/60 border-cyan-500/20 hover:bg-black/70'
+                    ? 'ring-2 ring-primary/70 bg-primary/10'
+                    : 'bg-secondary/60 border-border/50 hover:bg-secondary/70'
                 }`}
                 onClick={() => handleModelSelect(model)}
               >
@@ -129,9 +129,9 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
                 <CardContent className="relative p-4 space-y-3">
                   {/* Title and Badge */}
                   <div className="flex items-center justify-between">
-                    <h3 className="text-sm font-bold text-white">{model.title}</h3>
+                    <h3 className="text-sm font-bold text-foreground">{model.title}</h3>
                     {model.isLimitedFree && (
-                      <Badge className="bg-cyan-500 text-black text-xs px-2 py-1 rounded-full font-medium">
+                      <Badge className="bg-primary text-primary-foreground text-xs px-2 py-1 rounded-full font-medium">
                         Limited Time Free
                       </Badge>
                     )}
@@ -144,8 +144,8 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
                         key={index} 
                         className={`${
                           index === 0
-                            ? 'text-white font-medium text-xs'
-                            : 'text-gray-300 text-xs'
+                            ? 'text-foreground font-medium text-xs'
+                            : 'text-muted-foreground text-xs'
                         }`}
                       >
                         • {feature}
@@ -156,7 +156,7 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
                   {/* Selection indicator */}
                   {currentSelectedModel.id === model.id && model.id === 'mistral-nemo-free' && (
                     <div className="absolute top-4 right-4">
-                      <div className="w-5 h-5 bg-cyan-500 rounded-full flex items-center justify-center">
+                      <div className="w-5 h-5 bg-primary rounded-full flex items-center justify-center">
                         <div className="w-2 h-2 bg-white rounded-full" />
                       </div>
                     </div>
@@ -171,7 +171,7 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
             <Button
               size="sm"
               onClick={handleUseModel}
-              className="w-full bg-cyan-600 hover:bg-cyan-700 text-white rounded-md text-xs font-semibold"
+              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground rounded-md text-xs font-semibold"
             >
               Use it
             </Button>
