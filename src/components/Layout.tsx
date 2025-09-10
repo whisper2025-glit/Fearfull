@@ -75,16 +75,16 @@ export function Layout({ children, headerBottom, mainOverflow = 'auto', headerPo
                   )}
                 </div>
               </div>
+              {headerBottom ? (
+                <div className={"px-4 py-2 " + (headerBottomBorder ? 'border-t border-border' : '')}>
+                  {headerBottom}
+                </div>
+              ) : null}
             </header>
           )}
 
           {/* Main Content */}
           <main className={mainOverflow === 'hidden' ? 'flex-1 min-h-0 overflow-hidden' : 'flex-1 min-h-0 overflow-auto'}>
-            {headerBottom ? (
-              <div className={"px-4 py-2 " + (headerBottomBorder ? 'border-b border-border' : '')}>
-                {headerBottom}
-              </div>
-            ) : null}
             {children}
           </main>
         </div>
