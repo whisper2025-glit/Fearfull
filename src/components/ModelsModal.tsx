@@ -38,7 +38,7 @@ const mockModels: Model[] = [
   {
     id: "roleplay",
     name: "google/gemma-3-27b-it:free",
-    title: "Roleplay",
+    title: "Role-playing",
     description: "Google Gemma 3-27B powered immersive roleplay model",
     features: [
       "Advanced reasoning for immersive roleplay",
@@ -51,7 +51,7 @@ const mockModels: Model[] = [
   {
     id: "storystream",
     name: "cognitivecomputations/dolphin-mistral-24b-venice-edition:free",
-    title: "StoryStream",
+    title: "Narrative Flow",
     description: "Dolphin Mistral-powered storytelling and narrative AI",
     features: [
       "Coherent long-form story continuation",
@@ -64,7 +64,7 @@ const mockModels: Model[] = [
   {
     id: "lifelike",
     name: "deepseek/deepseek-chat-v3-0324:free",
-    title: "Lifelike",
+    title: "Realistic Chat",
     description: "DeepSeek Chat v3 powered natural and human-like conversation AI",
     features: [
       "Human-like, lifelike interactions",
