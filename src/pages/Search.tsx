@@ -325,10 +325,7 @@ const Search = () => {
   const isSearchActive = hasSearched && searchQuery.trim().length > 0;
 
   return (
-    <Layout headerZIndex="overlay" showHeaderSearchButton={false} showHeaderProfile={false}>
-      <div className="flex-1 overflow-auto bg-background">
-        <div className="p-4 space-y-4">
-          {/* Search Header */}
+    <Layout headerZIndex="overlay" showHeaderSearchButton={false} showHeaderProfile={false} headerBottom={(
           <div className="flex items-center gap-3">
             <Button
               variant="ghost"
@@ -362,6 +359,9 @@ const Search = () => {
               </div>
             </form>
           </div>
+        )}>
+      <div className="flex-1 overflow-auto bg-background">
+        <div className="p-4 space-y-4">
 
           {!isSearchActive ? (
             <>
