@@ -14,9 +14,10 @@ interface LayoutProps {
   headerBorder?: boolean;
   headerBottomBorder?: boolean;
   hideTopBar?: boolean;
+  contentUnderHeader?: boolean;
 }
 
-export function Layout({ children, headerBottom, mainOverflow = 'auto', headerPosition = 'sticky', hideHeader = false, headerBorder = true, headerBottomBorder = true, hideTopBar = false }: LayoutProps) {
+export function Layout({ children, headerBottom, mainOverflow = 'auto', headerPosition = 'sticky', hideHeader = false, headerBorder = true, headerBottomBorder = true, hideTopBar = false, contentUnderHeader = false }: LayoutProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useUser();
@@ -46,10 +47,14 @@ export function Layout({ children, headerBottom, mainOverflow = 'auto', headerPo
     return (headerPosition === 'fixed' ? 'fixed top-0 left-0 right-0 ' : 'sticky top-0 ') + base;
   }, [headerBorder, headerPosition]);
 
-  // When header is fixed, ensure content scrolls under it
+  // When header is fixed, optionally allow content to slide underneath by not offsetting main
   const mainBaseClass = mainOverflow === 'hidden' ? 'flex-1 min-h-0 overflow-hidden' : 'flex-1 min-h-0 overflow-auto';
   const mainClassName = mainBaseClass;
-  const mainStyle = hideHeader ? undefined : (headerPosition === 'fixed' ? { paddingTop: headerHeight } : undefined);
+  const mainStyle = hideHeader
+    ? undefined
+    : headerPosition === 'fixed' && !contentUnderHeader
+      ? { paddingTop: headerHeight }
+      : undefined;
 
   return (
     <SidebarProvider>
