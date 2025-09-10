@@ -4,6 +4,8 @@ import { AppSidebar } from "@/components/AppSidebar";
 import { Button } from "@/components/ui/button";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useUser } from "@clerk/clerk-react";
+import { Search } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface LayoutProps {
   children: ReactNode;
@@ -15,9 +17,11 @@ interface LayoutProps {
   headerBottomBorder?: boolean;
   hideTopBar?: boolean;
   contentUnderHeader?: boolean;
+  hideSearchIcon?: boolean;
+  hideUserAvatar?: boolean;
 }
 
-export function Layout({ children, headerBottom, mainOverflow = 'auto', headerPosition = 'sticky', hideHeader = false, headerBorder = true, headerBottomBorder = true, hideTopBar = false, contentUnderHeader = false }: LayoutProps) {
+export function Layout({ children, headerBottom, mainOverflow = 'auto', headerPosition = 'sticky', hideHeader = false, headerBorder = true, headerBottomBorder = true, hideTopBar = false, contentUnderHeader = false, hideSearchIcon = false, hideUserAvatar = false }: LayoutProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useUser();
@@ -71,6 +75,33 @@ export function Layout({ children, headerBottom, mainOverflow = 'auto', headerPo
                   </div>
 
                   <div className="flex items-center gap-3">
+                    {!hideSearchIcon && (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="text-muted-foreground hover:text-foreground"
+                        onClick={() => navigate('/search')}
+                        aria-label="Search"
+                      >
+                        <Search className="h-4 w-4" />
+                      </Button>
+                    )}
+
+                    {user && !hideUserAvatar && (
+                      <button
+                        onClick={() => navigate('/profile')}
+                        className="rounded-full focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background"
+                        aria-label="Open profile"
+                      >
+                        <Avatar className="h-8 w-8">
+                          <AvatarImage src={user?.imageUrl || ''} alt={user?.fullName || 'User'} />
+                          <AvatarFallback className="text-xs">
+                            {(user?.firstName?.[0] || user?.username?.[0] || 'U').toUpperCase()}
+                          </AvatarFallback>
+                        </Avatar>
+                      </button>
+                    )}
+
                     {!user && (
                       <Button
                         onClick={() => {
