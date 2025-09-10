@@ -11,6 +11,8 @@ interface LayoutProps {
   children: ReactNode;
   headerBottom?: ReactNode;
   headerRight?: ReactNode;
+  headerLeft?: ReactNode;
+  headerCenter?: ReactNode;
   mainOverflow?: 'auto' | 'hidden';
   headerPosition?: 'sticky' | 'fixed';
   hideHeader?: boolean;
@@ -21,7 +23,7 @@ interface LayoutProps {
   showHeaderProfile?: boolean;
 }
 
-export function Layout({ children, headerBottom, headerRight, mainOverflow = 'auto', headerPosition = 'sticky', hideHeader = false, headerBorder = true, headerBottomBorder = true, headerZIndex = 'default', showHeaderSearchButton = true, showHeaderProfile = true }: LayoutProps) {
+export function Layout({ children, headerBottom, headerRight, headerLeft, headerCenter, mainOverflow = 'auto', headerPosition = 'sticky', hideHeader = false, headerBorder = true, headerBottomBorder = true, headerZIndex = 'default', showHeaderSearchButton = true, showHeaderProfile = true }: LayoutProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useUser();
@@ -37,9 +39,17 @@ export function Layout({ children, headerBottom, headerRight, mainOverflow = 'au
           {/* Header */}
           {!hideHeader && (
             <header className={(headerPosition === 'fixed' ? 'fixed top-0 left-0 right-0 ' : 'sticky top-0 ') + zIndexClass + ' bg-background/95 backdrop-blur-sm ' + (headerBorder ? 'border-b border-border' : '')}>
-              <div className="h-14 flex items-center justify-between px-4">
+              <div className="h-14 flex items-center px-4">
                 <div className="flex items-center gap-3">
-                  <SidebarTrigger className="text-foreground hover:text-primary" />
+                  {headerLeft ? (
+                    headerLeft
+                  ) : (
+                    <SidebarTrigger className="text-foreground hover:text-primary" />
+                  )}
+                </div>
+
+                <div className="flex-1 flex justify-center px-4">
+                  {headerCenter ? headerCenter : null}
                 </div>
 
                 <div className="flex items-center gap-3">
