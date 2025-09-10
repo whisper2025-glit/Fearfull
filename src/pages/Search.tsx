@@ -325,7 +325,7 @@ const Search = () => {
   const isSearchActive = hasSearched && searchQuery.trim().length > 0;
 
   return (
-    <Layout hideTopBar={true} headerBottom={
+    <Layout hideTopBar={true} headerPosition="fixed" headerBottom={
       <div className="space-y-3">
         <div className="flex items-center gap-3">
           <Button
