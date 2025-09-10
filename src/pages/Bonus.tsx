@@ -167,9 +167,9 @@ export default function Bonus() {
 
 
   return (
-    <Layout>
+    <Layout headerPosition="fixed" contentUnderHeader>
       <div className="flex-1 bg-background text-foreground min-h-full">
-        <div className="p-4 space-y-4">
+        <div className="px-4 pb-4 pt-20 space-y-4">
           <Card className="bg-gradient-to-r from-gray-500/20 to-cyan-500/20 border-border">
             <CardContent className="p-4">
               <div className="flex items-center justify-center">

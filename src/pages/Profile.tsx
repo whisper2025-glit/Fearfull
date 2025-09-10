@@ -13,7 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { ChevronLeft, Settings, Gift, MoreHorizontal, X, Camera, Loader2 } from "lucide-react";
+import { ChevronLeft, Settings, MoreHorizontal, X, Camera, Loader2 } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { FullscreenSpinner } from "@/components/ui/loading-spinner";
 import { CharacterCard } from "@/components/CharacterCard";
@@ -388,9 +388,6 @@ const Profile = () => {
 
             {/* Overlay buttons */}
             <div className="absolute top-4 right-4 flex items-center gap-2">
-              <Button variant="ghost" size="icon" className="bg-black/20 hover:bg-black/40 text-white">
-                <Gift className="h-5 w-5" />
-              </Button>
               <SettingsSheet>
                 <Button variant="ghost" size="icon" className="bg-black/20 hover:bg-black/40 text-white">
                   <Settings className="h-5 w-5" />

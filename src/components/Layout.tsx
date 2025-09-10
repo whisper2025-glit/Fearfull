@@ -1,11 +1,11 @@
 import { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
-import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useUser } from "@clerk/clerk-react";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Search } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface LayoutProps {
   children: ReactNode;
@@ -16,9 +16,12 @@ interface LayoutProps {
   headerBorder?: boolean;
   headerBottomBorder?: boolean;
   hideTopBar?: boolean;
+  contentUnderHeader?: boolean;
+  hideSearchIcon?: boolean;
+  hideUserAvatar?: boolean;
 }
 
-export function Layout({ children, headerBottom, mainOverflow = 'auto', headerPosition = 'sticky', hideHeader = false, headerBorder = true, headerBottomBorder = true, hideTopBar = false }: LayoutProps) {
+export function Layout({ children, headerBottom, mainOverflow = 'auto', headerPosition = 'sticky', hideHeader = false, headerBorder = true, headerBottomBorder = true, hideTopBar = false, contentUnderHeader = false, hideSearchIcon = false, hideUserAvatar = false }: LayoutProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useUser();
@@ -48,10 +51,14 @@ export function Layout({ children, headerBottom, mainOverflow = 'auto', headerPo
     return (headerPosition === 'fixed' ? 'fixed top-0 left-0 right-0 ' : 'sticky top-0 ') + base;
   }, [headerBorder, headerPosition]);
 
-  // When header is fixed, ensure content scrolls under it
+  // When header is fixed, optionally allow content to slide underneath by not offsetting main
   const mainBaseClass = mainOverflow === 'hidden' ? 'flex-1 min-h-0 overflow-hidden' : 'flex-1 min-h-0 overflow-auto';
   const mainClassName = mainBaseClass;
-  const mainStyle = hideHeader ? undefined : (headerPosition === 'fixed' ? { paddingTop: headerHeight } : undefined);
+  const mainStyle = hideHeader
+    ? undefined
+    : headerPosition === 'fixed' && !contentUnderHeader
+      ? { paddingTop: headerHeight }
+      : undefined;
 
   return (
     <SidebarProvider>
@@ -68,16 +75,19 @@ export function Layout({ children, headerBottom, mainOverflow = 'auto', headerPo
                   </div>
 
                   <div className="flex items-center gap-3">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="text-muted-foreground hover:text-foreground"
-                      onClick={() => navigate('/search')}
-                    >
-                      <Search className="h-4 w-4" />
-                    </Button>
+                    {!hideSearchIcon && (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="text-muted-foreground hover:text-foreground"
+                        onClick={() => navigate('/search')}
+                        aria-label="Search"
+                      >
+                        <Search className="h-4 w-4" />
+                      </Button>
+                    )}
 
-                    {user ? (
+                    {user && !hideUserAvatar && (
                       <button
                         onClick={() => navigate('/profile')}
                         className="rounded-full focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background"
@@ -90,7 +100,9 @@ export function Layout({ children, headerBottom, mainOverflow = 'auto', headerPo
                           </AvatarFallback>
                         </Avatar>
                       </button>
-                    ) : (
+                    )}
+
+                    {!user && (
                       <Button
                         onClick={() => {
                           try {
