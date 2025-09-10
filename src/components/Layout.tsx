@@ -10,6 +10,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 interface LayoutProps {
   children: ReactNode;
   headerBottom?: ReactNode;
+  headerRight?: ReactNode;
   mainOverflow?: 'auto' | 'hidden';
   headerPosition?: 'sticky' | 'fixed';
   hideHeader?: boolean;
@@ -20,7 +21,7 @@ interface LayoutProps {
   showHeaderProfile?: boolean;
 }
 
-export function Layout({ children, headerBottom, mainOverflow = 'auto', headerPosition = 'sticky', hideHeader = false, headerBorder = true, headerBottomBorder = true, headerZIndex = 'default', showHeaderSearchButton = true, showHeaderProfile = true }: LayoutProps) {
+export function Layout({ children, headerBottom, headerRight, mainOverflow = 'auto', headerPosition = 'sticky', hideHeader = false, headerBorder = true, headerBottomBorder = true, headerZIndex = 'default', showHeaderSearchButton = true, showHeaderProfile = true }: LayoutProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useUser();
@@ -42,45 +43,51 @@ export function Layout({ children, headerBottom, mainOverflow = 'auto', headerPo
                 </div>
 
                 <div className="flex items-center gap-3">
-                  {showHeaderSearchButton && (
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="text-muted-foreground hover:text-foreground"
-                      onClick={() => navigate('/search')}
-                    >
-                      <Search className="h-4 w-4" />
-                    </Button>
-                  )}
+                  {headerRight ? (
+                    headerRight
+                  ) : (
+                    <>
+                      {showHeaderSearchButton && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="text-muted-foreground hover:text-foreground"
+                          onClick={() => navigate('/search')}
+                        >
+                          <Search className="h-4 w-4" />
+                        </Button>
+                      )}
 
-                  {showHeaderProfile && (
-                    user ? (
-                      <button
-                        onClick={() => navigate('/profile')}
-                        className="rounded-full focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background"
-                        aria-label="Open profile"
-                      >
-                        <Avatar className="h-8 w-8">
-                          <AvatarImage src={user?.imageUrl || ''} alt={user?.fullName || 'User'} />
-                          <AvatarFallback className="text-xs">
-                            {(user?.firstName?.[0] || user?.username?.[0] || 'U').toUpperCase()}
-                          </AvatarFallback>
-                        </Avatar>
-                      </button>
-                    ) : (
-                      <Button
-                        onClick={() => {
-                          try {
-                            sessionStorage.setItem('authReturnTo', location.pathname + (location.search || ''));
-                          } catch {}
-                          navigate('/auth');
-                        }}
-                        className="h-8 px-4 rounded-full"
-                        size="sm"
-                      >
-                        Sign in
-                      </Button>
-                    )
+                      {showHeaderProfile && (
+                        user ? (
+                          <button
+                            onClick={() => navigate('/profile')}
+                            className="rounded-full focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background"
+                            aria-label="Open profile"
+                          >
+                            <Avatar className="h-8 w-8">
+                              <AvatarImage src={user?.imageUrl || ''} alt={user?.fullName || 'User'} />
+                              <AvatarFallback className="text-xs">
+                                {(user?.firstName?.[0] || user?.username?.[0] || 'U').toUpperCase()}
+                              </AvatarFallback>
+                            </Avatar>
+                          </button>
+                        ) : (
+                          <Button
+                            onClick={() => {
+                              try {
+                                sessionStorage.setItem('authReturnTo', location.pathname + (location.search || ''));
+                              } catch {}
+                              navigate('/auth');
+                            }}
+                            className="h-8 px-4 rounded-full"
+                            size="sm"
+                          >
+                            Sign in
+                          </Button>
+                        )
+                      )}
+                    </>
                   )}
                 </div>
               </div>
