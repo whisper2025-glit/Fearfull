@@ -205,6 +205,7 @@ const Index = () => {
     <Layout
       headerBorder={false}
       headerBottomBorder={false}
+      headerPosition="fixed"
       headerBottom={
         <HomeFilters
           activeTag={activeTag}
