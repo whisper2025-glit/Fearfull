@@ -325,7 +325,7 @@ const Search = () => {
   const isSearchActive = hasSearched && searchQuery.trim().length > 0;
 
   return (
-    <Layout>
+    <Layout headerZIndex="overlay">
       <div className="flex-1 overflow-auto bg-background">
         <div className="p-4 space-y-4">
           {/* Search Header */}
@@ -338,7 +338,7 @@ const Search = () => {
             >
               <ArrowLeft className="h-5 w-5" />
             </Button>
-            
+
             <form onSubmit={handleSearch} className="flex-1 relative">
               <div className="relative">
                 <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
