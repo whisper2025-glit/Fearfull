@@ -1,4 +1,5 @@
 import { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
+import type { CSSProperties } from 'react';
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { Button } from "@/components/ui/button";
@@ -28,7 +29,13 @@ export function Layout({ children, headerBottom, mainOverflow = 'auto', headerPo
 
   // Measure header height for fixed positioning so main can offset correctly
   const headerRef = useRef<HTMLElement | null>(null);
-  const [headerHeight, setHeaderHeight] = useState(0);
+  const DEFAULT_TOPBAR_H = 56; // h-14
+  const [headerHeight, setHeaderHeight] = useState<number>(() => {
+    if (hideHeader) return 0;
+    const topBarH = hideTopBar ? 0 : DEFAULT_TOPBAR_H;
+    const bottomApprox = headerBottom ? 40 : 0; // approximate until measured
+    return topBarH + bottomApprox;
+  });
 
   useEffect(() => {
     const el = headerRef.current;
@@ -44,7 +51,7 @@ export function Layout({ children, headerBottom, mainOverflow = 'auto', headerPo
       ro.disconnect();
       window.removeEventListener('resize', update);
     };
-  }, [headerBottom, hideTopBar]);
+  }, [headerBottom, hideTopBar, hideHeader]);
 
   const headerClass = useMemo(() => {
     const base = 'z-40 bg-background/95 backdrop-blur-sm ' + (headerBorder ? 'border-b border-border' : '');
@@ -52,17 +59,21 @@ export function Layout({ children, headerBottom, mainOverflow = 'auto', headerPo
   }, [headerBorder, headerPosition]);
 
   // When header is fixed, optionally allow content to slide underneath by not offsetting main
-  const mainBaseClass = mainOverflow === 'hidden' ? 'flex-1 min-h-0 overflow-hidden' : 'flex-1 min-h-0 overflow-auto';
+  const mainBaseClass = mainOverflow === 'hidden' ? 'flex-1 min-h-0 overflow-hidden' : 'flex-1 min-h-0 overflow-y-auto overscroll-y-contain touch-pan-y';
   const mainClassName = mainBaseClass;
-  const mainStyle = hideHeader
-    ? undefined
-    : headerPosition === 'fixed' && !contentUnderHeader
-      ? { paddingTop: headerHeight }
-      : undefined;
+  const mainStyle: CSSProperties = {
+    WebkitOverflowScrolling: 'touch',
+    overscrollBehavior: 'contain',
+    ...(hideHeader
+      ? {}
+      : headerPosition === 'fixed' && !contentUnderHeader
+        ? { paddingTop: headerHeight }
+        : {})
+  };
 
   return (
     <SidebarProvider>
-      <div className="h-screen flex w-full overflow-hidden">
+      <div className="h-[100dvh] flex w-full overflow-hidden">
         <AppSidebar />
 
         <div className="flex-1 flex flex-col min-w-0">
