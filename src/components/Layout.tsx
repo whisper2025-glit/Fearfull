@@ -1,4 +1,5 @@
 import { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
+import type { CSSProperties } from 'react';
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { Button } from "@/components/ui/button";
@@ -54,7 +55,7 @@ export function Layout({ children, headerBottom, mainOverflow = 'auto', headerPo
   // When header is fixed, optionally allow content to slide underneath by not offsetting main
   const mainBaseClass = mainOverflow === 'hidden' ? 'flex-1 min-h-0 overflow-hidden' : 'flex-1 min-h-0 overflow-y-auto overscroll-y-contain touch-pan-y';
   const mainClassName = mainBaseClass;
-  const mainStyle: React.CSSProperties = {
+  const mainStyle: CSSProperties = {
     WebkitOverflowScrolling: 'touch',
     overscrollBehavior: 'contain',
     ...(hideHeader
