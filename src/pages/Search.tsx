@@ -325,7 +325,16 @@ const Search = () => {
   const isSearchActive = hasSearched && searchQuery.trim().length > 0;
 
   return (
-    <Layout headerZIndex="overlay" showHeaderSearchButton={false} showHeaderProfile={false} headerRight={(
+    <Layout headerZIndex="overlay" showHeaderSearchButton={false} showHeaderProfile={false} headerLeft={(
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => navigate(-1)}
+            className="text-primary hover:text-primary/80"
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+        )} headerCenter={(
           <div className="w-[min(720px,70vw)]">
             <form onSubmit={handleSearch} className="relative">
               <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
