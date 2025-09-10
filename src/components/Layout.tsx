@@ -15,9 +15,10 @@ interface LayoutProps {
   hideHeader?: boolean;
   headerBorder?: boolean;
   headerBottomBorder?: boolean;
+  hideTopBar?: boolean;
 }
 
-export function Layout({ children, headerBottom, mainOverflow = 'auto', headerPosition = 'sticky', hideHeader = false, headerBorder = true, headerBottomBorder = true }: LayoutProps) {
+export function Layout({ children, headerBottom, mainOverflow = 'auto', headerPosition = 'sticky', hideHeader = false, headerBorder = true, headerBottomBorder = true, hideTopBar = false }: LayoutProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useUser();
@@ -31,52 +32,54 @@ export function Layout({ children, headerBottom, mainOverflow = 'auto', headerPo
           {/* Header */}
           {!hideHeader && (
             <header className={(headerPosition === 'fixed' ? 'fixed top-0 left-0 right-0 ' : 'sticky top-0 ') + 'z-40 bg-background/95 backdrop-blur-sm ' + (headerBorder ? 'border-b border-border' : '')}>
-              <div className="h-14 flex items-center justify-between px-4">
-                <div className="flex items-center gap-3">
-                  <SidebarTrigger className="text-foreground hover:text-primary" />
-                </div>
+              {!hideTopBar && (
+                <div className="h-14 flex items-center justify-between px-4">
+                  <div className="flex items-center gap-3">
+                    <SidebarTrigger className="text-foreground hover:text-primary" />
+                  </div>
 
-                <div className="flex items-center gap-3">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="text-muted-foreground hover:text-foreground"
-                    onClick={() => navigate('/search')}
-                  >
-                    <Search className="h-4 w-4" />
-                  </Button>
-
-                  {user ? (
-                    <button
-                      onClick={() => navigate('/profile')}
-                      className="rounded-full focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background"
-                      aria-label="Open profile"
-                    >
-                      <Avatar className="h-8 w-8">
-                        <AvatarImage src={user?.imageUrl || ''} alt={user?.fullName || 'User'} />
-                        <AvatarFallback className="text-xs">
-                          {(user?.firstName?.[0] || user?.username?.[0] || 'U').toUpperCase()}
-                        </AvatarFallback>
-                      </Avatar>
-                    </button>
-                  ) : (
+                  <div className="flex items-center gap-3">
                     <Button
-                      onClick={() => {
-                        try {
-                          sessionStorage.setItem('authReturnTo', location.pathname + (location.search || ''));
-                        } catch {}
-                        navigate('/auth');
-                      }}
-                      className="h-8 px-4 rounded-full"
-                      size="sm"
+                      variant="ghost"
+                      size="icon"
+                      className="text-muted-foreground hover:text-foreground"
+                      onClick={() => navigate('/search')}
                     >
-                      Sign in
+                      <Search className="h-4 w-4" />
                     </Button>
-                  )}
+
+                    {user ? (
+                      <button
+                        onClick={() => navigate('/profile')}
+                        className="rounded-full focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background"
+                        aria-label="Open profile"
+                      >
+                        <Avatar className="h-8 w-8">
+                          <AvatarImage src={user?.imageUrl || ''} alt={user?.fullName || 'User'} />
+                          <AvatarFallback className="text-xs">
+                            {(user?.firstName?.[0] || user?.username?.[0] || 'U').toUpperCase()}
+                          </AvatarFallback>
+                        </Avatar>
+                      </button>
+                    ) : (
+                      <Button
+                        onClick={() => {
+                          try {
+                            sessionStorage.setItem('authReturnTo', location.pathname + (location.search || ''));
+                          } catch {}
+                          navigate('/auth');
+                        }}
+                        className="h-8 px-4 rounded-full"
+                        size="sm"
+                      >
+                        Sign in
+                      </Button>
+                    )}
+                  </div>
                 </div>
-              </div>
+              )}
               {headerBottom ? (
-                <div className={"px-4 py-2 " + (headerBottomBorder ? 'border-t border-border' : '')}>
+                <div className={"px-4 py-2 " + (headerBottomBorder ? (hideTopBar ? '' : 'border-t ') + 'border-border' : '')}>
                   {headerBottom}
                 </div>
               ) : null}
