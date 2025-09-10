@@ -325,38 +325,27 @@ const Search = () => {
   const isSearchActive = hasSearched && searchQuery.trim().length > 0;
 
   return (
-    <Layout headerZIndex="overlay" showHeaderSearchButton={false} showHeaderProfile={false} headerBottom={(
-          <div className="flex items-center gap-3">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => navigate(-1)}
-              className="text-primary hover:text-primary/80"
-            >
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
-
-            <form onSubmit={handleSearch} className="flex-1 relative">
-              <div className="relative">
-                <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search character name or key word"
-                  className="pl-10 pr-10 bg-muted border-0 rounded-full text-xs"
-                />
-                {searchQuery && (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    onClick={clearSearch}
-                    className="absolute right-1 top-1/2 transform -translate-y-1/2 h-8 w-8 text-muted-foreground hover:text-foreground"
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                )}
-              </div>
+    <Layout headerZIndex="overlay" showHeaderSearchButton={false} showHeaderProfile={false} headerRight={(
+          <div className="w-[min(720px,70vw)]">
+            <form onSubmit={handleSearch} className="relative">
+              <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search character name or key word"
+                className="pl-10 pr-10 bg-muted border-0 rounded-full text-xs"
+              />
+              {searchQuery && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={clearSearch}
+                  className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 text-muted-foreground hover:text-foreground"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              )}
             </form>
           </div>
         )}>
