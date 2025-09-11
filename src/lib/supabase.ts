@@ -4,8 +4,22 @@ import { createOrUpdateUser as createOrUpdateUserImpl } from './createOrUpdateUs
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Missing Supabase environment variables');
+const isPlaceholder = (val?: string) => !val || val.startsWith('REPLACE_ENV') || val === 'REPLACE_ENV.VITE_SUPABASE_URL' || val === 'REPLACE_ENV.VITE_SUPABASE_ANON_KEY';
+
+const isValidUrl = (u?: string) => {
+  if (!u) return false;
+  try {
+    // URL constructor will throw for invalid URLs
+    // eslint-disable-next-line no-new
+    new URL(u);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
+if (isPlaceholder(supabaseUrl) || isPlaceholder(supabaseAnonKey) || !isValidUrl(supabaseUrl)) {
+  throw new Error('Missing or invalid Supabase environment variables. Ensure VITE_SUPABASE_URL is a valid URL and VITE_SUPABASE_ANON_KEY is provided.');
 }
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
@@ -1736,7 +1750,7 @@ export const processInviteCode = async (inviteeId: string, inviteCode: string): 
     });
 
     if (error) {
-      console.error('❌ Error processing invite code:', error);
+      console.error('�� Error processing invite code:', error);
       return { success: false, message: 'Failed to process invite code' };
     }
 
