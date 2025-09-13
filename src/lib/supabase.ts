@@ -586,7 +586,6 @@ export interface Database {
     };
   };
 };
-}
 
 // Helper functions for common operations
 export const uploadImage = async (bucket: string, path: string, file: File) => {
