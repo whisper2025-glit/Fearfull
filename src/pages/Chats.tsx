@@ -49,22 +49,8 @@ const Chats = () => {
       setIsLoading(true);
       try {
         // Load character chat history
-        const { data: messageData, error } = await supabase
-          .from('messages')
-          .select(`
-            character_id,
-            content,
-            created_at,
-            characters!inner(
-              id,
-              name,
-              avatar_url,
-              users!characters_owner_id_fkey(full_name)
-            )
-          `)
-          .eq('author_id', user.id)
-          .eq('is_bot', false)
-          .order('created_at', { ascending: false });
+        const { data, error } = await supabase
+          .rpc('get_chat_history', { p_user_id: user.id });
 
         if (error) {
           console.error('Error loading character history:', error);
