@@ -69,17 +69,10 @@ export const toggleFollowUser = async (followerId: string, followingId: string):
 export const getFollowersCount = async (userId: string): Promise<number> => {
   if (!userId) return 0;
   try {
-    const { count, error } = await supabase
-      .from('follows')
-      .select('id', { count: 'exact', head: true })
-      .eq('following_id', userId);
-    if (error) {
-      console.warn('getFollowersCount error (fallback to 0):', error);
-      return 0;
-    }
-    return count || 0;
-  } catch (err) {
-    console.warn('getFollowersCount unexpected error:', err);
+    const { data, error } = await supabase.rpc('get_follow_counts', { p_user_id: userId });
+    if (error) return 0;
+    return Number((data && data[0]?.followers) || 0);
+  } catch {
     return 0;
   }
 };
@@ -87,17 +80,10 @@ export const getFollowersCount = async (userId: string): Promise<number> => {
 export const getFollowingCount = async (userId: string): Promise<number> => {
   if (!userId) return 0;
   try {
-    const { count, error } = await supabase
-      .from('follows')
-      .select('id', { count: 'exact', head: true })
-      .eq('follower_id', userId);
-    if (error) {
-      console.warn('getFollowingCount error (fallback to 0):', error);
-      return 0;
-    }
-    return count || 0;
-  } catch (err) {
-    console.warn('getFollowingCount unexpected error:', err);
+    const { data, error } = await supabase.rpc('get_follow_counts', { p_user_id: userId });
+    if (error) return 0;
+    return Number((data && data[0]?.following) || 0);
+  } catch {
     return 0;
   }
 };
