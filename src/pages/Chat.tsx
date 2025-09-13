@@ -133,55 +133,34 @@ const Chat = () => {
           return;
         }
 
-        // Load messages for this character/conversation
-        let messagesQuery = supabase
-          .from('messages')
-          .select('*')
-          .eq('character_id', characterId);
-
-        // If conversation ID is provided, filter by conversation
-        if (conversationId) {
-          messagesQuery = messagesQuery.eq('conversation_id', conversationId);
-        } else {
-          // If no conversation ID, get the most recent conversation for this character and user
-          const { data: recentConv } = await supabase
-            .from('conversations')
-            .select('id, persona_id')
-            .eq('character_id', characterId)
-            .eq('user_id', user?.id || '')
-            .eq('is_archived', false)
-            .order('last_message_at', { ascending: false })
-            .limit(1)
-            .single();
-
-          if (recentConv) {
-            setCurrentConversationId(recentConv.id);
-            messagesQuery = messagesQuery.eq('conversation_id', recentConv.id);
-
-            // Load the persona associated with this conversation
-            if (recentConv.persona_id && !currentPersona) {
+        // Determine conversation
+        let convId = conversationId || null;
+        if (!convId && user) {
+          const { data: convRows } = await supabase.rpc('get_recent_conversation', { p_user_id: user.id, p_character_id: characterId });
+          if (convRows && convRows.length > 0) {
+            convId = convRows[0].id;
+            setCurrentConversationId(convId);
+            if (convRows[0].persona_id && !currentPersona) {
               try {
                 const { data: conversationPersona } = await supabase
                   .from('personas')
                   .select('*')
-                  .eq('id', recentConv.persona_id)
+                  .eq('id', convRows[0].persona_id)
                   .single();
-
-                if (conversationPersona) {
-                  setCurrentPersona(conversationPersona);
-                  console.log('✅ Conversation persona loaded:', conversationPersona.name);
-                }
-              } catch (error) {
-                console.error('Error loading conversation persona:', error);
-              }
+                if (conversationPersona) setCurrentPersona(conversationPersona);
+              } catch {}
             }
-          } else {
-            // No existing conversation, we'll create one when first message is sent
-            messagesQuery = messagesQuery.eq('conversation_id', 'none'); // This will return no messages
           }
         }
 
-        const { data: messagesData, error: messagesError } = await messagesQuery.order('created_at', { ascending: true });
+        // Load messages via RPC if we have a conversation
+        let messagesData: any[] = [];
+        let messagesError: any = null;
+        if (convId && user) {
+          const { data, error } = await supabase.rpc('get_messages_for_conversation', { p_user_id: user.id, p_conversation_id: convId });
+          messagesData = data || [];
+          messagesError = error;
+        }
 
         if (messagesError) {
           console.error('Error loading messages:', messagesError);
@@ -364,11 +343,9 @@ const Chat = () => {
       if (conversationToUse) {
         userMessagePayload.conversation_id = conversationToUse;
       }
-      const { data: insertedUserMessage, error: userMessageError } = await supabase
-        .from('messages')
-        .insert(userMessagePayload)
-        .select('id, conversation_id, created_at')
-        .single();
+      const { data: sentRows, error: userMessageError } = await supabase
+        .rpc('send_user_message', { p_user_id: user.id, p_character_id: characterId, p_content: enhancedUserMessage, p_conversation_id: conversationToUse || null });
+      const insertedUserMessage = sentRows && sentRows[0] ? { id: sentRows[0].message_id, conversation_id: sentRows[0].conversation_id, created_at: sentRows[0].created_at } : null;
 
       if (userMessageError) {
         console.error('Error saving user message:', userMessageError);
@@ -457,15 +434,7 @@ const Chat = () => {
 
         // Save AI response to Supabase
         const { error: botMessageError } = await supabase
-          .from('messages')
-          .insert({
-            character_id: characterId,
-            conversation_id: conversationToUse,
-            author_id: null,
-            content: aiResponse,
-            is_bot: true,
-            type: 'regular'
-          });
+          .rpc('add_bot_message', { p_conversation_id: conversationToUse, p_character_id: characterId, p_content: aiResponse });
 
         if (botMessageError) {
           console.error('Error saving bot message:', botMessageError);

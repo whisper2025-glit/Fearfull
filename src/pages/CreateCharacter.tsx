@@ -656,26 +656,24 @@ const CreateCharacter = () => {
                   }
 
                   // Create character in Supabase
-                  const { data: characterData, error } = await supabase
-                    .from('characters')
-                    .insert({
-                      owner_id: user.id,
-                      name: formData.name,
-                      intro: formData.intro,
-                      scenario: formData.scenario || null,
-                      greeting: formData.greeting || null,
-                      personality: formData.personality || null,
-                      appearance: formData.appearance || null,
-                      avatar_url: avatarUrl,
-                      scene_url: sceneUrl,
-                      visibility: formData.visibility as 'public' | 'unlisted' | 'private',
-                      rating: formData.rating as 'filtered' | 'unfiltered',
-                      tags: formData.tags && formData.tags.length > 0 ? formData.tags : null,
-                      gender: formData.gender || null,
-                      age: formData.age || null
-                    })
-                    .select()
-                    .single();
+                  const { data: createdRows, error } = await supabase
+                    .rpc('create_character', {
+                      p_owner_id: user.id,
+                      p_name: formData.name,
+                      p_intro: formData.intro,
+                      p_scenario: formData.scenario || null,
+                      p_greeting: formData.greeting || null,
+                      p_personality: formData.personality || null,
+                      p_appearance: formData.appearance || null,
+                      p_avatar_url: avatarUrl,
+                      p_scene_url: sceneUrl,
+                      p_visibility: formData.visibility,
+                      p_rating: formData.rating,
+                      p_tags: formData.tags && formData.tags.length > 0 ? formData.tags : null,
+                      p_gender: formData.gender || null,
+                      p_age: formData.age || null
+                    });
+                  const characterData = createdRows && createdRows[0] ? { id: createdRows[0].id } : null;
 
                   if (error) {
                     console.error('Error creating character:', error);

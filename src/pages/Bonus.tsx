@@ -63,17 +63,13 @@ export default function Bonus() {
     const loadEligibility = async () => {
       if (!user) { setConversationEligible(false); return; }
       try {
-        const { count, error } = await supabase
-          .from('messages')
-          .select('*', { count: 'exact', head: true })
-          .eq('author_id', user.id)
-          .eq('is_bot', false)
-          .gte('created_at', startOfTodayUTC().toISOString());
+        const { data, error } = await supabase
+          .rpc('user_messages_today_count', { p_user_id: user.id });
         if (error) {
           console.error('Eligibility check failed', error);
           setConversationEligible(false);
         } else {
-          setConversationEligible((count || 0) > 0);
+          setConversationEligible((Number(data) || 0) > 0);
         }
       } catch (e) {
         console.error(e);

@@ -49,22 +49,8 @@ const Chats = () => {
       setIsLoading(true);
       try {
         // Load character chat history
-        const { data: messageData, error } = await supabase
-          .from('messages')
-          .select(`
-            character_id,
-            content,
-            created_at,
-            characters!inner(
-              id,
-              name,
-              avatar_url,
-              users!characters_owner_id_fkey(full_name)
-            )
-          `)
-          .eq('author_id', user.id)
-          .eq('is_bot', false)
-          .order('created_at', { ascending: false });
+        const { data, error } = await supabase
+          .rpc('get_chat_history', { p_user_id: user.id });
 
         if (error) {
           console.error('Error loading character history:', error);
@@ -72,44 +58,21 @@ const Chats = () => {
           return;
         }
 
-        if (!messageData || messageData.length === 0) {
+        const rows = data || [];
+        if (rows.length === 0) {
           setCharacterHistory([]);
           return;
         }
 
-        // Group messages by character and create history objects
-        const characterMap = new Map<string, CharacterHistory>();
-
-        messageData.forEach((message: any) => {
-          const characterId = message.character_id;
-          const character = message.characters;
-          
-          if (!character) return;
-
-          if (!characterMap.has(characterId)) {
-            characterMap.set(characterId, {
-              id: characterId,
-              name: character.name,
-              avatar_url: character.avatar_url || "/placeholder.svg",
-              author: character.users?.full_name || "Unknown",
-              lastChatDate: message.created_at,
-              totalMessages: 1,
-              lastMessage: message.content,
-            });
-          } else {
-            const existing = characterMap.get(characterId)!;
-            existing.totalMessages += 1;
-            // Keep the most recent message date and content
-            if (new Date(message.created_at) > new Date(existing.lastChatDate)) {
-              existing.lastChatDate = message.created_at;
-              existing.lastMessage = message.content;
-            }
-          }
-        });
-
-        const historyArray = Array.from(characterMap.values()).sort(
-          (a, b) => new Date(b.lastChatDate).getTime() - new Date(a.lastChatDate).getTime()
-        );
+        const historyArray: CharacterHistory[] = rows.map((row: any) => ({
+          id: row.character_id,
+          name: row.name,
+          avatar_url: row.avatar_url || '/placeholder.svg',
+          author: row.author_full_name || 'Unknown',
+          lastChatDate: row.last_chat_date,
+          totalMessages: Number(row.total_messages || 0),
+          lastMessage: row.last_message || ''
+        }));
 
         setCharacterHistory(historyArray);
       } catch (error) {

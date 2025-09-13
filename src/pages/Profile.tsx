@@ -106,10 +106,7 @@ const Profile = () => {
 
       // Load user's characters
       const { data: charactersData, error: charactersError } = await supabase
-        .from('characters')
-        .select('*, messages(id)')
-        .eq('owner_id', user.id)
-        .order('created_at', { ascending: false });
+        .rpc('get_user_characters', { p_user_id: user.id });
 
       if (charactersError) {
         console.error('Error loading characters:', charactersError);
