@@ -277,6 +277,7 @@ export interface Database {
           type?: 'intro' | 'scenario' | 'regular';
           created_at?: string;
         };
+      };
       comments: {
         Row: {
           id: string;
