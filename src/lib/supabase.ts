@@ -1977,39 +1977,41 @@ export const addAdventureMessage = async (
 // Batch fetch message counts for characters
 export const getMessageCountsForCharacters = async (characterIds: string[]): Promise<Record<string, number>> => {
   if (!characterIds || characterIds.length === 0) return {};
-  const results = await Promise.all(
-    characterIds.map(async (id) => {
-      const { count, error } = await supabase
-        .from('messages')
-        .select('id', { count: 'exact', head: true })
-        .eq('character_id', id);
-      if (error) {
-        console.error('Error counting messages for character', id, error);
-        return [id, 0] as const;
-      }
-      return [id, count || 0] as const;
-    })
-  );
-  return Object.fromEntries(results);
+  try {
+    const { data, error } = await supabase.rpc('get_message_counts', { character_ids: characterIds });
+    if (error) {
+      console.error('Error fetching message counts via RPC:', error);
+      return {};
+    }
+    const map: Record<string, number> = {};
+    for (const row of data || []) {
+      if (row && row.character_id) map[row.character_id] = Number(row.cnt) || 0;
+    }
+    return map;
+  } catch (err) {
+    console.error('Final error in getMessageCountsForCharacters:', err);
+    return {};
+  }
 };
 
 // Batch fetch favorite counts for characters
 export const getFavoriteCountsForCharacters = async (characterIds: string[]): Promise<Record<string, number>> => {
   if (!characterIds || characterIds.length === 0) return {};
-  const results = await Promise.all(
-    characterIds.map(async (id) => {
-      const { count, error } = await supabase
-        .from('favorited')
-        .select('id', { count: 'exact', head: true })
-        .eq('character_id', id);
-      if (error) {
-        console.error('Error counting favorites for character', id, error);
-        return [id, 0] as const;
-      }
-      return [id, count || 0] as const;
-    })
-  );
-  return Object.fromEntries(results);
+  try {
+    const { data, error } = await supabase.rpc('get_favorite_counts', { character_ids: characterIds });
+    if (error) {
+      console.error('Error fetching favorite counts via RPC:', error);
+      return {};
+    }
+    const map: Record<string, number> = {};
+    for (const row of data || []) {
+      if (row && row.character_id) map[row.character_id] = Number(row.cnt) || 0;
+    }
+    return map;
+  } catch (err) {
+    console.error('Final error in getFavoriteCountsForCharacters:', err);
+    return {};
+  }
 };
 
 export const getAdventureMessages = async (conversationId: string) => {
