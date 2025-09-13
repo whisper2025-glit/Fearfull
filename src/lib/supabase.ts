@@ -1271,70 +1271,44 @@ export const favoriteCharacter = async (userId: string, characterId: string): Pr
 export const checkIsFavorited = async (userId: string, characterIds: string[]): Promise<string[]> => {
   try {
     if (characterIds.length === 0) return [];
-
-    console.log('🔍 Checking favorited status for characters:', characterIds);
-
-    const { data: favorites, error } = await supabase
-      .from('favorited')
-      .select('character_id')
-      .eq('user_id', userId)
-      .in('character_id', characterIds);
-
+    console.log('🔍 Checking favorited status for characters (RPC):', characterIds);
+    const { data, error } = await supabase.rpc('check_favorited', { p_user_id: userId, p_character_ids: characterIds });
     if (error) {
-      console.error('❌ Error checking favorites:', error);
+      console.error('❌ Error checking favorites via RPC:', error);
       return [];
     }
-
-    const favoritedIds = (favorites || []).map(fav => fav.character_id);
-    console.log('�� Favorited character IDs:', favoritedIds);
-    return favoritedIds;
+    const ids = (data || []).map((r: any) => r.character_id);
+    return ids;
   } catch (error) {
-    console.error('❌ Final error in checkIsFavorited:', error);
+    console.error('❌ Final error in checkIsFavorited (RPC):', error);
     return [];
   }
 };
 
 export const getFavoriteCharacters = async (userId: string) => {
   try {
-    console.log('📋 Fetching favorite characters for user:', userId);
-
-    const { data: favoriteCharacters, error } = await supabase
-      .from('favorited')
-      .select(`
-        created_at,
-        characters!favorited_character_id_fkey(
-          id,
-          name,
-          intro,
-          avatar_url,
-          tags,
-          owner_id,
-          visibility,
-          rating,
-          created_at,
-          users!characters_owner_id_fkey(
-            full_name
-          )
-        )
-      `)
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false });
-
+    console.log('📋 Fetching favorite characters for user (RPC):', userId);
+    const { data, error } = await supabase.rpc('get_favorite_characters', { p_user_id: userId });
     if (error) {
-      console.error('❌ Error fetching favorite characters:', error);
-      throw error;
+      console.error('❌ Error fetching favorite characters via RPC:', error);
+      return [];
     }
-
-    // Extract just the character data with favorite timestamp
-    const characters = (favoriteCharacters || []).map(fav => ({
-      ...fav.characters,
-      favorited_at: fav.created_at
-    })).filter(char => char.id); // Filter out any null characters
-
-    console.log('✅ Favorite characters fetched successfully:', characters.length);
+    const characters = (data || []).map((row: any) => ({
+      id: row.id,
+      name: row.name,
+      intro: row.intro,
+      avatar_url: row.avatar_url,
+      tags: row.tags,
+      owner_id: row.owner_id,
+      visibility: row.visibility,
+      rating: row.rating,
+      created_at: row.created_at,
+      favorited_at: row.favorited_at
+    })).filter((c: any) => c.id);
+    console.log('✅ Favorite characters fetched successfully (RPC):', characters.length);
     return characters;
   } catch (error) {
-    console.error('❌ Final error in getFavoriteCharacters:', error);
+    console.error('❌ Final error in getFavoriteCharacters (RPC):', error);
     return [];
   }
 };
