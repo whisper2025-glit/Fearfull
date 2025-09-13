@@ -36,8 +36,8 @@ const RouteChangeTracker = () => {
 };
 
 const AppContent = () => {
-  // Sync user with Supabase when authenticated
-  console.log('🏗️ AppContent rendering, calling useUserSync...');
+  // Keep Supabase authenticated with Clerk and sync the user profile
+  useSupabaseAuth();
   useUserSync();
 
   return (
