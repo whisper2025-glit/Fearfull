@@ -36,8 +36,8 @@ export default function Bonus() {
   const navigate = useNavigate();
   const [coins, setCoins] = useState<number>(0);
   const [now, setNow] = useState<number>(Date.now());
-  const [hasCheckedIn, setHasCheckedIn] = useState<boolean>(() => !canClaimDailyReward('checkin'));
-  const [hasConvoReward, setHasConvoReward] = useState<boolean>(() => !canClaimDailyReward('conversation'));
+  const [hasCheckedIn, setHasCheckedIn] = useState<boolean>(false);
+  const [hasConvoReward, setHasConvoReward] = useState<boolean>(false);
   const [conversationEligible, setConversationEligible] = useState(false);
 
   useEffect(() => {

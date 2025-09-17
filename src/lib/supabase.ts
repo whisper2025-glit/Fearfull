@@ -1,5 +1,4 @@
 import { createClient } from '@supabase/supabase-js';
-import { createOrUpdateUser as createOrUpdateUserImpl } from './createOrUpdateUser';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
@@ -648,7 +647,6 @@ const generateUsername = (displayName: string, userId: string): string => {
   return username;
 };
 
-export const createOrUpdateUser = createOrUpdateUserImpl;
 
 // Persona CRUD operations
 export interface PersonaData {
@@ -1473,10 +1471,13 @@ export const incrementUserCoins = async (userId: string, amount: number, reason:
   try {
     console.log('💰 Incrementing user coins:', { userId, amount, reason });
 
-    // Ensure user exists first
-    await createOrUpdateUser({ id: userId });
+    // Ensure a user row exists (minimal upsert to avoid circular deps)
+    const { error: upsertErr } = await supabase
+      .from('users')
+      .upsert({ id: userId, updated_at: new Date().toISOString() }, { onConflict: 'id' });
+    if (upsertErr) console.warn('⚠️ Could not ensure user exists before coin increment:', upsertErr);
 
-    // Use a database function for atomic increment
+    // Use a database function for atomic increment if available
     const { data, error } = await supabase.rpc('increment_user_coins', {
       user_id: userId,
       coin_amount: amount,
@@ -1493,6 +1494,18 @@ export const incrementUserCoins = async (userId: string, amount: number, reason:
         .eq('id', userId)
         .single();
 
+      // If user still doesn't exist, create with starting balance
+      if (fetchError && fetchError.code === 'PGRST116') {
+        const { data: inserted, error: insertErr } = await supabase
+          .from('users')
+          .insert({ id: userId, coins: amount, updated_at: new Date().toISOString() })
+          .select('coins')
+          .single();
+        if (insertErr) throw insertErr;
+        console.log('✅ User created and coins set (fallback):', inserted.coins);
+        return inserted.coins;
+      }
+
       if (fetchError) {
         console.error('❌ Error fetching current coins:', fetchError);
         throw fetchError;
@@ -1503,7 +1516,7 @@ export const incrementUserCoins = async (userId: string, amount: number, reason:
 
       const { data: updatedUser, error: updateError } = await supabase
         .from('users')
-        .update({ coins: newCoins })
+        .update({ coins: newCoins, updated_at: new Date().toISOString() })
         .eq('id', userId)
         .select('coins')
         .single();
