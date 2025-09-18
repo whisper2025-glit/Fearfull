@@ -93,6 +93,11 @@ const AppContent = () => {
             <Bonus />
           </ProtectedRoute>
         } />
+        <Route path="/voices" element={
+          <ProtectedRoute>
+            <Voices />
+          </ProtectedRoute>
+        } />
         <Route path="/test-asterisk" element={
           <ProtectedRoute>
             <AsteriskTestPage />
