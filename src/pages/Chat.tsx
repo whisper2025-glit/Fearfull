@@ -1154,6 +1154,13 @@ const Chat = () => {
         selectedModel={selectedModel}
       />
 
+      <VoiceModal
+        open={isVoiceModalOpen}
+        onOpenChange={setIsVoiceModalOpen}
+        value={voiceSettings}
+        onSave={(v) => setVoiceSettings(v)}
+      />
+
       <ChatPageSettingsModal
         open={isChatPageSettingsModalOpen}
         onOpenChange={setIsChatPageSettingsModalOpen}
