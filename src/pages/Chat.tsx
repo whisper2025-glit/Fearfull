@@ -876,7 +876,7 @@ const Chat = () => {
                             <Button
                               variant="outline"
                               size="sm"
-                              className="absolute -bottom-2 -right-2 h-7 w-7 p-0 rounded-full"
+                              className="absolute bottom-1 right-1 h-7 w-7 p-0 rounded-full"
                               onClick={(e) => { e.stopPropagation(); speakMessage(getDisplayedContent(msg)); }}
                               aria-label="Play voice"
                               title="Play voice"
@@ -897,7 +897,7 @@ const Chat = () => {
                                   <Button
                                     variant="outline"
                                     size="sm"
-                                    className="absolute -bottom-2 -right-2 h-7 w-7 p-0 rounded-full"
+                                    className="absolute bottom-1 right-1 h-7 w-7 p-0 rounded-full"
                                     onClick={(e) => { e.stopPropagation(); speakMessage(getDisplayedContent(msg)); }}
                                     aria-label="Play voice"
                                     title="Play voice"
