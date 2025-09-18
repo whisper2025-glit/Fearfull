@@ -493,6 +493,78 @@ const Chat = () => {
 
   const allMessages = currentCharacter ? [...currentCharacter.messages, ...messages] : [];
 
+  const handleRegenerate = async (targetIndex: number) => {
+    if (!currentCharacter) return;
+
+    try {
+      // Build conversation history up to the message before target
+      const historySlice = allMessages.slice(0, targetIndex)
+        .filter(m => m.type === 'regular')
+        .map(m => ({ role: m.isBot ? 'assistant' as const : 'user' as const, content: m.content }));
+
+      const aiResponse = await openRouterAI.generateCharacterResponse(
+        {
+          name: currentCharacter.name,
+          intro: currentCharacter.intro,
+          scenario: currentCharacter.scenario,
+          personality: currentCharacter.personality,
+          appearance: currentCharacter.appearance,
+          gender: currentCharacter.gender,
+          age: currentCharacter.age,
+          greeting: currentCharacter.greeting
+        },
+        historySlice,
+        currentPersona ? {
+          name: currentPersona.name,
+          description: currentPersona.description,
+          gender: currentPersona.gender
+        } : undefined
+      );
+
+      const baseLen = currentCharacter.messages.length;
+
+      // Update UI
+      if (targetIndex < baseLen) {
+        setCurrentCharacter(prev => {
+          if (!prev) return prev;
+          const updated = [...prev.messages];
+          updated[targetIndex] = { ...updated[targetIndex], content: aiResponse };
+          return { ...prev, messages: updated };
+        });
+
+        // Try to persist if we know DB id
+        const targetMsg = currentCharacter.messages[targetIndex];
+        if (targetMsg?.dbId) {
+          try {
+            const { error } = await supabase
+              .from('messages')
+              .update({ content: aiResponse })
+              .eq('id', targetMsg.dbId);
+            if (error) {
+              console.warn('Regenerated message could not be saved:', error);
+            }
+          } catch (e) {
+            console.warn('Regenerated message save failed:', e);
+          }
+        }
+      } else {
+        const relIndex = targetIndex - baseLen;
+        setMessages(prev => {
+          const copy = [...prev];
+          copy[relIndex] = { ...copy[relIndex], content: aiResponse };
+          return copy;
+        });
+        // We may not have db id for in-session bot messages; skip persistence
+      }
+
+      toast.success('Message regenerated');
+    } catch (e) {
+      console.error('Regenerate failed:', e);
+      const msg = e instanceof Error ? e.message : 'Unknown error';
+      toast.error(`Failed to regenerate: ${msg}`);
+    }
+  };
+
   // Show loading state while character is being loaded
   if (isLoadingCharacter || !currentCharacter) {
     return (
