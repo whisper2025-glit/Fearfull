@@ -787,6 +787,21 @@ const Chat = () => {
         onSave={(v) => setChatPageSettings(v)}
       />
 
+      {user && (
+        <StartNewChatModal
+          open={isStartNewChatModalOpen}
+          onOpenChange={setIsStartNewChatModalOpen}
+          userId={user.id}
+          characterId={characterId as string}
+          currentConversationId={currentConversationId}
+          personaId={currentPersona?.id ?? null}
+          onStarted={(newId) => {
+            setMessages([]);
+            setCurrentConversationId(newId);
+          }}
+        />
+      )}
+
     </div>
   );
 };
