@@ -565,7 +565,9 @@ const Chat = () => {
         const relIndex = targetIndex - baseLen;
         setMessages(prev => {
           const copy = [...prev];
-          copy[relIndex] = { ...copy[relIndex], content: aiResponse };
+          const old = copy[relIndex];
+          const newVariants = old.variants ? [...old.variants, aiResponse] : [old.content, aiResponse];
+          copy[relIndex] = { ...old, content: aiResponse, variants: newVariants, currentVariantIndex: newVariants.length - 1 };
           return copy;
         });
         // We may not have db id for in-session bot messages; skip persistence
