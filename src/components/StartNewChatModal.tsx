@@ -56,11 +56,6 @@ export const StartNewChatModal = ({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="bg-[#111216] text-white border-border/50">
-        <img
-          src="https://cdn.builder.io/api/v1/image/assets%2F1fb0f098159d4d458071e3b7d0f37f77%2Fea474a69762e418bb43bb14e18e80c6b?format=webp&width=800"
-          alt="Start new chat"
-          className="w-full h-32 object-cover rounded-md mb-3 opacity-90"
-        />
         <DialogHeader>
           <DialogTitle className="text-xl">Start a new conversation?</DialogTitle>
           <DialogDescription className="text-gray-300">
@@ -68,26 +63,8 @@ export const StartNewChatModal = ({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="rounded-xl border border-white/10 bg-white/5 p-4 space-y-3 mt-2">
-          <div className="flex items-center gap-3">
-            <Checkbox id="retain-profile" checked={retainProfile} onCheckedChange={(v) => setRetainProfile(Boolean(v))} />
-            <Label htmlFor="retain-profile" className="text-sm">Retain Profile Card</Label>
-          </div>
-          <div className="flex items-center gap-3">
-            <Checkbox id="retain-scene" checked={retainScene} onCheckedChange={(v) => setRetainScene(Boolean(v))} />
-            <Label htmlFor="retain-scene" className="text-sm">Retain Scene Card</Label>
-          </div>
-          <div className="flex items-center gap-3">
-            <Checkbox id="retain-instructions" checked={retainInstructions} onCheckedChange={(v) => setRetainInstructions(Boolean(v))} />
-            <Label htmlFor="retain-instructions" className="text-sm">Retain Instructions</Label>
-          </div>
-        </div>
-
         <div className="flex flex-col gap-3 mt-4">
-          <Button disabled={isSubmitting} className="bg-pink-500 hover:bg-pink-600 text-white w-full h-12 rounded-full" onClick={() => start({ deleteOld: false })}>
-            Save and start new chat
-          </Button>
-          <Button disabled={isSubmitting} variant="secondary" className="w-full h-12 rounded-full" onClick={() => start({ deleteOld: true })}>
+          <Button disabled={isSubmitting} className="bg-pink-500 hover:bg-pink-600 text-white w-full h-12 rounded-full" onClick={() => start({ deleteOld: true })}>
             Delete and start new chat
           </Button>
         </div>
