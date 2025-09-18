@@ -220,7 +220,9 @@ const Chat = () => {
               isBot: msg.is_bot,
               timestamp: new Date(msg.created_at).toLocaleTimeString(),
               type: msg.type as 'intro' | 'scenario' | 'regular',
-              dbId: msg.id as string
+              dbId: msg.id as string,
+              variants: msg.is_bot ? [msg.content] : undefined,
+              currentVariantIndex: msg.is_bot ? 0 : undefined,
             }))
           ]
         };
