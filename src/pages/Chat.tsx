@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { useUser } from "@clerk/clerk-react";
-import { ArrowLeft, Home, MoreHorizontal, Clock, Users, Bot, ChevronDown, User, Settings, Coins, Send, RotateCcw, ChevronLeft, ChevronRight, Edit, Copy, Trash2 } from "lucide-react";
+import { ArrowLeft, Home, MoreHorizontal, Clock, Users, Bot, ChevronDown, User, Settings, Send, RotateCcw, ChevronLeft, ChevronRight, Edit, Copy, Trash2 } from "lucide-react";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -745,14 +745,6 @@ const Chat = () => {
           <h1 className="text-sm font-semibold">{currentCharacter.name}</h1>
         </div>
 
-        {/* Coin Balance Display */}
-        <div className="flex items-center gap-2 bg-card/30 backdrop-blur-sm px-3 py-1 rounded-full border border-border/30">
-          <Coins className="h-4 w-4 text-yellow-500" />
-          <span className="text-sm font-medium">
-            {loadingCoins ? '...' : userCoins}
-          </span>
-          <span className="text-xs text-muted-foreground">coins</span>
-        </div>
 
         <div className="flex items-center gap-2">
           <Button
