@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { useUser } from "@clerk/clerk-react";
-import { ArrowLeft, Home, MoreHorizontal, Clock, Users, Bot, ChevronDown, User, Settings, Coins, Send, RotateCcw, ChevronLeft, ChevronRight, Edit, Copy, Pin } from "lucide-react";
+import { ArrowLeft, Home, MoreHorizontal, Clock, Users, Bot, ChevronDown, User, Settings, Coins, Send, RotateCcw, ChevronLeft, ChevronRight, Edit, Copy, Trash2 } from "lucide-react";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -68,7 +68,6 @@ const Chat = () => {
   const [isStartNewChatModalOpen, setIsStartNewChatModalOpen] = useState(false);
 
   // Message menu and editing state
-  const [pinnedIds, setPinnedIds] = useState<Set<string>>(new Set());
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [editingMessage, setEditingMessage] = useState<Message | null>(null);
   const [editingText, setEditingText] = useState("");
@@ -112,43 +111,58 @@ const Chat = () => {
   const [isLoadingCharacter, setIsLoadingCharacter] = useState(true);
   const [currentConversationId, setCurrentConversationId] = useState<string | null>(conversationId);
 
-  // Helpers for pinned messages (localStorage per conversation)
-  const pinStorageKey = () => `pinned_${currentConversationId || `char_${characterId}`}`;
-  const messageKey = (m: Message) => (m.dbId ? `db:${m.dbId}` : `local:${m.id}`);
+  // Delete a user message and cascade delete the immediate following bot reply
+  const deleteUserMessageCascade = async (m: Message) => {
+    if (m.isBot) return;
+    const idx = allMessages.findIndex(mm => mm === m);
+    if (idx === -1) return;
+    const next = allMessages[idx + 1];
+    const botToDelete = next && next.isBot && next.type === 'regular' ? next : undefined;
 
-  useEffect(() => {
     try {
-      const raw = localStorage.getItem(pinStorageKey());
-      if (raw) {
-        const arr: string[] = JSON.parse(raw);
-        setPinnedIds(new Set(arr));
-      } else {
-        setPinnedIds(new Set());
+      if (m.dbId) await supabase.from('messages').delete().eq('id', m.dbId);
+      if (botToDelete?.dbId) {
+        await supabase.from('messages').delete().eq('id', botToDelete.dbId);
+      } else if (botToDelete && currentConversationId) {
+        try {
+          const { data: lastBot } = await supabase
+            .from('messages')
+            .select('id')
+            .eq('conversation_id', currentConversationId)
+            .eq('is_bot', true)
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .single();
+          if (lastBot?.id) await supabase.from('messages').delete().eq('id', lastBot.id);
+        } catch {}
       }
-    } catch {
-      setPinnedIds(new Set());
+    } catch (e) {
+      console.warn('Remote delete failed (continuing with local removal):', e);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentConversationId, characterId]);
 
-  const persistPinned = (setVal: Set<string>) => {
-    localStorage.setItem(pinStorageKey(), JSON.stringify(Array.from(setVal)));
-  };
-
-  const togglePin = (m: Message) => {
-    const key = messageKey(m);
-    setPinnedIds(prev => {
-      const next = new Set(prev);
-      if (next.has(key)) {
-        next.delete(key);
-        toast('Unpinned message');
+    const baseLen = currentCharacter?.messages.length ?? 0;
+    const removeAt = (index: number) => {
+      if (index < 0) return;
+      if (index < baseLen) {
+        setCurrentCharacter(prev => {
+          if (!prev) return prev;
+          const arr = [...prev.messages];
+          arr.splice(index, 1);
+          return { ...prev, messages: arr };
+        });
       } else {
-        next.add(key);
-        toast.success('Pinned message');
+        const rel = index - baseLen;
+        setMessages(prev => {
+          const arr = [...prev];
+          arr.splice(rel, 1);
+          return arr;
+        });
       }
-      persistPinned(next);
-      return next;
-    });
+    };
+
+    if (botToDelete) removeAt(idx + 1);
+    removeAt(idx);
+    toast.success('Message deleted');
   };
 
   const copyMessage = async (m: Message) => {
@@ -193,6 +207,8 @@ const Chat = () => {
         } catch (e) {
           console.warn('Edit save failed:', e);
         }
+      } else {
+        toast("Edited locally (unsaved message)");
       }
       toast.success('Message updated');
     }
@@ -451,6 +467,14 @@ const Chat = () => {
       const { data: sentRows, error: userMessageError } = await supabase
         .rpc('send_user_message', { p_user_id: user.id, p_character_id: characterId, p_content: enhancedUserMessage, p_conversation_id: conversationToUse || null });
       const insertedUserMessage = sentRows && sentRows[0] ? { id: sentRows[0].message_id, conversation_id: sentRows[0].conversation_id, created_at: sentRows[0].created_at } : null;
+      if (insertedUserMessage?.id) {
+        setMessages(prev => {
+          const arr = [...prev];
+          const i = arr.findIndex(mm => mm.id === userMessage.id);
+          if (i !== -1) arr[i] = { ...arr[i], dbId: insertedUserMessage.id } as any;
+          return arr;
+        });
+      }
 
       if (userMessageError) {
         console.error('Error saving user message:', userMessageError);
@@ -853,14 +877,14 @@ const Chat = () => {
                           <DropdownMenuItem onClick={() => copyMessage(msg)}>
                             <Copy className="mr-2 h-4 w-4" /> Copy
                           </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => openEdit(msg)}>
+                            <Edit className="mr-2 h-4 w-4" /> Edit
+                          </DropdownMenuItem>
                           {!msg.isBot && (
-                            <DropdownMenuItem onClick={() => openEdit(msg)}>
-                              <Edit className="mr-2 h-4 w-4" /> Edit
+                            <DropdownMenuItem onClick={() => deleteUserMessageCascade(msg)}>
+                              <Trash2 className="mr-2 h-4 w-4" /> Delete
                             </DropdownMenuItem>
                           )}
-                          <DropdownMenuItem onClick={() => togglePin(msg)}>
-                            <Pin className="mr-2 h-4 w-4" /> {pinnedIds.has(messageKey(msg)) ? 'Unpin' : 'Pin'}
-                          </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
                       {msg.isBot ? (
