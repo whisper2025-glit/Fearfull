@@ -77,19 +77,29 @@ export default function Voices() {
     setLoading(true);
     setError("");
     try {
-      const res = await fetch(REPO_API_URL, {
-        headers: {
-          Accept: "application/vnd.github+json",
-        },
-      });
-      if (!res.ok) {
-        throw new Error(`Failed to load voices: ${res.status}`);
-      }
-      const data: GithubContentItem[] = await res.json();
-      const wavs = (data || [])
+      const headers = { Accept: "application/vnd.github+json" } as const;
+      const [voicesRes, systemRes] = await Promise.all([
+        fetch(REPO_API_URL, { headers }),
+        fetch("https://api.github.com/repos/whisper2025-glit/Muzik/contents/system/at_sounds?ref=main", { headers })
+      ]);
+
+      if (!voicesRes.ok) throw new Error(`Failed to load voices: ${voicesRes.status}`);
+      // systemRes may 404 in forks; tolerate non-200
+
+      const dataVoices: GithubContentItem[] = await voicesRes.json();
+      const listVoices = (dataVoices || [])
         .filter((f) => f.type === "file" && f.name.toLowerCase().endsWith(".wav") && !!f.download_url)
         .map((f) => ({ name: f.name.replace(/\.wav$/i, ""), url: f.download_url as string }));
-      // Sort by name consistently
+
+      let listSystem: VoiceItem[] = [];
+      if (systemRes.ok) {
+        const dataSystem: GithubContentItem[] = await systemRes.json();
+        listSystem = (dataSystem || [])
+          .filter((f) => f.type === "file" && f.name.toLowerCase().endsWith(".wav") && !!f.download_url)
+          .map((f) => ({ name: `system/at_sounds/${f.name.replace(/\.wav$/i, "")}` , url: f.download_url as string }));
+      }
+
+      const wavs = [...listVoices, ...listSystem];
       wavs.sort((a, b) => a.name.localeCompare(b.name));
       setItems(wavs);
     } catch (e: any) {
