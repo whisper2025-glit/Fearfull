@@ -31,6 +31,7 @@ interface Message {
   type?: 'intro' | 'scenario' | 'regular';
   characterName?: string;
   author?: string;
+  dbId?: string; // Supabase messages.id when available
 }
 
 interface Character {
