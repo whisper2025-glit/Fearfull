@@ -4,7 +4,8 @@ import {
   Plus,
   MessageCircle,
   Search,
-  Gift
+  Gift,
+  AudioLines
 } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useUser, useClerk } from "@clerk/clerk-react";
