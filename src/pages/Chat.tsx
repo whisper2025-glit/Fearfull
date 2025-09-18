@@ -863,30 +863,38 @@ const Chat = () => {
                           {currentCharacter.name}
                         </div>
                       )}
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <div role="button" className="focus:outline-none">
-                            <Card className={`${msg.isBot ? 'bg-black/80 text-white' : 'bg-cyan-500 text-white'} p-4 rounded-xl w-full shadow-md`}>
-                              <div className="w-full">
-                                <MessageFormatter content={getDisplayedContent(msg)} className="chat-text" />
-                              </div>
-                            </Card>
+                      {(msg.isBot && msg.type === 'regular' && getDisplayedContent(msg) === (currentCharacter.greeting || '')) ? (
+                        <Card className={`${msg.isBot ? 'bg-black/80 text-white' : 'bg-cyan-500 text-white'} p-4 rounded-xl w-full shadow-md`}>
+                          <div className="w-full">
+                            <MessageFormatter content={getDisplayedContent(msg)} className="chat-text" />
                           </div>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent side="top" align="center" className="w-40">
-                          <DropdownMenuItem onClick={() => copyMessage(msg)}>
-                            <Copy className="mr-2 h-4 w-4" /> Copy
-                          </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => openEdit(msg)}>
-                            <Edit className="mr-2 h-4 w-4" /> Edit
-                          </DropdownMenuItem>
-                          {!msg.isBot && (
-                            <DropdownMenuItem onClick={() => deleteUserMessageCascade(msg)}>
-                              <Trash2 className="mr-2 h-4 w-4" /> Delete
+                        </Card>
+                      ) : (
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <div role="button" className="focus:outline-none">
+                              <Card className={`${msg.isBot ? 'bg-black/80 text-white' : 'bg-cyan-500 text-white'} p-4 rounded-xl w-full shadow-md`}>
+                                <div className="w-full">
+                                  <MessageFormatter content={getDisplayedContent(msg)} className="chat-text" />
+                                </div>
+                              </Card>
+                            </div>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent side="top" align="center" className="w-40">
+                            <DropdownMenuItem onClick={() => copyMessage(msg)}>
+                              <Copy className="mr-2 h-4 w-4" /> Copy
                             </DropdownMenuItem>
-                          )}
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                            <DropdownMenuItem onClick={() => openEdit(msg)}>
+                              <Edit className="mr-2 h-4 w-4" /> Edit
+                            </DropdownMenuItem>
+                            {!msg.isBot && (
+                              <DropdownMenuItem onClick={() => deleteUserMessageCascade(msg)}>
+                                <Trash2 className="mr-2 h-4 w-4" /> Delete
+                              </DropdownMenuItem>
+                            )}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      )}
                       {msg.isBot ? (
                         <img src={currentCharacter.avatar} alt={currentCharacter.name} className="w-[40px] h-[40px] rounded-full object-cover absolute top-2 left-[-50px]" />
                       ) : (
