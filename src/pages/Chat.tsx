@@ -497,6 +497,13 @@ const Chat = () => {
 
   const allMessages = currentCharacter ? [...currentCharacter.messages, ...messages] : [];
 
+  const getDisplayedContent = (msg: Message) => {
+    if (msg.variants && typeof msg.currentVariantIndex === 'number') {
+      return msg.variants[msg.currentVariantIndex] ?? msg.content;
+    }
+    return msg.content;
+  };
+
   const handleRegenerate = async (targetIndex: number) => {
     if (!currentCharacter || isLoading) return;
 
