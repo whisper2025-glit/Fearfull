@@ -494,8 +494,9 @@ const Chat = () => {
   const allMessages = currentCharacter ? [...currentCharacter.messages, ...messages] : [];
 
   const handleRegenerate = async (targetIndex: number) => {
-    if (!currentCharacter) return;
+    if (!currentCharacter || isLoading) return;
 
+    setIsLoading(true);
     try {
       // Build conversation history up to the message before target
       const historySlice = allMessages.slice(0, targetIndex)
