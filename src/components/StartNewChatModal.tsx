@@ -39,11 +39,7 @@ export const StartNewChatModal = ({
         }
       }
 
-      const conversation = await createConversation(userId, characterId, personaId ?? null, null, {
-        retainProfile,
-        retainScene,
-        retainInstructions,
-      });
+      const conversation = await createConversation(userId, characterId, personaId ?? null, null, null);
 
       onOpenChange(false);
       if (conversation?.id) {
