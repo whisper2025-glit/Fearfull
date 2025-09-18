@@ -742,7 +742,7 @@ const Chat = () => {
                       <div className="mt-2 flex justify-start">
                         <Button
                           variant="outline"
-                          size="xs"
+                          size="sm"
                           className="h-6 px-2 text-[10px]"
                           onClick={() => handleRegenerate(allMessages.findIndex(m => m === msg))}
                         >
