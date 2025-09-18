@@ -23,6 +23,8 @@ import { openRouterAI, ChatMessage as AIMessage } from "@/lib/ai-client";
 import { toast } from "sonner";
 import { StartNewChatModal } from "@/components/StartNewChatModal";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { VoiceModal } from "@/components/VoiceModal";
+import { VoiceSettings, loadVoiceSettings, saveVoiceSettings, speakWithSettings } from "@/lib/voice";
 
 interface Message {
   id: number;
