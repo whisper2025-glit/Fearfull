@@ -437,7 +437,9 @@ const Chat = () => {
           content: aiResponse,
           isBot: true,
           timestamp: new Date().toLocaleTimeString(),
-          type: "regular"
+          type: "regular",
+          variants: [aiResponse],
+          currentVariantIndex: 0,
         };
 
         setMessages(prev => [...prev, botMessage]);
