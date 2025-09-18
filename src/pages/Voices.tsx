@@ -27,6 +27,52 @@ export default function Voices() {
   const [error, setError] = useState<string>("");
   const [query, setQuery] = useState<string>("");
 
+  // In-browser TTS state (Web Speech API)
+  const [ttsText, setTtsText] = useState<string>("Hello! This is a sample.");
+  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
+  const [selectedVoiceURI, setSelectedVoiceURI] = useState<string>("");
+  const [speaking, setSpeaking] = useState<boolean>(false);
+
+  const loadVoices = () => {
+    const list = window.speechSynthesis?.getVoices?.() || [];
+    setVoices(list);
+    if (!selectedVoiceURI && list.length > 0) {
+      // Prefer an English voice if available
+      const preferred = list.find(v => /en[-_]/i.test(v.lang)) || list[0];
+      setSelectedVoiceURI(preferred.voiceURI);
+    }
+  };
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
+    loadVoices();
+    const handler = () => loadVoices();
+    window.speechSynthesis.addEventListener?.("voiceschanged", handler);
+    return () => {
+      window.speechSynthesis.removeEventListener?.("voiceschanged", handler);
+    };
+  }, []);
+
+  const handleSpeak = () => {
+    if (!("speechSynthesis" in window)) return;
+    const text = ttsText.trim();
+    if (!text) return;
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    const v = voices.find(v => v.voiceURI === selectedVoiceURI);
+    if (v) u.voice = v;
+    u.onend = () => setSpeaking(false);
+    u.onerror = () => setSpeaking(false);
+    setSpeaking(true);
+    window.speechSynthesis.speak(u);
+  };
+
+  const handleStop = () => {
+    if (!("speechSynthesis" in window)) return;
+    window.speechSynthesis.cancel();
+    setSpeaking(false);
+  };
+
   const fetchVoices = async () => {
     setLoading(true);
     setError("");
