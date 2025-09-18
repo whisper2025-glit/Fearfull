@@ -21,6 +21,7 @@ import { supabase, getDefaultPersona, incrementUserCoins, canClaimDailyReward, m
 import { createOrUpdateUser } from "@/lib/createOrUpdateUser";
 import { openRouterAI, ChatMessage as AIMessage } from "@/lib/ai-client";
 import { toast } from "sonner";
+import { StartNewChatModal } from "@/components/StartNewChatModal";
 
 interface Message {
   id: number;
