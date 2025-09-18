@@ -737,7 +737,7 @@ const Chat = () => {
                       ) : (
                         <img src={user?.imageUrl || '/placeholder.svg'} alt={user?.fullName || user?.username || 'You'} className="w-[40px] h-[40px] rounded-full object-cover absolute top-2 right-[-50px]" />
                       )}
-                      {msg.isBot && msg.type === 'regular' && (
+                      {msg.isBot && msg.type === 'regular' && msg.id !== 0 && (
                         <div className="mt-1 flex justify-start">
                           <Button
                             variant="outline"
