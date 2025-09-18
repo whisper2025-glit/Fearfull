@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { useUser } from "@clerk/clerk-react";
-import { ArrowLeft, Home, MoreHorizontal, Clock, Users, Bot, ChevronDown, User, Settings, Coins, Send } from "lucide-react";
+import { ArrowLeft, Home, MoreHorizontal, Clock, Users, Bot, ChevronDown, User, Settings, Coins, Send, RotateCcw, ChevronLeft, ChevronRight } from "lucide-react";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -31,6 +31,9 @@ interface Message {
   type?: 'intro' | 'scenario' | 'regular';
   characterName?: string;
   author?: string;
+  dbId?: string; // Supabase messages.id when available
+  variants?: string[]; // history of regenerated contents (bot only)
+  currentVariantIndex?: number; // index into variants
 }
 
 interface Character {
@@ -216,7 +219,10 @@ const Chat = () => {
               content: msg.content,
               isBot: msg.is_bot,
               timestamp: new Date(msg.created_at).toLocaleTimeString(),
-              type: msg.type as 'intro' | 'scenario' | 'regular'
+              type: msg.type as 'intro' | 'scenario' | 'regular',
+              dbId: msg.id as string,
+              variants: msg.is_bot ? [msg.content] : undefined,
+              currentVariantIndex: msg.is_bot ? 0 : undefined,
             }))
           ]
         };
@@ -431,7 +437,9 @@ const Chat = () => {
           content: aiResponse,
           isBot: true,
           timestamp: new Date().toLocaleTimeString(),
-          type: "regular"
+          type: "regular",
+          variants: [aiResponse],
+          currentVariantIndex: 0,
         };
 
         setMessages(prev => [...prev, botMessage]);
@@ -490,6 +498,92 @@ const Chat = () => {
   };
 
   const allMessages = currentCharacter ? [...currentCharacter.messages, ...messages] : [];
+
+  const getDisplayedContent = (msg: Message) => {
+    if (msg.variants && typeof msg.currentVariantIndex === 'number') {
+      return msg.variants[msg.currentVariantIndex] ?? msg.content;
+    }
+    return msg.content;
+  };
+
+  const handleRegenerate = async (targetIndex: number) => {
+    if (!currentCharacter || isLoading) return;
+
+    setIsLoading(true);
+    try {
+      // Build conversation history up to the message before target
+      const historySlice = allMessages.slice(0, targetIndex)
+        .filter(m => m.type === 'regular')
+        .map(m => ({ role: m.isBot ? 'assistant' as const : 'user' as const, content: getDisplayedContent(m) }));
+
+      const aiResponse = await openRouterAI.generateCharacterResponse(
+        {
+          name: currentCharacter.name,
+          intro: currentCharacter.intro,
+          scenario: currentCharacter.scenario,
+          personality: currentCharacter.personality,
+          appearance: currentCharacter.appearance,
+          gender: currentCharacter.gender,
+          age: currentCharacter.age,
+          greeting: currentCharacter.greeting
+        },
+        historySlice,
+        currentPersona ? {
+          name: currentPersona.name,
+          description: currentPersona.description,
+          gender: currentPersona.gender
+        } : undefined
+      );
+
+      const baseLen = currentCharacter.messages.length;
+
+      // Update UI
+      if (targetIndex < baseLen) {
+        setCurrentCharacter(prev => {
+          if (!prev) return prev;
+          const updated = [...prev.messages];
+          const old = updated[targetIndex];
+          const newVariants = old.variants ? [...old.variants, aiResponse] : [old.content, aiResponse];
+          updated[targetIndex] = { ...old, content: aiResponse, variants: newVariants, currentVariantIndex: newVariants.length - 1 };
+          return { ...prev, messages: updated };
+        });
+
+        // Try to persist if we know DB id
+        const targetMsg = currentCharacter.messages[targetIndex];
+        if (targetMsg?.dbId) {
+          try {
+            const { error } = await supabase
+              .from('messages')
+              .update({ content: aiResponse })
+              .eq('id', targetMsg.dbId);
+            if (error) {
+              console.warn('Regenerated message could not be saved:', error);
+            }
+          } catch (e) {
+            console.warn('Regenerated message save failed:', e);
+          }
+        }
+      } else {
+        const relIndex = targetIndex - baseLen;
+        setMessages(prev => {
+          const copy = [...prev];
+          const old = copy[relIndex];
+          const newVariants = old.variants ? [...old.variants, aiResponse] : [old.content, aiResponse];
+          copy[relIndex] = { ...old, content: aiResponse, variants: newVariants, currentVariantIndex: newVariants.length - 1 };
+          return copy;
+        });
+        // We may not have db id for in-session bot messages; skip persistence
+      }
+
+      toast.success('Message regenerated');
+    } catch (e) {
+      console.error('Regenerate failed:', e);
+      const msg = e instanceof Error ? e.message : 'Unknown error';
+      toast.error(`Failed to regenerate: ${msg}`);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   // Show loading state while character is being loaded
   if (isLoadingCharacter || !currentCharacter) {
@@ -652,13 +746,120 @@ const Chat = () => {
                       )}
                       <Card className={`${msg.isBot ? 'bg-black/80 text-white' : 'bg-cyan-500 text-white'} p-4 rounded-xl w-full shadow-md`}>
                         <div className="w-full">
-                          <MessageFormatter content={msg.content} className="chat-text" />
+                          <MessageFormatter content={getDisplayedContent(msg)} className="chat-text" />
                         </div>
                       </Card>
                       {msg.isBot ? (
                         <img src={currentCharacter.avatar} alt={currentCharacter.name} className="w-[40px] h-[40px] rounded-full object-cover absolute top-2 left-[-50px]" />
                       ) : (
                         <img src={user?.imageUrl || '/placeholder.svg'} alt={user?.fullName || user?.username || 'You'} className="w-[40px] h-[40px] rounded-full object-cover absolute top-2 right-[-50px]" />
+                      )}
+                      {msg.isBot && msg.type === 'regular' && getDisplayedContent(msg) !== (currentCharacter.greeting || '') && (
+                        msg.variants && (msg.variants.length > 1) ? (
+                          <div className="mt-1 flex items-center gap-2 justify-start text-xs text-muted-foreground select-none">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="h-6 w-6 p-0"
+                              onClick={async () => {
+                                const idx = allMessages.findIndex(m => m === msg);
+                                const baseLen = currentCharacter.messages.length;
+                                if (idx < baseLen) {
+                                  setCurrentCharacter(prev => {
+                                    if (!prev) return prev;
+                                    const arr = [...prev.messages];
+                                    const m = arr[idx];
+                                    if (!m.variants || (m.currentVariantIndex ?? 0) <= 0) return prev;
+                                    const newIndex = (m.currentVariantIndex || 0) - 1;
+                                    const newContent = m.variants[newIndex];
+                                    arr[idx] = { ...m, currentVariantIndex: newIndex, content: newContent };
+                                    return { ...prev, messages: arr };
+                                  });
+                                  const m = currentCharacter.messages[idx];
+                                  if (m?.dbId && m.variants && (m.currentVariantIndex ?? 0) > 0) {
+                                    try { await supabase.from('messages').update({ content: m.variants[(m.currentVariantIndex || 0) - 1] }).eq('id', m.dbId); } catch {}
+                                  }
+                                } else {
+                                  const rel = idx - baseLen;
+                                  setMessages(prev => {
+                                    const arr = [...prev];
+                                    const m = arr[rel];
+                                    if (!m.variants || (m.currentVariantIndex ?? 0) <= 0) return prev;
+                                    const newIndex = (m.currentVariantIndex || 0) - 1;
+                                    const newContent = m.variants[newIndex];
+                                    arr[rel] = { ...m, currentVariantIndex: newIndex, content: newContent };
+                                    return arr;
+                                  });
+                                }
+                              }}
+                              aria-label="Previous version"
+                              title="Previous version"
+                            >
+                              <ChevronLeft className="h-3 w-3" />
+                            </Button>
+                            <span className="min-w-[28px] text-center">
+                              {((msg.currentVariantIndex ?? 0) + 1)} / {(msg.variants?.length ?? 1)}
+                            </span>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="h-6 w-6 p-0"
+                              onClick={async () => {
+                                const idx = allMessages.findIndex(m => m === msg);
+                                const baseLen = currentCharacter.messages.length;
+                                const atLast = (msg.currentVariantIndex ?? 0) >= ((msg.variants?.length ?? 1) - 1);
+                                if (!atLast) {
+                                  if (idx < baseLen) {
+                                    setCurrentCharacter(prev => {
+                                      if (!prev) return prev;
+                                      const arr = [...prev.messages];
+                                      const m = arr[idx];
+                                      if (!m.variants) return prev;
+                                      const newIndex = (m.currentVariantIndex || 0) + 1;
+                                      const newContent = m.variants[newIndex] ?? m.content;
+                                      arr[idx] = { ...m, currentVariantIndex: newIndex, content: newContent };
+                                      return { ...prev, messages: arr };
+                                    });
+                                    const m = currentCharacter.messages[idx];
+                                    if (m?.dbId && m.variants) {
+                                      try { await supabase.from('messages').update({ content: m.variants[(m.currentVariantIndex || 0) + 1] }).eq('id', m.dbId); } catch {}
+                                    }
+                                  } else {
+                                    const rel = idx - baseLen;
+                                    setMessages(prev => {
+                                      const arr = [...prev];
+                                      const m = arr[rel];
+                                      if (!m.variants) return prev;
+                                      const newIndex = (m.currentVariantIndex || 0) + 1;
+                                      const newContent = m.variants[newIndex] ?? m.content;
+                                      arr[rel] = { ...m, currentVariantIndex: newIndex, content: newContent };
+                                      return arr;
+                                    });
+                                  }
+                                } else {
+                                  await handleRegenerate(idx);
+                                }
+                              }}
+                              aria-label="Next or regenerate"
+                              title="Next or regenerate"
+                            >
+                              <ChevronRight className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        ) : (
+                          <div className="mt-1 flex justify-start">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="h-6 w-6 p-0"
+                              onClick={() => handleRegenerate(allMessages.findIndex(m => m === msg))}
+                              aria-label="Regenerate"
+                              title="Regenerate"
+                            >
+                              <RotateCcw className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        )
                       )}
                     </div>
                   </div>
