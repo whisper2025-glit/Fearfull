@@ -9,7 +9,6 @@ import {
 import { useLocation, useNavigate } from "react-router-dom";
 import { useUser, useClerk } from "@clerk/clerk-react";
 import { CreateModal } from "@/components/CreateModal";
-import { supabase } from "@/lib/supabase";
 import {
   Sidebar,
   SidebarContent,
