@@ -1,7 +1,5 @@
 import { supabase } from './supabase';
 
-import { supabase } from './supabase';
-
 // Helper function to generate username from display name
 const generateUsername = (displayName: string, userId: string): string => {
   // Remove spaces and special characters, convert to lowercase
