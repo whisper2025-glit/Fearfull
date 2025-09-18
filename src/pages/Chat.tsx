@@ -512,7 +512,7 @@ const Chat = () => {
       // Build conversation history up to the message before target
       const historySlice = allMessages.slice(0, targetIndex)
         .filter(m => m.type === 'regular')
-        .map(m => ({ role: m.isBot ? 'assistant' as const : 'user' as const, content: m.content }));
+        .map(m => ({ role: m.isBot ? 'assistant' as const : 'user' as const, content: getDisplayedContent(m) }));
 
       const aiResponse = await openRouterAI.generateCharacterResponse(
         {
