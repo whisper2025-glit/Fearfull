@@ -540,7 +540,9 @@ const Chat = () => {
         setCurrentCharacter(prev => {
           if (!prev) return prev;
           const updated = [...prev.messages];
-          updated[targetIndex] = { ...updated[targetIndex], content: aiResponse };
+          const old = updated[targetIndex];
+          const newVariants = old.variants ? [...old.variants, aiResponse] : [old.content, aiResponse];
+          updated[targetIndex] = { ...old, content: aiResponse, variants: newVariants, currentVariantIndex: newVariants.length - 1 };
           return { ...prev, messages: updated };
         });
 
