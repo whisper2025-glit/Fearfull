@@ -754,17 +754,60 @@ const Chat = () => {
                       ) : (
                         <img src={user?.imageUrl || '/placeholder.svg'} alt={user?.fullName || user?.username || 'You'} className="w-[40px] h-[40px] rounded-full object-cover absolute top-2 right-[-50px]" />
                       )}
-                      {msg.isBot && msg.type === 'regular' && msg.id !== 0 && (
-                        <div className="mt-1 flex justify-start">
+                      {msg.isBot && msg.type === 'regular' && getDisplayedContent(msg) !== (currentCharacter.greeting || '') && (
+                        <div className="mt-1 flex items-center gap-2 justify-start text-xs text-muted-foreground select-none">
                           <Button
                             variant="outline"
                             size="sm"
-                            className="h-6 px-2"
+                            className="h-6 w-6 p-0"
+                            onClick={async () => {
+                              const idx = allMessages.findIndex(m => m === msg);
+                              const baseLen = currentCharacter.messages.length;
+                              if (idx < baseLen) {
+                                setCurrentCharacter(prev => {
+                                  if (!prev) return prev;
+                                  const arr = [...prev.messages];
+                                  const m = arr[idx];
+                                  if (!m.variants || (m.currentVariantIndex ?? 0) <= 0) return prev;
+                                  const newIndex = (m.currentVariantIndex || 0) - 1;
+                                  const newContent = m.variants[newIndex];
+                                  arr[idx] = { ...m, currentVariantIndex: newIndex, content: newContent };
+                                  return { ...prev, messages: arr };
+                                });
+                                const m = currentCharacter.messages[idx];
+                                if (m?.dbId && m.variants && (m.currentVariantIndex ?? 0) > 0) {
+                                  try { await supabase.from('messages').update({ content: m.variants[(m.currentVariantIndex || 0) - 1] }).eq('id', m.dbId); } catch {}
+                                }
+                              } else {
+                                const rel = idx - baseLen;
+                                setMessages(prev => {
+                                  const arr = [...prev];
+                                  const m = arr[rel];
+                                  if (!m.variants || (m.currentVariantIndex ?? 0) <= 0) return prev;
+                                  const newIndex = (m.currentVariantIndex || 0) - 1;
+                                  const newContent = m.variants[newIndex];
+                                  arr[rel] = { ...m, currentVariantIndex: newIndex, content: newContent };
+                                  return arr;
+                                });
+                              }
+                            }}
+                            aria-label="Previous version"
+                            title="Previous version"
+                          >
+                            <ChevronLeft className="h-3 w-3" />
+                          </Button>
+                          <span className="min-w-[28px] text-center">
+                            {((msg.currentVariantIndex ?? 0) + 1)} / {(msg.variants?.length ?? 1)}
+                          </span>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="h-6 w-6 p-0"
                             onClick={() => handleRegenerate(allMessages.findIndex(m => m === msg))}
                             aria-label="Regenerate"
                             title="Regenerate"
                           >
-                            <RotateCcw className="h-3 w-3" />
+                            <ChevronRight className="h-3 w-3" />
                           </Button>
                         </div>
                       )}
