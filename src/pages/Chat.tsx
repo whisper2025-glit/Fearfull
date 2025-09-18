@@ -141,7 +141,7 @@ const Chat = () => {
       const next = new Set(prev);
       if (next.has(key)) {
         next.delete(key);
-        toast.message('Unpinned message');
+        toast('Unpinned message');
       } else {
         next.add(key);
         toast.success('Pinned message');
