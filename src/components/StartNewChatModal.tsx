@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { createConversation, deleteConversation } from '@/lib/supabase';
+import { createConversation, deleteConversation, clearMessagesForConversation, clearMessagesForUserCharacter } from '@/lib/supabase';
 import { useNavigate } from 'react-router-dom';
 
 interface StartNewChatModalProps {
