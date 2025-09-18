@@ -21,6 +21,7 @@ import { supabase, getDefaultPersona, incrementUserCoins, canClaimDailyReward, m
 import { createOrUpdateUser } from "@/lib/createOrUpdateUser";
 import { openRouterAI, ChatMessage as AIMessage } from "@/lib/ai-client";
 import { toast } from "sonner";
+import { StartNewChatModal } from "@/components/StartNewChatModal";
 
 interface Message {
   id: number;
@@ -60,10 +61,12 @@ const Chat = () => {
   const [isPersonaModalOpen, setIsPersonaModalOpen] = useState(false);
   const [isModelsModalOpen, setIsModelsModalOpen] = useState(false);
   const [isChatPageSettingsModalOpen, setIsChatPageSettingsModalOpen] = useState(false);
+  const [isStartNewChatModalOpen, setIsStartNewChatModalOpen] = useState(false);
 
   useHistoryBackClose(isPersonaModalOpen, setIsPersonaModalOpen, "persona-modal");
   useHistoryBackClose(isModelsModalOpen, setIsModelsModalOpen, "models-modal");
   useHistoryBackClose(isChatPageSettingsModalOpen, setIsChatPageSettingsModalOpen, "chat-settings-modal");
+  useHistoryBackClose(isStartNewChatModalOpen, setIsStartNewChatModalOpen, "start-new-chat-modal");
   const [selectedModel, setSelectedModel] = useState<Model>({
     id: "mistral-nemo-free",
     name: "mistralai/mistral-nemo:free",
@@ -557,7 +560,7 @@ const Chat = () => {
                 <MoreHorizontal className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48">
+            <DropdownMenuContent align="end" className="w-56">
               <DropdownMenuItem onClick={() => navigate(`/character/${characterId}`)}>
                 <User className="mr-2 h-4 w-4" />
                 Bot Profile
@@ -565,6 +568,10 @@ const Chat = () => {
               <DropdownMenuItem onClick={() => setIsChatPageSettingsModalOpen(true)}>
                 <Settings className="mr-2 h-4 w-4" />
                 Chat Page Settings
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setIsStartNewChatModalOpen(true)}>
+                <Clock className="mr-2 h-4 w-4" />
+                Start New Chat
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -779,6 +786,21 @@ const Chat = () => {
         value={chatPageSettings}
         onSave={(v) => setChatPageSettings(v)}
       />
+
+      {user && (
+        <StartNewChatModal
+          open={isStartNewChatModalOpen}
+          onOpenChange={setIsStartNewChatModalOpen}
+          userId={user.id}
+          characterId={characterId as string}
+          currentConversationId={currentConversationId}
+          personaId={currentPersona?.id ?? null}
+          onStarted={(newId) => {
+            setMessages([]);
+            setCurrentConversationId(newId);
+          }}
+        />
+      )}
 
     </div>
   );

@@ -605,6 +605,93 @@ export const uploadImage = async (bucket: string, path: string, file: File) => {
   return { data, publicUrl };
 };
 
+// Create a conversation for a character
+export const createConversation = async (
+  userId: string,
+  characterId: string,
+  personaId?: string | null,
+  title?: string | null,
+  metadata?: any
+) => {
+  try {
+    const { data: conversation, error } = await supabase
+      .from('conversations')
+      .insert({
+        user_id: userId,
+        character_id: characterId,
+        persona_id: personaId ?? null,
+        title: title ?? null,
+        metadata: metadata ?? null,
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+    return conversation;
+  } catch (error) {
+    console.error('❌ Error creating conversation:', error);
+    throw error;
+  }
+};
+
+// Delete a conversation (only if user owns it)
+export const deleteConversation = async (conversationId: string, userId: string) => {
+  try {
+    const { error } = await supabase
+      .from('conversations')
+      .delete()
+      .eq('id', conversationId)
+      .eq('user_id', userId);
+
+    if (error) throw error;
+    return true;
+  } catch (error) {
+    console.error('❌ Error deleting conversation:', error);
+    throw error;
+  }
+};
+
+// Clear all messages for a conversation (only messages, not the conversation row)
+export const clearMessagesForConversation = async (conversationId: string) => {
+  try {
+    const { error } = await supabase
+      .from('messages')
+      .delete()
+      .eq('conversation_id', conversationId);
+    if (error) throw error;
+    return true;
+  } catch (error) {
+    console.error('❌ Error clearing messages for conversation:', error);
+    throw error;
+  }
+};
+
+// Clear all messages between a user and a character across all their conversations
+export const clearMessagesForUserCharacter = async (userId: string, characterId: string) => {
+  try {
+    // Fetch all conversation ids for this user+character
+    const { data: convs, error: convErr } = await supabase
+      .from('conversations')
+      .select('id')
+      .eq('user_id', userId)
+      .eq('character_id', characterId);
+    if (convErr) throw convErr;
+
+    const ids = (convs || []).map((c: any) => c.id).filter(Boolean);
+    if (ids.length === 0) return true;
+
+    const { error } = await supabase
+      .from('messages')
+      .delete()
+      .in('conversation_id', ids);
+    if (error) throw error;
+    return true;
+  } catch (error) {
+    console.error('❌ Error clearing messages for user+character:', error);
+    throw error;
+  }
+};
+
 // Helper function to get the best available display name for a user
 export const getUserDisplayName = async (clerkUser: any): Promise<string> => {
   if (!clerkUser) return 'User';
