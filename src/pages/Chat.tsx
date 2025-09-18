@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { useUser } from "@clerk/clerk-react";
-import { ArrowLeft, Home, MoreHorizontal, Clock, Users, Bot, ChevronDown, User, Settings, Coins, Send, RotateCcw, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowLeft, Home, MoreHorizontal, Clock, Users, Bot, ChevronDown, User, Settings, Send, RotateCcw, ChevronLeft, ChevronRight, Edit, Copy, Trash2 } from "lucide-react";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -22,6 +22,7 @@ import { createOrUpdateUser } from "@/lib/createOrUpdateUser";
 import { openRouterAI, ChatMessage as AIMessage } from "@/lib/ai-client";
 import { toast } from "sonner";
 import { StartNewChatModal } from "@/components/StartNewChatModal";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 
 interface Message {
   id: number;
@@ -66,6 +67,11 @@ const Chat = () => {
   const [isChatPageSettingsModalOpen, setIsChatPageSettingsModalOpen] = useState(false);
   const [isStartNewChatModalOpen, setIsStartNewChatModalOpen] = useState(false);
 
+  // Message menu and editing state
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [editingMessage, setEditingMessage] = useState<Message | null>(null);
+  const [editingText, setEditingText] = useState("");
+
   useHistoryBackClose(isPersonaModalOpen, setIsPersonaModalOpen, "persona-modal");
   useHistoryBackClose(isModelsModalOpen, setIsModelsModalOpen, "models-modal");
   useHistoryBackClose(isChatPageSettingsModalOpen, setIsChatPageSettingsModalOpen, "chat-settings-modal");
@@ -104,6 +110,111 @@ const Chat = () => {
   const [currentCharacter, setCurrentCharacter] = useState<Character | null>(null);
   const [isLoadingCharacter, setIsLoadingCharacter] = useState(true);
   const [currentConversationId, setCurrentConversationId] = useState<string | null>(conversationId);
+
+  // Delete a user message and cascade delete the immediate following bot reply
+  const deleteUserMessageCascade = async (m: Message) => {
+    if (m.isBot) return;
+    const idx = allMessages.findIndex(mm => mm === m);
+    if (idx === -1) return;
+    const next = allMessages[idx + 1];
+    const botToDelete = next && next.isBot && next.type === 'regular' ? next : undefined;
+
+    try {
+      if (m.dbId) await supabase.from('messages').delete().eq('id', m.dbId);
+      if (botToDelete?.dbId) {
+        await supabase.from('messages').delete().eq('id', botToDelete.dbId);
+      } else if (botToDelete && currentConversationId) {
+        try {
+          const { data: lastBot } = await supabase
+            .from('messages')
+            .select('id')
+            .eq('conversation_id', currentConversationId)
+            .eq('is_bot', true)
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .single();
+          if (lastBot?.id) await supabase.from('messages').delete().eq('id', lastBot.id);
+        } catch {}
+      }
+    } catch (e) {
+      console.warn('Remote delete failed (continuing with local removal):', e);
+    }
+
+    const baseLen = currentCharacter?.messages.length ?? 0;
+    const removeAt = (index: number) => {
+      if (index < 0) return;
+      if (index < baseLen) {
+        setCurrentCharacter(prev => {
+          if (!prev) return prev;
+          const arr = [...prev.messages];
+          arr.splice(index, 1);
+          return { ...prev, messages: arr };
+        });
+      } else {
+        const rel = index - baseLen;
+        setMessages(prev => {
+          const arr = [...prev];
+          arr.splice(rel, 1);
+          return arr;
+        });
+      }
+    };
+
+    if (botToDelete) removeAt(idx + 1);
+    removeAt(idx);
+    toast.success('Message deleted');
+  };
+
+  const copyMessage = async (m: Message) => {
+    try {
+      await navigator.clipboard.writeText(getDisplayedContent(m));
+      toast.success('Copied to clipboard');
+    } catch {
+      toast.error('Copy failed');
+    }
+  };
+
+  const openEdit = (m: Message) => {
+    setEditingMessage(m);
+    setEditingText(getDisplayedContent(m));
+    setIsEditOpen(true);
+  };
+
+  const saveEdit = async () => {
+    if (!editingMessage) return;
+    const newText = editingText;
+    const baseLen = currentCharacter?.messages.length ?? 0;
+    const idx = allMessages.findIndex(mm => mm === editingMessage);
+    if (idx >= 0) {
+      if (idx < baseLen) {
+        setCurrentCharacter(prev => {
+          if (!prev) return prev;
+          const arr = [...prev.messages];
+          arr[idx] = { ...arr[idx], content: newText };
+          return { ...prev, messages: arr };
+        });
+      } else {
+        const rel = idx - baseLen;
+        setMessages(prev => {
+          const arr = [...prev];
+          arr[rel] = { ...arr[rel], content: newText };
+          return arr;
+        });
+      }
+      if (editingMessage.dbId) {
+        try {
+          await supabase.from('messages').update({ content: newText }).eq('id', editingMessage.dbId);
+        } catch (e) {
+          console.warn('Edit save failed:', e);
+        }
+      } else {
+        toast("Edited locally (unsaved message)");
+      }
+      toast.success('Message updated');
+    }
+    setIsEditOpen(false);
+    setEditingMessage(null);
+  };
 
   // Coin balance state
   const [userCoins, setUserCoins] = useState<number>(0);
@@ -356,6 +467,14 @@ const Chat = () => {
       const { data: sentRows, error: userMessageError } = await supabase
         .rpc('send_user_message', { p_user_id: user.id, p_character_id: characterId, p_content: enhancedUserMessage, p_conversation_id: conversationToUse || null });
       const insertedUserMessage = sentRows && sentRows[0] ? { id: sentRows[0].message_id, conversation_id: sentRows[0].conversation_id, created_at: sentRows[0].created_at } : null;
+      if (insertedUserMessage?.id) {
+        setMessages(prev => {
+          const arr = [...prev];
+          const i = arr.findIndex(mm => mm.id === userMessage.id);
+          if (i !== -1) arr[i] = { ...arr[i], dbId: insertedUserMessage.id } as any;
+          return arr;
+        });
+      }
 
       if (userMessageError) {
         console.error('Error saving user message:', userMessageError);
@@ -626,14 +745,6 @@ const Chat = () => {
           <h1 className="text-sm font-semibold">{currentCharacter.name}</h1>
         </div>
 
-        {/* Coin Balance Display */}
-        <div className="flex items-center gap-2 bg-card/30 backdrop-blur-sm px-3 py-1 rounded-full border border-border/30">
-          <Coins className="h-4 w-4 text-yellow-500" />
-          <span className="text-sm font-medium">
-            {loadingCoins ? '...' : userCoins}
-          </span>
-          <span className="text-xs text-muted-foreground">coins</span>
-        </div>
 
         <div className="flex items-center gap-2">
           <Button
@@ -744,11 +855,38 @@ const Chat = () => {
                           {currentCharacter.name}
                         </div>
                       )}
-                      <Card className={`${msg.isBot ? 'bg-black/80 text-white' : 'bg-cyan-500 text-white'} p-4 rounded-xl w-full shadow-md`}>
-                        <div className="w-full">
-                          <MessageFormatter content={getDisplayedContent(msg)} className="chat-text" />
-                        </div>
-                      </Card>
+                      {(msg.isBot && msg.type === 'regular' && getDisplayedContent(msg) === (currentCharacter.greeting || '')) ? (
+                        <Card className={`${msg.isBot ? 'bg-black/80 text-white' : 'bg-cyan-500 text-white'} p-4 rounded-xl w-full shadow-md`}>
+                          <div className="w-full">
+                            <MessageFormatter content={getDisplayedContent(msg)} className="chat-text" />
+                          </div>
+                        </Card>
+                      ) : (
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <div role="button" className="focus:outline-none">
+                              <Card className={`${msg.isBot ? 'bg-black/80 text-white' : 'bg-cyan-500 text-white'} p-4 rounded-xl w-full shadow-md`}>
+                                <div className="w-full">
+                                  <MessageFormatter content={getDisplayedContent(msg)} className="chat-text" />
+                                </div>
+                              </Card>
+                            </div>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent side="top" align="center" className="w-40">
+                            <DropdownMenuItem onClick={() => copyMessage(msg)}>
+                              <Copy className="mr-2 h-4 w-4" /> Copy
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => openEdit(msg)}>
+                              <Edit className="mr-2 h-4 w-4" /> Edit
+                            </DropdownMenuItem>
+                            {!msg.isBot && (
+                              <DropdownMenuItem onClick={() => deleteUserMessageCascade(msg)}>
+                                <Trash2 className="mr-2 h-4 w-4" /> Delete
+                              </DropdownMenuItem>
+                            )}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      )}
                       {msg.isBot ? (
                         <img src={currentCharacter.avatar} alt={currentCharacter.name} className="w-[40px] h-[40px] rounded-full object-cover absolute top-2 left-[-50px]" />
                       ) : (
@@ -945,6 +1083,19 @@ const Chat = () => {
           )}
         </div>
       </div>
+
+      <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
+        <DialogContent className="bg-secondary border-border">
+          <DialogHeader>
+            <DialogTitle className="text-primary">Edit Message</DialogTitle>
+          </DialogHeader>
+          <Textarea value={editingText} onChange={(e) => setEditingText(e.target.value)} className="min-h-[120px] bg-secondary/50 border-border" />
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsEditOpen(false)}>Cancel</Button>
+            <Button onClick={saveEdit}>Save</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <PersonaModal
         open={isPersonaModalOpen}
