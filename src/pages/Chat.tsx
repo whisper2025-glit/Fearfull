@@ -868,19 +868,43 @@ const Chat = () => {
                         </div>
                       )}
                       {(msg.isBot && msg.type === 'regular' && getDisplayedContent(msg) === (currentCharacter.greeting || '')) ? (
-                        <Card className={`${msg.isBot ? 'bg-black/80 text-white' : 'bg-cyan-500 text-white'} p-4 rounded-xl w-full shadow-md`}>
+                        <Card className={`${msg.isBot ? 'bg-black/80 text-white' : 'bg-cyan-500 text-white'} p-4 rounded-xl w-full shadow-md relative`}>
                           <div className="w-full">
                             <MessageFormatter content={getDisplayedContent(msg)} className="chat-text" />
                           </div>
+                          {msg.isBot && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="absolute -bottom-2 -right-2 h-7 w-7 p-0 rounded-full"
+                              onClick={(e) => { e.stopPropagation(); speakMessage(getDisplayedContent(msg)); }}
+                              aria-label="Play voice"
+                              title="Play voice"
+                            >
+                              <Volume2 className="h-3.5 w-3.5" />
+                            </Button>
+                          )}
                         </Card>
                       ) : (
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <div role="button" className="focus:outline-none">
-                              <Card className={`${msg.isBot ? 'bg-black/80 text-white' : 'bg-cyan-500 text-white'} p-4 rounded-xl w-full shadow-md`}>
+                              <Card className={`${msg.isBot ? 'bg-black/80 text-white' : 'bg-cyan-500 text-white'} p-4 rounded-xl w-full shadow-md relative`}>
                                 <div className="w-full">
                                   <MessageFormatter content={getDisplayedContent(msg)} className="chat-text" />
                                 </div>
+                                {msg.isBot && (
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="absolute -bottom-2 -right-2 h-7 w-7 p-0 rounded-full"
+                                    onClick={(e) => { e.stopPropagation(); speakMessage(getDisplayedContent(msg)); }}
+                                    aria-label="Play voice"
+                                    title="Play voice"
+                                  >
+                                    <Volume2 className="h-3.5 w-3.5" />
+                                  </Button>
+                                )}
                               </Card>
                             </div>
                           </DropdownMenuTrigger>
