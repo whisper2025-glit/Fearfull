@@ -217,7 +217,8 @@ const Chat = () => {
               content: msg.content,
               isBot: msg.is_bot,
               timestamp: new Date(msg.created_at).toLocaleTimeString(),
-              type: msg.type as 'intro' | 'scenario' | 'regular'
+              type: msg.type as 'intro' | 'scenario' | 'regular',
+              dbId: msg.id as string
             }))
           ]
         };
