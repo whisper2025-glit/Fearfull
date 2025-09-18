@@ -146,6 +146,41 @@ export default function Voices() {
           </Card>
         )}
 
+        <Card className="border-border">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm">Text-to-Speech (Browser)</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <Textarea
+              value={ttsText}
+              onChange={(e) => setTtsText(e.target.value)}
+              placeholder="Type text to speak"
+              aria-label="TTS text"
+            />
+            <div className="flex items-center gap-2">
+              <Select value={selectedVoiceURI} onValueChange={setSelectedVoiceURI}>
+                <SelectTrigger className="w-full sm:w-80">
+                  <SelectValue placeholder="Select a voice" />
+                </SelectTrigger>
+                <SelectContent>
+                  {voices.map((v) => (
+                    <SelectItem key={v.voiceURI} value={v.voiceURI}>
+                      {v.name} ({v.lang})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Button onClick={handleSpeak} disabled={speaking || !ttsText.trim()} className="whitespace-nowrap">Speak</Button>
+              <Button onClick={handleStop} variant="outline" disabled={!speaking} className="whitespace-nowrap">Stop</Button>
+            </div>
+            {!("speechSynthesis" in window) && (
+              <p className="text-xs text-muted-foreground">
+                Your browser does not support the Web Speech API.
+              </p>
+            )}
+          </CardContent>
+        </Card>
+
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {loading && items.length === 0 ? (
             Array.from({ length: 6 }).map((_, i) => (
