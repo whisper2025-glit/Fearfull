@@ -30,12 +30,21 @@ export const StartNewChatModal = ({
     if (isSubmitting) return;
     setIsSubmitting(true);
     try {
-      if (opts.deleteOld && currentConversationId) {
+      if (opts.deleteOld) {
         try {
-          await deleteConversation(currentConversationId, userId);
+          if (currentConversationId) {
+            await clearMessagesForConversation(currentConversationId);
+          }
+          await clearMessagesForUserCharacter(userId, characterId);
         } catch (e) {
-          // Non-blocking
-          console.warn('Could not delete previous conversation', e);
+          console.warn('Could not clear previous messages', e);
+        }
+        if (currentConversationId) {
+          try {
+            await deleteConversation(currentConversationId, userId);
+          } catch (e) {
+            console.warn('Could not delete previous conversation', e);
+          }
         }
       }
 
