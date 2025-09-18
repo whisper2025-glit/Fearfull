@@ -735,6 +735,18 @@ const Chat = () => {
                         <img src={user?.imageUrl || '/placeholder.svg'} alt={user?.fullName || user?.username || 'You'} className="w-[40px] h-[40px] rounded-full object-cover absolute top-2 right-[-50px]" />
                       )}
                     </div>
+                    {msg.isBot && msg.type === 'regular' && (
+                      <div className="mt-2 flex justify-start">
+                        <Button
+                          variant="outline"
+                          size="xs"
+                          className="h-6 px-2 text-[10px]"
+                          onClick={() => handleRegenerate(allMessages.findIndex(m => m === msg))}
+                        >
+                          <RotateCcw className="h-3 w-3 mr-1" /> Regenerate
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 </>
               )}
