@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { useUser } from "@clerk/clerk-react";
-import { ArrowLeft, Home, MoreHorizontal, Clock, Users, Bot, ChevronDown, User, Settings, Coins, Send, RotateCcw, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowLeft, Home, MoreHorizontal, Clock, Users, Bot, ChevronDown, User, Settings, Coins, Send, RotateCcw, ChevronLeft, ChevronRight, Edit, Copy, Pin } from "lucide-react";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -22,6 +22,7 @@ import { createOrUpdateUser } from "@/lib/createOrUpdateUser";
 import { openRouterAI, ChatMessage as AIMessage } from "@/lib/ai-client";
 import { toast } from "sonner";
 import { StartNewChatModal } from "@/components/StartNewChatModal";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 
 interface Message {
   id: number;
@@ -66,6 +67,12 @@ const Chat = () => {
   const [isChatPageSettingsModalOpen, setIsChatPageSettingsModalOpen] = useState(false);
   const [isStartNewChatModalOpen, setIsStartNewChatModalOpen] = useState(false);
 
+  // Message menu and editing state
+  const [pinnedIds, setPinnedIds] = useState<Set<string>>(new Set());
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [editingMessage, setEditingMessage] = useState<Message | null>(null);
+  const [editingText, setEditingText] = useState("");
+
   useHistoryBackClose(isPersonaModalOpen, setIsPersonaModalOpen, "persona-modal");
   useHistoryBackClose(isModelsModalOpen, setIsModelsModalOpen, "models-modal");
   useHistoryBackClose(isChatPageSettingsModalOpen, setIsChatPageSettingsModalOpen, "chat-settings-modal");
@@ -104,6 +111,94 @@ const Chat = () => {
   const [currentCharacter, setCurrentCharacter] = useState<Character | null>(null);
   const [isLoadingCharacter, setIsLoadingCharacter] = useState(true);
   const [currentConversationId, setCurrentConversationId] = useState<string | null>(conversationId);
+
+  // Helpers for pinned messages (localStorage per conversation)
+  const pinStorageKey = () => `pinned_${currentConversationId || `char_${characterId}`}`;
+  const messageKey = (m: Message) => (m.dbId ? `db:${m.dbId}` : `local:${m.id}`);
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(pinStorageKey());
+      if (raw) {
+        const arr: string[] = JSON.parse(raw);
+        setPinnedIds(new Set(arr));
+      } else {
+        setPinnedIds(new Set());
+      }
+    } catch {
+      setPinnedIds(new Set());
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentConversationId, characterId]);
+
+  const persistPinned = (setVal: Set<string>) => {
+    localStorage.setItem(pinStorageKey(), JSON.stringify(Array.from(setVal)));
+  };
+
+  const togglePin = (m: Message) => {
+    const key = messageKey(m);
+    setPinnedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(key)) {
+        next.delete(key);
+        toast.message('Unpinned message');
+      } else {
+        next.add(key);
+        toast.success('Pinned message');
+      }
+      persistPinned(next);
+      return next;
+    });
+  };
+
+  const copyMessage = async (m: Message) => {
+    try {
+      await navigator.clipboard.writeText(getDisplayedContent(m));
+      toast.success('Copied to clipboard');
+    } catch {
+      toast.error('Copy failed');
+    }
+  };
+
+  const openEdit = (m: Message) => {
+    setEditingMessage(m);
+    setEditingText(getDisplayedContent(m));
+    setIsEditOpen(true);
+  };
+
+  const saveEdit = async () => {
+    if (!editingMessage) return;
+    const newText = editingText;
+    const baseLen = currentCharacter?.messages.length ?? 0;
+    const idx = allMessages.findIndex(mm => mm === editingMessage);
+    if (idx >= 0) {
+      if (idx < baseLen) {
+        setCurrentCharacter(prev => {
+          if (!prev) return prev;
+          const arr = [...prev.messages];
+          arr[idx] = { ...arr[idx], content: newText };
+          return { ...prev, messages: arr };
+        });
+      } else {
+        const rel = idx - baseLen;
+        setMessages(prev => {
+          const arr = [...prev];
+          arr[rel] = { ...arr[rel], content: newText };
+          return arr;
+        });
+      }
+      if (editingMessage.dbId) {
+        try {
+          await supabase.from('messages').update({ content: newText }).eq('id', editingMessage.dbId);
+        } catch (e) {
+          console.warn('Edit save failed:', e);
+        }
+      }
+      toast.success('Message updated');
+    }
+    setIsEditOpen(false);
+    setEditingMessage(null);
+  };
 
   // Coin balance state
   const [userCoins, setUserCoins] = useState<number>(0);
@@ -744,11 +839,30 @@ const Chat = () => {
                           {currentCharacter.name}
                         </div>
                       )}
-                      <Card className={`${msg.isBot ? 'bg-black/80 text-white' : 'bg-cyan-500 text-white'} p-4 rounded-xl w-full shadow-md`}>
-                        <div className="w-full">
-                          <MessageFormatter content={getDisplayedContent(msg)} className="chat-text" />
-                        </div>
-                      </Card>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <div role="button" className="focus:outline-none">
+                            <Card className={`${msg.isBot ? 'bg-black/80 text-white' : 'bg-cyan-500 text-white'} p-4 rounded-xl w-full shadow-md`}>
+                              <div className="w-full">
+                                <MessageFormatter content={getDisplayedContent(msg)} className="chat-text" />
+                              </div>
+                            </Card>
+                          </div>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent side="top" align="center" className="w-40">
+                          <DropdownMenuItem onClick={() => copyMessage(msg)}>
+                            <Copy className="mr-2 h-4 w-4" /> Copy
+                          </DropdownMenuItem>
+                          {!msg.isBot && (
+                            <DropdownMenuItem onClick={() => openEdit(msg)}>
+                              <Edit className="mr-2 h-4 w-4" /> Edit
+                            </DropdownMenuItem>
+                          )}
+                          <DropdownMenuItem onClick={() => togglePin(msg)}>
+                            <Pin className="mr-2 h-4 w-4" /> {pinnedIds.has(messageKey(msg)) ? 'Unpin' : 'Pin'}
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                       {msg.isBot ? (
                         <img src={currentCharacter.avatar} alt={currentCharacter.name} className="w-[40px] h-[40px] rounded-full object-cover absolute top-2 left-[-50px]" />
                       ) : (
@@ -945,6 +1059,19 @@ const Chat = () => {
           )}
         </div>
       </div>
+
+      <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
+        <DialogContent className="bg-secondary border-border">
+          <DialogHeader>
+            <DialogTitle className="text-primary">Edit Message</DialogTitle>
+          </DialogHeader>
+          <Textarea value={editingText} onChange={(e) => setEditingText(e.target.value)} className="min-h-[120px] bg-secondary/50 border-border" />
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsEditOpen(false)}>Cancel</Button>
+            <Button onClick={saveEdit}>Save</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <PersonaModal
         open={isPersonaModalOpen}
