@@ -23,9 +23,6 @@ export const StartNewChatModal = ({
   personaId,
   onStarted,
 }: StartNewChatModalProps) => {
-  const [retainProfile, setRetainProfile] = useState(true);
-  const [retainScene, setRetainScene] = useState(true);
-  const [retainInstructions, setRetainInstructions] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
