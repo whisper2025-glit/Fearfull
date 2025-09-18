@@ -21,6 +21,7 @@ import ImageTest from "./pages/ImageTest";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
 import SsoCallback from "./pages/SsoCallback";
+import Voices from "./pages/Voices";
 import { useEffect } from "react";
 import { trackPageview } from "./lib/analytics";
 
