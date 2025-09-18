@@ -742,10 +742,12 @@ const Chat = () => {
                           <Button
                             variant="outline"
                             size="sm"
-                            className="h-6 px-2 text-[10px]"
+                            className="h-6 px-2"
                             onClick={() => handleRegenerate(allMessages.findIndex(m => m === msg))}
+                            aria-label="Regenerate"
+                            title="Regenerate"
                           >
-                            <RotateCcw className="h-3 w-3 mr-1" /> Regenerate
+                            <RotateCcw className="h-3 w-3" />
                           </Button>
                         </div>
                       )}
