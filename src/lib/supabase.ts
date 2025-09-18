@@ -605,6 +605,52 @@ export const uploadImage = async (bucket: string, path: string, file: File) => {
   return { data, publicUrl };
 };
 
+// Create a conversation for a character
+export const createConversation = async (
+  userId: string,
+  characterId: string,
+  personaId?: string | null,
+  title?: string | null,
+  metadata?: any
+) => {
+  try {
+    const { data: conversation, error } = await supabase
+      .from('conversations')
+      .insert({
+        user_id: userId,
+        character_id: characterId,
+        persona_id: personaId ?? null,
+        title: title ?? null,
+        metadata: metadata ?? null,
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+    return conversation;
+  } catch (error) {
+    console.error('❌ Error creating conversation:', error);
+    throw error;
+  }
+};
+
+// Delete a conversation (only if user owns it)
+export const deleteConversation = async (conversationId: string, userId: string) => {
+  try {
+    const { error } = await supabase
+      .from('conversations')
+      .delete()
+      .eq('id', conversationId)
+      .eq('user_id', userId);
+
+    if (error) throw error;
+    return true;
+  } catch (error) {
+    console.error('❌ Error deleting conversation:', error);
+    throw error;
+  }
+};
+
 // Helper function to get the best available display name for a user
 export const getUserDisplayName = async (clerkUser: any): Promise<string> => {
   if (!clerkUser) return 'User';
@@ -1163,7 +1209,7 @@ export const subscribeToComments = (
         filter: `character_id=eq.${characterId}`
       },
       (payload) => {
-        console.log('����️ Comment deleted:', payload.old);
+        console.log('�����️ Comment deleted:', payload.old);
         onCommentDeleted(payload.old.id);
       }
     )
@@ -1469,7 +1515,7 @@ export const getUserCoins = async (userId: string): Promise<number> => {
 
 export const incrementUserCoins = async (userId: string, amount: number, reason: string = 'coins_earned'): Promise<number> => {
   try {
-    console.log('💰 Incrementing user coins:', { userId, amount, reason });
+    console.log('�� Incrementing user coins:', { userId, amount, reason });
 
     // Ensure a user row exists (minimal upsert to avoid circular deps)
     const { error: upsertErr } = await supabase
