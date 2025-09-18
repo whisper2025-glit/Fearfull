@@ -560,7 +560,7 @@ const Chat = () => {
                 <MoreHorizontal className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48">
+            <DropdownMenuContent align="end" className="w-56">
               <DropdownMenuItem onClick={() => navigate(`/character/${characterId}`)}>
                 <User className="mr-2 h-4 w-4" />
                 Bot Profile
@@ -568,6 +568,10 @@ const Chat = () => {
               <DropdownMenuItem onClick={() => setIsChatPageSettingsModalOpen(true)}>
                 <Settings className="mr-2 h-4 w-4" />
                 Chat Page Settings
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setIsStartNewChatModalOpen(true)}>
+                <Clock className="mr-2 h-4 w-4" />
+                Start New Chat
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
