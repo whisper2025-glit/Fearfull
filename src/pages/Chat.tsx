@@ -68,6 +68,8 @@ const Chat = () => {
   const [isModelsModalOpen, setIsModelsModalOpen] = useState(false);
   const [isChatPageSettingsModalOpen, setIsChatPageSettingsModalOpen] = useState(false);
   const [isStartNewChatModalOpen, setIsStartNewChatModalOpen] = useState(false);
+  const [isVoiceModalOpen, setIsVoiceModalOpen] = useState(false);
+  const [voiceSettings, setVoiceSettings] = useState<VoiceSettings>(() => loadVoiceSettings() || { voiceURI: '', rate: 1, pitch: 1, volume: 1 });
 
   // Message menu and editing state
   const [isEditOpen, setIsEditOpen] = useState(false);
