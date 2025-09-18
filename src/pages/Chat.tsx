@@ -32,6 +32,8 @@ interface Message {
   characterName?: string;
   author?: string;
   dbId?: string; // Supabase messages.id when available
+  variants?: string[]; // history of regenerated contents (bot only)
+  currentVariantIndex?: number; // index into variants
 }
 
 interface Character {
