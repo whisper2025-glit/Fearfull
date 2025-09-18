@@ -563,6 +563,8 @@ const Chat = () => {
       console.error('Regenerate failed:', e);
       const msg = e instanceof Error ? e.message : 'Unknown error';
       toast.error(`Failed to regenerate: ${msg}`);
+    } finally {
+      setIsLoading(false);
     }
   };
 
