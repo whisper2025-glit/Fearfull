@@ -622,6 +622,14 @@ const Chat = () => {
 
   const allMessages = currentCharacter ? [...currentCharacter.messages, ...messages] : [];
 
+  const speakMessage = (text: string) => {
+    if (!("speechSynthesis" in window)) {
+      toast.error('Your browser does not support speech synthesis');
+      return;
+    }
+    speakWithSettings(text, voiceSettings);
+  };
+
   const getDisplayedContent = (msg: Message) => {
     if (msg.variants && typeof msg.currentVariantIndex === 'number') {
       return msg.variants[msg.currentVariantIndex] ?? msg.content;
