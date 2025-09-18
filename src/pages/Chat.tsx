@@ -746,7 +746,7 @@ const Chat = () => {
                       )}
                       <Card className={`${msg.isBot ? 'bg-black/80 text-white' : 'bg-cyan-500 text-white'} p-4 rounded-xl w-full shadow-md`}>
                         <div className="w-full">
-                          <MessageFormatter content={msg.content} className="chat-text" />
+                          <MessageFormatter content={getDisplayedContent(msg)} className="chat-text" />
                         </div>
                       </Card>
                       {msg.isBot ? (
