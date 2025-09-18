@@ -4,7 +4,8 @@ import {
   Plus,
   MessageCircle,
   Search,
-  Gift
+  Gift,
+  AudioLines
 } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useUser, useClerk } from "@clerk/clerk-react";
@@ -35,6 +36,7 @@ const menuItems = [
   { title: "Home", url: "/", icon: Home },
   { title: "Chats", url: "/chats", icon: MessageCircle },
   { title: "Search", url: "/search", icon: Search },
+  { title: "Voices", url: "/voices", icon: AudioLines },
   { title: "Bonus", url: "/bonus", icon: Gift }
 ];
 

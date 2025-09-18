@@ -1,0 +1,240 @@
+import { useEffect, useMemo, useState } from "react";
+import { Layout } from "@/components/Layout";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ExternalLink, RefreshCw, Volume2 } from "lucide-react";
+
+interface GithubContentItem {
+  name: string;
+  path: string;
+  download_url: string | null;
+  type: "file" | "dir";
+}
+
+interface VoiceItem {
+  name: string;
+  url: string;
+}
+
+const REPO_API_URL = "https://api.github.com/repos/whisper2025-glit/Muzik/contents/voices?ref=main";
+
+export default function Voices() {
+  const [items, setItems] = useState<VoiceItem[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string>("");
+  const [query, setQuery] = useState<string>("");
+
+  // In-browser TTS state (Web Speech API)
+  const [ttsText, setTtsText] = useState<string>("Hello! This is a sample.");
+  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
+  const [selectedVoiceURI, setSelectedVoiceURI] = useState<string>("");
+  const [speaking, setSpeaking] = useState<boolean>(false);
+
+  const loadVoices = () => {
+    const list = window.speechSynthesis?.getVoices?.() || [];
+    setVoices(list);
+    if (!selectedVoiceURI && list.length > 0) {
+      // Prefer an English voice if available
+      const preferred = list.find(v => /en[-_]/i.test(v.lang)) || list[0];
+      setSelectedVoiceURI(preferred.voiceURI);
+    }
+  };
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
+    loadVoices();
+    const handler = () => loadVoices();
+    window.speechSynthesis.addEventListener?.("voiceschanged", handler);
+    return () => {
+      window.speechSynthesis.removeEventListener?.("voiceschanged", handler);
+    };
+  }, []);
+
+  const handleSpeak = () => {
+    if (!("speechSynthesis" in window)) return;
+    const text = ttsText.trim();
+    if (!text) return;
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    const v = voices.find(v => v.voiceURI === selectedVoiceURI);
+    if (v) u.voice = v;
+    u.onend = () => setSpeaking(false);
+    u.onerror = () => setSpeaking(false);
+    setSpeaking(true);
+    window.speechSynthesis.speak(u);
+  };
+
+  const handleStop = () => {
+    if (!("speechSynthesis" in window)) return;
+    window.speechSynthesis.cancel();
+    setSpeaking(false);
+  };
+
+  const fetchVoices = async () => {
+    setLoading(true);
+    setError("");
+    try {
+      const headers = { Accept: "application/vnd.github+json" } as const;
+      const [voicesRes, systemRes] = await Promise.all([
+        fetch(REPO_API_URL, { headers }),
+        fetch("https://api.github.com/repos/whisper2025-glit/Muzik/contents/system/at_sounds?ref=main", { headers })
+      ]);
+
+      if (!voicesRes.ok) throw new Error(`Failed to load voices: ${voicesRes.status}`);
+      // systemRes may 404 in forks; tolerate non-200
+
+      const dataVoices: GithubContentItem[] = await voicesRes.json();
+      const listVoices = (dataVoices || [])
+        .filter((f) => f.type === "file" && f.name.toLowerCase().endsWith(".wav") && !!f.download_url)
+        .map((f) => ({ name: f.name.replace(/\.wav$/i, ""), url: f.download_url as string }));
+
+      let listSystem: VoiceItem[] = [];
+      if (systemRes.ok) {
+        const dataSystem: GithubContentItem[] = await systemRes.json();
+        listSystem = (dataSystem || [])
+          .filter((f) => f.type === "file" && f.name.toLowerCase().endsWith(".wav") && !!f.download_url)
+          .map((f) => ({ name: `system/at_sounds/${f.name.replace(/\.wav$/i, "")}` , url: f.download_url as string }));
+      }
+
+      const wavs = [...listVoices, ...listSystem];
+      wavs.sort((a, b) => a.name.localeCompare(b.name));
+      setItems(wavs);
+    } catch (e: any) {
+      setError(e?.message || "Unknown error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchVoices();
+  }, []);
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return items;
+    return items.filter((it) => it.name.toLowerCase().includes(q));
+  }, [items, query]);
+
+  return (
+    <Layout headerPosition="fixed" contentUnderHeader>
+      <div className="min-h-full px-4 pb-6 pt-20 space-y-4">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+          <h1 className="text-xl font-semibold flex items-center gap-2">
+            <Volume2 className="h-5 w-5 text-primary" /> Voices
+          </h1>
+          <div className="flex-1" />
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <Input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search voices"
+              className="w-full sm:w-64"
+              aria-label="Search voices"
+            />
+            <Button variant="outline" size="icon" onClick={fetchVoices} aria-label="Refresh">
+              <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+            </Button>
+            <a
+              href="https://github.com/whisper2025-glit/Muzik/tree/main/voices"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Button variant="outline" size="icon" aria-label="Open voices on GitHub">
+                <ExternalLink className="h-4 w-4" />
+              </Button>
+            </a>
+          </div>
+        </div>
+
+        {error && (
+          <Card className="border-destructive/50">
+            <CardContent className="p-4 text-destructive text-sm">{error}</CardContent>
+          </Card>
+        )}
+
+        <Card className="border-border">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm">Text-to-Speech (Browser)</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <Textarea
+              value={ttsText}
+              onChange={(e) => setTtsText(e.target.value)}
+              placeholder="Type text to speak"
+              aria-label="TTS text"
+            />
+            <div className="flex items-center gap-2">
+              <Select value={selectedVoiceURI} onValueChange={setSelectedVoiceURI}>
+                <SelectTrigger className="w-full sm:w-80">
+                  <SelectValue placeholder="Select a voice" />
+                </SelectTrigger>
+                <SelectContent>
+                  {voices.map((v) => (
+                    <SelectItem key={v.voiceURI} value={v.voiceURI}>
+                      {v.name} ({v.lang})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Button onClick={handleSpeak} disabled={speaking || !ttsText.trim()} className="whitespace-nowrap">Speak</Button>
+              <Button onClick={handleStop} variant="outline" disabled={!speaking} className="whitespace-nowrap">Stop</Button>
+            </div>
+            {!("speechSynthesis" in window) && (
+              <p className="text-xs text-muted-foreground">
+                Your browser does not support the Web Speech API.
+              </p>
+            )}
+          </CardContent>
+        </Card>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {loading && items.length === 0 ? (
+            Array.from({ length: 6 }).map((_, i) => (
+              <Card key={i} className="animate-pulse">
+                <CardHeader>
+                  <CardTitle className="text-sm bg-muted h-4 w-40 rounded" />
+                </CardHeader>
+                <CardContent>
+                  <div className="bg-muted h-10 w-full rounded" />
+                </CardContent>
+              </Card>
+            ))
+          ) : filtered.length === 0 ? (
+            <Card>
+              <CardContent className="p-4 text-sm text-muted-foreground">No voices found.</CardContent>
+            </Card>
+          ) : (
+            filtered.map((v) => (
+              <Card key={v.url} className="border-border">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm break-words">{v.name}</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <audio controls preload="none" className="w-full">
+                    <source src={v.url} type="audio/wav" />
+                  </audio>
+                  <div className="flex items-center gap-2">
+                    <a href={v.url} download>
+                      <Button size="sm" variant="secondary">Download</Button>
+                    </a>
+                    <a href={v.url} target="_blank" rel="noopener noreferrer">
+                      <Button size="sm" variant="outline">Open</Button>
+                    </a>
+                  </div>
+                </CardContent>
+              </Card>
+            ))
+          )}
+        </div>
+
+        {filtered.length > 0 && (
+          <p className="text-xs text-muted-foreground pt-2">Showing {filtered.length} voice{filtered.length === 1 ? "" : "s"}.</p>
+        )}
+      </div>
+    </Layout>
+  );
+}
