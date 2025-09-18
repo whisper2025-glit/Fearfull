@@ -65,6 +65,11 @@ export const StartNewChatModal = ({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="bg-[#111216] text-white border-border/50">
+        <img
+          src="https://cdn.builder.io/api/v1/image/assets%2F1fb0f098159d4d458071e3b7d0f37f77%2Fea474a69762e418bb43bb14e18e80c6b?format=webp&width=800"
+          alt="Start new chat"
+          className="w-full h-32 object-cover rounded-md mb-3 opacity-90"
+        />
         <DialogHeader>
           <DialogTitle className="text-xl">Start a new conversation?</DialogTitle>
           <DialogDescription className="text-gray-300">
