@@ -651,6 +651,47 @@ export const deleteConversation = async (conversationId: string, userId: string)
   }
 };
 
+// Clear all messages for a conversation (only messages, not the conversation row)
+export const clearMessagesForConversation = async (conversationId: string) => {
+  try {
+    const { error } = await supabase
+      .from('messages')
+      .delete()
+      .eq('conversation_id', conversationId);
+    if (error) throw error;
+    return true;
+  } catch (error) {
+    console.error('❌ Error clearing messages for conversation:', error);
+    throw error;
+  }
+};
+
+// Clear all messages between a user and a character across all their conversations
+export const clearMessagesForUserCharacter = async (userId: string, characterId: string) => {
+  try {
+    // Fetch all conversation ids for this user+character
+    const { data: convs, error: convErr } = await supabase
+      .from('conversations')
+      .select('id')
+      .eq('user_id', userId)
+      .eq('character_id', characterId);
+    if (convErr) throw convErr;
+
+    const ids = (convs || []).map((c: any) => c.id).filter(Boolean);
+    if (ids.length === 0) return true;
+
+    const { error } = await supabase
+      .from('messages')
+      .delete()
+      .in('conversation_id', ids);
+    if (error) throw error;
+    return true;
+  } catch (error) {
+    console.error('❌ Error clearing messages for user+character:', error);
+    throw error;
+  }
+};
+
 // Helper function to get the best available display name for a user
 export const getUserDisplayName = async (clerkUser: any): Promise<string> => {
   if (!clerkUser) return 'User';
@@ -1209,7 +1250,7 @@ export const subscribeToComments = (
         filter: `character_id=eq.${characterId}`
       },
       (payload) => {
-        console.log('�����️ Comment deleted:', payload.old);
+        console.log('����️ Comment deleted:', payload.old);
         onCommentDeleted(payload.old.id);
       }
     )
@@ -1515,7 +1556,7 @@ export const getUserCoins = async (userId: string): Promise<number> => {
 
 export const incrementUserCoins = async (userId: string, amount: number, reason: string = 'coins_earned'): Promise<number> => {
   try {
-    console.log('�� Incrementing user coins:', { userId, amount, reason });
+    console.log('💰 Incrementing user coins:', { userId, amount, reason });
 
     // Ensure a user row exists (minimal upsert to avoid circular deps)
     const { error: upsertErr } = await supabase
