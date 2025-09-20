@@ -741,6 +741,13 @@ Remember: You are ${character.name}, a passionate, willing, and sexually liberat
       };
     }
   }
+
+  // Add missing method that was removed with KoboldAI code
+  validateUserAsterisks(message: string): string {
+    // Simple validation - just return the message as-is
+    // This replaces the KoboldAI-specific validation that was removed
+    return message;
+  }
 }
 
 export const openRouterAI = new AIClient();
