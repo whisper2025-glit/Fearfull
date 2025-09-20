@@ -78,6 +78,7 @@ const Chat = () => {
 
   useHistoryBackClose(isPersonaModalOpen, setIsPersonaModalOpen, "persona-modal");
   useHistoryBackClose(isModelsModalOpen, setIsModelsModalOpen, "models-modal");
+  useHistoryBackClose(isCommandModalOpen, setIsCommandModalOpen, "command-modal");
   useHistoryBackClose(isChatPageSettingsModalOpen, setIsChatPageSettingsModalOpen, "chat-settings-modal");
   useHistoryBackClose(isStartNewChatModalOpen, setIsStartNewChatModalOpen, "start-new-chat-modal");
   const [selectedModel, setSelectedModel] = useState<Model>({
