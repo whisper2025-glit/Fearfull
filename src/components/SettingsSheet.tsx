@@ -9,6 +9,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
+import { Input } from "@/components/ui/input";
 import {
   Settings,
   Moon,
@@ -16,11 +17,15 @@ import {
   LogOut,
   Instagram,
   Mail,
-  Twitter
+  Twitter,
+  Server,
+  CheckCircle,
+  XCircle
 } from "lucide-react";
 import { useUser, useClerk } from "@clerk/clerk-react";
 import { supabase } from "@/lib/supabase";
 import { useHistoryBackClose } from "@/hooks/useHistoryBackClose";
+import { openRouterAI } from "@/lib/ai-client";
 
 // Custom Discord Icon
 const DiscordIcon = ({ className }: { className?: string }) => (
@@ -44,6 +49,9 @@ const SettingsSheet = ({ children }: SettingsSheetProps) => {
   const [darkMode, setDarkMode] = useState(true);
   const [participateInLeaderboards, setParticipateInLeaderboards] = useState(true);
   const [allowFollowers, setAllowFollowers] = useState(true);
+  const [koboldEndpoint, setKoboldEndpoint] = useState('');
+  const [isTestingConnection, setIsTestingConnection] = useState(false);
+  const [connectionStatus, setConnectionStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const { user } = useUser();
   const { signOut } = useClerk();
 
@@ -80,7 +88,44 @@ const SettingsSheet = ({ children }: SettingsSheetProps) => {
       }
     };
     loadAccount();
+
+    // Load saved KoboldAI endpoint
+    const savedEndpoint = localStorage.getItem('kobold_endpoint');
+    if (savedEndpoint) {
+      setKoboldEndpoint(savedEndpoint);
+    }
   }, [user]);
+
+  const testKoboldConnection = async () => {
+    if (!koboldEndpoint.trim()) {
+      setConnectionStatus('error');
+      return;
+    }
+
+    setIsTestingConnection(true);
+    setConnectionStatus('idle');
+
+    try {
+      openRouterAI.setKoboldEndpoint(koboldEndpoint);
+      const result = await openRouterAI.testConnection();
+      
+      if (result.success) {
+        setConnectionStatus('success');
+        localStorage.setItem('kobold_endpoint', koboldEndpoint);
+      } else {
+        setConnectionStatus('error');
+      }
+    } catch (error) {
+      setConnectionStatus('error');
+    } finally {
+      setIsTestingConnection(false);
+    }
+  };
+
+  const saveKoboldEndpoint = () => {
+    localStorage.setItem('kobold_endpoint', koboldEndpoint);
+    openRouterAI.setKoboldEndpoint(koboldEndpoint);
+  };
 
   const contactLinks = [
     {
@@ -150,6 +195,55 @@ const SettingsSheet = ({ children }: SettingsSheetProps) => {
                 onCheckedChange={setDarkMode}
                 className="data-[state=checked]:bg-cyan-600"
               />
+            </div>
+
+            <Separator className="bg-gray-700" />
+
+            <div className="space-y-4">
+              <h3 className="text-gray-400 text-sm font-medium">KoboldAI Configuration</h3>
+              
+              <div className="space-y-3">
+                <div className="space-y-2">
+                  <label className="text-white text-sm">KoboldCpp Endpoint</label>
+                  <Input
+                    value={koboldEndpoint}
+                    onChange={(e) => setKoboldEndpoint(e.target.value)}
+                    placeholder="http://localhost:5001 or https://your-server.com"
+                    className="bg-gray-800 border-gray-600 text-white placeholder-gray-400"
+                    onBlur={saveKoboldEndpoint}
+                  />
+                  <p className="text-gray-400 text-xs">
+                    Leave empty to use local proxy (localhost only)
+                  </p>
+                </div>
+                
+                <div className="flex items-center gap-3">
+                  <Button
+                    onClick={testKoboldConnection}
+                    disabled={isTestingConnection}
+                    size="sm"
+                    variant="outline"
+                    className="bg-gray-800 border-gray-600 text-white hover:bg-gray-700"
+                  >
+                    <Server className="h-4 w-4 mr-2" />
+                    {isTestingConnection ? 'Testing...' : 'Test Connection'}
+                  </Button>
+                  
+                  {connectionStatus === 'success' && (
+                    <div className="flex items-center gap-1 text-green-400">
+                      <CheckCircle className="h-4 w-4" />
+                      <span className="text-xs">Connected</span>
+                    </div>
+                  )}
+                  
+                  {connectionStatus === 'error' && (
+                    <div className="flex items-center gap-1 text-red-400">
+                      <XCircle className="h-4 w-4" />
+                      <span className="text-xs">Failed</span>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
 
             <Separator className="bg-gray-700" />

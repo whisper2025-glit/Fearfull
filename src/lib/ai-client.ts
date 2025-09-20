@@ -38,10 +38,29 @@ class AIClient {
     this.provider = 'openrouter';
   }
 
-  private initializeKoboldClient(endpoint: string = 'http://localhost:5001'): void {
-    this.koboldEndpoint = endpoint;
+  private initializeKoboldClient(endpoint?: string): void {
+    // Determine the best endpoint based on environment
+    if (!endpoint) {
+      // Check if we're running locally and can use the Vite proxy
+      const isLocalDev = window.location.hostname === 'localhost' || 
+                        window.location.hostname === '127.0.0.1' ||
+                        window.location.hostname.includes('replit.dev');
+      
+      if (isLocalDev) {
+        // Use Vite proxy for local development to avoid CORS issues
+        this.koboldEndpoint = '/kobold';
+        console.log('🔄 Using Vite proxy for KoboldAI connection');
+      } else {
+        // For hosted environments, require explicit endpoint configuration
+        this.koboldEndpoint = '';
+        console.log('⚠️ KoboldAI requires endpoint configuration in hosted environment');
+      }
+    } else {
+      this.koboldEndpoint = endpoint;
+    }
+
     this.openai = new OpenAI({
-      baseURL: `${endpoint}/v1`,
+      baseURL: this.koboldEndpoint ? `${this.koboldEndpoint}/v1` : '',
       apiKey: import.meta.env.VITE_KOBOLD_API_KEY || 'sk-no-key-required',
       dangerouslyAllowBrowser: true
     });
@@ -616,13 +635,25 @@ class AIClient {
 
     if (this.provider === 'kobold') {
       // Test KoboldCpp connection
+      if (!this.koboldEndpoint) {
+        throw new Error('KoboldCpp endpoint not configured. Please configure a KoboldCpp endpoint in settings.');
+      }
+      
       try {
-        const response = await fetch(`${this.koboldEndpoint}/api/v1/model`);
+        const testUrl = this.koboldEndpoint.startsWith('/') 
+          ? `${this.koboldEndpoint}/api/v1/model`  // Proxy endpoint
+          : `${this.koboldEndpoint}/api/v1/model`; // Direct endpoint
+        
+        const response = await fetch(testUrl);
         if (!response.ok) {
           throw new Error(`KoboldCpp server not accessible at ${this.koboldEndpoint}`);
         }
       } catch (error) {
-        throw new Error(`KoboldCpp connection failed: ${error instanceof Error ? error.message : 'Unknown error'}. Please ensure KoboldCpp is running at ${this.koboldEndpoint}`);
+        const isProxy = this.koboldEndpoint.startsWith('/');
+        const errorMessage = isProxy 
+          ? `KoboldCpp connection failed via proxy. Please ensure KoboldCpp is running on localhost:5001`
+          : `KoboldCpp connection failed: ${error instanceof Error ? error.message : 'Unknown error'}. Please ensure KoboldCpp is running at ${this.koboldEndpoint}`;
+        throw new Error(errorMessage);
       }
     }
 
@@ -692,18 +723,37 @@ class AIClient {
         }
       } else if (this.provider === 'kobold') {
         // Test KoboldCpp connectivity
+        if (!this.koboldEndpoint) {
+          return {
+            success: false,
+            message: 'KoboldCpp endpoint not configured. Please configure a KoboldCpp endpoint in settings.'
+          };
+        }
+        
         try {
-          const response = await fetch(`${this.koboldEndpoint}/api/v1/model`);
+          const testUrl = this.koboldEndpoint.startsWith('/') 
+            ? `${this.koboldEndpoint}/api/v1/model`  // Proxy endpoint
+            : `${this.koboldEndpoint}/api/v1/model`; // Direct endpoint
+          
+          const response = await fetch(testUrl);
           if (!response.ok) {
+            const isProxy = this.koboldEndpoint.startsWith('/');
+            const message = isProxy 
+              ? 'KoboldCpp not accessible via proxy. Please ensure KoboldCpp is running on localhost:5001'
+              : `KoboldCpp server not accessible at ${this.koboldEndpoint}. Please ensure KoboldCpp is running.`;
             return {
               success: false,
-              message: `KoboldCpp server not accessible at ${this.koboldEndpoint}. Please ensure KoboldCpp is running.`
+              message
             };
           }
         } catch (error) {
+          const isProxy = this.koboldEndpoint.startsWith('/');
+          const message = isProxy 
+            ? 'KoboldCpp connection failed via proxy. Please check if KoboldCpp is running on localhost:5001'
+            : `KoboldCpp connection failed: Cannot reach ${this.koboldEndpoint}. Please check if KoboldCpp is running.`;
           return {
             success: false,
-            message: `KoboldCpp connection failed: Cannot reach ${this.koboldEndpoint}. Please check if KoboldCpp is running.`
+            message
           };
         }
       }
