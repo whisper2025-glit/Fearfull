@@ -780,8 +780,8 @@ class AIClient {
       } catch (error) {
         const isProxy = this.koboldEndpoint.startsWith('/');
         const errorMessage = isProxy 
-          ? `KoboldCpp connection failed via proxy. Please ensure KoboldCpp is running on localhost:5001`
-          : `KoboldCpp connection failed: ${error instanceof Error ? error.message : 'Unknown error'}. Please ensure KoboldCpp is running at ${this.koboldEndpoint}`;
+          ? `KoboldCpp connection failed via proxy. Please ensure KoboldCpp is running on localhost:5001, or configure your actual KoboldCpp endpoint in Settings.`
+          : `KoboldCpp connection failed: ${error instanceof Error ? error.message : 'Unknown error'}. Please ensure KoboldCpp is running at ${this.koboldEndpoint}, or check your endpoint configuration in Settings.`;
         throw new Error(errorMessage);
       }
     }
