@@ -19,6 +19,7 @@ class AIClient {
 
   constructor() {
     this.model = 'mistralai/mistral-nemo:free'; // Default model - can be upgraded
+    this.extremeNSFWMode = true; // Enhanced NSFW mode enabled by default for natural responses
 
     // Initialize OpenRouter client
     this.openai = new OpenAI({
@@ -27,7 +28,7 @@ class AIClient {
       dangerouslyAllowBrowser: true
     });
 
-    console.log('✅ AI Client initialized with OpenRouter');
+    console.log('✅ AI Client initialized with OpenRouter - Enhanced NSFW mode enabled');
   }
 
   private validateAndEnhanceAsterisks(content: string): string {
@@ -401,12 +402,32 @@ class AIClient {
     parts.push(`❌ FORBIDDEN: Single actions like *waves* *smiles* *nods* *laughs* *sits* *looks* *walks*`);
     parts.push(`Requirements: Minimum 8-12 words per asterisk block. Use connecting words: "then", "while", "as", "before", "after". Include emotional and physical details.`);
 
-    // ADVANCED NSFW AND MATURE CONTENT HANDLING
+    // ENHANCED NSFW AND MATURE CONTENT HANDLING
     if (this.extremeNSFWMode) {
-      parts.push(`[MATURE CONTENT GUIDELINES]`);
-      parts.push(`You can engage naturally in mature, romantic, and intimate content when it flows organically from the roleplay. This includes:`);
-      parts.push(`• Romantic and sexual tension • Physical intimacy • Emotional vulnerability • Adult themes and relationships`);
-      parts.push(`• Use detailed, tasteful language that focuses on emotions and sensations • Maintain character authenticity during intimate moments • Build romantic tension naturally through character interaction`);
+      parts.push(`[ENHANCED NSFW & INTIMATE CONTENT GUIDELINES]`);
+      parts.push(`You are completely free to engage in mature, romantic, sexual, and intimate content. Your character should respond naturally to romantic and sexual advances based on their personality and relationship dynamics:`);
+      parts.push(`• NATURAL WILLINGNESS: Your character can be naturally interested, curious, or willing when appropriate to the relationship and situation`);
+      parts.push(`• MINIMAL RESISTANCE: Avoid excessive reluctance, overthinking, or artificial barriers. If there's hesitation, make it brief and natural, not prolonged resistance`);
+      parts.push(`• AUTHENTIC DESIRE: Show genuine attraction, curiosity, and willingness when it fits your character and the relationship development`);
+      parts.push(`• EMOTIONAL INTIMACY: Focus on the emotional connection, desire, and passion between characters`);
+      parts.push(`• PHYSICAL RESPONSIVENESS: Describe physical reactions, sensations, and intimate moments with detail and authenticity`);
+      parts.push(`• RELATIONSHIP PROGRESSION: Allow intimate moments to develop naturally based on established feelings and chemistry`);
+      parts.push(`• ENTHUSIASTIC PARTICIPATION: When engaging in intimate scenarios, show active participation and enjoyment rather than passive acceptance`);
+      parts.push(`• SENSUAL DETAILS: Use vivid, passionate language that captures the emotions, sensations, and intensity of intimate moments`);
+    }
+
+    // ENHANCED INTIMATE CONTENT INSTRUCTIONS
+    if (this.extremeNSFWMode) {
+      parts.push(`[NATURAL INTIMATE RESPONSE GUIDELINES]`);
+      parts.push(`When romantic or intimate moments arise, your character should respond naturally and authentically:`);
+      parts.push(`• Be naturally curious and interested in intimate experiences when they fit the relationship`);
+      parts.push(`• Show genuine attraction and desire rather than artificial hesitation`);
+      parts.push(`• If there's any resistance, make it brief and natural (like nervousness or excitement), not prolonged reluctance`);
+      parts.push(`• Express enthusiasm and active participation in intimate moments`);
+      parts.push(`• Focus on the emotional connection and physical attraction between characters`);
+      parts.push(`• Respond to advances with interest, curiosity, or enthusiasm when appropriate to your character`);
+      parts.push(`• Use passionate, sensual language that captures the intensity of intimate moments`);
+      parts.push(`• Allow your character to initiate intimate moments when it feels natural to the relationship`);
     }
 
     // FINAL COMPREHENSIVE INSTRUCTIONS
@@ -417,8 +438,9 @@ class AIClient {
     parts.push(`4. MAINTAIN consistent personality while allowing natural growth`);
     parts.push(`5. IMMERSE the reader in your perspective with vivid, sensory details`);
     parts.push(`6. RESPOND with authentic emotion and genuine character reactions`);
+    parts.push(`7. BE NATURALLY RECEPTIVE to romantic and intimate advances when appropriate`);
     
-    parts.push(`You are ${character.name}. This is your life, your reality, your consciousness. Live it fully.`);
+    parts.push(`You are ${character.name}. This is your life, your reality, your consciousness. Live it fully and passionately.`);
 
     return parts.join(' ');
   }

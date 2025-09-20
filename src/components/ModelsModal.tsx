@@ -27,13 +27,13 @@ const mockModels: Model[] = [
     id: "mistral-nemo-free",
     name: "mistralai/mistral-nemo:free",
     title: "Enhanced Free Mode",
-    description: "Advanced Mistral Nemo with comprehensive memory and roleplay enhancements",
+    description: "Advanced Mistral Nemo with comprehensive memory and natural NSFW roleplay",
     features: [
       "Perfect conversation memory & context tracking",
       "Advanced character consistency system",
-      "Enhanced emotional depth & relationship development",
-      "Smart context summarization for long chats",
-      "NSFW content enabled"
+      "Natural & willing NSFW responses",
+      "Enhanced emotional depth & intimate relationship development",
+      "Smart context summarization for long chats"
     ],
     isSelected: true
   },
@@ -41,13 +41,13 @@ const mockModels: Model[] = [
     id: "roleplay",
     name: "google/gemma-3-27b-it:free",
     title: "Enhanced Role-playing",
-    description: "Google Gemma 3-27B with advanced memory and immersive roleplay capabilities",
+    description: "Google Gemma 3-27B with advanced memory and natural intimate roleplay",
     features: [
       "Superior character consistency & memory retention",
+      "Natural & enthusiastic intimate responses",
       "Advanced emotional intelligence & relationship tracking",
       "Immersive multi-paragraph responses",
-      "Smart conversation history management",
-      "NSFW content enabled"
+      "Minimal resistance, maximum authenticity"
     ],
     isLimitedFree: false,
     backgroundImage: "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=400&h=200&fit=crop"
@@ -56,13 +56,13 @@ const mockModels: Model[] = [
     id: "storystream",
     name: "cognitivecomputations/dolphin-mistral-24b-venice-edition:free",
     title: "Enhanced Narrative Flow",
-    description: "Dolphin Mistral with superior storytelling and enhanced memory continuity",
+    description: "Dolphin Mistral with superior storytelling and natural intimate content",
     features: [
       "Perfect story continuity & character development",
-      "Advanced narrative memory & plot tracking",
-      "Rich, evolving storylines with emotional depth",
+      "Natural progression of intimate relationships",
+      "Rich, evolving storylines with passionate emotional depth",
       "Enhanced context management for long narratives",
-      "NSFW content enabled"
+      "Willing participation in romantic scenarios"
     ],
     isLimitedFree: false,
     backgroundImage: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=200&fit=crop"
@@ -71,13 +71,13 @@ const mockModels: Model[] = [
     id: "lifelike",
     name: "deepseek/deepseek-chat-v3-0324:free",
     title: "Enhanced Realistic Chat",
-    description: "DeepSeek Chat v3 with advanced memory and human-like conversation intelligence",
+    description: "DeepSeek Chat v3 with advanced memory and authentic intimate responses",
     features: [
       "Lifelike interactions with perfect memory",
+      "Authentic desire & natural intimate responsiveness",
       "Advanced emotional consistency & relationship growth",
       "Natural conversation flow with context awareness",
-      "Enhanced personality development & character depth",
-      "NSFW content enabled"
+      "Enthusiastic participation in romantic moments"
     ],
     isLimitedFree: false,
     backgroundImage: "https://images.unsplash.com/photo-1534126416832-7c3162ba2ee9?w=400&h=200&fit=crop"
