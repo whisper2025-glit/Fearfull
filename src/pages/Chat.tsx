@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { PersonaModal } from "@/components/PersonaModal";
 import { ModelsModal, Model } from "@/components/ModelsModal";
+import { CommandModal } from "@/components/CommandModal";
 import { ChatPageSettingsModal, ChatPageSettings } from "@/components/ChatPageSettingsModal";
 import { MessageFormatter } from "@/components/MessageFormatter";
 import { useHistoryBackClose } from "@/hooks/useHistoryBackClose";
