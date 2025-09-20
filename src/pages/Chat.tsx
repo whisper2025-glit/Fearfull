@@ -1133,7 +1133,7 @@ const Chat = () => {
         onOpenChange={setIsModelsModalOpen}
         onModelSelect={(model) => {
           setSelectedModel(model);
-          openRouterAI.setModel(model.name);
+          openRouterAI.setModel(model.name, model.provider);
           setIsModelsModalOpen(false);
         }}
         selectedModel={selectedModel}

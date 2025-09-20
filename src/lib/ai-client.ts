@@ -9,6 +9,8 @@ class AIClient {
   private model: string;
   private extremeNSFWMode: boolean = true;
   private openai: OpenAI;
+  private provider: 'openrouter' | 'kobold' = 'openrouter';
+  private koboldEndpoint: string = 'http://localhost:5001';
 
   // Simple actions that should be forbidden or enhanced
   private forbiddenSimpleActions = [
@@ -21,14 +23,29 @@ class AIClient {
     this.model = 'mistralai/mistral-nemo:free'; // Default model - can be upgraded
     this.extremeNSFWMode = true; // Enhanced NSFW mode enabled by default for natural responses
 
-    // Initialize OpenRouter client
+    // Initialize OpenRouter client by default
+    this.initializeOpenRouterClient();
+
+    console.log('✅ AI Client initialized with OpenRouter - Enhanced NSFW mode enabled');
+  }
+
+  private initializeOpenRouterClient(): void {
     this.openai = new OpenAI({
       baseURL: "https://openrouter.ai/api/v1",
       apiKey: import.meta.env.VITE_OPENROUTER_API_KEY,
       dangerouslyAllowBrowser: true
     });
+    this.provider = 'openrouter';
+  }
 
-    console.log('✅ AI Client initialized with OpenRouter - Enhanced NSFW mode enabled');
+  private initializeKoboldClient(endpoint: string = 'http://localhost:5001'): void {
+    this.koboldEndpoint = endpoint;
+    this.openai = new OpenAI({
+      baseURL: `${endpoint}/v1`,
+      apiKey: import.meta.env.VITE_KOBOLD_API_KEY || 'sk-no-key-required',
+      dangerouslyAllowBrowser: true
+    });
+    this.provider = 'kobold';
   }
 
   private validateAndEnhanceAsterisks(content: string): string {
@@ -446,9 +463,46 @@ class AIClient {
   }
 
   // Enhanced model management with better options for roleplay
-  public setModel(model: string): void {
+  public setModel(model: string, provider?: 'openrouter' | 'kobold', koboldEndpoint?: string): void {
     this.model = model;
-    console.log(`AI model set to: ${model}`);
+    
+    // Determine provider based on model name if not explicitly provided
+    if (!provider) {
+      if (model.includes('KoboldAI/') || model.includes('hakurei/')) {
+        provider = 'kobold';
+      } else {
+        provider = 'openrouter';
+      }
+    }
+
+    // Switch provider if needed
+    if (provider !== this.provider) {
+      if (provider === 'kobold') {
+        this.initializeKoboldClient(koboldEndpoint);
+        console.log(`✅ Switched to KoboldCpp provider at ${this.koboldEndpoint}`);
+      } else {
+        this.initializeOpenRouterClient();
+        console.log(`✅ Switched to OpenRouter provider`);
+      }
+    }
+
+    console.log(`AI model set to: ${model} (Provider: ${this.provider})`);
+  }
+
+  public setKoboldEndpoint(endpoint: string): void {
+    this.koboldEndpoint = endpoint;
+    if (this.provider === 'kobold') {
+      this.initializeKoboldClient(endpoint);
+      console.log(`KoboldCpp endpoint updated to: ${endpoint}`);
+    }
+  }
+
+  public getProvider(): 'openrouter' | 'kobold' {
+    return this.provider;
+  }
+
+  public getKoboldEndpoint(): string {
+    return this.koboldEndpoint;
   }
 
   // Get recommended models for better roleplay performance
@@ -555,9 +609,21 @@ class AIClient {
     persona?: any
   ): Promise<string> {
 
-    // Check if we have an API key configured
-    if (!import.meta.env.VITE_OPENROUTER_API_KEY) {
+    // Check if we have appropriate API configuration
+    if (this.provider === 'openrouter' && !import.meta.env.VITE_OPENROUTER_API_KEY) {
       throw new Error('OpenRouter API key not configured. Please add VITE_OPENROUTER_API_KEY to your environment variables.');
+    }
+
+    if (this.provider === 'kobold') {
+      // Test KoboldCpp connection
+      try {
+        const response = await fetch(`${this.koboldEndpoint}/api/v1/model`);
+        if (!response.ok) {
+          throw new Error(`KoboldCpp server not accessible at ${this.koboldEndpoint}`);
+        }
+      } catch (error) {
+        throw new Error(`KoboldCpp connection failed: ${error instanceof Error ? error.message : 'Unknown error'}. Please ensure KoboldCpp is running at ${this.koboldEndpoint}`);
+      }
     }
 
     // Enhanced context management
@@ -601,7 +667,7 @@ class AIClient {
     const response = completion.choices[0]?.message?.content;
 
     if (!response) {
-      throw new Error('No response from OpenRouter');
+      throw new Error(`No response from ${this.provider === 'kobold' ? 'KoboldCpp' : 'OpenRouter'}`);
     }
 
     // Validate roleplay consistency and enhance asterisk actions
@@ -617,11 +683,29 @@ class AIClient {
 
   async testConnection(): Promise<{ success: boolean; message: string }> {
     try {
-      if (!import.meta.env.VITE_OPENROUTER_API_KEY) {
-        return {
-          success: false,
-          message: 'OpenRouter API key not configured. Please add VITE_OPENROUTER_API_KEY to your environment variables.'
-        };
+      if (this.provider === 'openrouter') {
+        if (!import.meta.env.VITE_OPENROUTER_API_KEY) {
+          return {
+            success: false,
+            message: 'OpenRouter API key not configured. Please add VITE_OPENROUTER_API_KEY to your environment variables.'
+          };
+        }
+      } else if (this.provider === 'kobold') {
+        // Test KoboldCpp connectivity
+        try {
+          const response = await fetch(`${this.koboldEndpoint}/api/v1/model`);
+          if (!response.ok) {
+            return {
+              success: false,
+              message: `KoboldCpp server not accessible at ${this.koboldEndpoint}. Please ensure KoboldCpp is running.`
+            };
+          }
+        } catch (error) {
+          return {
+            success: false,
+            message: `KoboldCpp connection failed: Cannot reach ${this.koboldEndpoint}. Please check if KoboldCpp is running.`
+          };
+        }
       }
 
       // Test the connection with a simple request
@@ -633,13 +717,13 @@ class AIClient {
 
       return {
         success: true,
-        message: `OpenRouter connection successful. Using model: ${this.model}`
+        message: `${this.provider === 'kobold' ? 'KoboldCpp' : 'OpenRouter'} connection successful. Using model: ${this.model}`
       };
       
     } catch (error: any) {
       return {
         success: false,
-        message: `OpenRouter connection failed: ${error.message}. Falling back to local mode.`
+        message: `${this.provider === 'kobold' ? 'KoboldCpp' : 'OpenRouter'} connection failed: ${error.message}`
       };
     }
   }
