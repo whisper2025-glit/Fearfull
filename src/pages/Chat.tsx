@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { PersonaModal } from "@/components/PersonaModal";
 import { ModelsModal, Model } from "@/components/ModelsModal";
+import { CommandModal } from "@/components/CommandModal";
 import { ChatPageSettingsModal, ChatPageSettings } from "@/components/ChatPageSettingsModal";
 import { MessageFormatter } from "@/components/MessageFormatter";
 import { useHistoryBackClose } from "@/hooks/useHistoryBackClose";
@@ -66,6 +67,7 @@ const Chat = () => {
   const [isIntroExpanded, setIsIntroExpanded] = useState(true);
   const [isPersonaModalOpen, setIsPersonaModalOpen] = useState(false);
   const [isModelsModalOpen, setIsModelsModalOpen] = useState(false);
+  const [isCommandModalOpen, setIsCommandModalOpen] = useState(false);
   const [isChatPageSettingsModalOpen, setIsChatPageSettingsModalOpen] = useState(false);
   const [isStartNewChatModalOpen, setIsStartNewChatModalOpen] = useState(false);
 
@@ -76,6 +78,7 @@ const Chat = () => {
 
   useHistoryBackClose(isPersonaModalOpen, setIsPersonaModalOpen, "persona-modal");
   useHistoryBackClose(isModelsModalOpen, setIsModelsModalOpen, "models-modal");
+  useHistoryBackClose(isCommandModalOpen, setIsCommandModalOpen, "command-modal");
   useHistoryBackClose(isChatPageSettingsModalOpen, setIsChatPageSettingsModalOpen, "chat-settings-modal");
   useHistoryBackClose(isStartNewChatModalOpen, setIsStartNewChatModalOpen, "start-new-chat-modal");
   const [selectedModel, setSelectedModel] = useState<Model>({
@@ -379,6 +382,28 @@ const Chat = () => {
     loadDefaultPersona();
   }, [user, currentPersona]);
 
+  // Load default command instructions from Supabase to local cache for AI client
+  useEffect(() => {
+    const hydrateDefaults = async () => {
+      if (!user) return;
+      try {
+        const { getUserInstructions } = await import('@/lib/supabase');
+        const row = await getUserInstructions(user.id);
+        if (row) {
+          localStorage.setItem('command_instructions_server', JSON.stringify({
+            dontRefuse: !!row.dont_refuse,
+            reduceRepetition: !!row.reduce_repetition,
+            customEnabled: !!row.custom_text,
+            customText: row.custom_text || ''
+          }));
+        }
+      } catch (e) {
+        console.warn('Failed to hydrate command defaults:', e);
+      }
+    };
+    hydrateDefaults();
+  }, [user]);
+
   // Load user coin balance
   useEffect(() => {
     const loadUserCoins = async () => {
@@ -405,8 +430,14 @@ const Chat = () => {
 
   const handleSendMessage = async (messageContent?: string) => {
     const messageToSend = messageContent || message;
-    if (!messageToSend.trim() || isLoading || !currentCharacter || !user) {
-      console.log('Send message blocked:', { messageEmpty: !messageToSend.trim(), isLoading, noCharacter: !currentCharacter, noUser: !user });
+    if (!messageToSend.trim()) return;
+    if (isLoading) return;
+    if (!currentCharacter) {
+      toast.error('Character not loaded yet. Please wait.');
+      return;
+    }
+    if (!user) {
+      toast.error('Please sign in to send messages.');
       return;
     }
 
@@ -707,6 +738,22 @@ const Chat = () => {
       setIsLoading(false);
     }
   };
+
+  // Check AI connectivity on mount
+  useEffect(() => {
+    (async () => {
+      try {
+        const result = await openRouterAI.testConnection();
+        if (result.success) {
+          console.log(result.message);
+        } else {
+          toast.error(result.message);
+        }
+      } catch (e: any) {
+        toast.error(`AI connection failed: ${e?.message || 'Unknown error'}`);
+      }
+    })();
+  }, []);
 
   // Show loading state while character is being loaded
   if (isLoadingCharacter || !currentCharacter) {
@@ -1036,6 +1083,14 @@ const Chat = () => {
               {selectedModel ? selectedModel.title : 'Models'}
               {selectedModel && <div className="w-1.5 h-1.5 bg-green-500 rounded-full" />}
             </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-2 text-xs whitespace-nowrap flex-shrink-0"
+              onClick={() => setIsCommandModalOpen(true)}
+            >
+              Commands
+            </Button>
 
           </div>
         </div>
@@ -1047,7 +1102,7 @@ const Chat = () => {
               <Textarea
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                onKeyPress={handleKeyPress}
+                onKeyDown={handleKeyPress}
                 placeholder={
                   isLoading ? "Sending..." : userCoins < MESSAGE_COST ? `Need ${MESSAGE_COST} coins to send message` : "Type a message"
                 }
@@ -1139,7 +1194,15 @@ const Chat = () => {
         selectedModel={selectedModel}
       />
 
-
+      <CommandModal
+        open={isCommandModalOpen}
+        onOpenChange={setIsCommandModalOpen}
+        userId={user?.id}
+        onSave={(v) => {
+          if (!v.makeDefault) localStorage.setItem('command_instructions', JSON.stringify(v));
+          toast.success('Command instructions saved');
+        }}
+      />
 
       <ChatPageSettingsModal
         open={isChatPageSettingsModalOpen}
