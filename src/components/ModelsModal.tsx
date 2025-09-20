@@ -13,7 +13,7 @@ export interface Model {
   isLimitedFree?: boolean;
   isSelected?: boolean;
   backgroundImage?: string;
-  provider?: 'openrouter' | 'kobold';
+  provider?: 'openrouter';
   requiresSetup?: boolean;
 }
 
@@ -88,109 +88,6 @@ const mockModels: Model[] = [
     backgroundImage: "https://images.unsplash.com/photo-1534126416832-7c3162ba2ee9?w=400&h=200&fit=crop",
     provider: "openrouter"
   },
-  // KoboldAI NSFW Models
-  {
-    id: "erebus-13b",
-    name: "KoboldAI/OPT-13B-Erebus",
-    title: "Erebus 13B - Flagship NSFW",
-    description: "Community's premier NSFW model trained on Literotica, Shinen and erotic novels",
-    features: [
-      "Flagship NSFW model with comprehensive erotic content training",
-      "Covers vast majority of erotic writing styles and kinks",
-      "Trained on Literotica and curated erotic novel datasets",
-      "Advanced tagging support for precise content generation",
-      "Explicit sexual content with detailed descriptions",
-      "Replaces both Lit and Shinen models in quality and scope"
-    ],
-    isLimitedFree: false,
-    backgroundImage: "https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=400&h=200&fit=crop",
-    provider: "kobold"
-  },
-  {
-    id: "shinen-13b",
-    name: "KoboldAI/fairseq-dense-13B-Shinen",
-    title: "Shinen 13B - Explicit NSFW",
-    description: "Explicit NSFW model designed for maximum sexual content generation",
-    features: [
-      "Designed specifically for explicit sexual content",
-      "Trained on diverse adult stories from Sexstories",
-      "Contains wide variety of kinks and fetishes",
-      "More explicit than standard NSFW models",
-      "Advanced understanding of sexual scenarios",
-      "Highly detailed intimate scene generation"
-    ],
-    isLimitedFree: false,
-    backgroundImage: "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=400&h=200&fit=crop",
-    provider: "kobold"
-  },
-  {
-    id: "lit-6b",
-    name: "hakurei/lit-6B",
-    title: "Lit 6B - Literotica NSFW",
-    description: "Premium NSFW model trained on high-quality Literotica stories and novels",
-    features: [
-      "Trained on large Literotica story collection",
-      "High-quality erotic novel writing style",
-      "Advanced tagging support for content control",
-      "Third-person perspective optimization",
-      "Excellent for romantic and sexual storylines",
-      "Quality-focused NSFW content generation"
-    ],
-    isLimitedFree: false,
-    backgroundImage: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=200&fit=crop",
-    provider: "kobold"
-  },
-  {
-    id: "horni-2-7b",
-    name: "KoboldAI/GPT-Neo-2.7B-Horni",
-    title: "Horni 2.7B - Compact NSFW",
-    description: "Efficient NSFW model tuned on Literotica for intimate roleplay scenarios",
-    features: [
-      "Compact model optimized for NSFW content",
-      "Tuned specifically on Literotica dataset",
-      "Novel-style intimate content generation",
-      "Strong bias towards sexual and romantic content",
-      "Efficient performance with quality output",
-      "Perfect for personal intimate AI conversations"
-    ],
-    isLimitedFree: false,
-    backgroundImage: "https://images.unsplash.com/photo-1534126416832-7c3162ba2ee9?w=400&h=200&fit=crop",
-    provider: "kobold"
-  },
-  {
-    id: "horni-ln-2-7b",
-    name: "KoboldAI/GPT-Neo-2.7B-Horni-LN",
-    title: "Horni LN 2.7B - Balanced NSFW",
-    description: "Balanced model combining NSFW capabilities with SFW novel writing",
-    features: [
-      "Perfect balance between SFW and NSFW content",
-      "Retains Horni's NSFW knowledge and capabilities",
-      "Enhanced with SFW novel training for versatility",
-      "Can switch between romantic and explicit content",
-      "Excellent character development and storytelling",
-      "Ideal for users wanting both SFW and NSFW options"
-    ],
-    isLimitedFree: false,
-    backgroundImage: "https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=400&h=200&fit=crop",
-    provider: "kobold"
-  },
-  {
-    id: "nerys-13b",
-    name: "KoboldAI/OPT-13B-Nerys-v2",
-    title: "Nerys 13B - Hybrid Adventure",
-    description: "Versatile hybrid model for novels, adventures, and intimate roleplay scenarios",
-    features: [
-      "Hybrid model supporting multiple content types",
-      "Excellent for both adventure and novel writing",
-      "Light novel training with adventure mode support",
-      "Heavily biased towards SFW but capable of mature content",
-      "Supports second-person adventure gameplay",
-      "Diverse model with emotional depth and character consistency"
-    ],
-    isLimitedFree: false,
-    backgroundImage: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=200&fit=crop",
-    provider: "kobold"
-  }
 ];
 
 export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }: ModelsModalProps) {
@@ -250,11 +147,6 @@ export function ModelsModal({ open, onOpenChange, onModelSelect, selectedModel }
                     {model.isLimitedFree && (
                       <Badge className="bg-primary text-primary-foreground text-xs px-2 py-1 rounded-full font-medium">
                         Limited Time Free
-                      </Badge>
-                    )}
-                    {model.requiresSetup && (
-                      <Badge className="bg-orange-500 text-white text-xs px-2 py-1 rounded-full font-medium">
-                        Requires KoboldCpp
                       </Badge>
                     )}
                   </div>
