@@ -1053,7 +1053,7 @@ const Chat = () => {
               <Textarea
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                onKeyPress={handleKeyPress}
+                onKeyDown={handleKeyPress}
                 placeholder={
                   isLoading ? "Sending..." : userCoins < MESSAGE_COST ? `Need ${MESSAGE_COST} coins to send message` : "Type a message"
                 }
