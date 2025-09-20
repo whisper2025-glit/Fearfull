@@ -1172,7 +1172,15 @@ const Chat = () => {
         selectedModel={selectedModel}
       />
 
-
+      <CommandModal
+        open={isCommandModalOpen}
+        onOpenChange={setIsCommandModalOpen}
+        onSave={(v) => {
+          // Persist if not already persisted by the modal and notify user
+          if (v.makeDefault) localStorage.setItem('command_instructions', JSON.stringify(v));
+          toast.success('Command instructions saved');
+        }}
+      />
 
       <ChatPageSettingsModal
         open={isChatPageSettingsModalOpen}
