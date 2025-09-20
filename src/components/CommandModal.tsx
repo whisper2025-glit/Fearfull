@@ -26,10 +26,41 @@ const PREVIEW_IMAGES = [
   "https://cdn.builder.io/api/v1/image/assets%2Fe94115ef60444f66ad2b62a07d981ac7%2F01dfe1822c94405f9d49d305b879a99e?format=webp&width=800"
 ];
 
-export function CommandModal({ open, onOpenChange, onSave }: CommandModalProps) {
+export function CommandModal({ open, onOpenChange, onSave, userId }: CommandModalProps) {
   const stored = useMemo(() => {
     try { return JSON.parse(localStorage.getItem("command_instructions") || "null"); } catch { return null; }
   }, []);
+
+  // Hydrate from Supabase when opened
+  const [isLoading, setIsLoading] = useState(false);
+  const loadFromServer = async () => {
+    if (!userId) return;
+    try {
+      setIsLoading(true);
+      const row = await getUserInstructions(userId);
+      if (row) {
+        setDontRefuse(!!row.dont_refuse);
+        setReduceRepetition(!!row.reduce_repetition);
+        setCustomEnabled(!!row.custom_text);
+        setCustomText(row.custom_text || "");
+        // cache for AI client
+        localStorage.setItem("command_instructions_server", JSON.stringify({
+          dontRefuse: !!row.dont_refuse,
+          reduceRepetition: !!row.reduce_repetition,
+          customEnabled: !!row.custom_text,
+          customText: row.custom_text || ""
+        }));
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  if (open) {
+    // simple effect-less load on open render
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    loadFromServer();
+  }
 
   const [dontRefuse, setDontRefuse] = useState<boolean>(stored?.dontRefuse ?? false);
   const [reduceRepetition, setReduceRepetition] = useState<boolean>(stored?.reduceRepetition ?? false);
@@ -37,9 +68,26 @@ export function CommandModal({ open, onOpenChange, onSave }: CommandModalProps) 
   const [customText, setCustomText] = useState<string>(stored?.customText ?? "");
   const [makeDefault, setMakeDefault] = useState<boolean>(stored?.makeDefault ?? false);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const value = { dontRefuse, reduceRepetition, customEnabled, customText, makeDefault };
-    if (makeDefault) {
+    if (makeDefault && userId) {
+      const saved = await upsertUserInstructions(userId, {
+        dont_refuse: dontRefuse,
+        reduce_repetition: reduceRepetition,
+        custom_text: customEnabled ? customText : ''
+      });
+      if (saved) {
+        localStorage.setItem("command_instructions_server", JSON.stringify({
+          dontRefuse: saved.dont_refuse,
+          reduceRepetition: saved.reduce_repetition,
+          customEnabled: !!saved.custom_text,
+          customText: saved.custom_text || ''
+        }));
+        toast.success('Default instructions saved');
+      } else {
+        toast.error('Failed to save default instructions');
+      }
+    } else {
       localStorage.setItem("command_instructions", JSON.stringify(value));
     }
     onSave?.(value);
@@ -109,8 +157,8 @@ export function CommandModal({ open, onOpenChange, onSave }: CommandModalProps) 
 
           {/* Footer */}
           <DialogFooter className="p-6 pt-0 flex-shrink-0 gap-2 sm:gap-2">
-            <Button variant="outline" size="sm" className="w-full" onClick={() => onOpenChange(false)}>Cancel</Button>
-            <Button size="sm" className="w-full" onClick={handleSave}>Save</Button>
+            <Button variant="outline" size="sm" className="w-full" onClick={() => onOpenChange(false)} disabled={isLoading}>Cancel</Button>
+            <Button size="sm" className="w-full" onClick={handleSave} disabled={isLoading}>Save</Button>
           </DialogFooter>
         </div>
       </DialogContent>
