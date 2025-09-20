@@ -104,8 +104,7 @@ const mockModels: Model[] = [
     ],
     isLimitedFree: false,
     backgroundImage: "https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=400&h=200&fit=crop",
-    provider: "kobold",
-    requiresSetup: true
+    provider: "kobold"
   },
   {
     id: "shinen-13b",
@@ -122,8 +121,7 @@ const mockModels: Model[] = [
     ],
     isLimitedFree: false,
     backgroundImage: "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=400&h=200&fit=crop",
-    provider: "kobold",
-    requiresSetup: true
+    provider: "kobold"
   },
   {
     id: "lit-6b",
@@ -140,8 +138,7 @@ const mockModels: Model[] = [
     ],
     isLimitedFree: false,
     backgroundImage: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=200&fit=crop",
-    provider: "kobold",
-    requiresSetup: true
+    provider: "kobold"
   },
   {
     id: "horni-2-7b",
@@ -158,8 +155,7 @@ const mockModels: Model[] = [
     ],
     isLimitedFree: false,
     backgroundImage: "https://images.unsplash.com/photo-1534126416832-7c3162ba2ee9?w=400&h=200&fit=crop",
-    provider: "kobold",
-    requiresSetup: true
+    provider: "kobold"
   },
   {
     id: "horni-ln-2-7b",
@@ -176,8 +172,7 @@ const mockModels: Model[] = [
     ],
     isLimitedFree: false,
     backgroundImage: "https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=400&h=200&fit=crop",
-    provider: "kobold",
-    requiresSetup: true
+    provider: "kobold"
   },
   {
     id: "nerys-13b",
@@ -194,8 +189,7 @@ const mockModels: Model[] = [
     ],
     isLimitedFree: false,
     backgroundImage: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=200&fit=crop",
-    provider: "kobold",
-    requiresSetup: true
+    provider: "kobold"
   }
 ];
 

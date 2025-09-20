@@ -23,10 +23,15 @@ class AIClient {
     this.model = 'mistralai/mistral-nemo:free'; // Default model - can be upgraded
     this.extremeNSFWMode = true; // Enhanced NSFW mode enabled by default for natural responses
 
-    // Initialize OpenRouter client by default
-    this.initializeOpenRouterClient();
-
-    console.log('✅ AI Client initialized with OpenRouter - Enhanced NSFW mode enabled');
+    // Initialize appropriate client based on environment and available credentials
+    if (import.meta.env.VITE_OPENROUTER_API_KEY) {
+      this.initializeOpenRouterClient();
+      console.log('✅ AI Client initialized with OpenRouter - Enhanced NSFW mode enabled');
+    } else {
+      // Fallback to KoboldCPP/AI Horde for zero-config operation
+      this.initializeKoboldClient();
+      console.log('✅ AI Client initialized with KoboldCPP/AI Horde - Zero-config mode enabled');
+    }
   }
 
   private initializeOpenRouterClient(): void {
@@ -51,20 +56,128 @@ class AIClient {
         this.koboldEndpoint = '/kobold';
         console.log('🔄 Using Vite proxy for KoboldAI connection');
       } else {
-        // For hosted environments, require explicit endpoint configuration
-        this.koboldEndpoint = '';
-        console.log('⚠️ KoboldAI requires endpoint configuration in hosted environment');
+        // For hosted environments, use AI Horde as default public endpoint
+        this.koboldEndpoint = 'https://aihorde.net';
+        console.log('🌐 Using AI Horde public endpoint for KoboldCPP compatibility');
       }
     } else {
       this.koboldEndpoint = endpoint;
     }
 
-    this.openai = new OpenAI({
-      baseURL: this.koboldEndpoint ? `${this.koboldEndpoint}/v1` : '',
-      apiKey: import.meta.env.VITE_KOBOLD_API_KEY || 'sk-no-key-required',
-      dangerouslyAllowBrowser: true
-    });
+    // Only configure OpenAI client for actual KoboldCPP endpoints, not AI Horde
+    if (this.koboldEndpoint && !this.koboldEndpoint.includes('aihorde.net')) {
+      this.openai = new OpenAI({
+        baseURL: this.koboldEndpoint ? `${this.koboldEndpoint}/v1` : '',
+        apiKey: import.meta.env.VITE_KOBOLD_API_KEY || 'sk-no-key-required',
+        dangerouslyAllowBrowser: true
+      });
+    }
     this.provider = 'kobold';
+  }
+
+  // Build conversation prompt for AI Horde (which expects plain text prompts)
+  private buildConversationPrompt(character: any, conversationHistory: ChatMessage[], persona?: any): string {
+    const recentMessages = conversationHistory.slice(-10); // Last 10 messages for context
+    
+    let prompt = `Character: ${character.name}\n`;
+    prompt += `Description: ${character.description}\n`;
+    if (character.personality) {
+      prompt += `Personality: ${character.personality}\n`;
+    }
+    prompt += `\nConversation:\n`;
+    
+    recentMessages.forEach(msg => {
+      if (msg.role === 'user') {
+        prompt += `Human: ${msg.content}\n`;
+      } else {
+        prompt += `${character.name}: ${msg.content}\n`;
+      }
+    });
+    
+    prompt += `${character.name}:`;
+    return prompt;
+  }
+
+  // Map KoboldCPP model names to AI Horde compatible models
+  private mapToAIHordeModel(koboldModel: string): string[] {
+    const modelMap: { [key: string]: string[] } = {
+      'KoboldAI/fairseq-dense-13B-Erebus': ['Pygmalion 7B', 'MLewd 13B'],
+      'KoboldAI/fairseq-dense-13B-Shinen': ['MLewd 13B', 'Pygmalion 7B'],
+      'hakurei/lit-6B': ['Pygmalion 7B', 'Alpaca 7B'],
+      'KoboldAI/GPT-Neo-2.7B-Horni': ['Alpaca 7B', 'Pygmalion 7B'],
+      'KoboldAI/GPT-Neo-2.7B-Horni-LN': ['Alpaca 7B', 'Pygmalion 7B'],
+      'KoboldAI/OPT-13B-Nerys-v2': ['Pygmalion 7B', 'Llama 2 7B']
+    };
+    
+    return modelMap[koboldModel] || ['Pygmalion 7B', 'MLewd 13B']; // Default fallback
+  }
+
+  // AI Horde specific generation method
+  private async generateViaAIHorde(prompt: string): Promise<string> {
+    const apiKey = '0000000000'; // Anonymous access key
+    const aiHordeModels = this.mapToAIHordeModel(this.model);
+    
+    // Submit generation request
+    const submitResponse = await fetch(`${this.koboldEndpoint}/api/v2/generate/text/async`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': apiKey,
+        'Client-Agent': 'WhisperChat-AI:1.0:support@whisperchat.ai'
+      },
+      body: JSON.stringify({
+        prompt: prompt,
+        params: {
+          max_new_tokens: 150,
+          max_context_length: 2048,
+          temperature: 0.8,
+          top_p: 0.9,
+          top_k: 40
+        },
+        models: aiHordeModels,
+        nsfw: true, // Enable NSFW content at top level
+        trusted_workers: false
+      })
+    });
+
+    if (!submitResponse.ok) {
+      throw new Error(`AI Horde request failed: ${submitResponse.status}`);
+    }
+
+    const { id } = await submitResponse.json();
+    
+    // Poll for completion with longer timeout for anonymous users
+    let attempts = 0;
+    const maxAttempts = 150; // 5 minutes timeout
+    
+    while (attempts < maxAttempts) {
+      await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds
+      
+      const statusResponse = await fetch(`${this.koboldEndpoint}/api/v2/generate/text/status/${id}`, {
+        headers: { 
+          'apikey': apiKey,
+          'Client-Agent': 'WhisperChat-AI:1.0:support@whisperchat.ai'
+        }
+      });
+      
+      if (!statusResponse.ok) {
+        throw new Error(`AI Horde status check failed: ${statusResponse.status}`);
+      }
+      
+      const status = await statusResponse.json();
+      
+      if (status.done) {
+        if (status.generations && status.generations.length > 0) {
+          return status.generations[0].text;
+        } else {
+          throw new Error('No text generated by AI Horde');
+        }
+      }
+      
+      attempts++;
+    }
+    
+    throw new Error('AI Horde request timed out after 5 minutes');
   }
 
   private validateAndEnhanceAsterisks(content: string): string {
@@ -634,7 +747,23 @@ class AIClient {
     }
 
     if (this.provider === 'kobold') {
-      // Test KoboldCpp connection
+      // Handle AI Horde separately (uses different API format)
+      if (this.koboldEndpoint && this.koboldEndpoint.includes('aihorde.net')) {
+        // For AI Horde, build the prompt from conversation history and use AI Horde generation
+        const conversationPrompt = this.buildConversationPrompt(character, conversationHistory, persona);
+        const aiHordeResponse = await this.generateViaAIHorde(conversationPrompt);
+        
+        // Apply the same post-processing as OpenAI responses
+        const consistencyValidatedResponse = this.validateRoleplayConsistency(aiHordeResponse, character);
+        const enhancedResponse = this.validateAndEnhanceAsterisks(consistencyValidatedResponse);
+        
+        if (enhancedResponse !== aiHordeResponse) {
+          console.log('AI Horde response enhanced for better asterisk compliance and roleplay consistency');
+        }
+        return enhancedResponse;
+      }
+      
+      // Test KoboldCpp connection for local/custom endpoints
       if (!this.koboldEndpoint) {
         throw new Error('KoboldCpp endpoint not configured. Please configure a KoboldCpp endpoint in settings.');
       }
@@ -722,7 +851,33 @@ class AIClient {
           };
         }
       } else if (this.provider === 'kobold') {
-        // Test KoboldCpp connectivity
+        // AI Horde uses different connectivity test
+        if (this.koboldEndpoint === 'https://aihorde.net') {
+          try {
+            const response = await fetch(`${this.koboldEndpoint}/api/v2/status/models`, {
+              headers: {
+                'Client-Agent': 'WhisperChat-AI:1.0:support@whisperchat.ai'
+              }
+            });
+            if (!response.ok) {
+              return {
+                success: false,
+                message: 'AI Horde service is currently unavailable. Please try again later.'
+              };
+            }
+            return {
+              success: true,
+              message: 'Connected to AI Horde - Free distributed AI network available.'
+            };
+          } catch (error) {
+            return {
+              success: false,
+              message: 'Cannot connect to AI Horde. Please check your internet connection.'
+            };
+          }
+        }
+        
+        // Test KoboldCpp connectivity for local/custom endpoints
         if (!this.koboldEndpoint) {
           return {
             success: false,
