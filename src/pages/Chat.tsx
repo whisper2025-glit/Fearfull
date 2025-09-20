@@ -714,6 +714,22 @@ const Chat = () => {
     }
   };
 
+  // Check AI connectivity on mount
+  useEffect(() => {
+    (async () => {
+      try {
+        const result = await openRouterAI.testConnection();
+        if (result.success) {
+          console.log(result.message);
+        } else {
+          toast.error(result.message);
+        }
+      } catch (e: any) {
+        toast.error(`AI connection failed: ${e?.message || 'Unknown error'}`);
+      }
+    })();
+  }, []);
+
   // Show loading state while character is being loaded
   if (isLoadingCharacter || !currentCharacter) {
     return (
@@ -1057,7 +1073,7 @@ const Chat = () => {
                 placeholder={
                   isLoading ? "Sending..." : userCoins < MESSAGE_COST ? `Need ${MESSAGE_COST} coins to send message` : "Type a message"
                 }
-                disabled={isLoading}
+                disabled={isLoading || userCoins < MESSAGE_COST}
                 className="flex-1 bg-card/50 border-border resize-none min-h-[48px] max-h-[160px] text-sm chat-text pr-12"
                 rows={1}
               />
@@ -1066,7 +1082,7 @@ const Chat = () => {
                   console.log('Send button clicked:', { message: message.trim(), isLoading, userCoins, MESSAGE_COST });
                   handleSendMessage();
                 }}
-                disabled={!message.trim() || isLoading}
+                disabled={!message.trim() || isLoading || userCoins < MESSAGE_COST}
                 size="icon"
                 className="absolute right-2 bottom-2 h-8 w-8"
                 variant={userCoins < MESSAGE_COST ? "secondary" : "default"}
