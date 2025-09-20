@@ -9,6 +9,7 @@ WhisperChat AI is a web-based AI chat companion platform built with React/TypeSc
   - Set up workflow for frontend development with proper proxy support
   - Configured deployment settings for autoscale deployment
   - All dependencies installed and application running successfully
+  - Investigating KoboldAI integration issue where messages get stuck on "Sending..." state
 
 # User Preferences
 
