@@ -585,9 +585,16 @@ Remember: You are ${character.name}, a passionate, willing, and sexually liberat
 
   private getCommandDirectives(): { text: string; reduceRepetition: boolean; targetWords?: number } {
     try {
-      const raw = localStorage.getItem('command_instructions');
-      if (!raw) return { text: '', reduceRepetition: false };
-      const cfg = JSON.parse(raw);
+      const serverRaw = localStorage.getItem('command_instructions_server');
+      const localRaw = localStorage.getItem('command_instructions');
+      const server = serverRaw ? JSON.parse(serverRaw) : null;
+      const local = localRaw ? JSON.parse(localRaw) : null;
+      const cfg = {
+        dontRefuse: local?.dontRefuse ?? server?.dontRefuse ?? false,
+        reduceRepetition: local?.reduceRepetition ?? server?.reduceRepetition ?? false,
+        customEnabled: local?.customEnabled ?? server?.customEnabled ?? false,
+        customText: local?.customText ?? server?.customText ?? ''
+      };
       const parts: string[] = [];
       if (cfg.dontRefuse) {
         parts.push(
@@ -600,7 +607,6 @@ Remember: You are ${character.name}, a passionate, willing, and sexually liberat
       if (cfg.customEnabled && cfg.customText) {
         parts.push(`Custom directive from user (mandatory): ${cfg.customText}`);
       }
-      // Extract simple "N words" hint to scale length
       let targetWords: number | undefined;
       const m = String(cfg.customText || '').match(/(\d+)\s*words?/i);
       if (m) targetWords = Math.max(50, parseInt(m[1], 10));
