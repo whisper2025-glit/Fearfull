@@ -33,34 +33,31 @@ export function CommandModal({ open, onOpenChange, onSave, userId }: CommandModa
 
   // Hydrate from Supabase when opened
   const [isLoading, setIsLoading] = useState(false);
-  const loadFromServer = async () => {
-    if (!userId) return;
-    try {
-      setIsLoading(true);
-      const row = await getUserInstructions(userId);
-      if (row) {
-        setDontRefuse(!!row.dont_refuse);
-        setReduceRepetition(!!row.reduce_repetition);
-        setCustomEnabled(!!row.custom_text);
-        setCustomText(row.custom_text || "");
-        // cache for AI client
-        localStorage.setItem("command_instructions_server", JSON.stringify({
-          dontRefuse: !!row.dont_refuse,
-          reduceRepetition: !!row.reduce_repetition,
-          customEnabled: !!row.custom_text,
-          customText: row.custom_text || ""
-        }));
+  useEffect(() => {
+    const load = async () => {
+      if (!open || !userId) return;
+      try {
+        setIsLoading(true);
+        const row = await getUserInstructions(userId);
+        if (row) {
+          setDontRefuse(!!row.dont_refuse);
+          setReduceRepetition(!!row.reduce_repetition);
+          setCustomEnabled(!!row.custom_text);
+          setCustomText(row.custom_text || "");
+          localStorage.setItem("command_instructions_server", JSON.stringify({
+            dontRefuse: !!row.dont_refuse,
+            reduceRepetition: !!row.reduce_repetition,
+            customEnabled: !!row.custom_text,
+            customText: row.custom_text || ""
+          }));
+        }
+      } finally {
+        setIsLoading(false);
       }
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  if (open) {
-    // simple effect-less load on open render
+    };
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    loadFromServer();
-  }
+    load();
+  }, [open, userId]);
 
   const [dontRefuse, setDontRefuse] = useState<boolean>(stored?.dontRefuse ?? false);
   const [reduceRepetition, setReduceRepetition] = useState<boolean>(stored?.reduceRepetition ?? false);
