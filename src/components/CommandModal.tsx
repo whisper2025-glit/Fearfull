@@ -137,7 +137,7 @@ export function CommandModal({ open, onOpenChange, onSave, userId }: CommandModa
                     value={customText}
                     onChange={(e) => setCustomText(e.target.value)}
                     disabled={!customEnabled}
-                    placeholder="Enter your custom instruction here (e.g., 'Reply in English')."
+                    placeholder={customEnabled ? "e.g., 'write future response in 1000 words' or 'reply in Spanish'" : "Check 'Custom' above to enable custom instructions"}
                     className="bg-secondary/50 border-border min-h-[88px] text-xs"
                     maxLength={300}
                   />

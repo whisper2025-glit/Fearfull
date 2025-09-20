@@ -635,8 +635,8 @@ Remember: You are ${character.name}, a passionate, willing, and sexually liberat
 
     // Prepare messages for OpenRouter with improved context
     const messages: OpenAI.Chat.ChatCompletionMessageParam[] = [
-      { role: 'system', content: systemPrompt },
-      ...(directives.text ? [{ role: 'system', content: `MANDATORY DIRECTIVES (override defaults):\n${directives.text}` as const }] : []),
+      { role: 'system' as const, content: systemPrompt },
+      ...(directives.text ? [{ role: 'system' as const, content: `MANDATORY DIRECTIVES (override defaults):\n${directives.text}` }] : []),
       ...smartSelectedHistory.map(msg => ({
         role: msg.role as 'user' | 'assistant',
         content: msg.content
@@ -660,6 +660,11 @@ Remember: You are ${character.name}, a passionate, willing, and sexually liberat
       }
       return 3000;
     })();
+
+    // Debug: Log token allocation for word count commands
+    if (directives.targetWords) {
+      console.log(`🎯 Word count directive: ${directives.targetWords} words → ${dynamicMaxTokens} max tokens`);
+    }
 
     // Optimized parameters with directive-aware tuning
     const completion = await this.openai.chat.completions.create({
@@ -748,6 +753,7 @@ Remember: You are ${character.name}, a passionate, willing, and sexually liberat
     // This replaces the KoboldAI-specific validation that was removed
     return message;
   }
+
 }
 
 export const openRouterAI = new AIClient();
