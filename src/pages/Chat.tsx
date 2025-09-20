@@ -405,8 +405,14 @@ const Chat = () => {
 
   const handleSendMessage = async (messageContent?: string) => {
     const messageToSend = messageContent || message;
-    if (!messageToSend.trim() || isLoading || !currentCharacter || !user) {
-      console.log('Send message blocked:', { messageEmpty: !messageToSend.trim(), isLoading, noCharacter: !currentCharacter, noUser: !user });
+    if (!messageToSend.trim()) return;
+    if (isLoading) return;
+    if (!currentCharacter) {
+      toast.error('Character not loaded yet. Please wait.');
+      return;
+    }
+    if (!user) {
+      toast.error('Please sign in to send messages.');
       return;
     }
 
