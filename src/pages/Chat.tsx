@@ -1175,9 +1175,9 @@ const Chat = () => {
       <CommandModal
         open={isCommandModalOpen}
         onOpenChange={setIsCommandModalOpen}
+        userId={user?.id}
         onSave={(v) => {
-          // Persist if not already persisted by the modal and notify user
-          if (v.makeDefault) localStorage.setItem('command_instructions', JSON.stringify(v));
+          if (!v.makeDefault) localStorage.setItem('command_instructions', JSON.stringify(v));
           toast.success('Command instructions saved');
         }}
       />
