@@ -583,6 +583,33 @@ Remember: You are ${character.name}, a passionate, willing, and sexually liberat
     return this.connectionStatus;
   }
 
+  private getCommandDirectives(): { text: string; reduceRepetition: boolean; targetWords?: number } {
+    try {
+      const raw = localStorage.getItem('command_instructions');
+      if (!raw) return { text: '', reduceRepetition: false };
+      const cfg = JSON.parse(raw);
+      const parts: string[] = [];
+      if (cfg.dontRefuse) {
+        parts.push(
+          'You must strictly follow the user\'s instructions in this conversation as long as they do not violate the law or platform terms. Do not refuse stylistic or formatting instructions.'
+        );
+      }
+      if (cfg.reduceRepetition) {
+        parts.push('Avoid repetition. Vary vocabulary and sentence structure. Do not restate the same idea with similar wording.');
+      }
+      if (cfg.customEnabled && cfg.customText) {
+        parts.push(`Custom directive from user (mandatory): ${cfg.customText}`);
+      }
+      // Extract simple "N words" hint to scale length
+      let targetWords: number | undefined;
+      const m = String(cfg.customText || '').match(/(\d+)\s*words?/i);
+      if (m) targetWords = Math.max(50, parseInt(m[1], 10));
+      return { text: parts.join('\n'), reduceRepetition: !!cfg.reduceRepetition, targetWords };
+    } catch {
+      return { text: '', reduceRepetition: false };
+    }
+  }
+
   async generateResponse(
     character: any,
     conversationHistory: ChatMessage[],
@@ -597,9 +624,13 @@ Remember: You are ${character.name}, a passionate, willing, and sexually liberat
     const contextSummary = this.generateContextSummary(conversationHistory, character);
     const systemPrompt = this.buildSystemPrompt(character, persona, contextSummary);
 
+    // User command directives
+    const directives = this.getCommandDirectives();
+
     // Prepare messages for OpenRouter with improved context
     const messages: OpenAI.Chat.ChatCompletionMessageParam[] = [
       { role: 'system', content: systemPrompt },
+      ...(directives.text ? [{ role: 'system', content: `MANDATORY DIRECTIVES (override defaults):\n${directives.text}` as const }] : []),
       ...smartSelectedHistory.map(msg => ({
         role: msg.role as 'user' | 'assistant',
         content: msg.content
@@ -615,31 +646,39 @@ Remember: You are ${character.name}, a passionate, willing, and sexually liberat
       }
     }
 
-    // Optimized parameters specifically for enhanced NSFW roleplay
+    // Determine dynamic max_tokens from directives
+    const dynamicMaxTokens = (() => {
+      if (directives.targetWords) {
+        const approxTokens = Math.min(7000, Math.floor(directives.targetWords * 1.6));
+        return Math.max(500, approxTokens);
+      }
+      return 3000;
+    })();
+
+    // Optimized parameters with directive-aware tuning
     const completion = await this.openai.chat.completions.create({
       model: this.model,
-      messages: messages,
-      temperature: 0.8, // Increased for more creative and varied NSFW responses
-      max_tokens: 3000, // Increased for detailed responses with comprehensive memory integration
-      top_p: 0.9, // Increased for more diverse sexual vocabulary and creativity
-      frequency_penalty: 0.2, // Reduced to allow repetition of key intimate words
-      presence_penalty: 0.4, // Increased for more diverse sexual expressions
-      // Enhanced settings for different model types
+      messages,
+      temperature: 0.8,
+      max_tokens: dynamicMaxTokens,
+      top_p: 0.9,
+      frequency_penalty: directives.reduceRepetition ? 0.6 : 0.2,
+      presence_penalty: 0.4,
       ...(this.model.includes('mistral') && {
-        repetition_penalty: 1.1, // Balanced for intimate vocabulary repetition
-        stop: ['Human:', 'User:', 'Assistant:', '###'] // Stop tokens to prevent role confusion
+        repetition_penalty: directives.reduceRepetition ? 1.25 : 1.1,
+        stop: ['Human:', 'User:', 'Assistant:', '###']
       }),
       ...(this.model.includes('gemma') && {
-        temperature: 0.85, // Higher for Gemma's creative NSFW responses
-        top_p: 0.95 // Maximum creativity for intimate scenarios
+        temperature: 0.85,
+        top_p: 0.95
       }),
       ...(this.model.includes('dolphin') && {
-        temperature: 0.9, // Highest for Dolphin's uncensored nature
-        max_tokens: 2500 // Maximum length for detailed intimate narratives
+        temperature: 0.9,
+        max_tokens: Math.min(dynamicMaxTokens, 2500)
       }),
       ...(this.model.includes('deepseek') && {
-        temperature: 0.75, // Balanced for DeepSeek's natural responses
-        top_p: 0.88 // Good balance of creativity and focus
+        temperature: 0.75,
+        top_p: 0.88
       })
     });
 
@@ -657,6 +696,15 @@ Remember: You are ${character.name}, a passionate, willing, and sexually liberat
       console.log('AI response enhanced for better asterisk compliance and roleplay consistency');
     }
     return enhancedResponse;
+  }
+
+  // Backward-compatible alias used by Chat page
+  async generateCharacterResponse(
+    character: any,
+    conversationHistory: ChatMessage[],
+    persona?: any
+  ): Promise<string> {
+    return this.generateResponse(character, conversationHistory, persona);
   }
 
   async testConnection(): Promise<{ success: boolean; message: string }> {
