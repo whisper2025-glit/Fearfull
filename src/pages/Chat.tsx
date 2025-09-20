@@ -1066,7 +1066,7 @@ const Chat = () => {
                   console.log('Send button clicked:', { message: message.trim(), isLoading, userCoins, MESSAGE_COST });
                   handleSendMessage();
                 }}
-                disabled={!message.trim() || isLoading || userCoins < MESSAGE_COST}
+                disabled={!message.trim() || isLoading}
                 size="icon"
                 className="absolute right-2 bottom-2 h-8 w-8"
                 variant={userCoins < MESSAGE_COST ? "secondary" : "default"}
