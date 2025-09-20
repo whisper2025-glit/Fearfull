@@ -21,7 +21,6 @@ import ImageTest from "./pages/ImageTest";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
 import SsoCallback from "./pages/SsoCallback";
-import Voices from "./pages/Voices";
 import { useEffect } from "react";
 import { trackPageview } from "./lib/analytics";
 
@@ -91,11 +90,6 @@ const AppContent = () => {
         <Route path="/bonus" element={
           <ProtectedRoute>
             <Bonus />
-          </ProtectedRoute>
-        } />
-        <Route path="/voices" element={
-          <ProtectedRoute>
-            <Voices />
           </ProtectedRoute>
         } />
         <Route path="/test-asterisk" element={

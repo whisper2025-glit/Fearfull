@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { useUser } from "@clerk/clerk-react";
-import { ArrowLeft, Home, MoreHorizontal, Clock, Users, Bot, ChevronDown, User, Settings, Send, RotateCcw, ChevronLeft, ChevronRight, Edit, Copy, Trash2, Volume2 } from "lucide-react";
+import { ArrowLeft, Home, MoreHorizontal, Clock, Users, Bot, ChevronDown, User, Settings, Send, RotateCcw, ChevronLeft, ChevronRight, Edit, Copy, Trash2 } from "lucide-react";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -23,8 +23,8 @@ import { openRouterAI, ChatMessage as AIMessage } from "@/lib/ai-client";
 import { toast } from "sonner";
 import { StartNewChatModal } from "@/components/StartNewChatModal";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { VoiceModal } from "@/components/VoiceModal";
-import { VoiceSettings, loadVoiceSettings, saveVoiceSettings, speakWithSettings } from "@/lib/voice";
+
+
 
 interface Message {
   id: number;
@@ -68,8 +68,6 @@ const Chat = () => {
   const [isModelsModalOpen, setIsModelsModalOpen] = useState(false);
   const [isChatPageSettingsModalOpen, setIsChatPageSettingsModalOpen] = useState(false);
   const [isStartNewChatModalOpen, setIsStartNewChatModalOpen] = useState(false);
-  const [isVoiceModalOpen, setIsVoiceModalOpen] = useState(false);
-  const [voiceSettings, setVoiceSettings] = useState<VoiceSettings>(() => loadVoiceSettings() || { voiceURI: '', rate: 1, pitch: 1, volume: 1 });
 
   // Message menu and editing state
   const [isEditOpen, setIsEditOpen] = useState(false);
@@ -622,13 +620,7 @@ const Chat = () => {
 
   const allMessages = currentCharacter ? [...currentCharacter.messages, ...messages] : [];
 
-  const speakMessage = (text: string) => {
-    if (!("speechSynthesis" in window)) {
-      toast.error('Your browser does not support speech synthesis');
-      return;
-    }
-    speakWithSettings(text, voiceSettings);
-  };
+
 
   const getDisplayedContent = (msg: Message) => {
     if (msg.variants && typeof msg.currentVariantIndex === 'number') {
@@ -872,18 +864,7 @@ const Chat = () => {
                           <div className="w-full">
                             <MessageFormatter content={getDisplayedContent(msg)} className="chat-text" />
                           </div>
-                          {msg.isBot && (
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="absolute bottom-1 right-1 h-7 w-7 p-0 rounded-full"
-                              onClick={(e) => { e.stopPropagation(); speakMessage(getDisplayedContent(msg)); }}
-                              aria-label="Play voice"
-                              title="Play voice"
-                            >
-                              <Volume2 className="h-3.5 w-3.5" />
-                            </Button>
-                          )}
+
                         </Card>
                       ) : (
                         <DropdownMenu>
@@ -893,18 +874,7 @@ const Chat = () => {
                                 <div className="w-full">
                                   <MessageFormatter content={getDisplayedContent(msg)} className="chat-text" />
                                 </div>
-                                {msg.isBot && (
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    className="absolute bottom-1 right-1 h-7 w-7 p-0 rounded-full"
-                                    onClick={(e) => { e.stopPropagation(); speakMessage(getDisplayedContent(msg)); }}
-                                    aria-label="Play voice"
-                                    title="Play voice"
-                                  >
-                                    <Volume2 className="h-3.5 w-3.5" />
-                                  </Button>
-                                )}
+      
                               </Card>
                             </div>
                           </DropdownMenuTrigger>
@@ -1066,16 +1036,7 @@ const Chat = () => {
               {selectedModel ? selectedModel.title : 'Models'}
               {selectedModel && <div className="w-1.5 h-1.5 bg-green-500 rounded-full" />}
             </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              className="flex items-center gap-2 text-xs whitespace-nowrap flex-shrink-0"
-              onClick={() => setIsVoiceModalOpen(true)}
-            >
-              <Volume2 className="h-3 w-3" />
-              Voice
-              {voiceSettings?.voiceURI && <div className="w-1.5 h-1.5 bg-green-500 rounded-full" />}
-            </Button>
+
           </div>
         </div>
 
@@ -1178,12 +1139,7 @@ const Chat = () => {
         selectedModel={selectedModel}
       />
 
-      <VoiceModal
-        open={isVoiceModalOpen}
-        onOpenChange={setIsVoiceModalOpen}
-        value={voiceSettings}
-        onSave={(v) => setVoiceSettings(v)}
-      />
+
 
       <ChatPageSettingsModal
         open={isChatPageSettingsModalOpen}

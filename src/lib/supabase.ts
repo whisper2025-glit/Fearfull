@@ -17,11 +17,18 @@ const isValidUrl = (u?: string) => {
   }
 };
 
-if (isPlaceholder(supabaseUrl) || isPlaceholder(supabaseAnonKey) || !isValidUrl(supabaseUrl)) {
-  throw new Error('Missing or invalid Supabase environment variables. Ensure VITE_SUPABASE_URL is a valid URL and VITE_SUPABASE_ANON_KEY is provided.');
-}
+const hasSupabaseConfig = !isPlaceholder(supabaseUrl) && !isPlaceholder(supabaseAnonKey) && isValidUrl(supabaseUrl);
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// Create a safe supabase export that won’t crash the app at import-time
+export const supabase: any = hasSupabaseConfig
+  ? createClient(supabaseUrl, supabaseAnonKey)
+  : new Proxy({}, {
+      get() {
+        throw new Error('Supabase is not configured. Please add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.');
+      }
+    });
+
+export const hasSupabaseEnv = () => hasSupabaseConfig;
 
 // Function to create Supabase client with Clerk authentication
 export const createSupabaseClientWithClerkAuth = (getToken: () => Promise<string | null>) => {
