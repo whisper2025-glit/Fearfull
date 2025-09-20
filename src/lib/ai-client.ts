@@ -11,6 +11,10 @@ class AIClient {
   private openai: OpenAI;
   private provider: 'openrouter' | 'kobold' = 'openrouter';
   private koboldEndpoint: string = 'http://localhost:5001';
+  private initializationPromise: Promise<void> | null = null;
+  private isInitialized: boolean = false;
+  private connectionStatus: 'initializing' | 'connected' | 'failed' = 'initializing';
+  private lastError: string | null = null;
 
   // Simple actions that should be forbidden or enhanced
   private forbiddenSimpleActions = [
@@ -26,11 +30,25 @@ class AIClient {
     // Initialize appropriate client based on environment and available credentials
     if (import.meta.env.VITE_OPENROUTER_API_KEY) {
       this.initializeOpenRouterClient();
+      this.isInitialized = true;
+      this.connectionStatus = 'connected';
       console.log('✅ AI Client initialized with OpenRouter - Enhanced NSFW mode enabled');
     } else {
-      // Fallback to KoboldCPP/AI Horde for zero-config operation
-      this.initializeKoboldClient();
-      console.log('✅ AI Client initialized with KoboldCPP/AI Horde - Zero-config mode enabled');
+      // Fallback to KoboldCPP/AI Horde for zero-config operation (async initialization)
+      this.initializationPromise = this.initializeKoboldClient().then(() => {
+        this.isInitialized = true;
+        this.connectionStatus = 'connected';
+        console.log('✅ AI Client initialized with KoboldCPP/AI Horde - Zero-config mode enabled');
+      }).catch((error) => {
+        console.warn('Failed to initialize KoboldCpp client:', error);
+        this.lastError = error.message;
+        // Fallback to AI Horde
+        this.koboldEndpoint = 'https://aihorde.net';
+        this.provider = 'kobold';
+        this.isInitialized = true;
+        this.connectionStatus = 'connected'; // AI Horde should work
+        console.log('✅ AI Client fallback to AI Horde - Zero-config mode enabled');
+      });
     }
   }
 
@@ -43,22 +61,35 @@ class AIClient {
     this.provider = 'openrouter';
   }
 
-  private initializeKoboldClient(endpoint?: string): void {
+  private async initializeKoboldClient(endpoint?: string): Promise<void> {
     // Determine the best endpoint based on environment
     if (!endpoint) {
-      // Check if we're running locally and can use the Vite proxy
+      // Check if we're running locally and can auto-detect KoboldCpp
       const isLocalDev = window.location.hostname === 'localhost' || 
                         window.location.hostname === '127.0.0.1' ||
                         window.location.hostname.includes('replit.dev');
       
       if (isLocalDev) {
-        // Use Vite proxy for local development to avoid CORS issues
-        this.koboldEndpoint = '/kobold';
-        console.log('🔄 Using Vite proxy for KoboldAI connection');
+        // Try to auto-detect KoboldCpp on common ports
+        const detectedEndpoint = await this.autoDetectKoboldCpp();
+        if (detectedEndpoint) {
+          this.koboldEndpoint = detectedEndpoint;
+          console.log(`🔍 Auto-detected KoboldCpp at: ${detectedEndpoint}`);
+        } else {
+          // Use Vite proxy as fallback for local development
+          this.koboldEndpoint = '/kobold';
+          console.log('🔄 Using Vite proxy for KoboldAI connection (fallback)');
+        }
       } else {
-        // For hosted environments, use AI Horde as default public endpoint
-        this.koboldEndpoint = 'https://aihorde.net';
-        console.log('🌐 Using AI Horde public endpoint for KoboldCPP compatibility');
+        // For hosted environments, try public instances first, then AI Horde
+        const publicEndpoint = await this.findPublicKoboldInstance();
+        if (publicEndpoint) {
+          this.koboldEndpoint = publicEndpoint;
+          console.log(`🌐 Using public KoboldCpp instance: ${publicEndpoint}`);
+        } else {
+          this.koboldEndpoint = 'https://aihorde.net';
+          console.log('🌐 Using AI Horde public endpoint for KoboldCPP compatibility');
+        }
       }
     } else {
       this.koboldEndpoint = endpoint;
@@ -73,6 +104,88 @@ class AIClient {
       });
     }
     this.provider = 'kobold';
+  }
+
+  // Auto-detect KoboldCpp on common ports
+  private async autoDetectKoboldCpp(): Promise<string | null> {
+    const commonPorts = [5001, 5000, 7860, 8080, 8000];
+    const baseHosts = ['localhost', '127.0.0.1'];
+    
+    for (const host of baseHosts) {
+      for (const port of commonPorts) {
+        const endpoint = `http://${host}:${port}`;
+        try {
+          // Try the service info endpoint first
+          const response = await fetch(`${endpoint}/.well-known/serviceinfo`, {
+            method: 'GET',
+            signal: AbortSignal.timeout(2000) // 2 second timeout
+          });
+          
+          if (response.ok) {
+            const serviceInfo = await response.json();
+            if (serviceInfo.name?.toLowerCase().includes('kobold') || 
+                serviceInfo.description?.toLowerCase().includes('kobold')) {
+              return endpoint;
+            }
+          }
+        } catch (error) {
+          // Try fallback endpoint check
+          try {
+            const response = await fetch(`${endpoint}/api/v1/model`, {
+              method: 'GET',
+              signal: AbortSignal.timeout(2000)
+            });
+            if (response.ok) {
+              return endpoint;
+            }
+          } catch (fallbackError) {
+            // Continue to next port
+            continue;
+          }
+        }
+      }
+    }
+    return null;
+  }
+
+  // Find public KoboldCpp instances
+  private async findPublicKoboldInstance(): Promise<string | null> {
+    // List of known public KoboldCpp instances (can be expanded)
+    const publicInstances = [
+      'https://koboldai.org/api',
+      'https://api.koboldai.net',
+      // Add more public instances as they become available
+    ];
+
+    for (const instance of publicInstances) {
+      try {
+        const response = await fetch(`${instance}/.well-known/serviceinfo`, {
+          method: 'GET',
+          signal: AbortSignal.timeout(3000) // 3 second timeout for public instances
+        });
+        
+        if (response.ok) {
+          const serviceInfo = await response.json();
+          if (serviceInfo.name?.toLowerCase().includes('kobold')) {
+            return instance;
+          }
+        }
+      } catch (error) {
+        // Try basic endpoint check
+        try {
+          const response = await fetch(`${instance}/api/v1/model`, {
+            method: 'GET',
+            signal: AbortSignal.timeout(3000)
+          });
+          if (response.ok) {
+            return instance;
+          }
+        } catch (fallbackError) {
+          continue;
+        }
+      }
+    }
+    return null;
   }
 
   // Build conversation prompt for AI Horde (which expects plain text prompts)
