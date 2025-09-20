@@ -1271,7 +1271,7 @@ export const subscribeToCommentLikes = (
   commentIds: string[],
   onLikesChanged: (commentId: string, newLikesCount: number) => void
 ) => {
-  console.log('👍 Setting up real-time subscription for comment likes:', commentIds);
+  console.log('��� Setting up real-time subscription for comment likes:', commentIds);
 
   const subscription = supabase
     .channel('comment_likes_changes')
@@ -1778,6 +1778,54 @@ export const getDailyClaimStatus = async (userId: string): Promise<{checkin: boo
   } catch (error) {
     console.error('Error getting daily claim status:', error);
     return { checkin: false, conversation: false };
+  }
+};
+
+// Command Instructions
+export type UserInstructions = {
+  user_id: string;
+  dont_refuse: boolean;
+  reduce_repetition: boolean;
+  custom_text: string;
+};
+
+export const getUserInstructions = async (userId: string): Promise<UserInstructions | null> => {
+  try {
+    const { data, error } = await supabase.rpc('get_instructions', { p_user_id: userId });
+    if (error) throw error;
+    const row = Array.isArray(data) ? data[0] : null;
+    if (!row) return null;
+    return {
+      user_id: row.user_id,
+      dont_refuse: !!row.dont_refuse,
+      reduce_repetition: !!row.reduce_repetition,
+      custom_text: row.custom_text || ''
+    };
+  } catch (e) {
+    console.warn('getUserInstructions failed:', e);
+    return null;
+  }
+};
+
+export const upsertUserInstructions = async (userId: string, value: Omit<UserInstructions, 'user_id'>): Promise<UserInstructions | null> => {
+  try {
+    const { data, error } = await supabase.rpc('upsert_instructions', {
+      p_user_id: userId,
+      p_dont_refuse: value.dont_refuse,
+      p_reduce_repetition: value.reduce_repetition,
+      p_custom_text: value.custom_text
+    });
+    if (error) throw error;
+    const row = data as any;
+    return row ? {
+      user_id: row.user_id,
+      dont_refuse: !!row.dont_refuse,
+      reduce_repetition: !!row.reduce_repetition,
+      custom_text: row.custom_text || ''
+    } : null;
+  } catch (e) {
+    console.warn('upsertUserInstructions failed:', e);
+    return null;
   }
 };
 
