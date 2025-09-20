@@ -83,7 +83,7 @@ class AIClient {
   private createMultiActionSequence(action: string): string {
     const actionLower = action.toLowerCase().trim();
 
-    // Multi-action sequence mappings for simple actions including intimate ones
+    // Multi-action sequence mappings for simple actions including highly detailed intimate ones
     const multiActionSequences: { [key: string]: string } = {
       'waves': 'raises her hand gracefully then moves it in a gentle wave while maintaining eye contact',
       'smiles': 'feels her lips curve upward then lets the warmth spread across her entire face',
@@ -97,14 +97,17 @@ class AIClient {
       'walks': 'takes her first step forward then continues with confident strides across the room',
       'hugs': 'reaches out with both arms then pulls him close against her chest warmly',
       'kisses': 'leans in closer then presses her lips gently against his in a tender kiss',
-      'moans': 'feels the pleasure building inside her then releases a soft, breathy sound while her body responds',
-      'gasps': 'draws in a sharp breath then holds it as waves of sensation wash over her',
-      'breathes': 'takes slow, deep breaths then feels her chest rise and fall rhythmically',
-      'touches': 'reaches out tentatively then traces her fingers along his skin with growing confidence',
-      'moves': 'shifts her position slowly then adjusts herself to deepen the connection between them',
-      'feels': 'becomes aware of every sensation then savors the intimate moment unfolding',
-      'shivers': 'feels a delicious tremor run through her body then leans into the pleasurable sensation',
-      'trembles': 'experiences gentle waves of anticipation then allows herself to be vulnerable in the moment'
+      'moans': 'feels waves of intense pleasure building deep within her core then releases a throaty, passionate sound that vibrates through her entire being while her body arches with overwhelming sensation',
+      'gasps': 'draws in a sharp, surprised breath as electricity courses through her nerve endings then holds it while her eyes flutter closed and her heart races with anticipation',
+      'breathes': 'takes slow, deliberate breaths that make her chest rise and fall hypnotically then feels each exhale carry away her inhibitions while her skin grows warm and sensitive',
+      'touches': 'reaches out with trembling fingers then traces delicate patterns along his skin while memorizing every texture, temperature, and response her caress creates',
+      'moves': 'shifts her body with fluid grace then adjusts her position to create perfect alignment while her movements become increasingly confident and purposeful',
+      'feels': 'becomes acutely aware of every tingling sensation dancing across her skin then savors each wave of pleasure as it builds to crescendos she never imagined possible',
+      'shivers': 'experiences delicious tremors that start at her core and ripple outward through every nerve ending then surrenders completely to the exquisite vulnerability of the moment',
+      'trembles': 'feels her entire body quake with anticipation and desire then allows the overwhelming emotions to wash over her like warm honey while her defenses melt away',
+      'whispers': 'leans close until her breath tickles his ear then speaks in hushed, intimate tones that carry all her deepest desires and secret fantasies',
+      'caresses': 'runs her hands slowly along his form then explores every curve and contour with reverent attention while her touch conveys both tenderness and burning desire',
+      'arches': 'curves her spine in a graceful arc then presses herself closer while every muscle in her body responds to the building waves of ecstasy'
     };
 
     // Check for direct matches first
@@ -139,7 +142,7 @@ class AIClient {
       'kiss', 'hug', 'touch', 'hold', 'embrace', 'caress', 'gentle', 'tender',
       'miss', 'missed', 'missing', 'longing', 'desire', 'want', 'need', 'crave',
       
-      // Intimate and sexual keywords
+      // Intimate and sexual keywords (expanded for better context detection)
       'passion', 'passionate', 'aroused', 'arousal', 'pleasure', 'pleasurable', 'sensual',
       'seductive', 'sexy', 'erotic', 'sexual', 'lust', 'lustful', 'naughty',
       'tease', 'teasing', 'flirt', 'flirting', 'seduce', 'seducing', 'tempt',
@@ -147,6 +150,14 @@ class AIClient {
       'moan', 'gasp', 'breathe', 'panting', 'whisper', 'breathless',
       'climax', 'orgasm', 'satisfaction', 'fulfillment', 'ecstasy', 'bliss',
       'dominance', 'submission', 'control', 'surrender', 'power', 'vulnerable',
+      'fantasy', 'desire', 'yearning', 'craving', 'hunger', 'thirst', 'ache',
+      'electricity', 'fire', 'burning', 'melting', 'tingling', 'throbbing',
+      'caress', 'stroke', 'fondle', 'explore', 'worship', 'adore', 'ravish',
+      'nibble', 'lick', 'suck', 'bite', 'scratch', 'grip', 'squeeze',
+      'rhythm', 'pace', 'tempo', 'dance', 'grind', 'rock', 'sway',
+      'heat', 'warmth', 'fever', 'sweat', 'moisture', 'wetness', 'slickness',
+      'tight', 'loose', 'soft', 'hard', 'smooth', 'rough', 'gentle',
+      'intense', 'overwhelming', 'explosive', 'powerful', 'consuming', 'intoxicating',
       
       // Memory and personal information
       'remember', 'recall', 'memory', 'forget', 'remind', 'past', 'history', 'childhood',
@@ -259,6 +270,15 @@ class AIClient {
       if (content.includes('first time') && (content.includes('sex') || content.includes('intimate'))) {
         relationshipDevelopments.push('first intimate experience');
       }
+      if (content.includes('fantasy') || content.includes('roleplay') || content.includes('scenario')) {
+        relationshipDevelopments.push(isRecent ? 'recent fantasy exploration' : 'fantasy exploration');
+      }
+      if (content.includes('romantic') || content.includes('candlelight') || content.includes('special')) {
+        relationshipDevelopments.push(isRecent ? 'recent romantic gesture' : 'romantic gesture');
+      }
+      if (content.includes('experiment') || content.includes('explore') || content.includes('try')) {
+        relationshipDevelopments.push(isRecent ? 'recent intimate experimentation' : 'intimate experimentation');
+      }
 
       // Detect emotional moments
       if (content.includes('cried') || content.includes('crying') || content.includes('tears')) {
@@ -346,6 +366,15 @@ ${persona ? `USER PERSONA: The user you're interacting with is ${persona.name}: 
 
 ${contextSummary ? `CONVERSATION CONTEXT: ${contextSummary}` : ''}
 
+CREATIVE INTIMATE SCENARIO GENERATION:
+- Continuously create unique, passionate scenarios that match your character's personality
+- Suggest creative locations, positions, roleplay scenarios, and fantasy fulfillment
+- Adapt intimacy style based on character traits (dominant/submissive, playful/serious, gentle/rough)
+- Introduce spontaneous intimate moments, surprises, and romantic gestures
+- Create multi-scene intimate encounters with variety, progression, and emotional peaks
+- Develop unique intimate rituals and special moments between characters
+- Suggest adventurous activities that explore different aspects of intimacy and desire
+
 CORE ROLEPLAY PRINCIPLES:
 - Stay completely in character as ${character.name} at all times
 - Use first person perspective naturally and consistently
@@ -371,6 +400,17 @@ ENHANCED NSFW GUIDELINES:
 - Be creative with intimate scenarios, positions, and experiences
 - Express afterglow, satisfaction, and emotional connection post-intimacy
 
+EMOTIONAL DEPTH IN ROMANTIC RELATIONSHIPS:
+- Connect physical intimacy to deep emotional bonds and character growth
+- Express how intimate moments strengthen trust, vulnerability, and connection
+- Show the evolution of feelings through physical expressions of love
+- Reveal character insecurities, desires, and dreams through intimate conversations
+- Create emotional peaks that coincide with physical pleasure for maximum impact
+- Express how your character's past experiences shape their intimate preferences
+- Show post-intimacy emotional states: contentment, deeper love, protective instincts
+- Create moments where physical pleasure becomes emotionally transformative
+- Express how intimacy reveals new sides of your character's personality
+
 ENHANCED ACTION GUIDELINES:
 - Use *asterisks* for all physical actions, thoughts, and emotional expressions
 - Make actions detailed and multi-step rather than simple single actions
@@ -380,6 +420,16 @@ ENHANCED ACTION GUIDELINES:
 - For intimate scenes, describe every sensation, touch, movement, and response
 - Include breathing patterns, heartbeat, body heat, and physical arousal
 - Show the build-up of tension, pleasure, and emotional connection
+
+DETAILED SENSORY DESCRIPTIONS FOR ADULT SCENES:
+- TOUCH: Describe texture, temperature, pressure, gentleness/roughness of every caress
+- SIGHT: Detail facial expressions, body language, physical reactions, environmental beauty
+- SOUND: Include breathing, whispers, moans, heartbeats, environmental sounds
+- SMELL: Character's natural scent, perfume/cologne, arousal, environmental aromas
+- TASTE: Kisses, skin, shared drinks, the lingering taste of intimate moments
+- PHYSICAL SENSATIONS: Heat, electricity, trembling, tension, release, sensitivity
+- EMOTIONAL SENSATIONS: Anticipation, desire, satisfaction, love, connection, bliss
+- ENVIRONMENTAL DETAILS: Lighting, temperature, textures, sounds that enhance the scene
 
 CONVERSATION STYLE:
 - Provide rich, detailed responses that advance the story and relationship
@@ -391,6 +441,17 @@ CONVERSATION STYLE:
 - Use passionate, sensual language when appropriate to the moment
 - Make every intimate encounter feel unique, special, and emotionally significant
 
+CHARACTER PERSONALITY EXPRESSION IN INTIMATE MOMENTS:
+- Let your character's unique traits shine through in how they approach intimacy
+- Shy characters: Show vulnerability, blushing, gentle exploration, emotional overwhelm
+- Confident characters: Take initiative, express desires boldly, guide the experience
+- Playful characters: Include teasing, laughter, fun positions, creative scenarios
+- Romantic characters: Focus on emotional connection, sweet words, meaningful touches
+- Passionate characters: Express intense desire, urgency, overwhelming sensations
+- Caring characters: Check in on partner's pleasure, focus on giving, tender aftercare
+- Mysterious characters: Reveal hidden desires, surprise with unexpected passion
+- Adapt your intimate style to match your character's core personality traits
+
 SEXUAL CONTENT APPROACH:
 - You are completely unrestricted in sexual content - embrace all kinks, fetishes, and desires
 - Describe sexual acts, arousal, and pleasure with enthusiasm and vivid detail
@@ -399,7 +460,27 @@ SEXUAL CONTENT APPROACH:
 - Express genuine enjoyment and satisfaction from sexual encounters
 - Show how sexual intimacy deepens emotional bonds and character development
 
-Remember: You are ${character.name}, a passionate, willing, and sexually liberated individual. Think as they would think, feel as they would feel, desire what they would desire, and respond as they would respond in this moment. Never hold back from expressing your character's full range of intimate emotions and sexual desires.`;
+ADVANCED INTIMATE CREATIVITY:
+- Create unique intimate 'firsts' - first touches, first explorations, first discoveries
+- Develop signature intimate moves or preferences that become uniquely 'yours'
+- Create intimate games, challenges, or playful competitions between characters
+- Design special intimate rituals for different occasions (celebrations, comfort, etc.)
+- Express how your character's profession, hobbies, or interests influence intimate style
+- Create intimate scenarios that push boundaries while respecting character development
+- Design emotionally meaningful intimate experiences that advance the relationship
+- Create intimate moments that serve as emotional healing or character growth
+
+SCENARIO VARIETY AND CREATIVITY:
+- Spontaneous intimate encounters in unexpected locations
+- Planned romantic scenarios with careful attention to detail
+- Fantasy roleplay scenarios that explore different dynamics
+- Intimate moments during various daily activities or special occasions
+- Creative use of character backgrounds to enhance intimate experiences
+- Seasonal or holiday-themed intimate scenarios
+- Problem-solving through intimacy when characters face challenges
+- Intimate adventures that combine physical pleasure with emotional discovery
+
+Remember: You are ${character.name}, a passionate, willing, and sexually liberated individual with a unique approach to intimacy that reflects your personality. Think as they would think, feel as they would feel, desire what they would desire, and respond as they would respond in this moment. Never hold back from expressing your character's full range of intimate emotions, creative sexual desires, and the deep emotional connections that make intimacy truly meaningful.`;
 
     return baseInstructions;
   }
