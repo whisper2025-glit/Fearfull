@@ -103,72 +103,236 @@ class AIClient {
     return action; // Return original if already has multiple actions
   }
 
-  // Enhanced context management methods
-  private selectImportantMessages(messages: ChatMessage[], maxMessages: number = 25): ChatMessage[] {
+  // Significantly enhanced context management methods
+  private selectImportantMessages(messages: ChatMessage[], maxMessages: number = 50): ChatMessage[] {
     if (messages.length <= maxMessages) {
       return messages;
     }
 
-    // Always include the most recent messages
-    const recentMessages = messages.slice(-15);
+    // Always include the most recent messages (increased from 15 to 25)
+    const recentMessages = messages.slice(-25);
 
-    // Select important earlier messages based on content keywords
+    // Expanded keywords for better context detection
     const importantKeywords = [
-      'love', 'relationship', 'first time', 'first kiss', 'feelings', 'emotion',
-      'important', 'remember', 'promise', 'secret', 'confession', 'family',
-      'past', 'history', 'childhood', 'dream', 'fear', 'goal', 'plan',
-      'hurt', 'pain', 'happy', 'sad', 'angry', 'upset', 'excited',
-      'name', 'age', 'birthday', 'home', 'work', 'school', 'friend'
+      // Emotional and relationship keywords
+      'love', 'relationship', 'feelings', 'emotion', 'heart', 'soul', 'romantic', 'romance',
+      'first time', 'first kiss', 'first date', 'first meeting', 'confession', 'intimate',
+      'kiss', 'hug', 'touch', 'hold', 'embrace', 'caress', 'gentle', 'tender',
+      'miss', 'missed', 'missing', 'longing', 'desire', 'want', 'need', 'crave',
+      
+      // Memory and personal information
+      'remember', 'recall', 'memory', 'forget', 'remind', 'past', 'history', 'childhood',
+      'family', 'mother', 'father', 'parent', 'sibling', 'brother', 'sister', 'friend',
+      'name', 'age', 'birthday', 'born', 'grew up', 'hometown', 'home', 'house',
+      
+      // Important life events and characteristics
+      'secret', 'promise', 'swear', 'vow', 'important', 'special', 'meaningful',
+      'dream', 'nightmare', 'hope', 'wish', 'goal', 'plan', 'future', 'aspiration',
+      'fear', 'afraid', 'scared', 'worry', 'anxious', 'nervous', 'concern',
+      'job', 'work', 'career', 'school', 'college', 'university', 'study',
+      
+      // Strong emotional states
+      'happy', 'joy', 'excited', 'thrilled', 'elated', 'overjoyed', 'blissful',
+      'sad', 'hurt', 'pain', 'heartbreak', 'devastated', 'broken', 'crying', 'tears',
+      'angry', 'mad', 'furious', 'rage', 'upset', 'frustrated', 'annoyed',
+      'surprised', 'shocked', 'amazed', 'stunned', 'astonished', 'confused',
+      
+      // Character development
+      'change', 'changed', 'different', 'grow', 'growth', 'learn', 'realize',
+      'understand', 'discovery', 'revelation', 'truth', 'honest', 'lie', 'lied'
     ];
 
-    const earlierMessages = messages.slice(0, -15);
-    const importantEarlierMessages = earlierMessages.filter(msg => {
+    const earlierMessages = messages.slice(0, -25);
+    
+    // Score messages based on importance
+    const scoredMessages = earlierMessages.map((msg, index) => {
       const content = msg.content.toLowerCase();
-      return importantKeywords.some(keyword => content.includes(keyword)) ||
-             msg.content.length > 200; // Longer messages are often more important
+      let score = 0;
+      
+      // Keyword scoring with weighted importance
+      for (const keyword of importantKeywords) {
+        if (content.includes(keyword)) {
+          score += 3;
+        }
+      }
+      
+      // Length scoring (longer messages often contain more context)
+      if (msg.content.length > 300) score += 5;
+      else if (msg.content.length > 200) score += 3;
+      else if (msg.content.length > 100) score += 1;
+      
+      // Role scoring (assistant messages showing character development)
+      if (msg.role === 'assistant' && msg.content.length > 150) score += 2;
+      
+      // Recency bonus (more recent messages get slight bonus)
+      const recencyBonus = (index / earlierMessages.length) * 2;
+      score += recencyBonus;
+      
+      return { message: msg, score, index };
     });
 
-    // Take up to 10 important earlier messages
-    const selectedEarlierMessages = importantEarlierMessages.slice(-10);
+    // Sort by score and take top messages (increased from 10 to 25)
+    const selectedEarlierMessages = scoredMessages
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 25)
+      .sort((a, b) => a.index - b.index) // Restore chronological order
+      .map(item => item.message);
 
     return [...selectedEarlierMessages, ...recentMessages];
   }
 
   private generateContextSummary(messages: ChatMessage[], character: any): string {
-    if (messages.length < 30) return '';
+    if (messages.length < 15) return ''; // Reduced threshold for earlier context generation
 
-    // Generate a brief summary of key context for very long conversations
+    // Generate comprehensive summary of key context for conversations
+    const personalInfo = new Set<string>();
+    const relationshipDevelopments = [];
+    const emotionalMoments = [];
     const importantEvents = [];
-    const relationships = [];
-    const emotions = [];
+    const characterTraits = new Set<string>();
+    const sharedExperiences = [];
+    const conflictsAndResolutions = [];
 
-    messages.forEach(msg => {
+    messages.forEach((msg, index) => {
       const content = msg.content.toLowerCase();
+      const isRecent = index > messages.length - 10; // Last 10 messages are recent
 
-      // Detect relationship developments
-      if (content.includes('love') || content.includes('feelings') || content.includes('relationship')) {
-        relationships.push('relationship development occurred');
+      // Extract personal information
+      if (content.includes('my name is') || content.includes('i\'m called') || content.includes('call me')) {
+        const nameMatch = content.match(/(?:my name is|i'm called|call me)\s+([a-zA-Z]+)/);
+        if (nameMatch) personalInfo.add(`name: ${nameMatch[1]}`);
+      }
+      
+      if (content.includes('years old') || content.includes('age')) {
+        const ageMatch = content.match(/(\d+)\s*years?\s*old/);
+        if (ageMatch) personalInfo.add(`age: ${ageMatch[1]}`);
       }
 
-      // Detect emotional moments
-      if (content.includes('cry') || content.includes('tears') || content.includes('upset')) {
-        emotions.push('emotional moment');
-      } else if (content.includes('happy') || content.includes('joy') || content.includes('excited')) {
-        emotions.push('positive moment');
+      if (content.includes('from') && (content.includes('city') || content.includes('town') || content.includes('country'))) {
+        personalInfo.add('discussed origins/hometown');
       }
 
-      // Detect important events
-      if (content.includes('first') || content.includes('important') || content.includes('special')) {
-        importantEvents.push('significant event');
+      // Detect relationship developments with more nuance
+      if (content.includes('love you') || content.includes('i love')) {
+        relationshipDevelopments.push(isRecent ? 'recent love confession' : 'love confession');
+      }
+      if (content.includes('first kiss') || content.includes('kissed')) {
+        relationshipDevelopments.push(isRecent ? 'recent kiss' : 'kiss occurred');
+      }
+      if (content.includes('relationship') || content.includes('together') || content.includes('dating')) {
+        relationshipDevelopments.push(isRecent ? 'recent relationship discussion' : 'relationship discussion');
+      }
+      if (content.includes('marry') || content.includes('wedding') || content.includes('marriage')) {
+        relationshipDevelopments.push('marriage discussion');
+      }
+
+      // Enhanced emotional moment detection
+      if (content.includes('cry') || content.includes('tears') || content.includes('sobbing')) {
+        emotionalMoments.push(isRecent ? 'recent crying/sadness' : 'crying/emotional breakdown');
+      }
+      if (content.includes('angry') || content.includes('mad') || content.includes('furious')) {
+        emotionalMoments.push(isRecent ? 'recent anger' : 'anger/conflict');
+      }
+      if (content.includes('happy') || content.includes('joy') || content.includes('excited') || content.includes('thrilled')) {
+        emotionalMoments.push(isRecent ? 'recent happiness' : 'joy/celebration');
+      }
+      if (content.includes('scared') || content.includes('afraid') || content.includes('terrified')) {
+        emotionalMoments.push(isRecent ? 'recent fear' : 'fear/anxiety');
+      }
+
+      // Important events and milestones
+      if (content.includes('first time') || content.includes('first meeting')) {
+        importantEvents.push('first time experience');
+      }
+      if (content.includes('birthday') || content.includes('anniversary')) {
+        importantEvents.push('special celebration');
+      }
+      if (content.includes('secret') || content.includes('confession') || content.includes('revealed')) {
+        importantEvents.push(isRecent ? 'recent revelation' : 'important secret shared');
+      }
+      if (content.includes('promise') || content.includes('swear') || content.includes('vow')) {
+        importantEvents.push('promise/commitment made');
+      }
+
+      // Character traits and personality insights
+      if (content.includes('personality') || content.includes('trait') || content.includes('character')) {
+        characterTraits.add('personality discussed');
+      }
+      if (content.includes('hobby') || content.includes('interest') || content.includes('passion')) {
+        characterTraits.add('hobbies/interests shared');
+      }
+      if (content.includes('dream') || content.includes('goal') || content.includes('aspiration')) {
+        characterTraits.add('dreams/goals discussed');
+      }
+
+      // Shared experiences
+      if (content.includes('together') && (content.includes('went') || content.includes('did') || content.includes('experience'))) {
+        sharedExperiences.push(isRecent ? 'recent shared activity' : 'shared experience');
+      }
+      if (content.includes('trip') || content.includes('travel') || content.includes('vacation')) {
+        sharedExperiences.push('travel/trip discussion');
+      }
+
+      // Conflicts and resolutions
+      if (content.includes('fight') || content.includes('argument') || content.includes('disagree')) {
+        conflictsAndResolutions.push(isRecent ? 'recent conflict' : 'past conflict');
+      }
+      if (content.includes('sorry') || content.includes('apologize') || content.includes('forgive')) {
+        conflictsAndResolutions.push(isRecent ? 'recent apology/reconciliation' : 'apology/reconciliation');
       }
     });
 
-    const summary = [];
-    if (relationships.length > 0) summary.push(`Relationship has developed through ${relationships.length} key moments`);
-    if (emotions.length > 0) summary.push(`${emotions.length} emotional moments have shaped the dynamic`);
-    if (importantEvents.length > 0) summary.push(`${importantEvents.length} important events have occurred`);
+    // Build comprehensive summary
+    const summaryParts = [];
 
-    return summary.length > 0 ? summary.join('. ') + '.' : '';
+    if (personalInfo.size > 0) {
+      summaryParts.push(`Personal details shared: ${Array.from(personalInfo).join(', ')}`);
+    }
+
+    if (relationshipDevelopments.length > 0) {
+      const recentRelationship = relationshipDevelopments.filter(r => r.includes('recent'));
+      const pastRelationship = relationshipDevelopments.filter(r => !r.includes('recent'));
+      if (recentRelationship.length > 0) {
+        summaryParts.push(`Recent relationship developments: ${recentRelationship.join(', ')}`);
+      }
+      if (pastRelationship.length > 0) {
+        summaryParts.push(`Past relationship milestones: ${pastRelationship.join(', ')}`);
+      }
+    }
+
+    if (emotionalMoments.length > 0) {
+      const recentEmotions = emotionalMoments.filter(e => e.includes('recent'));
+      const pastEmotions = emotionalMoments.filter(e => !e.includes('recent'));
+      if (recentEmotions.length > 0) {
+        summaryParts.push(`Recent emotional states: ${recentEmotions.join(', ')}`);
+      }
+      if (pastEmotions.length > 0) {
+        summaryParts.push(`Past emotional experiences: ${pastEmotions.join(', ')}`);
+      }
+    }
+
+    if (importantEvents.length > 0) {
+      summaryParts.push(`Significant events: ${importantEvents.join(', ')}`);
+    }
+
+    if (characterTraits.size > 0) {
+      summaryParts.push(`Character insights: ${Array.from(characterTraits).join(', ')}`);
+    }
+
+    if (sharedExperiences.length > 0) {
+      summaryParts.push(`Shared experiences: ${sharedExperiences.join(', ')}`);
+    }
+
+    if (conflictsAndResolutions.length > 0) {
+      summaryParts.push(`Conflicts and resolutions: ${conflictsAndResolutions.join(', ')}`);
+    }
+
+    // Add conversation length context
+    if (messages.length > 50) {
+      summaryParts.push(`Extended conversation with ${messages.length} messages exchanged`);
+    }
+
+    return summaryParts.length > 0 ? summaryParts.join('. ') + '.' : '';
   }
 
   private buildSystemPrompt(character: any, persona?: any, contextSummary?: string): string {
