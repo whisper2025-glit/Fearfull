@@ -95,14 +95,8 @@ class AIClient {
       this.koboldEndpoint = endpoint;
     }
 
-    // Only configure OpenAI client for actual KoboldCPP endpoints, not AI Horde
-    if (this.koboldEndpoint && !this.koboldEndpoint.includes('aihorde.net')) {
-      this.openai = new OpenAI({
-        baseURL: this.koboldEndpoint ? `${this.koboldEndpoint}/v1` : '',
-        apiKey: import.meta.env.VITE_KOBOLD_API_KEY || 'sk-no-key-required',
-        dangerouslyAllowBrowser: true
-      });
-    }
+    // KoboldCpp uses native API endpoints, not OpenAI compatibility layer
+    // OpenAI client is only for OpenRouter, not KoboldCpp
     this.provider = 'kobold';
   }
 
@@ -111,40 +105,59 @@ class AIClient {
     const commonPorts = [5001, 5000, 7860, 8080, 8000];
     const baseHosts = ['localhost', '127.0.0.1'];
     
-    for (const host of baseHosts) {
-      for (const port of commonPorts) {
-        const endpoint = `http://${host}:${port}`;
-        try {
-          // Try the service info endpoint first
-          const response = await fetch(`${endpoint}/.well-known/serviceinfo`, {
-            method: 'GET',
-            signal: AbortSignal.timeout(2000) // 2 second timeout
-          });
-          
-          if (response.ok) {
-            const serviceInfo = await response.json();
-            if (serviceInfo.name?.toLowerCase().includes('kobold') || 
-                serviceInfo.description?.toLowerCase().includes('kobold')) {
-              return endpoint;
-            }
-          }
-        } catch (error) {
-          // Try fallback endpoint check
-          try {
-            const response = await fetch(`${endpoint}/api/v1/model`, {
-              method: 'GET',
-              signal: AbortSignal.timeout(2000)
-            });
-            if (response.ok) {
-              return endpoint;
-            }
-          } catch (fallbackError) {
-            // Continue to next port
-            continue;
+    // Try all combinations in parallel for faster detection
+    const candidates = baseHosts.flatMap(host => 
+      commonPorts.map(port => `http://${host}:${port}`)
+    );
+
+    const testEndpoint = async (endpoint: string): Promise<string | null> => {
+      try {
+        // Try the service info endpoint first
+        const response = await fetch(`${endpoint}/.well-known/serviceinfo`, {
+          method: 'GET',
+          signal: AbortSignal.timeout(1000) // Reduced timeout for faster scanning
+        });
+        
+        if (response.ok) {
+          const serviceInfo = await response.json();
+          if (serviceInfo.name?.toLowerCase().includes('kobold') || 
+              serviceInfo.description?.toLowerCase().includes('kobold')) {
+            return endpoint;
           }
         }
+      } catch (error) {
+        // Try fallback endpoint check
+        try {
+          const response = await fetch(`${endpoint}/api/v1/model`, {
+            method: 'GET',
+            signal: AbortSignal.timeout(1000)
+          });
+          if (response.ok) {
+            const modelData = await response.json();
+            // Check if there's actually a model loaded
+            if (modelData.result && modelData.result.trim()) {
+              return endpoint;
+            }
+          }
+        } catch (fallbackError) {
+          // Silently fail - this is expected during scanning
+        }
       }
+      return null;
+    };
+
+    // Test all endpoints in parallel
+    try {
+      const results = await Promise.allSettled(candidates.map(testEndpoint));
+      for (const result of results) {
+        if (result.status === 'fulfilled' && result.value) {
+          return result.value;
+        }
+      }
+    } catch (error) {
+      // All failed, return null
     }
+    
     return null;
   }
 
@@ -223,6 +236,96 @@ class AIClient {
     };
     
     return modelMap[koboldModel] || ['Pygmalion 7B', 'MLewd 13B']; // Default fallback
+  }
+
+  // Helper to build KoboldCpp API URLs correctly
+  private buildKoboldUrl(endpoint: string, path: string): string {
+    // Normalize endpoint to remove trailing /api if present
+    const normalizedEndpoint = endpoint.replace(/\/api\/?$/, '');
+    
+    if (normalizedEndpoint.startsWith('/')) {
+      // Proxy endpoint (e.g., '/kobold')
+      return `${normalizedEndpoint}${path}`;
+    } else {
+      // Direct endpoint (e.g., 'http://localhost:5001')
+      return `${normalizedEndpoint}${path}`;
+    }
+  }
+
+  // Native KoboldCpp API generation method
+  private async generateViaKoboldNative(prompt: string): Promise<string> {
+    if (!this.koboldEndpoint) {
+      throw new Error('KoboldCpp endpoint not configured');
+    }
+
+    // Test connection and model status first
+    try {
+      const testUrl = this.buildKoboldUrl(this.koboldEndpoint, '/api/v1/model');
+      
+      const testResponse = await fetch(testUrl, {
+        signal: AbortSignal.timeout(5000) // 5 second timeout for connection test
+      });
+      
+      if (!testResponse.ok) {
+        throw new Error(`KoboldCpp server not accessible at ${this.koboldEndpoint}`);
+      }
+
+      const modelData = await testResponse.json();
+      if (!modelData.result || !modelData.result.trim()) {
+        throw new Error('No model loaded in KoboldCpp. Please load a model first.');
+      }
+    } catch (error) {
+      const isProxy = this.koboldEndpoint.startsWith('/');
+      const errorMessage = isProxy 
+        ? `KoboldCpp connection failed via proxy. Please ensure KoboldCpp is running on localhost:5001 with a model loaded.`
+        : `KoboldCpp connection failed: ${error instanceof Error ? error.message : 'Unknown error'}. Please ensure KoboldCpp is running at ${this.koboldEndpoint} with a model loaded.`;
+      throw new Error(errorMessage);
+    }
+
+    // Use native KoboldCpp generation endpoint with timeout
+    const generateUrl = this.buildKoboldUrl(this.koboldEndpoint, '/api/v1/generate');
+
+    try {
+      const response = await fetch(generateUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        signal: AbortSignal.timeout(45000), // 45 second timeout for generation
+        body: JSON.stringify({
+          prompt: prompt,
+          max_context_length: 2048,
+          max_length: 150, // Amount to generate
+          temperature: 0.8,
+          top_p: 0.9,
+          top_k: 40,
+          typical: 1.0,
+          tfs: 1.0,
+          rep_pen: 1.1,
+          rep_pen_range: 1024,
+          sampler_order: [6, 0, 1, 3, 4, 2, 5],
+          use_default_badwordsids: false,
+          quiet: true,
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`KoboldCpp generation failed: ${response.status} ${response.statusText}`);
+      }
+
+      const result = await response.json();
+      
+      if (result.results && result.results.length > 0) {
+        return result.results[0].text;
+      } else {
+        throw new Error('No text generated by KoboldCpp');
+      }
+    } catch (error) {
+      if (error instanceof Error && error.name === 'TimeoutError') {
+        throw new Error('KoboldCpp generation timed out. The model may be too slow or the server is overloaded.');
+      }
+      throw error;
+    }
   }
 
   // AI Horde specific generation method
@@ -876,27 +979,18 @@ class AIClient {
         return enhancedResponse;
       }
       
-      // Test KoboldCpp connection for local/custom endpoints
-      if (!this.koboldEndpoint) {
-        throw new Error('KoboldCpp endpoint not configured. Please configure a KoboldCpp endpoint in settings.');
-      }
+      // Use native KoboldCpp API for generation
+      const conversationPrompt = this.buildConversationPrompt(character, conversationHistory, persona);
+      const response = await this.generateViaKoboldNative(conversationPrompt);
       
-      try {
-        const testUrl = this.koboldEndpoint.startsWith('/') 
-          ? `${this.koboldEndpoint}/api/v1/model`  // Proxy endpoint
-          : `${this.koboldEndpoint}/api/v1/model`; // Direct endpoint
-        
-        const response = await fetch(testUrl);
-        if (!response.ok) {
-          throw new Error(`KoboldCpp server not accessible at ${this.koboldEndpoint}`);
-        }
-      } catch (error) {
-        const isProxy = this.koboldEndpoint.startsWith('/');
-        const errorMessage = isProxy 
-          ? `KoboldCpp connection failed via proxy. Please ensure KoboldCpp is running on localhost:5001, or configure your actual KoboldCpp endpoint in Settings.`
-          : `KoboldCpp connection failed: ${error instanceof Error ? error.message : 'Unknown error'}. Please ensure KoboldCpp is running at ${this.koboldEndpoint}, or check your endpoint configuration in Settings.`;
-        throw new Error(errorMessage);
+      // Apply the same post-processing as other responses
+      const consistencyValidatedResponse = this.validateRoleplayConsistency(response, character);
+      const enhancedResponse = this.validateAndEnhanceAsterisks(consistencyValidatedResponse);
+      
+      if (enhancedResponse !== response) {
+        console.log('KoboldCpp response enhanced for better asterisk compliance and roleplay consistency');
       }
+      return enhancedResponse;
     }
 
     // Enhanced context management
