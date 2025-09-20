@@ -382,6 +382,28 @@ const Chat = () => {
     loadDefaultPersona();
   }, [user, currentPersona]);
 
+  // Load default command instructions from Supabase to local cache for AI client
+  useEffect(() => {
+    const hydrateDefaults = async () => {
+      if (!user) return;
+      try {
+        const { getUserInstructions } = await import('@/lib/supabase');
+        const row = await getUserInstructions(user.id);
+        if (row) {
+          localStorage.setItem('command_instructions_server', JSON.stringify({
+            dontRefuse: !!row.dont_refuse,
+            reduceRepetition: !!row.reduce_repetition,
+            customEnabled: !!row.custom_text,
+            customText: row.custom_text || ''
+          }));
+        }
+      } catch (e) {
+        console.warn('Failed to hydrate command defaults:', e);
+      }
+    };
+    hydrateDefaults();
+  }, [user]);
+
   // Load user coin balance
   useEffect(() => {
     const loadUserCoins = async () => {
