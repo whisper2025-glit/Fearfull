@@ -1057,7 +1057,7 @@ const Chat = () => {
                 placeholder={
                   isLoading ? "Sending..." : userCoins < MESSAGE_COST ? `Need ${MESSAGE_COST} coins to send message` : "Type a message"
                 }
-                disabled={isLoading || userCoins < MESSAGE_COST}
+                disabled={isLoading}
                 className="flex-1 bg-card/50 border-border resize-none min-h-[48px] max-h-[160px] text-sm chat-text pr-12"
                 rows={1}
               />
