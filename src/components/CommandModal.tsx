@@ -5,9 +5,13 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 
+import { getUserInstructions, upsertUserInstructions } from "@/lib/supabase";
+import { toast } from "sonner";
+
 interface CommandModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  userId?: string | null;
   onSave?: (value: {
     dontRefuse: boolean;
     reduceRepetition: boolean;
