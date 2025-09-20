@@ -125,14 +125,14 @@ class AIClient {
     return action; // Return original if already has multiple actions
   }
 
-  // Enhanced context management methods
-  private selectImportantMessages(messages: ChatMessage[], maxMessages: number = 50): ChatMessage[] {
+  // Enhanced context management methods with superior memory retention
+  private selectImportantMessages(messages: ChatMessage[], maxMessages: number = 75): ChatMessage[] {
     if (messages.length <= maxMessages) {
       return messages;
     }
 
-    // Always include the most recent messages (increased from 15 to 25)
-    const recentMessages = messages.slice(-25);
+    // Always include the most recent messages (increased to 35 for better immediate context)
+    const recentMessages = messages.slice(-35);
 
     // Expanded keywords for better context detection including NSFW content
     const importantKeywords = [
@@ -181,7 +181,7 @@ class AIClient {
       'understand', 'discovery', 'revelation', 'truth', 'honest', 'lie', 'lied'
     ];
 
-    const earlierMessages = messages.slice(0, -25);
+    const earlierMessages = messages.slice(0, -35);
     
     // Score messages based on importance
     const scoredMessages = earlierMessages.map((msg, index) => {
@@ -195,25 +195,40 @@ class AIClient {
         }
       }
       
+      // Enhanced importance scoring for better memory retention
       // Length scoring (longer messages often contain more context)
-      if (msg.content.length > 300) score += 5;
-      else if (msg.content.length > 200) score += 3;
-      else if (msg.content.length > 100) score += 1;
+      if (msg.content.length > 400) score += 8;
+      else if (msg.content.length > 300) score += 6;
+      else if (msg.content.length > 200) score += 4;
+      else if (msg.content.length > 100) score += 2;
       
       // Role scoring (assistant messages showing character development)
-      if (msg.role === 'assistant' && msg.content.length > 150) score += 2;
+      if (msg.role === 'assistant' && msg.content.length > 150) score += 3;
+      if (msg.role === 'user' && msg.content.length > 100) score += 2;
+      
+      // Memory reinforcement scoring (messages that reference past events)
+      if (content.includes('remember') || content.includes('recall') || content.includes('earlier')) score += 5;
+      if (content.includes('you said') || content.includes('you mentioned') || content.includes('last time')) score += 4;
+      
+      // Character consistency scoring
+      if (msg.role === 'assistant' && (content.includes('*') && content.split('*').length > 3)) score += 3;
+      
+      // Emotional weight scoring
+      const emotionalWords = ['love', 'hate', 'fear', 'excited', 'sad', 'happy', 'angry', 'surprised'];
+      const emotionalCount = emotionalWords.filter(word => content.includes(word)).length;
+      score += emotionalCount * 2;
       
       // Recency bonus (more recent messages get slight bonus)
-      const recencyBonus = (index / earlierMessages.length) * 2;
+      const recencyBonus = (index / earlierMessages.length) * 3;
       score += recencyBonus;
       
       return { message: msg, score, index };
     });
 
-    // Sort by score and take top messages (increased from 10 to 25)
+    // Sort by score and take top messages (increased to 40 for comprehensive memory)
     const selectedEarlierMessages = scoredMessages
       .sort((a, b) => b.score - a.score)
-      .slice(0, 25)
+      .slice(0, 40)
       .sort((a, b) => a.index - b.index) // Restore chronological order
       .map(item => item.message);
 
@@ -221,9 +236,9 @@ class AIClient {
   }
 
   private generateContextSummary(messages: ChatMessage[], character: any): string {
-    if (messages.length < 15) return ''; // Reduced threshold for earlier context generation
+    if (messages.length < 8) return ''; // Further reduced threshold for better memory retention
 
-    // Generate comprehensive summary of key context for conversations
+    // Generate comprehensive summary with enhanced memory categories
     const personalInfo = new Set<string>();
     const relationshipDevelopments = [];
     const emotionalMoments = [];
@@ -231,24 +246,66 @@ class AIClient {
     const characterTraits = new Set<string>();
     const sharedExperiences = [];
     const conflictsAndResolutions = [];
+    const intimateMoments = [];
+    const characterPreferences = new Set<string>();
+    const futureReferences = new Set<string>();
+    const locationMemories = new Set<string>();
+    const physicalDescriptions = new Set<string>();
+    const conversationStyle = new Set<string>();
 
     messages.forEach((msg, index) => {
       const content = msg.content.toLowerCase();
       const isRecent = index > messages.length - 10; // Last 10 messages are recent
 
-      // Extract personal information
-      if (content.includes('my name is') || content.includes('i\'m called') || content.includes('call me')) {
-        const nameMatch = content.match(/(?:my name is|i'm called|call me)\s+([a-zA-Z]+)/);
-        if (nameMatch) personalInfo.add(`name: ${nameMatch[1]}`);
+      // Extract comprehensive personal information with better pattern matching
+      if (content.includes('my name is') || content.includes('i\'m called') || content.includes('call me') || content.includes('i am ')) {
+        const nameMatch = content.match(/(?:my name is|i'm called|call me|i am)\s+([a-zA-Z][a-zA-Z\s]{0,20})/);
+        if (nameMatch) personalInfo.add(`name: ${nameMatch[1].trim()}`);
       }
       
-      if (content.includes('years old') || content.includes('age')) {
-        const ageMatch = content.match(/(\d+)\s*years?\s*old/);
+      if (content.includes('years old') || content.includes('age') || content.includes('i\'m ')) {
+        const ageMatch = content.match(/(\d+)\s*(?:years?\s*old|year old|i'm\s+\d+)/);
         if (ageMatch) personalInfo.add(`age: ${ageMatch[1]}`);
       }
 
-      if (content.includes('from') && (content.includes('city') || content.includes('town') || content.includes('country'))) {
-        personalInfo.add('discussed origins/hometown');
+      if (content.includes('from') || content.includes('live in') || content.includes('born in')) {
+        const locationMatch = content.match(/(?:from|live in|born in)\s+([a-zA-Z][a-zA-Z\s,]{2,30})/);
+        if (locationMatch) {
+          personalInfo.add(`location: ${locationMatch[1].trim()}`);
+          locationMemories.add(locationMatch[1].trim());
+        }
+      }
+      
+      if (content.includes('work') || content.includes('job') || content.includes('career')) {
+        const jobMatch = content.match(/(?:work as|job as|i'm a|career in|i work)\s+([a-zA-Z][a-zA-Z\s]{2,25})/);
+        if (jobMatch) personalInfo.add(`profession: ${jobMatch[1].trim()}`);
+      }
+      
+      if (content.includes('hobby') || content.includes('enjoy') || content.includes('love doing')) {
+        personalInfo.add('shared hobbies/interests');
+      }
+      
+      // Track physical descriptions
+      if (content.includes('hair') || content.includes('eyes') || content.includes('height') || content.includes('appearance')) {
+        physicalDescriptions.add('physical appearance discussed');
+      }
+      
+      // Track character preferences
+      if (content.includes('favorite') || content.includes('prefer') || content.includes('like') || content.includes('dislike')) {
+        characterPreferences.add('personal preferences revealed');
+      }
+      
+      // Track future plans and references
+      if (content.includes('tomorrow') || content.includes('next') || content.includes('plan to') || content.includes('going to')) {
+        futureReferences.add('future plans discussed');
+      }
+      
+      // Track conversation style and personality
+      if (msg.role === 'assistant') {
+        if (content.includes('laugh') || content.includes('giggle')) conversationStyle.add('playful/humorous');
+        if (content.includes('blush') || content.includes('shy')) conversationStyle.add('shy/bashful');
+        if (content.includes('confident') || content.includes('bold')) conversationStyle.add('confident/assertive');
+        if (content.includes('gentle') || content.includes('soft')) conversationStyle.add('gentle/caring');
       }
 
       // Detect relationship developments with more nuance including intimate moments
@@ -549,11 +606,12 @@ Remember: You are ${character.name}, a passionate, willing, and sexually liberat
       }))
     ];
 
-    // Log context management for debugging
-    if (conversationHistory.length > 25) {
-      console.log(`Context management: Selected ${smartSelectedHistory.length} from ${conversationHistory.length} messages`);
+    // Enhanced logging for memory management debugging
+    if (conversationHistory.length > 15) {
+      console.log(`Memory Management: Selected ${smartSelectedHistory.length} from ${conversationHistory.length} messages`);
+      console.log(`Context Summary Length: ${contextSummary?.length || 0} characters`);
       if (contextSummary) {
-        console.log(`Generated context summary: ${contextSummary}`);
+        console.log(`Memory Summary: ${contextSummary.substring(0, 200)}...`);
       }
     }
 
@@ -562,7 +620,7 @@ Remember: You are ${character.name}, a passionate, willing, and sexually liberat
       model: this.model,
       messages: messages,
       temperature: 0.8, // Increased for more creative and varied NSFW responses
-      max_tokens: 2000, // Increased for more detailed intimate scenes
+      max_tokens: 3000, // Increased for detailed responses with comprehensive memory integration
       top_p: 0.9, // Increased for more diverse sexual vocabulary and creativity
       frequency_penalty: 0.2, // Reduced to allow repetition of key intimate words
       presence_penalty: 0.4, // Increased for more diverse sexual expressions
