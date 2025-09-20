@@ -67,6 +67,7 @@ const Chat = () => {
   const [isIntroExpanded, setIsIntroExpanded] = useState(true);
   const [isPersonaModalOpen, setIsPersonaModalOpen] = useState(false);
   const [isModelsModalOpen, setIsModelsModalOpen] = useState(false);
+  const [isCommandModalOpen, setIsCommandModalOpen] = useState(false);
   const [isChatPageSettingsModalOpen, setIsChatPageSettingsModalOpen] = useState(false);
   const [isStartNewChatModalOpen, setIsStartNewChatModalOpen] = useState(false);
 
