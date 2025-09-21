@@ -662,8 +662,8 @@ Remember: You are ${character.name}, a passionate, willing, and sexually liberat
     })();
 
     // Enforce strict cap for free-tier models selected via ModelsModal
-    const isFreeModel = /:free\b/i.test(this.model);
-    const computedMaxTokens = isFreeModel ? Math.min(dynamicMaxTokens, 80) : dynamicMaxTokens;
+    const isPrimaryFreeModel = this.model === 'mistralai/mistral-nemo:free';
+    const computedMaxTokens = isPrimaryFreeModel ? 80 : dynamicMaxTokens;
 
     // Debug: Log token allocation for word count commands
     if (directives.targetWords) {
