@@ -590,6 +590,10 @@ Remember: You are ${character.name}, a passionate, willing, and sexually liberat
     return this.connectionStatus;
   }
 
+  getLastCallMeta() {
+    return this.lastCallMeta;
+  }
+
   private getCommandDirectives(): { text: string; reduceRepetition: boolean; targetWords?: number } {
     try {
       const serverRaw = localStorage.getItem('command_instructions_server');
