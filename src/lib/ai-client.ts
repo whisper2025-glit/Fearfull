@@ -12,6 +12,13 @@ class AIClient {
   private provider: 'openrouter' = 'openrouter';
   private isInitialized: boolean = false;
   private connectionStatus: 'initializing' | 'connected' | 'failed' = 'initializing';
+  private lastCallMeta?: {
+    model: string;
+    requested_max_tokens: number;
+    applied_max_tokens: number;
+    usage?: { prompt_tokens?: number; completion_tokens?: number; total_tokens?: number };
+    timestamp: string;
+  };
 
   // Simple actions that should be forbidden or enhanced
   private forbiddenSimpleActions = [
