@@ -661,9 +661,13 @@ Remember: You are ${character.name}, a passionate, willing, and sexually liberat
       return 3000;
     })();
 
+    // Enforce strict cap for free-tier models selected via ModelsModal
+    const isFreeModel = /:free\b/i.test(this.model);
+    const computedMaxTokens = isFreeModel ? Math.min(dynamicMaxTokens, 80) : dynamicMaxTokens;
+
     // Debug: Log token allocation for word count commands
     if (directives.targetWords) {
-      console.log(`🎯 Word count directive: ${directives.targetWords} words → ${dynamicMaxTokens} max tokens`);
+      console.log(`🎯 Word count directive: ${directives.targetWords} words → ${dynamicMaxTokens} max tokens (applied: ${computedMaxTokens})`);
     }
 
     // Optimized parameters with directive-aware tuning
@@ -671,7 +675,7 @@ Remember: You are ${character.name}, a passionate, willing, and sexually liberat
       model: this.model,
       messages,
       temperature: 0.8,
-      max_tokens: dynamicMaxTokens,
+      max_tokens: computedMaxTokens,
       top_p: 0.9,
       frequency_penalty: directives.reduceRepetition ? 0.6 : 0.2,
       presence_penalty: 0.4,
@@ -685,7 +689,7 @@ Remember: You are ${character.name}, a passionate, willing, and sexually liberat
       }),
       ...(this.model.includes('dolphin') && {
         temperature: 0.9,
-        max_tokens: Math.min(dynamicMaxTokens, 2500)
+        max_tokens: Math.min(computedMaxTokens, 2500)
       }),
       ...(this.model.includes('deepseek') && {
         temperature: 0.75,
