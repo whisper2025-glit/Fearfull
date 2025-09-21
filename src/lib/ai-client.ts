@@ -12,6 +12,13 @@ class AIClient {
   private provider: 'openrouter' = 'openrouter';
   private isInitialized: boolean = false;
   private connectionStatus: 'initializing' | 'connected' | 'failed' = 'initializing';
+  private lastCallMeta?: {
+    model: string;
+    requested_max_tokens: number;
+    applied_max_tokens: number;
+    usage?: { prompt_tokens?: number; completion_tokens?: number; total_tokens?: number };
+    timestamp: string;
+  };
 
   // Simple actions that should be forbidden or enhanced
   private forbiddenSimpleActions = [
@@ -583,6 +590,10 @@ Remember: You are ${character.name}, a passionate, willing, and sexually liberat
     return this.connectionStatus;
   }
 
+  getLastCallMeta() {
+    return this.lastCallMeta;
+  }
+
   private getCommandDirectives(): { text: string; reduceRepetition: boolean; targetWords?: number } {
     try {
       const serverRaw = localStorage.getItem('command_instructions_server');
@@ -661,9 +672,13 @@ Remember: You are ${character.name}, a passionate, willing, and sexually liberat
       return 3000;
     })();
 
+    // Enforce strict cap for free-tier models selected via ModelsModal
+    const isPrimaryFreeModel = this.model === 'mistralai/mistral-nemo:free';
+    const computedMaxTokens = isPrimaryFreeModel ? 80 : dynamicMaxTokens;
+
     // Debug: Log token allocation for word count commands
     if (directives.targetWords) {
-      console.log(`🎯 Word count directive: ${directives.targetWords} words → ${dynamicMaxTokens} max tokens`);
+      console.log(`🎯 Word count directive: ${directives.targetWords} words → ${dynamicMaxTokens} max tokens (applied: ${computedMaxTokens})`);
     }
 
     // Optimized parameters with directive-aware tuning
@@ -671,7 +686,7 @@ Remember: You are ${character.name}, a passionate, willing, and sexually liberat
       model: this.model,
       messages,
       temperature: 0.8,
-      max_tokens: dynamicMaxTokens,
+      max_tokens: computedMaxTokens,
       top_p: 0.9,
       frequency_penalty: directives.reduceRepetition ? 0.6 : 0.2,
       presence_penalty: 0.4,
@@ -685,13 +700,24 @@ Remember: You are ${character.name}, a passionate, willing, and sexually liberat
       }),
       ...(this.model.includes('dolphin') && {
         temperature: 0.9,
-        max_tokens: Math.min(dynamicMaxTokens, 2500)
+        max_tokens: Math.min(computedMaxTokens, 2500)
       }),
       ...(this.model.includes('deepseek') && {
         temperature: 0.75,
         top_p: 0.88
       })
     });
+
+    // Record usage/meta for verification
+    this.lastCallMeta = {
+      model: this.model,
+      requested_max_tokens: dynamicMaxTokens,
+      applied_max_tokens: computedMaxTokens,
+      usage: completion.usage,
+      timestamp: new Date().toISOString(),
+    };
+    try { localStorage.setItem('ai_last_call_meta', JSON.stringify(this.lastCallMeta)); } catch {}
+    console.log('[AI] Call meta', this.lastCallMeta);
 
     const response = completion.choices[0]?.message?.content;
 
