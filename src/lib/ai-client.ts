@@ -708,6 +708,17 @@ Remember: You are ${character.name}, a passionate, willing, and sexually liberat
       })
     });
 
+    // Record usage/meta for verification
+    this.lastCallMeta = {
+      model: this.model,
+      requested_max_tokens: dynamicMaxTokens,
+      applied_max_tokens: computedMaxTokens,
+      usage: completion.usage,
+      timestamp: new Date().toISOString(),
+    };
+    try { localStorage.setItem('ai_last_call_meta', JSON.stringify(this.lastCallMeta)); } catch {}
+    console.log('[AI] Call meta', this.lastCallMeta);
+
     const response = completion.choices[0]?.message?.content;
 
     if (!response) {
