@@ -39,7 +39,7 @@ export const hasCompletedOnboarding = (): boolean => {
 // Filter characters based on user's content level
 export const filterCharactersByContentLevel = (characters: any[], contentLevel: ContentLevel = getUserContentLevel()) => {
   if (contentLevel === 'unrestricted') {
-    return characters; // Show all characters
+    return characters; // Show ALL characters including extreme/taboo content
   }
   
   if (contentLevel === 'sfw') {
