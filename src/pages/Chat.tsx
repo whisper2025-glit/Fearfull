@@ -15,6 +15,7 @@ import {
 import { PersonaModal } from "@/components/PersonaModal";
 import { ModelsModal, Model } from "@/components/ModelsModal";
 import { ChatPageSettingsModal, ChatPageSettings } from "@/components/ChatPageSettingsModal";
+import { ChatSettingsModal } from "@/components/ChatSettingsModal";
 import { MessageFormatter } from "@/components/MessageFormatter";
 import { useHistoryBackClose } from "@/hooks/useHistoryBackClose";
 import { supabase, getDefaultPersona, incrementUserCoins, canClaimDailyReward, markDailyRewardClaimed, getUserCoins, deductUserCoins } from "@/lib/supabase";
@@ -67,6 +68,7 @@ const Chat = () => {
   const [isPersonaModalOpen, setIsPersonaModalOpen] = useState(false);
   const [isModelsModalOpen, setIsModelsModalOpen] = useState(false);
   const [isChatPageSettingsModalOpen, setIsChatPageSettingsModalOpen] = useState(false);
+  const [isChatSettingsModalOpen, setIsChatSettingsModalOpen] = useState(false);
   const [isStartNewChatModalOpen, setIsStartNewChatModalOpen] = useState(false);
 
   // Message menu and editing state
@@ -76,7 +78,8 @@ const Chat = () => {
 
   useHistoryBackClose(isPersonaModalOpen, setIsPersonaModalOpen, "persona-modal");
   useHistoryBackClose(isModelsModalOpen, setIsModelsModalOpen, "models-modal");
-  useHistoryBackClose(isChatPageSettingsModalOpen, setIsChatPageSettingsModalOpen, "chat-settings-modal");
+  useHistoryBackClose(isChatPageSettingsModalOpen, setIsChatPageSettingsModalOpen, "chat-page-settings-modal");
+  useHistoryBackClose(isChatSettingsModalOpen, setIsChatSettingsModalOpen, "chat-settings-modal");
   useHistoryBackClose(isStartNewChatModalOpen, setIsStartNewChatModalOpen, "start-new-chat-modal");
   const [selectedModel, setSelectedModel] = useState<Model>({
     id: "mistral-nemo-free",
@@ -818,6 +821,10 @@ const Chat = () => {
                 <User className="mr-2 h-4 w-4" />
                 Bot Profile
               </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setIsChatSettingsModalOpen(true)}>
+                <Settings className="mr-2 h-4 w-4" />
+                Chat Settings
+              </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setIsChatPageSettingsModalOpen(true)}>
                 <Settings className="mr-2 h-4 w-4" />
                 Chat Page Settings
@@ -1189,6 +1196,11 @@ const Chat = () => {
         onOpenChange={setIsChatPageSettingsModalOpen}
         value={chatPageSettings}
         onSave={(v) => setChatPageSettings(v)}
+      />
+
+      <ChatSettingsModal
+        open={isChatSettingsModalOpen}
+        onOpenChange={setIsChatSettingsModalOpen}
       />
 
       {user && (
