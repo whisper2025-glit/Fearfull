@@ -18,6 +18,14 @@ class AIClient {
     usage?: { prompt_tokens?: number; completion_tokens?: number; total_tokens?: number };
     timestamp: string;
   };
+  
+  // Chat settings that will be applied to API calls
+  private chatSettings = {
+    temperature: 0.8,
+    contentDiversity: 0.05,
+    maxTokens: 3000,
+    extremeNSFWMode: true
+  };
 
   // Simple actions that should be forbidden or enhanced
   private forbiddenSimpleActions = [
@@ -616,6 +624,33 @@ Remember: You are ${character.name}, a passionate, willing, and sexually liberat
     return this.model;
   }
 
+  updateSettings(settings: {
+    temperature?: number;
+    contentDiversity?: number;
+    maxTokens?: number;
+    extremeNSFWMode?: boolean;
+  }): void {
+    if (settings.temperature !== undefined) {
+      this.chatSettings.temperature = settings.temperature;
+    }
+    if (settings.contentDiversity !== undefined) {
+      this.chatSettings.contentDiversity = settings.contentDiversity;
+    }
+    if (settings.maxTokens !== undefined) {
+      this.chatSettings.maxTokens = settings.maxTokens;
+    }
+    if (settings.extremeNSFWMode !== undefined) {
+      this.chatSettings.extremeNSFWMode = settings.extremeNSFWMode;
+      this.extremeNSFWMode = settings.extremeNSFWMode;
+    }
+    
+    console.log('🔧 AI Client settings updated:', this.chatSettings);
+  }
+
+  getCurrentSettings(): typeof this.chatSettings {
+    return { ...this.chatSettings };
+  }
+
   
 
   getConnectionStatus(): string {
@@ -721,13 +756,16 @@ Remember: You are ${character.name}, a passionate, willing, and sexually liberat
       console.log(`🎯 Word count directive: ${directives.targetWords} words → ${dynamicMaxTokens} max tokens (applied: ${computedMaxTokens})`);
     }
 
-    // Optimized parameters with directive-aware tuning
+    // Apply user settings with directive-aware tuning
+    const appliedTemperature = this.chatSettings.temperature;
+    const appliedTopP = Math.max(0.1, Math.min(1.0, 0.9 + this.chatSettings.contentDiversity));
+    
     const completion = await this.openai.chat.completions.create({
       model: this.model,
       messages,
-      temperature: 0.8,
+      temperature: appliedTemperature,
       max_tokens: computedMaxTokens,
-      top_p: 0.9,
+      top_p: appliedTopP,
       frequency_penalty: directives.reduceRepetition ? 0.6 : 0.2,
       presence_penalty: 0.4,
       ...(this.model.includes('mistral') && {

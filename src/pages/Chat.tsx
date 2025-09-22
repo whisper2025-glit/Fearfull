@@ -382,6 +382,40 @@ const Chat = () => {
     loadDefaultPersona();
   }, [user, currentPersona]);
 
+  // Load and apply chat settings when user is available
+  useEffect(() => {
+    const loadChatSettings = async () => {
+      if (!user) return;
+
+      try {
+        const { getChatSettings, getDefaultChatSettings } = await import('@/lib/supabase');
+        let userSettings = null;
+        
+        try {
+          userSettings = await getChatSettings(user.id);
+        } catch (error) {
+          console.log('No existing chat settings found, using defaults');
+        }
+
+        const settingsToUse = userSettings || getDefaultChatSettings();
+        
+        // Apply settings to AI client
+        openRouterAI.updateSettings({
+          temperature: settingsToUse.temperature,
+          contentDiversity: settingsToUse.content_diversity,
+          maxTokens: settingsToUse.max_tokens
+        });
+
+        console.log('✅ Chat settings loaded and applied:', settingsToUse);
+      } catch (error) {
+        console.error('Error loading chat settings:', error);
+        // Don't show error toast for this as it's not critical
+      }
+    };
+
+    loadChatSettings();
+  }, [user]);
+
   // Load default command instructions from Supabase to local cache for AI client
   useEffect(() => {
     const hydrateDefaults = async () => {

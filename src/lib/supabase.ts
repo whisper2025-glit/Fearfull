@@ -2218,7 +2218,66 @@ export const updateAdventureConversationTitle = async (
   }
 };
 
-// Chat Settings for UI components
+// Chat Settings Management
+export interface ChatSettings {
+  user_id: string;
+  model_id: string;
+  temperature: number;
+  content_diversity: number;
+  max_tokens: number;
+}
+
+export const getDefaultChatSettings = (): ChatSettings => ({
+  user_id: '',
+  model_id: 'default',
+  temperature: 0.8,
+  content_diversity: 0.05,
+  max_tokens: 3000
+});
+
+export const saveChatSettings = async (settings: ChatSettings): Promise<void> => {
+  try {
+    const { error } = await supabase
+      .from('chat_settings')
+      .upsert(settings, {
+        onConflict: 'user_id,model_id'
+      });
+
+    if (error) {
+      console.error('Error saving chat settings:', error);
+      throw error;
+    }
+
+    console.log('✅ Chat settings saved successfully');
+  } catch (error) {
+    console.error('❌ Error in saveChatSettings:', error);
+    throw error;
+  }
+};
+
+export const getChatSettings = async (userId: string, modelId: string = 'default'): Promise<ChatSettings | null> => {
+  try {
+    const { data, error } = await supabase
+      .from('chat_settings')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('model_id', modelId)
+      .single();
+
+    if (error) {
+      if (error.code === 'PGRST116') {
+        // No settings found, return null
+        return null;
+      }
+      throw error;
+    }
+
+    return data;
+  } catch (error) {
+    console.error('❌ Error getting chat settings:', error);
+    throw error;
+  }
+};ponents
 export interface ChatSettings {
   user_id: string;
   model_id: string;
