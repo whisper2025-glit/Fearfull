@@ -101,9 +101,9 @@ const Chats = () => {
   }
 
   return (
-    <Layout headerPosition="fixed" hideSearchIcon hideUserAvatar>
+    <Layout hideSearchIcon hideUserAvatar>
       <div className="flex-1 min-h-0 overflow-auto bg-background text-foreground">
-        <div className="p-4 space-y-2 pb-24">
+        <div className="p-4 space-y-2 pb-24"></div>
           {isLoading ? (
             <div className="space-y-4">
               {[...Array(3)].map((_, i) => (
