@@ -207,14 +207,14 @@ const Search = () => {
         `)
         .eq('visibility', 'public');
 
-      // Apply search query
-      if (query.trim()) {
-        queryBuilder = queryBuilder.or(`name.ilike.%${query}%,intro.ilike.%${query}%,personality.ilike.%${query}%`);
-      }
+      // Apply search query - search in name, intro, personality, and tags
+      const searchTerm = query.trim();
+      queryBuilder = queryBuilder.or(`name.ilike.%${searchTerm}%,intro.ilike.%${searchTerm}%,personality.ilike.%${searchTerm}%,tags.cs.{${searchTerm}}`);
 
       // Apply gender filter
       if (filterGender !== 'Gender All') {
-        queryBuilder = queryBuilder.eq('gender', filterGender.replace('Gender ', ''));
+        const genderValue = filterGender.replace('Gender ', '').toLowerCase();
+        queryBuilder = queryBuilder.ilike('gender', genderValue);
       }
 
       // Apply tag filters
@@ -241,8 +241,26 @@ const Search = () => {
         toast.error('Search failed. Please try again.');
         setSearchResults([]);
       } else {
+        // Additional client-side filtering for more precise matching
+        let filteredCharacters = characters || [];
+        
+        // Further filter results to ensure they match the search query
+        if (searchTerm) {
+          filteredCharacters = filteredCharacters.filter(char => {
+            const searchLower = searchTerm.toLowerCase();
+            const nameMatch = char.name?.toLowerCase().includes(searchLower);
+            const introMatch = char.intro?.toLowerCase().includes(searchLower);
+            const personalityMatch = char.personality?.toLowerCase().includes(searchLower);
+            const tagsMatch = Array.isArray(char.tags) && char.tags.some(tag => 
+              tag.toLowerCase().includes(searchLower)
+            );
+            
+            return nameMatch || introMatch || personalityMatch || tagsMatch;
+          });
+        }
+
         // Process search results to add calculated fields
-        const processedResults = await Promise.all((characters || []).map(async (character) => {
+        const processedResults = await Promise.all(filteredCharacters.map(async (character) => {
           // Get message count for this character
           const { count: messageCount } = await supabase
             .from('messages')
