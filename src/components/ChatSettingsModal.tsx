@@ -24,26 +24,36 @@ export function ChatSettingsModal({ open, onOpenChange, onSettingsChange }: Chat
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
-  // Load default settings when modal opens
+  // Load settings when modal opens
   useEffect(() => {
     const loadSettings = async () => {
       if (!open || !user) return;
 
       setIsLoading(true);
       try {
-        // Use default settings since we removed model-specific settings
-        const defaults = getDefaultChatSettings();
-        setTemperature([defaults.temperature]);
-        setContentDiversity([defaults.content_diversity]);
-        setMaxMessageLength([defaults.max_tokens]);
+        const { getChatSettings, getDefaultChatSettings } = await import('@/lib/supabase');
+        
+        // Try to load user's saved settings
+        let userSettings = null;
+        try {
+          userSettings = await getChatSettings(user.id, 'default');
+        } catch (error) {
+          console.log('No existing chat settings found, using defaults');
+        }
+
+        // Use saved settings or defaults
+        const settingsToUse = userSettings || getDefaultChatSettings();
+        
+        setTemperature([settingsToUse.temperature]);
+        setContentDiversity([settingsToUse.content_diversity]);
+        setMaxMessageLength([settingsToUse.max_tokens]);
 
         // Load NSFW mode setting
         const savedNSFWMode = localStorage.getItem('extreme_nsfw_mode');
         const nsfwModeEnabled = savedNSFWMode ? JSON.parse(savedNSFWMode) : true;
         setExtremeNSFWMode(nsfwModeEnabled);
-        openRouterAI.enableExtremeNSFWMode(nsfwModeEnabled);
 
-        console.log('📋 Using default chat settings');
+        console.log('📋 Chat settings loaded:', settingsToUse);
       } catch (error) {
         console.error('❌ Error loading chat settings:', error);
         toast.error('Failed to load chat settings');
@@ -71,13 +81,24 @@ export function ChatSettingsModal({ open, onOpenChange, onSettingsChange }: Chat
         max_tokens: maxMessageLength[0]
       };
 
+      // Save settings to database
+      const { saveChatSettings } = await import('@/lib/supabase');
+      await saveChatSettings(settings);
+
+      // Apply settings to AI client immediately
+      openRouterAI.updateSettings({
+        temperature: settings.temperature,
+        contentDiversity: settings.content_diversity,
+        maxTokens: settings.max_tokens,
+        extremeNSFWMode: extremeNSFWMode
+      });
+
       // Save NSFW mode setting
       localStorage.setItem('extreme_nsfw_mode', JSON.stringify(extremeNSFWMode));
-      openRouterAI.enableExtremeNSFWMode(extremeNSFWMode);
 
-      console.log('✅ Chat settings updated:', settings);
+      console.log('✅ Chat settings saved and applied:', settings);
       console.log('🔞 Extreme NSFW mode:', extremeNSFWMode ? 'ENABLED' : 'DISABLED');
-      toast.success(`Chat settings updated! Extreme NSFW mode ${extremeNSFWMode ? 'ENABLED' : 'DISABLED'}`);
+      toast.success(`Chat settings saved and applied! Extreme NSFW mode ${extremeNSFWMode ? 'ENABLED' : 'DISABLED'}`);
       onSettingsChange?.(settings);
       onOpenChange(false);
     } catch (error) {

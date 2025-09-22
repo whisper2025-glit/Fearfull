@@ -2227,12 +2227,10 @@ export interface ChatSettings {
   max_tokens: number;
 }
 
-export const getDefaultChatSettings = (): ChatSettings => ({
-  user_id: '',
-  model_id: 'default',
-  temperature: 0.8,
+export const getDefaultChatSettings = (): Pick<ChatSettings, 'temperature' | 'content_diversity' | 'max_tokens'> => ({
+  temperature: 0.70,
   content_diversity: 0.05,
-  max_tokens: 3000
+  max_tokens: 195
 });
 
 export const saveChatSettings = async (settings: ChatSettings): Promise<void> => {
@@ -2277,19 +2275,4 @@ export const getChatSettings = async (userId: string, modelId: string = 'default
     console.error('❌ Error getting chat settings:', error);
     throw error;
   }
-};ponents
-export interface ChatSettings {
-  user_id: string;
-  model_id: string;
-  temperature: number;
-  content_diversity: number;
-  max_tokens: number;
-}
-
-export const getDefaultChatSettings = (): Pick<ChatSettings, 'temperature' | 'content_diversity' | 'max_tokens'> => {
-  return {
-    temperature: 0.70,
-    content_diversity: 0.05,
-    max_tokens: 195
-  };
 };

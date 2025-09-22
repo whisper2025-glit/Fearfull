@@ -39,16 +39,22 @@ class AIClient {
     this.model = 'mistralai/mistral-nemo:free'; // Default model - can be upgraded
     this.extremeNSFWMode = true; // Enhanced NSFW mode enabled by default for natural responses
 
-    // Initialize OpenRouter client
+    // Initialize OpenRouter client with fallback API key
+    const apiKey = import.meta.env.VITE_OPENROUTER_API_KEY || 'placeholder';
     this.openai = new OpenAI({
       baseURL: "https://openrouter.ai/api/v1",
-      apiKey: import.meta.env.VITE_OPENROUTER_API_KEY,
+      apiKey: apiKey,
       dangerouslyAllowBrowser: true
     });
     
     this.isInitialized = true;
-    this.connectionStatus = 'connected';
-    console.log('✅ AI Client initialized with OpenRouter - Unrestricted NSFW mode activated for enhanced intimate roleplay');
+    this.connectionStatus = apiKey === 'placeholder' ? 'failed' : 'connected';
+    
+    if (apiKey === 'placeholder') {
+      console.warn('⚠️ AI Client initialized without valid API key - Set VITE_OPENROUTER_API_KEY environment variable');
+    } else {
+      console.log('✅ AI Client initialized with OpenRouter - Unrestricted NSFW mode activated for enhanced intimate roleplay');
+    }
   }
 
   private validateAndEnhanceAsterisks(content: string): string {
