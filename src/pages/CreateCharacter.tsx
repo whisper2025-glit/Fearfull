@@ -18,6 +18,7 @@ import { trackEvent } from "@/lib/analytics";
 import { MessageFormatter } from "@/components/MessageFormatter";
 import { Card } from "@/components/ui/card";
 import { useHistoryBackClose } from "@/hooks/useHistoryBackClose";
+import { shouldBlockNSFWContent } from "@/lib/contentFilter";
 
 const CreateCharacter = () => {
   const navigate = useNavigate();
@@ -344,10 +345,12 @@ const CreateCharacter = () => {
                     <RadioGroupItem value="filtered" id="filtered" className="border-primary text-primary" />
                     <Label htmlFor="filtered" className="text-xs font-medium">Filtered</Label>
                   </div>
-                  <div className="flex items-center space-x-3">
-                    <RadioGroupItem value="unfiltered" id="unfiltered" className="border-primary" />
-                    <Label htmlFor="unfiltered" className="text-xs font-medium">Unfiltered</Label>
-                  </div>
+                  {!shouldBlockNSFWContent() && (
+                    <div className="flex items-center space-x-3">
+                      <RadioGroupItem value="unfiltered" id="unfiltered" className="border-primary" />
+                      <Label htmlFor="unfiltered" className="text-xs font-medium">Unfiltered</Label>
+                    </div>
+                  )}
                 </RadioGroup>
               </div>
 

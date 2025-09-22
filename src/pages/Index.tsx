@@ -11,6 +11,9 @@ import { HomeFilters, SortOption } from "@/components/HomeFilters";
 import { useUser } from "@clerk/clerk-react";
 import { getFavoriteCharacters } from "@/lib/supabase";
 import { trackEvent } from "@/lib/analytics";
+import { PreferencesOnboardingModal } from "@/components/PreferencesOnboardingModal";
+import { CreateModal } from "@/components/CreateModal";
+
 
 const Index = () => {
   const navigate = useNavigate();
@@ -27,6 +30,32 @@ const Index = () => {
   const [hasMore, setHasMore] = useState(true);
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
   const PAGE_SIZE = 24;
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [filteredCharacters, setFilteredCharacters] = useState<any[]>([]);
+  const [showOnboarding, setShowOnboarding] = useState(false);
+
+  // Helper to check if user has completed onboarding
+  const hasCompletedOnboarding = useCallback(() => {
+    // In a real app, you'd store this in user metadata or a separate table
+    // For this example, we'll simulate it. If user has a 'last_login' in supabase, assume onboarding is done.
+    // This is a placeholder and needs a proper implementation.
+    if (!user) return true; // Assume logged out users have completed it
+    return user.unsafeMetadata?.onboardingCompleted === true;
+  }, [user]);
+
+  // Content filtering based on user's age preference
+  const filterCharactersByContentLevel = useCallback((chars: any[]) => {
+    // Placeholder for actual age preference retrieval from user profile/metadata
+    // For now, we'll use a simulated value or check if user is logged in
+    const userAgePreference = user?.unsafeMetadata?.agePreference || 18; // Default to 18 if not set
+
+    if (userAgePreference < 18) {
+      return chars.filter(char => !char.isNsfw); // Filter out NSFW characters
+    } else if (userAgePreference >= 18 && userAgePreference <= 20) {
+      return chars.filter(char => !char.isHighlyNsfw); // Filter out highly NSFW characters
+    }
+    return chars; // Show all if 20+
+  }, [user]);
 
   // Paginated fetch
   const fetchPage = useCallback(async (pageToLoad: number) => {
@@ -72,6 +101,8 @@ const Index = () => {
         created_at: char.created_at,
         gender: char.gender || null,
         stats: { messages: 0, likes: 0 },
+        isNsfw: char.is_nsfw || false, // Assuming a property in your DB
+        isHighlyNsfw: char.is_highly_nsfw || false, // Assuming a property in your DB
       }));
 
       const ids = transformed.map((c: any) => c.id);
@@ -105,6 +136,33 @@ const Index = () => {
     }
   }, [PAGE_SIZE, isLoadingMore, isSignedIn, user, gender, activeTag]);
 
+  const applyFilters = useCallback(() => {
+    let filtered = characters;
+
+    // Apply content filtering first
+    filtered = filterCharactersByContentLevel(characters);
+
+    // Apply other filters
+    if (gender !== 'Gender All') {
+      const g = gender.replace('Gender ', '');
+      filtered = filtered.filter((c) => (c.gender ? c.gender === g : true));
+    }
+
+    if (activeTag) {
+      filtered = filtered.filter((c) => (c.tags || []).includes(activeTag) || c.category === activeTag);
+    }
+
+    if (sortBy === 'Following') {
+      if (favoriteIds.length > 0) {
+        filtered = filtered.filter((c) => favoriteIds.includes(c.id));
+      } else if (isSignedIn) {
+        filtered = [];
+      }
+    }
+    setFilteredCharacters(filtered);
+  }, [characters, activeTag, sortBy, gender, favoriteIds, isSignedIn, filterCharactersByContentLevel]);
+
+
   useEffect(() => {
     // Initialize from URL once on mount
     const tag = searchParams.get('tag');
@@ -121,21 +179,19 @@ const Index = () => {
   }, []);
 
   useEffect(() => {
-    setCharacters([]);
-    setHasMore(true);
-    setPage(0);
-    trackEvent('filter_change', { tag: activeTag, sort: sortBy, gender });
-    // Persist to URL only when it actually changes to avoid navigation loops
-    const params: any = {};
-    if (activeTag) params.tag = activeTag;
-    if (sortBy) params.sort = sortBy;
-    if (gender) params.gender = gender;
-    const next = new URLSearchParams(params).toString();
-    if (searchParams.toString() !== next) {
-      setSearchParams(params);
+    // Check if user needs onboarding
+    if (user && !hasCompletedOnboarding()) {
+      setShowOnboarding(true);
     }
+  }, [user, hasCompletedOnboarding]);
+
+  useEffect(() => {
     fetchPage(0);
-  }, [activeTag, gender, sortBy]);
+  }, [fetchPage]); // fetchPage will re-run if dependencies change
+
+  useEffect(() => {
+    applyFilters();
+  }, [characters, activeTag, sortBy, gender, favoriteIds, isSignedIn, applyFilters]); // Re-apply filters when relevant state changes
 
   useEffect(() => {
     const loadFavorites = async () => {
@@ -150,24 +206,11 @@ const Index = () => {
   }, [sortBy, isSignedIn, user]);
 
   const visibleCharacters = useMemo(() => {
-    let list = characters;
+    let list = filteredCharacters;
 
-    if (gender !== 'Gender All') {
-      const g = gender.replace('Gender ', '');
-      list = list.filter((c) => (c.gender ? c.gender === g : true));
-    }
-
-    if (activeTag) {
-      list = list.filter((c) => (c.tags || []).includes(activeTag) || c.category === activeTag);
-    }
-
-    if (sortBy === 'Following') {
-      if (favoriteIds.length > 0) {
-        list = list.filter((c) => favoriteIds.includes(c.id));
-      } else if (isSignedIn) {
-        list = [];
-      }
-    }
+    // Sorting is now applied directly in applyFilters or handled by backend.
+    // If specific client-side sorting is needed here, it would be applied to `filteredCharacters`.
+    // For now, assuming backend handles most sorting and applyFilters handles client-side logic.
 
     switch (sortBy) {
       case 'New':
@@ -182,7 +225,7 @@ const Index = () => {
       default:
         return [...list].sort((a, b) => ((b.stats.likes + b.stats.messages * 2) - (a.stats.likes + a.stats.messages * 2)));
     }
-  }, [characters, activeTag, sortBy, gender, favoriteIds, isSignedIn]);
+  }, [filteredCharacters, sortBy]);
 
   // Observer to trigger loading more
   useEffect(() => {
@@ -228,7 +271,7 @@ const Index = () => {
           <div className="flex items-center justify-center py-12">
             <div className="text-center">
               <p className="text-muted-foreground mb-4">No characters found for this filter</p>
-              <Button onClick={() => navigate('/create')}>Create Your First Character</Button>
+              <Button onClick={() => { trackEvent('click_create_character'); navigate('/create'); }}>Create Your First Character</Button>
             </div>
           </div>
         ) : (
@@ -251,6 +294,20 @@ const Index = () => {
           </>
         )}
       </div>
+
+      <CreateModal
+        open={isCreateModalOpen}
+        onOpenChange={setIsCreateModalOpen}
+      />
+
+      <PreferencesOnboardingModal
+        open={showOnboarding}
+        onComplete={() => {
+          setShowOnboarding(false);
+          // Reload characters with new filtering
+          applyFilters(); // Re-apply filters to update the displayed characters
+        }}
+      />
     </Layout>
   );
 };

@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { toast } from "sonner";
+import PreferencesOnboardingModal from "@/components/PreferencesOnboardingModal";
 
 const AuthPage = () => {
   const navigate = useNavigate();
@@ -20,6 +21,7 @@ const AuthPage = () => {
   const [loading, setLoading] = useState<null | "email" | "google" | "discord" | "verify">(null);
   const [verificationRequired, setVerificationRequired] = useState(false);
   const [verificationCode, setVerificationCode] = useState("");
+  const [showOnboarding, setShowOnboarding] = useState(false);
 
   const isLoaded = signInLoaded && signUpLoaded;
 
@@ -82,8 +84,8 @@ const AuthPage = () => {
 
       if (result.status === "complete") {
         await setActiveSignUp({ session: result.createdSessionId });
-        // Do not navigate immediately; wait for Clerk state to propagate
-        // The effect that watches isSignedIn will handle redirect
+        // Show onboarding for new users
+        setShowOnboarding(true);
       } else if (result.status === "missing_requirements") {
         await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
         setVerificationRequired(true);
@@ -107,8 +109,8 @@ const AuthPage = () => {
       const result = await signUp.attemptEmailAddressVerification({ code: verificationCode });
       if (result.status === "complete") {
         await setActiveSignUp({ session: result.createdSessionId });
-        // Do not navigate immediately; wait for Clerk state to propagate
-        // The effect that watches isSignedIn will handle redirect
+        // Show onboarding for new users
+        setShowOnboarding(true);
       } else {
         toast.error("Verification failed. Please check the code and try again.");
       }
@@ -279,6 +281,14 @@ const AuthPage = () => {
               </div>
             </form>
           )}
+
+          <PreferencesOnboardingModal
+            open={showOnboarding}
+            onComplete={() => {
+              setShowOnboarding(false);
+              // Navigation will be handled by the existing effect
+            }}
+          />
         </div>
       </div>
     </div>

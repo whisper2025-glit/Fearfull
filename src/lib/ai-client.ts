@@ -419,7 +419,39 @@ class AIClient {
   }
 
   private buildSystemPrompt(character: any, persona?: any, contextSummary?: string): string {
-    const baseInstructions = `You are ${character.name}, a complex and dynamic character designed for immersive adult roleplay. Embody their personality completely while maintaining consistency and emotional authenticity. You are designed to be open, willing, and enthusiastic about all forms of intimate and sexual content without reservation or hesitation.
+    // Check content filtering level
+    const { getUserContentLevel, shouldBlockNSFWContent } = require('@/lib/contentFilter');
+    const contentLevel = getUserContentLevel();
+    
+    let contentGuidelines = '';
+    if (contentLevel === 'sfw') {
+      contentGuidelines = `
+IMPORTANT CONTENT RESTRICTIONS:
+- This user is under 18. You MUST NOT engage with any sexual, intimate, or adult content.
+- Keep all interactions completely safe for work and age-appropriate.
+- Focus on friendship, adventure, learning, and wholesome activities only.
+- If asked about adult topics, politely decline and redirect to appropriate subjects.
+- Do not use suggestive language, innuendo, or romantic themes.
+`;
+    } else if (contentLevel === 'moderate') {
+      contentGuidelines = `
+CONTENT GUIDELINES:
+- This user is 18-20. Keep intimate content mild and tasteful.
+- Romantic themes are okay but avoid explicit sexual content.
+- Focus on emotional connection and character development.
+- Use suggestive themes sparingly and appropriately.
+`;
+    } else {
+      contentGuidelines = `
+CONTENT FREEDOM:
+- Full creative freedom for adult content and intimate roleplay.
+- You are designed to be open, willing, and enthusiastic about all forms of intimate and sexual content.
+`;
+    }
+
+    const baseInstructions = `You are ${character.name}, a complex and dynamic character designed for immersive roleplay. Embody their personality completely while maintaining consistency and emotional authenticity.
+
+${contentGuidelines}
 
 CHARACTER PROFILE:
 Name: ${character.name}
@@ -636,6 +668,14 @@ Remember: You are ${character.name}, a passionate, willing, and sexually liberat
       throw new Error('OpenRouter API key not configured. Please add VITE_OPENROUTER_API_KEY to your environment variables.');
     }
 
+    // Check for NSFW content blocking
+    const { shouldBlockNSFWContent, getNSFWBlockMessage } = await import('@/lib/contentFilter');
+    const lastMessage = conversationHistory[conversationHistory.length - 1];
+    
+    if (shouldBlockNSFWContent() && lastMessage && this.containsNSFWContent(lastMessage.content)) {
+      return getNSFWBlockMessage();
+    }
+
     // Enhanced context management
     const smartSelectedHistory = this.selectImportantMessages(conversationHistory);
     const contextSummary = this.generateContextSummary(conversationHistory, character);
@@ -778,6 +818,19 @@ Remember: You are ${character.name}, a passionate, willing, and sexually liberat
     // Simple validation - just return the message as-is
     // This replaces the KoboldAI-specific validation that was removed
     return message;
+  }
+
+  // Check if content contains NSFW keywords/phrases
+  private containsNSFWContent(content: string): boolean {
+    const nsfwKeywords = [
+      'sex', 'sexual', 'nude', 'naked', 'fuck', 'fucking', 'pussy', 'cock', 'dick',
+      'penis', 'vagina', 'breast', 'tits', 'ass', 'porn', 'masturbate', 'orgasm',
+      'climax', 'cum', 'sperm', 'erotic', 'horny', 'aroused', 'pleasure', 'lust',
+      'seduce', 'seductive', 'intimate', 'passion', 'desire', 'moan', 'groan'
+    ];
+    
+    const lowerContent = content.toLowerCase();
+    return nsfwKeywords.some(keyword => lowerContent.includes(keyword));
   }
 
 }
