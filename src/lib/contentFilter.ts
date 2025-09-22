@@ -100,3 +100,18 @@ export const updateUserContentLevel = (ageRange: string) => {
   
   return contentLevel;
 };
+
+// Direct content level setter
+export const setUserContentLevel = (contentLevel: ContentLevel) => {
+  try {
+    localStorage.setItem('user_content_level', contentLevel);
+    // Map content level back to age range for consistency
+    const ageRange = contentLevel === 'sfw' ? 'below-18' : 
+                     contentLevel === 'moderate' ? '18-20' : '21+';
+    localStorage.setItem('user_age_range', ageRange);
+  } catch (error) {
+    console.error('Error setting content level:', error);
+  }
+  
+  return contentLevel;
+};

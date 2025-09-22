@@ -24,7 +24,7 @@ export const PreferencesOnboardingModal = ({ isOpen, onClose }: PreferencesOnboa
       ageRange: '13+',
     },
     {
-      id: 'adult' as ContentLevel,
+      id: 'moderate' as ContentLevel,
       title: 'Adult Content',
       description: 'Mature themes and romantic content',
       icon: Users,
