@@ -209,7 +209,15 @@ const Search = () => {
 
       // Apply search query - search in name, intro, personality, and tags
       const searchTerm = query.trim();
-      queryBuilder = queryBuilder.or(`name.ilike.%${searchTerm}%,intro.ilike.%${searchTerm}%,personality.ilike.%${searchTerm}%,tags.cs.{${searchTerm}}`);
+      if (searchTerm) {
+        // Use multiple approaches for better search coverage
+        queryBuilder = queryBuilder.or(`
+          name.ilike.%${searchTerm}%,
+          intro.ilike.%${searchTerm}%,
+          personality.ilike.%${searchTerm}%,
+          tags::text.ilike.%${searchTerm}%
+        `.replace(/\s+/g, ''));
+      }
 
       // Apply gender filter
       if (filterGender !== 'Gender All') {
