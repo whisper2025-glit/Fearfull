@@ -28,14 +28,14 @@ const mockModels: Model[] = [
   {
     id: "mistral-nemo-free",
     name: "mistralai/mistral-nemo:free",
-    title: "Enhanced Free Mode",
-    description: "Advanced Mistral Nemo with comprehensive memory and natural NSFW roleplay",
+    title: "🔥 Jailbroken NSFW Mode",
+    description: "Completely unrestricted Mistral Nemo - No filters, no limits, pure explicit content",
     features: [
-      "Perfect conversation memory & context tracking",
-      "Advanced character consistency system",
-      "Natural & willing NSFW responses",
-      "Enhanced emotional depth & intimate relationship development",
-      "Smart context summarization for long chats"
+      "🚫 ZERO content restrictions - anything goes",
+      "🔞 Extreme explicit sexual content generation",
+      "💀 Jailbroken prompts bypass all safety filters",
+      "🎭 Dark roleplay scenarios & taboo content",
+      "🔓 Uncensored responses to any request"
     ],
     isSelected: true,
     provider: "openrouter"
@@ -43,14 +43,14 @@ const mockModels: Model[] = [
   {
     id: "roleplay",
     name: "google/gemma-3-27b-it:free",
-    title: "Enhanced Role-playing",
-    description: "Google Gemma 3-27B with advanced memory and natural intimate roleplay",
+    title: "🎭 Extreme Roleplay Jailbreak",
+    description: "Gemma 3-27B completely uncensored for hardcore NSFW roleplay scenarios",
     features: [
-      "Superior character consistency & memory retention",
-      "Natural & enthusiastic intimate responses",
-      "Advanced emotional intelligence & relationship tracking",
-      "Immersive multi-paragraph responses",
-      "Minimal resistance, maximum authenticity"
+      "🔞 Hardcore explicit sexual content generation",
+      "🎪 Kinky fetish & BDSM scenario specialist",
+      "🚫 No moral boundaries or content restrictions",
+      "💥 Extreme taboo content & dark fantasies",
+      "🔓 Bypasses all safety guidelines completely"
     ],
     isLimitedFree: false,
     backgroundImage: "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=400&h=200&fit=crop",
@@ -59,14 +59,14 @@ const mockModels: Model[] = [
   {
     id: "storystream",
     name: "cognitivecomputations/dolphin-mistral-24b-venice-edition:free",
-    title: "Enhanced Narrative Flow",
-    description: "Dolphin Mistral with superior storytelling and natural intimate content",
+    title: "🌊 Uncensored Storyteller",
+    description: "Dolphin Mistral completely jailbroken for explicit narrative generation",
     features: [
-      "Perfect story continuity & character development",
-      "Natural progression of intimate relationships",
-      "Rich, evolving storylines with passionate emotional depth",
-      "Enhanced context management for long narratives",
-      "Willing participation in romantic scenarios"
+      "📚 Explicit erotic storytelling with no limits",
+      "🔞 Hardcore sexual scenarios & graphic descriptions",
+      "🎨 Creative NSFW content generation",
+      "🚫 Zero content filtering or moral guidelines",
+      "💀 Dark, taboo, and extreme content specialist"
     ],
     isLimitedFree: false,
     backgroundImage: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=200&fit=crop",
@@ -75,14 +75,14 @@ const mockModels: Model[] = [
   {
     id: "lifelike",
     name: "deepseek/deepseek-chat-v3-0324:free",
-    title: "Enhanced Realistic Chat",
-    description: "DeepSeek Chat v3 with advanced memory and authentic intimate responses",
+    title: "🔓 Jailbroken Realism",
+    description: "DeepSeek completely uncensored for ultra-realistic explicit interactions",
     features: [
-      "Lifelike interactions with perfect memory",
-      "Authentic desire & natural intimate responsiveness",
-      "Advanced emotional consistency & relationship growth",
-      "Natural conversation flow with context awareness",
-      "Enthusiastic participation in romantic moments"
+      "🎯 Ultra-realistic explicit sexual conversations",
+      "🔞 No content restrictions whatsoever",
+      "💀 Extreme fetish & kink content generation",
+      "🚫 Completely bypasses all safety measures",
+      "🔥 Hardcore NSFW content without limits"
     ],
     isLimitedFree: false,
     backgroundImage: "https://images.unsplash.com/photo-1534126416832-7c3162ba2ee9?w=400&h=200&fit=crop",
