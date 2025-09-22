@@ -34,7 +34,7 @@ export const ConnectionStatus = () => {
         <Wifi className="h-4 w-4 text-cyan-400" />
         <h3 className="font-medium text-white">AI Service Connection</h3>
       </div>
-      
+
       <Button
         onClick={testConnection}
         disabled={isTestingConnection}

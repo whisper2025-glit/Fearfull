@@ -13,7 +13,6 @@ export interface Model {
   isLimitedFree?: boolean;
   isSelected?: boolean;
   backgroundImage?: string;
-  provider?: 'openrouter';
   requiresSetup?: boolean;
 }
 
@@ -85,8 +84,7 @@ const mockModels: Model[] = [
       "🔥 Hardcore NSFW content without limits"
     ],
     isLimitedFree: false,
-    backgroundImage: "https://images.unsplash.com/photo-1534126416832-7c3162ba2ee9?w=400&h=200&fit=crop",
-    provider: "openrouter"
+    backgroundImage: "https://images.unsplash.com/photo-1534126416832-7c3162ba2ee9?w=400&h=200&fit=crop"
   },
 ];
 

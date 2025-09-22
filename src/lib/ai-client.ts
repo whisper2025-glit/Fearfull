@@ -9,7 +9,6 @@ class AIClient {
   private model: string;
   private extremeNSFWMode: boolean = true;
   private openai: OpenAI;
-  private provider: 'openrouter' = 'openrouter';
   private isInitialized: boolean = false;
   private connectionStatus: 'initializing' | 'connected' | 'failed' = 'initializing';
   private lastCallMeta?: {
@@ -33,19 +32,15 @@ class AIClient {
     this.extremeNSFWMode = true; // Enhanced NSFW mode enabled by default for natural responses
 
     // Initialize OpenRouter client
-    this.initializeOpenRouterClient();
-    this.isInitialized = true;
-    this.connectionStatus = 'connected';
-    console.log('✅ AI Client initialized with OpenRouter - Unrestricted NSFW mode activated for enhanced intimate roleplay');
-  }
-
-  private initializeOpenRouterClient(): void {
     this.openai = new OpenAI({
       baseURL: "https://openrouter.ai/api/v1",
       apiKey: import.meta.env.VITE_OPENROUTER_API_KEY,
       dangerouslyAllowBrowser: true
     });
-    this.provider = 'openrouter';
+    
+    this.isInitialized = true;
+    this.connectionStatus = 'connected';
+    console.log('✅ AI Client initialized with OpenRouter - Unrestricted NSFW mode activated for enhanced intimate roleplay');
   }
 
   private validateAndEnhanceAsterisks(content: string): string {
@@ -618,9 +613,7 @@ Remember: You are ${character.name}, a passionate, willing, and sexually liberat
     return this.model;
   }
 
-  getProvider(): string {
-    return this.provider;
-  }
+  
 
   getConnectionStatus(): string {
     return this.connectionStatus;
