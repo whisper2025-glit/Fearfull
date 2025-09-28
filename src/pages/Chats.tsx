@@ -105,7 +105,6 @@ const Chats = () => {
       hideSearchIcon
       hideUserAvatar
       headerPosition="fixed"
-      contentUnderHeader={true}
     >
       <div className="flex-1 min-h-0 overflow-auto bg-background text-foreground">
         <div className="px-4 pt-0 space-y-2 pb-24">
