@@ -105,10 +105,9 @@ const Chats = () => {
       hideSearchIcon
       hideUserAvatar
       headerPosition="fixed"
-      contentUnderHeader={true}
     >
       <div className="flex-1 min-h-0 bg-background text-foreground">
-        <div className="pt-14 px-4 space-y-2 pb-24">
+        <div className="p-4 space-y-2 pb-24">
           {isLoading ? (
             <div className="space-y-4">
               {[...Array(3)].map((_, i) => (
