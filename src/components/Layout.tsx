@@ -60,7 +60,7 @@ export function Layout({ children, headerBottom, mainOverflow = 'auto', headerPo
 
   // When header is fixed, optionally allow content to slide underneath by not offsetting main
   const mainBaseClass = mainOverflow === 'hidden' ? 'flex-1 min-h-0 overflow-hidden' : 'flex-1 min-h-0 overflow-y-auto overscroll-y-contain touch-pan-y';
-  const mainClassName = mainBaseClass;
+  const mainClassName = mainBaseClass + '';
   const mainStyle: CSSProperties = {
     WebkitOverflowScrolling: 'touch',
     overscrollBehavior: 'contain',
