@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useAuth } from '@clerk/clerk-react';
+import { useAuth } from '@/lib/fake-clerk';
 import { setSupabaseAuth } from '@/lib/supabase';
 
 // Keeps Supabase authenticated with the current Clerk session JWT

@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Coins } from "lucide-react";
 import { toast } from "sonner";
-import { useUser } from "@clerk/clerk-react";
+import { useUser } from "@/lib/fake-clerk";
 import { getUserInviteStats, ensureUserHasInviteCode, InviteStats } from "@/lib/supabase";
 
 export const InviteFriends = () => {

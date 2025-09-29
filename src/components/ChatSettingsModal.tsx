@@ -5,7 +5,7 @@ import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { getDefaultChatSettings, ChatSettings } from "@/lib/supabase";
 import { openRouterAI } from "@/lib/ai-client";
-import { useUser } from "@clerk/clerk-react";
+import { useUser } from "@/lib/fake-clerk";
 import { toast } from "sonner";
 import { Save } from "lucide-react";
 

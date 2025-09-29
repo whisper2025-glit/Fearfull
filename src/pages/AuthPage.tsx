@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useSignIn, useSignUp, useUser } from "@clerk/clerk-react";
+import { useSignIn, useSignUp, useUser } from "@/lib/fake-clerk";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";

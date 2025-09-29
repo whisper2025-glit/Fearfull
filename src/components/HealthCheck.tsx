@@ -27,22 +27,7 @@ const HealthCheck = () => {
   const performHealthChecks = () => {
     const checks: HealthStatus[] = [];
 
-    // Check Clerk
-    const clerkKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
-    checks.push({
-      name: 'Clerk Authentication',
-      status: clerkKey && clerkKey.trim().length > 0 ? 'success' : 'error',
-      message: clerkKey ? 'Configured ✓' : 'Missing VITE_CLERK_PUBLISHABLE_KEY'
-    });
-
-    // Check Supabase
-    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-    const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-    checks.push({
-      name: 'Supabase Database',
-      status: (supabaseUrl && supabaseKey) ? 'success' : 'error',
-      message: (supabaseUrl && supabaseKey) ? 'Configured ✓' : 'Missing Supabase credentials'
-    });
+    // Authentication and database have been removed in this build
 
     // Check OpenRouter
     const openRouterKey = import.meta.env.VITE_OPENROUTER_API_KEY;

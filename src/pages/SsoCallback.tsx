@@ -1,4 +1,4 @@
-import { AuthenticateWithRedirectCallback } from "@clerk/clerk-react";
+import { AuthenticateWithRedirectCallback } from "@/lib/fake-clerk";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 const SsoCallback = () => {

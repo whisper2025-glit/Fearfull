@@ -8,7 +8,7 @@ import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { supabase, getMessageCountsForCharacters, getFavoriteCountsForCharacters, checkIsFavorited } from "@/lib/supabase";
 import { toast } from "sonner";
 import { HomeFilters, SortOption } from "@/components/HomeFilters";
-import { useUser } from "@clerk/clerk-react";
+import { useUser } from "@/lib/fake-clerk";
 import { getFavoriteCharacters } from "@/lib/supabase";
 import { trackEvent } from "@/lib/analytics";
 import { PreferencesOnboardingModal } from "@/components/PreferencesOnboardingModal";

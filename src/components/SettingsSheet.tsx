@@ -19,7 +19,7 @@ import {
   Mail,
   Twitter,
 } from "lucide-react";
-import { useUser, useClerk } from "@clerk/clerk-react";
+import { useUser, useClerk } from "@/lib/fake-clerk";
 import { supabase } from "@/lib/supabase";
 import { useHistoryBackClose } from "@/hooks/useHistoryBackClose";
 
