@@ -7,7 +7,7 @@ import {
   Gift
 } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useUser, useClerk } from "@clerk/clerk-react";
+import { useUser, useClerk } from "@/lib/fake-clerk";
 import { CreateModal } from "@/components/CreateModal";
 import {
   Sidebar,
