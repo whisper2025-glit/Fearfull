@@ -36,11 +36,9 @@ const Chats = () => {
   };
 
   return (
-    <Layout headerPosition="fixed">
+    <Layout headerPosition="fixed" contentUnderHeader>
       <div className="p-4">
         <div className="max-w-2xl mx-auto">
-          <h1 className="text-2xl font-bold mb-6">Chat History</h1>
-
           {characterHistory.length === 0 ? (
             <div className="text-center py-12">
               <MessageCircle className="h-16 w-16 text-gray-400 mx-auto mb-4" />
