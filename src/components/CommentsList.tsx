@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useUser } from "@clerk/clerk-react";
+import { useUser } from "@/lib/fake-clerk";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
