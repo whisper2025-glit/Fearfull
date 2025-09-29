@@ -14,7 +14,7 @@ import { CharacterCard } from "@/components/CharacterCard";
 import { LoadingSpinner, FullscreenSpinner } from "@/components/ui/loading-spinner";
 import { supabase, getFavoriteCharacters, checkIsFavorited, getMessageCountsForCharacters, getFavoriteCountsForCharacters } from "@/lib/supabase";
 import { isFollowing, toggleFollowUser, getFollowersCount, getFollowingCount } from "@/lib/follow";
-import { useUser } from "@clerk/clerk-react";
+import { useUser } from "@/lib/fake-clerk";
 import { toast } from "sonner";
 
 interface CreatorUser {
