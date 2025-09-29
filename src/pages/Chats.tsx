@@ -1,13 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useUser } from "@clerk/clerk-react";
-import { MessageCircle, Clock, User } from "lucide-react";
-import { Layout } from "@/components/Layout";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
-import { supabase } from "@/lib/supabase";
-import { toast } from "sonner";
+import { MessageCircle } from "lucide-react";
 
 interface CharacterHistory {
   id: string;
@@ -36,167 +29,79 @@ const formatDate = (dateString: string): string => {
   }
 };
 
+// Simplified mock data
+const mockCharacterHistory: CharacterHistory[] = [
+  {
+    id: "1",
+    name: "Luna the Wise",
+    avatar_url: "/placeholder.svg",
+    author: "StoryMaster",
+    lastChatDate: new Date().toISOString(),
+    totalMessages: 24,
+    lastMessage: "Hello there!",
+    isVip: true
+  }
+];
+
 const Chats = () => {
-  const { user } = useUser();
   const navigate = useNavigate();
-  const [characterHistory, setCharacterHistory] = useState<CharacterHistory[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const loadChatHistory = async () => {
-      if (!user) return;
-
-      setIsLoading(true);
-      try {
-        // Load character chat history
-        const { data, error } = await supabase
-          .rpc('get_chat_history', { p_user_id: user.id });
-
-        if (error) {
-          console.error('Error loading character history:', error);
-          toast.error('Failed to load chat history');
-          return;
-        }
-
-        const rows = data || [];
-        if (rows.length === 0) {
-          setCharacterHistory([]);
-          return;
-        }
-
-        const historyArray: CharacterHistory[] = rows.map((row: any) => ({
-          id: row.character_id,
-          name: row.name,
-          avatar_url: row.avatar_url || '/placeholder.svg',
-          author: row.author_full_name || 'Unknown',
-          lastChatDate: row.last_chat_date,
-          totalMessages: Number(row.total_messages || 0),
-          lastMessage: row.last_message || ''
-        }));
-
-        setCharacterHistory(historyArray);
-      } catch (error) {
-        console.error('Error loading chat history:', error);
-        toast.error('Failed to load chat history');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadChatHistory();
-  }, [user]);
+  const [characterHistory] = useState<CharacterHistory[]>(mockCharacterHistory);
 
   const startNewChat = (characterId: string) => {
     navigate(`/chat/${characterId}`);
   };
 
-  if (!user) {
-    return (
-      <Layout>
-        <div className="flex items-center justify-center h-full">
-          <p className="text-muted-foreground">Please sign in to view your chat history.</p>
-        </div>
-      </Layout>
-    );
-  }
-
   return (
-    <Layout
-      hideSearchIcon
-      hideUserAvatar
-      headerPosition="fixed"
-      contentUnderHeader={false}
-    >
-      <div className="flex-1 min-h-0 overflow-auto bg-background text-foreground">
-        <div className="p-4 space-y-2 pb-24">
-          {isLoading ? (
-            <div className="space-y-4">
-              {[...Array(3)].map((_, i) => (
-                <Card key={i} className="bg-card border-border animate-pulse">
-                  <CardContent className="p-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 bg-muted rounded-full"></div>
-                      <div className="flex-1 space-y-2">
-                        <div className="h-4 bg-muted rounded w-1/3"></div>
-                        <div className="h-3 bg-muted rounded w-1/2"></div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          ) : characterHistory.length === 0 ? (
-            <div className="text-center py-12">
-              <MessageCircle className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-foreground mb-2">No character chats yet</h3>
-              <p className="text-muted-foreground mb-6">
-                Start chatting with characters to see them here
-              </p>
-              <button
-                onClick={() => navigate('/')}
-                className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-3 rounded-lg transition-colors"
-              >
-                Explore Characters
-              </button>
-            </div>
-          ) : (
-            characterHistory.map((character) => (
-              <Card
+    <div className="min-h-screen bg-gray-900 text-white p-4">
+      <div className="max-w-2xl mx-auto">
+        <h1 className="text-2xl font-bold mb-6">Chat History</h1>
+        
+        {characterHistory.length === 0 ? (
+          <div className="text-center py-12">
+            <MessageCircle className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+            <h3 className="text-lg font-medium mb-2">No Chats Available</h3>
+            <p className="text-gray-400 mb-6">
+              Chat history is currently not available.
+            </p>
+            <button
+              onClick={() => navigate('/')}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors"
+            >
+              Go Home
+            </button>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {characterHistory.map((character) => (
+              <div
                 key={character.id}
-                className="bg-card border-border hover:bg-card/80 transition-colors cursor-pointer"
+                className="bg-gray-800 p-4 rounded-lg hover:bg-gray-700 transition-colors cursor-pointer"
                 onClick={() => startNewChat(character.id)}
               >
-                <CardContent className="p-2">
-                  <div className="flex items-center gap-2">
-                    <Avatar className="w-10 h-10 flex-shrink-0">
-                      <AvatarImage src={character.avatar_url} alt={character.name} />
-                      <AvatarFallback className="bg-muted text-foreground text-sm">
-                        {character.name.charAt(0)}
-                      </AvatarFallback>
-                    </Avatar>
-
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <h3 className="font-semibold text-white truncate text-sm">
-                          {character.name}
-                        </h3>
-                        {character.isVip && (
-                          <Badge className="bg-yellow-500 text-black text-xs px-2 py-0.5">
-                            VIP
-                          </Badge>
-                        )}
-                      </div>
-
-                      <div className="flex items-center gap-1 text-muted-foreground text-xs">
-                        <User className="h-3 w-3" />
-                        <span>by {character.author}</span>
-                      </div>
-
-                      <p className="text-muted-foreground text-xs truncate">
-                        "{character.lastMessage}"
-                      </p>
-
-                      <div className="flex items-center justify-between text-xs text-muted-foreground">
-                        <div className="flex items-center gap-2">
-                          <div className="flex items-center gap-1">
-                            <MessageCircle className="h-3 w-3" />
-                            <span>{character.totalMessages} messages</span>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <Clock className="h-3 w-3" />
-                            <span>{formatDate(character.lastChatDate)}</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-gray-600 rounded-full flex items-center justify-center">
+                    {character.name.charAt(0)}
                   </div>
-                </CardContent>
-              </Card>
-            ))
-          )}
-        </div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <h3 className="font-semibold">{character.name}</h3>
+                      {character.isVip && (
+                        <span className="bg-yellow-500 text-black text-xs px-2 py-1 rounded">
+                          VIP
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-gray-400 text-sm">by {character.author}</p>
+                    <p className="text-gray-300 text-sm">"{character.lastMessage}"</p>
+                    <p className="text-gray-500 text-xs">{character.totalMessages} messages</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
-    </Layout>
+    </div>
   );
 };
 

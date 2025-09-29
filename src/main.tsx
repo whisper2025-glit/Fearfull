@@ -1,9 +1,7 @@
 import { createRoot } from 'react-dom/client'
-import { ClerkProvider } from '@clerk/clerk-react'
 import App from './App.tsx'
 import './index.css'
 
-const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY as string | undefined;
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string | undefined;
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
 const OPENROUTER_KEY = import.meta.env.VITE_OPENROUTER_API_KEY as string | undefined;
@@ -11,17 +9,12 @@ const OPENROUTER_KEY = import.meta.env.VITE_OPENROUTER_API_KEY as string | undef
 const root = createRoot(document.getElementById('root')!);
 
 const missing: string[] = [];
-if (!PUBLISHABLE_KEY || !PUBLISHABLE_KEY.trim()) missing.push('VITE_CLERK_PUBLISHABLE_KEY');
 if (!SUPABASE_URL || !SUPABASE_URL.trim()) missing.push('VITE_SUPABASE_URL');
 if (!SUPABASE_ANON_KEY || !SUPABASE_ANON_KEY.trim()) missing.push('VITE_SUPABASE_ANON_KEY');
 if (!OPENROUTER_KEY || !OPENROUTER_KEY.trim()) missing.push('VITE_OPENROUTER_API_KEY');
 
 if (missing.length === 0) {
-  root.render(
-    <ClerkProvider publishableKey={PUBLISHABLE_KEY!}>
-      <App />
-    </ClerkProvider>
-  );
+  root.render(<App />);
 } else {
   const isDevelopment = import.meta.env.DEV;
   const isProduction = import.meta.env.PROD;
@@ -53,7 +46,6 @@ if (missing.length === 0) {
             <h3 style={{ fontSize: 16, marginBottom: 8 }}>Production Deployment:</h3>
             <ol style={{ fontSize: 14, paddingLeft: 20 }}>
               <li>Go to your hosting dashboard → Environment Variables</li>
-              <li>Add: VITE_CLERK_PUBLISHABLE_KEY</li>
               <li>Add: VITE_SUPABASE_URL</li>
               <li>Add: VITE_SUPABASE_ANON_KEY</li>
               <li>Add: VITE_OPENROUTER_API_KEY</li>
