@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { ArrowLeft, Upload, Info, ChevronUp, RotateCcw, Loader2, ChevronDown, Send } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useUser } from "@clerk/clerk-react";
+import { useUser } from "@/lib/fake-clerk";
 import { supabase, uploadImage } from "@/lib/supabase";
 import { compressAndCropImage } from "@/lib/image";
 import { toast } from "sonner";
