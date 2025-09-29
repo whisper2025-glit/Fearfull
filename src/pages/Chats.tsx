@@ -36,7 +36,7 @@ const Chats = () => {
   };
 
   return (
-    <Layout headerPosition="fixed" contentUnderHeader>
+    <Layout headerPosition="fixed">
       <div className="p-4">
         <div className="max-w-2xl mx-auto">
           {characterHistory.length === 0 ? (
