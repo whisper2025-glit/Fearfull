@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useUser } from '@clerk/clerk-react';
+import { useUser } from '@/lib/fake-clerk';
 import { processInviteCode } from '@/lib/supabase';
 import { createOrUpdateUser } from '@/lib/createOrUpdateUser';
 import { toast } from 'sonner';
