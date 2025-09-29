@@ -1,4 +1,4 @@
-import { useUser } from "@clerk/clerk-react";
+import { useUser } from "@/lib/fake-clerk";
 import { Navigate } from "react-router-dom";
 import { ReactNode } from "react";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
